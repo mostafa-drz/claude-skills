@@ -8,7 +8,7 @@ To use these skills, copy them to your `~/.claude/skills/` directory:
 
 ```bash
 # Clone and copy all skills
-git clone git@github.com:mosiesta/claude-skills.git
+git clone git@github.com:mostafa-drz/claude-skills.git
 cp -r claude-skills/skills/* ~/.claude/skills/
 
 # Or copy a single skill
