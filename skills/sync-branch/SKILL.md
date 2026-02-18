@@ -17,7 +17,7 @@ Merge one branch into another, handling conflicts and preserving work in progres
 
 ## Preferences
 
-!`cat ~/.claude/skills/sync-branch/preferences.md 2>/dev/null || echo "_no preferences set_"`
+_Read `~/.claude/skills/sync-branch/preferences.md` using the Read tool. If not found, no preferences are set._
 
 ## Context
 

@@ -27,7 +27,7 @@ Fetch unresolved PR comments, understand the code context, categorize feedback, 
 
 ## Preferences
 
-!`cat ~/.claude/skills/address-pr-comments/preferences.md 2>/dev/null || echo "_no preferences set_"`
+_Read `~/.claude/skills/address-pr-comments/preferences.md` using the Read tool. If not found, no preferences are set._
 
 ## Context
 

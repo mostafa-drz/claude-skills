@@ -33,7 +33,7 @@ Analyze a pasted conversation thread and suggest concrete developer actions, the
 
 ## Preferences
 
-!`cat ~/.claude/skills/thread-to-action/preferences.md 2>/dev/null || echo "_no preferences set_"`
+_Read `~/.claude/skills/thread-to-action/preferences.md` using the Read tool. If not found, no preferences are set._
 
 ## Context
 

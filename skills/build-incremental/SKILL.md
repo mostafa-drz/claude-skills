@@ -22,7 +22,7 @@ Implement code in progressive, verified increments. Each unit is built, checked,
 
 ## Preferences
 
-!`cat ~/.claude/skills/build-incremental-incremental/preferences.md 2>/dev/null || echo "_no preferences set_"`
+_Read `~/.claude/skills/build-incremental/preferences.md` using the Read tool. If not found, no preferences are set._
 
 ## Project context
 
@@ -37,7 +37,7 @@ Check `$ARGUMENTS`:
 
 - **`help`** → display help then stop
 - **`config`** → interactive setup then stop
-- **`reset`** → delete `~/.claude/skills/build-incremental-incremental/preferences.md`, confirm, stop
+- **`reset`** → delete `~/.claude/skills/build-incremental/preferences.md`, confirm, stop
 - **`--dry-run <description>`** → show the plan without executing then stop
 - **`--no-commit <description>`** → build and verify but don't commit
 - **`--skip-lint <description>`** → skip linting, only run type checks
@@ -89,7 +89,7 @@ Use **`AskUserQuestion`**:
 
 **Q5** — "Unit size?" (small — 1-2 files per commit; medium — 3-5 files (default); large — whole milestone)
 
-Save to `~/.claude/skills/build-incremental-incremental/preferences.md`.
+Save to `~/.claude/skills/build-incremental/preferences.md`.
 
 ## First-time detection
 

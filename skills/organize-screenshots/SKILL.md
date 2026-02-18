@@ -19,12 +19,12 @@ Scan for recent screenshots, visually classify them, and organize with descripti
 
 ## Preferences
 
-!`cat ~/.claude/skills/organize-screenshots/preferences.md 2>/dev/null || echo "_no preferences set_"`
+_Read `~/.claude/skills/organize-screenshots/preferences.md` using the Read tool. If not found, no preferences are set._
 
 ## Context
 
 - Branch: !`git branch --show-current 2>/dev/null || echo "not a git repo"`
-- Recent screenshots: !`find ~/Desktop -maxdepth 1 -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.webp" \) -mtime -3 2>/dev/null | wc -l | tr -d ' '`
+- Recent screenshots: _Use Bash to count recent screenshots in ~/Desktop at runtime_
 
 ## Command routing
 

@@ -21,7 +21,7 @@ Investigate GitHub Actions failures — fetch logs, diagnose root causes, sugges
 
 ## Preferences
 
-!`cat ~/.claude/skills/investigate-ci/preferences.md 2>/dev/null || echo "_no preferences set_"`
+_Read `~/.claude/skills/investigate-ci/preferences.md` using the Read tool. If not found, no preferences are set._
 
 ## Context
 

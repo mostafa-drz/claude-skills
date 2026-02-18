@@ -98,7 +98,7 @@ Updated: 2026-02-17
 
 ### How it works
 
-1. **Read on startup** via `!`cat ~/.claude/skills/<name>/preferences.md 2>/dev/null``
+1. **Read on startup** — use the Read tool to load `~/.claude/skills/<name>/preferences.md` (do NOT use `!` backtick interpolation for `~/.claude/` paths as they are outside the Bash sandbox)
 2. **Write after config** — save explicitly chosen preferences
 3. **Learn silently** — when the user corrects a default (changes base branch, removes a section, picks a different format), save that preference and mention it: "Noted: you prefer X. Saved for next time."
 4. **Human-readable** — the user can edit the file directly
@@ -190,3 +190,6 @@ Don't use for: large outputs, commands that may hang, anything requiring auth.
 | `/investigate-ci` | Diagnose GitHub Actions failures | No (read-only) | No |
 | `/audit-skills` | Audit skills against manifest + upstream docs | No (read-only, fix mode optional) | No |
 | `/publish-skills` | Publish skills to GitHub repo | Yes (commits, pushes) | No |
+| `/skill-creator` | Create new skills interactively | Yes (creates files) | No |
+| `/test-on-pilot` | Merge feature branch + all-demos for pilot deploy | Yes (creates branches, pushes) | No |
+| `/git-cleanup` | Smart cleanup of stale branches, remotes, worktrees | Yes (deletes branches) | Linear |

@@ -23,7 +23,7 @@ Trace a resource, event, or feature through the system and verify it works end-t
 
 ## Preferences
 
-!`cat ~/.claude/skills/smoke-test/preferences.md 2>/dev/null || echo "_no preferences set_"`
+_Read `~/.claude/skills/smoke-test/preferences.md` using the Read tool. If not found, no preferences are set._
 
 ## Project context
 

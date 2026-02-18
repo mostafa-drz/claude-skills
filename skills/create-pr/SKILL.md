@@ -22,7 +22,7 @@ Create a well-structured, product-focused pull request.
 
 ## Preferences
 
-!`cat ~/.claude/skills/create-pr/preferences.md 2>/dev/null || echo "_no preferences set_"`
+_Read `~/.claude/skills/create-pr/preferences.md` using the Read tool. If not found, no preferences are set._
 
 ## Context
 
@@ -55,19 +55,19 @@ PR — Create a well-structured pull request
 
 Usage:
   /create-pr                         Create PR from current branch
-  /create-pr<issue-id>               Create PR and link Linear issue
-  /create-pr--base develop           Override base branch
-  /create-pr--draft                  Create as draft
-  /create-pr--no-linear              Skip Linear linking
-  /create-prconfig                   Set PR preferences
-  /create-prreset                    Clear preferences
-  /create-prhelp                     This help
+  /create-pr <issue-id>              Create PR and link Linear issue
+  /create-pr --base develop          Override base branch
+  /create-pr --draft                 Create as draft
+  /create-pr --no-linear             Skip Linear linking
+  /create-pr config                  Set PR preferences
+  /create-pr reset                   Clear preferences
+  /create-pr help                    This help
 
 Examples:
   /pr
-  /create-prAIS-810
-  /create-pr--base develop --draft
-  /create-prAIS-810 --base main
+  /create-pr AIS-810
+  /create-pr --base develop --draft
+  /create-pr AIS-810 --base main
 
 What it does:
   1. Detects base branch (or uses preference/flag)

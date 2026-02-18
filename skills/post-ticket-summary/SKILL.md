@@ -24,7 +24,7 @@ Add a structured implementation summary comment to a Linear issue after completi
 
 ## Preferences
 
-!`cat ~/.claude/skills/post-ticket-summary/preferences.md 2>/dev/null || echo "_no preferences set_"`
+_Read `~/.claude/skills/post-ticket-summary/preferences.md` using the Read tool. If not found, no preferences are set._
 
 ## Context
 

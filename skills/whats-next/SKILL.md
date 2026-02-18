@@ -5,6 +5,7 @@ description: >-
   Linear, PRs, and current conversation. Prioritizes blockers, unblocked items, and momentum.
   Use when deciding what to work on next or after finishing a task.
 argument-hint: [optional focus area]
+disable-model-invocation: true
 allowed-tools:
   - AskUserQuestion
   - Bash
@@ -30,7 +31,7 @@ Surface the 3 most impactful things to do right now based on all available conte
 
 ## Preferences
 
-!`cat ~/.claude/skills/whats-next/preferences.md 2>/dev/null || echo "_no preferences set_"`
+_Read `~/.claude/skills/whats-next/preferences.md` using the Read tool. If not found, no preferences are set._
 
 ## Context
 

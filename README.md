@@ -25,14 +25,17 @@ Each skill supports `/skill-name help` for usage details, `/skill-name config` f
 | [`/audit-skills`](skills/audit-skills/SKILL.md) | Audits skills against manifest and upstream docs | Yes |
 | [`/build-incremental`](skills/build-incremental/SKILL.md) | Implements code in progressive, verified increments | Yes |
 | [`/create-pr`](skills/create-pr/SKILL.md) | Creates well-structured pull requests with Linear linking | Yes |
+| [`/git-cleanup`](skills/git-cleanup/SKILL.md) | Identifies and removes stale branches, orphaned remotes, and unused worktrees | Yes |
 | [`/investigate-ci`](skills/investigate-ci/SKILL.md) | Investigates GitHub Actions workflow failures | No |
 | [`/organize-screenshots`](skills/organize-screenshots/SKILL.md) | Scans and organizes screenshots with descriptive names | Yes |
+| [`/post-pr-for-review`](skills/post-pr-for-review/SKILL.md) | Generates contextual Slack message for PR review requests | Yes |
 | [`/post-ticket-summary`](skills/post-ticket-summary/SKILL.md) | Posts implementation summary to Linear issues | Yes |
 | [`/publish-skills`](skills/publish-skills/SKILL.md) | Publishes skills to a GitHub repo for sharing | Yes |
 | [`/slack-to-ticket`](skills/slack-to-ticket/SKILL.md) | Creates Linear issues from Slack threads | Yes |
 | [`/smoke-test`](skills/smoke-test/SKILL.md) | Traces and verifies E2E in any environment | Yes |
 | [`/sync-branch`](skills/sync-branch/SKILL.md) | Merges branches with conflict handling | Yes |
 | [`/thread-to-action`](skills/thread-to-action/SKILL.md) | Parses threads and suggests developer actions | Yes |
+| [`/skill-creator`](skills/skill-creator/SKILL.md) | Creates new skills interactively with guided questions | Yes |
 | [`/whats-next`](skills/whats-next/SKILL.md) | Suggests top 3 next actions from full context | No |
 
 ## Skill Details
@@ -69,6 +72,14 @@ Creates a well-structured pull request with product-focused summary, change high
 
 ---
 
+### `/git-cleanup`
+
+Identifies and removes stale git branches, orphaned remote branches, and unused worktrees. Scans repos in the current directory, shows what's safe to delete, and cleans up with confirmation. Use when branches pile up or after finishing features.
+
+**Usage:** `/git-cleanup [repo-name] [--dry-run] [--all]`
+
+---
+
 ### `/investigate-ci`
 
 Investigates GitHub Actions workflow failures for any repo. Fetches recent runs, identifies failures, extracts error logs, diagnoses root causes, and suggests fixes. Use when a deploy or CI workflow fails and you need to understand why.
@@ -85,6 +96,14 @@ Scans a folder for recent screenshots, visually classifies which ones are releva
 
 ---
 
+### `/post-pr-for-review`
+
+Generates a contextual Slack message for posting a PR to the team's review channel. Pulls context from PR diff, Linear ticket, session conversation, and related PRs to write a concise, informative review request. Configurable tone, detail level, and format.
+
+**Usage:** `/post-pr-for-review <PR number or URL> [repo-name]`
+
+---
+
 ### `/post-ticket-summary`
 
 Posts a structured implementation summary comment to a Linear issue — what was built, key decisions, reuse patterns, and how to test. Use after completing work on a ticket to document the implementation for the team.
@@ -98,6 +117,14 @@ Posts a structured implementation summary comment to a Linear issue — what was
 Publishes personal Claude skills to a GitHub repository for sharing. Copies skill files, generates a README catalog, commits, and pushes. Use when ready to share skill updates or after creating/updating skills.
 
 **Usage:** `/publish-skills [--preview] [--diff]`
+
+---
+
+### `/skill-creator`
+
+Creates new Claude Code skills interactively by asking contextual questions about purpose, side effects, tools, and workflow. Generates a complete SKILL.md following all conventions from SKILLS_GUIDE.md. Use when creating a new skill or when asking to scaffold a skill.
+
+**Usage:** `/skill-creator [skill-name] [--from-description "..."]`
 
 ---
 

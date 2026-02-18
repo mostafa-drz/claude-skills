@@ -23,7 +23,7 @@ Creates a structured Linear issue from a pasted Slack conversation.
 
 ## Preferences
 
-!`cat ~/.claude/skills/slack-to-ticket/preferences.md 2>/dev/null || echo "_no preferences set_"`
+_Read `~/.claude/skills/slack-to-ticket/preferences.md` using the Read tool. If not found, no preferences are set._
 
 ## Command routing
 

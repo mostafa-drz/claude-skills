@@ -22,13 +22,11 @@ Publish personal Claude skills to a GitHub repository for sharing and versioning
 
 ## Preferences
 
-!`cat ~/.claude/skills/publish-skills/preferences.md 2>/dev/null || echo "_no preferences set_"`
+_Read `~/.claude/skills/publish-skills/preferences.md` using the Read tool. If not found, no preferences are set._
 
 ## Context
 
-- Skills dir: !`ls -1d ~/.claude/skills/*/SKILL.md 2>/dev/null | wc -l | tr -d ' '` skills found
-- Repo: !`cat ~/.claude/skills/publish-skills/preferences.md 2>/dev/null | grep "repo-path:" | sed 's/.*: //' || echo "not configured"`
-- Last published: !`cat ~/.claude/skills/publish-skills/preferences.md 2>/dev/null | grep "last-published:" | sed 's/.*: //' || echo "never"`
+_On startup, use the Glob tool to find `~/.claude/skills/*/SKILL.md` to count skills, and read preferences (above) to extract repo-path and last-published._
 
 ## Command routing
 
