@@ -144,7 +144,7 @@ Also note if the skill has `reference/` or `examples/` directories.
 **Compare with published repo** to detect changes:
 ```bash
 # For each local skill, diff against published version
-diff ~/.claude/skills/{skill-name}/SKILL.md {repo-path}/skills/{skill-name}/SKILL.md
+diff ~/.claude/skills/{skill-name}/SKILL.md {repo-path}/code/{skill-name}/SKILL.md
 ```
 
 Categorize each skill:
@@ -194,30 +194,30 @@ Only copy the skills the user approved:
 **For each approved skill:**
 ```bash
 # Create skill dir in repo
-mkdir -p {repo-path}/skills/{skill-name}
+mkdir -p {repo-path}/code/{skill-name}
 
 # Copy SKILL.md
-cp ~/.claude/skills/{skill-name}/SKILL.md {repo-path}/skills/{skill-name}/
+cp ~/.claude/skills/{skill-name}/SKILL.md {repo-path}/code/{skill-name}/
 
 # Copy reference/ if exists
 if [ -d ~/.claude/skills/{skill-name}/reference ]; then
-  cp -r ~/.claude/skills/{skill-name}/reference {repo-path}/skills/{skill-name}/
+  cp -r ~/.claude/skills/{skill-name}/reference {repo-path}/code/{skill-name}/
 fi
 
 # Copy examples/ if exists
 if [ -d ~/.claude/skills/{skill-name}/examples ]; then
-  cp -r ~/.claude/skills/{skill-name}/examples {repo-path}/skills/{skill-name}/
+  cp -r ~/.claude/skills/{skill-name}/examples {repo-path}/code/{skill-name}/
 fi
 ```
 
 **For each approved removal:**
 ```bash
-rm -rf {repo-path}/skills/{skill-name}
+rm -rf {repo-path}/code/{skill-name}
 ```
 
 **Copy SKILLS_GUIDE.md** (if changed and user approved):
 ```bash
-cp ~/.claude/skills/SKILLS_GUIDE.md {repo-path}/
+cp ~/.claude/skills/SKILLS_GUIDE.md {repo-path}/code/
 ```
 
 ### 5. Generate README.md
@@ -236,18 +236,18 @@ To use these skills, copy them to your `~/.claude/skills/` directory:
 ```bash
 # Clone and copy all skills
 git clone {remote-url}
-cp -r claude-skills/skills/* ~/.claude/skills/
+cp -r claude-skills/code/* ~/.claude/skills/
 
 # Or copy a single skill
-cp -r claude-skills/skills/whats-next ~/.claude/skills/
+cp -r claude-skills/code/whats-next ~/.claude/skills/
 ```
 
 ## Skills Catalog
 
 | Skill | Description | Side Effects |
 |-------|-------------|:------------:|
-| [`/address-pr-comments`](skills/address-pr-comments/SKILL.md) | {short description} | Yes |
-| [`/audit-skills`](skills/audit-skills/SKILL.md) | {short description} | No |
+| [`/address-pr-comments`](code/address-pr-comments/SKILL.md) | {short description} | Yes |
+| [`/audit-skills`](code/audit-skills/SKILL.md) | {short description} | No |
 | ... | ... | ... |
 
 ## Skill Details
@@ -264,7 +264,7 @@ cp -r claude-skills/skills/whats-next ~/.claude/skills/
 
 ## Design Guide
 
-These skills follow a consistent [design guide](SKILLS_GUIDE.md) with:
+These skills follow a consistent [design guide](code/SKILLS_GUIDE.md) with:
 - CLI-style help, config, and reset subcommands
 - Persistent preferences per skill
 - First-time setup guidance
@@ -292,7 +292,7 @@ Run `git -C {repo-path} diff` and show, then stop.
 Stage only the approved files:
 ```bash
 cd {repo-path}
-git add skills/{approved-skill-1}/ skills/{approved-skill-2}/ README.md SKILLS_GUIDE.md
+git add code/{approved-skill-1}/ code/{approved-skill-2}/ README.md code/SKILLS_GUIDE.md
 git status --short
 ```
 

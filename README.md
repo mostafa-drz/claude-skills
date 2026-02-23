@@ -1,181 +1,117 @@
-# Claude Skills
+# 🛠️ Claude Skills
 
-Personal collection of Claude Code skills for developer workflows.
+Collection of [Agent Skills](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) for **Claude Code** and **Claude Desktop / claude.ai** — developer workflows, automation, and productivity.
 
-## Quick Start
+Both platforms use the same SKILL.md format, but Claude Code skills have access to your local filesystem, shell, subagents, and MCP servers. Desktop skills run in a sandboxed VM — great for research, writing, and analysis.
 
-To use these skills, copy them to your `~/.claude/skills/` directory:
+## 📋 What's Inside
+
+```
+claude-skills/
+├── code/                  # Claude Code skills (16 skills)
+│   ├── SKILLS_GUIDE.md    # Design conventions for Code skills
+│   ├── whats-next/
+│   ├── create-pr/
+│   └── ...
+├── desktop/               # Claude Desktop / claude.ai skills
+│   ├── README.md          # Install guide for Desktop
+│   └── research-assistant/
+```
+
+---
+
+## ⚡ Claude Code Skills
+
+Full-access skills that integrate with your local dev environment — git, GitHub, Linear, shell, filesystem, MCP servers.
+
+### Install
 
 ```bash
 # Clone and copy all skills
-git clone git@github.com:mostafa-drz/claude-skills.git
-cp -r claude-skills/skills/* ~/.claude/skills/
+git clone https://github.com/mostafa-drz/claude-skills.git
+cp -r claude-skills/code/* ~/.claude/skills/
 
 # Or copy a single skill
-cp -r claude-skills/skills/whats-next ~/.claude/skills/
+cp -r claude-skills/code/whats-next ~/.claude/skills/
 ```
 
-Each skill supports `/skill-name help` for usage details, `/skill-name config` for preferences, and learns from your corrections over time.
+Each skill supports `/skill-name help` for usage, `/skill-name config` for preferences, and learns from your corrections over time. See the [Design Guide](code/SKILLS_GUIDE.md) for conventions.
 
-## Skills Catalog
+### Catalog
 
 | Skill | Description | Side Effects |
 |-------|-------------|:------------:|
-| [`/address-pr-comments`](skills/address-pr-comments/SKILL.md) | Fetches unresolved PR comments, categorizes and addresses them | Yes |
-| [`/audit-skills`](skills/audit-skills/SKILL.md) | Audits skills against manifest and upstream docs | Yes |
-| [`/build-incremental`](skills/build-incremental/SKILL.md) | Implements code in progressive, verified increments | Yes |
-| [`/create-pr`](skills/create-pr/SKILL.md) | Creates well-structured pull requests with Linear linking | Yes |
-| [`/git-cleanup`](skills/git-cleanup/SKILL.md) | Identifies and removes stale branches, orphaned remotes, and unused worktrees | Yes |
-| [`/investigate-ci`](skills/investigate-ci/SKILL.md) | Investigates GitHub Actions workflow failures | No |
-| [`/organize-screenshots`](skills/organize-screenshots/SKILL.md) | Scans and organizes screenshots with descriptive names | Yes |
-| [`/post-pr-for-review`](skills/post-pr-for-review/SKILL.md) | Generates contextual Slack message for PR review requests | Yes |
-| [`/post-ticket-summary`](skills/post-ticket-summary/SKILL.md) | Posts implementation summary to Linear issues | Yes |
-| [`/publish-skills`](skills/publish-skills/SKILL.md) | Publishes skills to a GitHub repo for sharing | Yes |
-| [`/slack-to-ticket`](skills/slack-to-ticket/SKILL.md) | Creates Linear issues from Slack threads | Yes |
-| [`/smoke-test`](skills/smoke-test/SKILL.md) | Traces and verifies E2E in any environment | Yes |
-| [`/sync-branch`](skills/sync-branch/SKILL.md) | Merges branches with conflict handling | Yes |
-| [`/thread-to-action`](skills/thread-to-action/SKILL.md) | Parses threads and suggests developer actions | Yes |
-| [`/skill-creator`](skills/skill-creator/SKILL.md) | Creates new skills interactively with guided questions | Yes |
-| [`/whats-next`](skills/whats-next/SKILL.md) | Suggests top 3 next actions from full context | No |
-
-## Skill Details
-
-### `/address-pr-comments`
-
-Fetches unresolved PR comments, categorizes them (must-fix, suggestion, question, nit), proposes fixes or replies for each, and executes approved actions. Use when addressing PR review feedback or when someone requests changes on your PR.
-
-**Usage:** `/address-pr-comments <PR number or URL>`
+| [`/address-pr-comments`](code/address-pr-comments/SKILL.md) | Fetches unresolved PR comments, categorizes and addresses them | Yes |
+| [`/audit-skills`](code/audit-skills/SKILL.md) | Audits skills against manifest and upstream docs | Yes |
+| [`/build-incremental`](code/build-incremental/SKILL.md) | Implements code in progressive, verified increments | Yes |
+| [`/create-pr`](code/create-pr/SKILL.md) | Creates well-structured PRs with Linear linking | Yes |
+| [`/git-cleanup`](code/git-cleanup/SKILL.md) | Removes stale branches, orphaned remotes, unused worktrees | Yes |
+| [`/investigate-ci`](code/investigate-ci/SKILL.md) | Investigates GitHub Actions workflow failures | No |
+| [`/organize-screenshots`](code/organize-screenshots/SKILL.md) | Scans and organizes screenshots with descriptive names | Yes |
+| [`/post-pr-for-review`](code/post-pr-for-review/SKILL.md) | Generates contextual Slack message for PR review requests | Yes |
+| [`/post-ticket-summary`](code/post-ticket-summary/SKILL.md) | Posts implementation summary to Linear issues | Yes |
+| [`/publish-skills`](code/publish-skills/SKILL.md) | Publishes skills to a GitHub repo for sharing | Yes |
+| [`/skill-creator`](code/skill-creator/SKILL.md) | Creates new skills interactively with guided questions | Yes |
+| [`/slack-to-ticket`](code/slack-to-ticket/SKILL.md) | Creates Linear issues from Slack threads | Yes |
+| [`/smoke-test`](code/smoke-test/SKILL.md) | Traces and verifies E2E in any environment | Yes |
+| [`/sync-branch`](code/sync-branch/SKILL.md) | Merges branches with conflict handling | Yes |
+| [`/thread-to-action`](code/thread-to-action/SKILL.md) | Parses threads and suggests developer actions | Yes |
+| [`/whats-next`](code/whats-next/SKILL.md) | Suggests top 3 next actions from full context | No |
 
 ---
 
-### `/audit-skills`
+## 🖥️ Claude Desktop / claude.ai Skills
 
-Audits all personal Claude skills against the SKILLS_GUIDE.md manifest, latest official Claude skills documentation, and best practices. Reports issues, missing patterns, and improvement suggestions per skill. Use to keep skills healthy, consistent, and up-to-date with the latest standards.
+Sandboxed skills for knowledge work — no local filesystem or shell access needed. Works in the Claude Desktop app and claude.ai web.
 
-**Usage:** `/audit-skills [skill-name] [--fix] [--verbose]`
+### Install
 
----
+1. Download the skill folder
+2. ZIP it: `zip -r skill-name.zip skill-name/`
+3. Go to **Settings > Capabilities** in Claude Desktop or claude.ai
+4. Toggle on **Code execution and file creation**
+5. Click **Upload skill** and select the `.zip`
 
-### `/build-incremental`
+Requires Pro, Max, Team, or Enterprise plan. See the [Desktop install guide](desktop/README.md) for details.
 
-Implements code in progressive, verified increments — auto-detects the project's toolchain, builds each unit, runs checks (typecheck, lint, test), fixes errors, and commits with semantic messages. Use when building features, implementing milestones, or making multi-step changes.
+### Catalog
 
-**Usage:** `/build-incremental <what to build>`
-
----
-
-### `/create-pr`
-
-Creates a well-structured pull request with product-focused summary, change highlights, and test steps. Auto-detects base branch, links Linear issues from branch name, and pushes if needed. Use when ready to open a PR or when asking to create a pull request.
-
-**Usage:** `/create-pr [issue-id] [--base branch] [--draft]`
+| Skill | Description |
+|-------|-------------|
+| [`research-assistant`](desktop/research-assistant/SKILL.md) | Systematic topic research with structured briefing output |
 
 ---
 
-### `/git-cleanup`
+## 🔍 Code vs Desktop — When to Use What
 
-Identifies and removes stale git branches, orphaned remote branches, and unused worktrees. Scans repos in the current directory, shows what's safe to delete, and cleans up with confirmation. Use when branches pile up or after finishing features.
+| | Claude Code | Claude Desktop / claude.ai |
+|---|:---:|:---:|
+| **Best for** | Dev workflows, automation, CI/CD | Research, writing, analysis |
+| Local filesystem | ✅ | - |
+| Shell / Bash | ✅ | - |
+| Slash commands (`/skill`) | ✅ | - |
+| Dynamic context (`$ARGUMENTS`) | ✅ | - |
+| Subagents | ✅ | - |
+| MCP servers | ✅ | - |
+| Sandboxed code execution | ✅ | ✅ |
+| Bundled scripts | N/A | ✅ |
 
-**Usage:** `/git-cleanup [repo-name] [--dry-run] [--all]`
-
----
-
-### `/investigate-ci`
-
-Investigates GitHub Actions workflow failures for any repo. Fetches recent runs, identifies failures, extracts error logs, diagnoses root causes, and suggests fixes. Use when a deploy or CI workflow fails and you need to understand why.
-
-**Usage:** `/investigate-ci <repo, workflow URL, or run URL>`
-
----
-
-### `/organize-screenshots`
-
-Scans a folder for recent screenshots, visually classifies which ones are relevant to current work, and organizes them into a target directory with descriptive filenames. Use when collecting screenshots for PRs, bug reports, docs, or Linear issues.
-
-**Usage:** `/organize-screenshots <target-dir> [--source dir] [--days N]`
+Both use the same `SKILL.md` format with YAML frontmatter + Markdown instructions. The [Agent Skills spec](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) covers the shared format.
 
 ---
 
-### `/post-pr-for-review`
+## 📚 Further Reading
 
-Generates a contextual Slack message for posting a PR to the team's review channel. Pulls context from PR diff, Linear ticket, session conversation, and related PRs to write a concise, informative review request. Configurable tone, detail level, and format.
+- [Agent Skills Overview](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) — Official spec
+- [Extend Claude with Skills](https://code.claude.com/docs/en/skills) — Claude Code docs
+- [Using Skills in Claude](https://support.claude.com/en/articles/12512180-using-skills-in-claude) — Desktop / claude.ai help
+- [How to Create Custom Skills](https://support.claude.com/en/articles/12512198-how-to-create-custom-skills) — Official guide
+- [Anthropic Skills Repo](https://github.com/anthropics/skills) — Official examples
 
-**Usage:** `/post-pr-for-review <PR number or URL> [repo-name]`
+## 📄 License
 
----
-
-### `/post-ticket-summary`
-
-Posts a structured implementation summary comment to a Linear issue — what was built, key decisions, reuse patterns, and how to test. Use after completing work on a ticket to document the implementation for the team.
-
-**Usage:** `/post-ticket-summary <issue-id> [--preview] [--minimal]`
+[MIT](LICENSE)
 
 ---
 
-### `/publish-skills`
-
-Publishes personal Claude skills to a GitHub repository for sharing. Copies skill files, generates a README catalog, commits, and pushes. Use when ready to share skill updates or after creating/updating skills.
-
-**Usage:** `/publish-skills [--preview] [--diff]`
-
----
-
-### `/skill-creator`
-
-Creates new Claude Code skills interactively by asking contextual questions about purpose, side effects, tools, and workflow. Generates a complete SKILL.md following all conventions from SKILLS_GUIDE.md. Use when creating a new skill or when asking to scaffold a skill.
-
-**Usage:** `/skill-creator [skill-name] [--from-description "..."]`
-
----
-
-### `/slack-to-ticket`
-
-Creates a Linear issue from a pasted Slack thread. Parses the conversation, infers title, priority, category, and description, checks for duplicates, and creates a clean ticket. Use when pasting a Slack thread to turn it into a trackable issue.
-
-**Usage:** `/slack-to-ticket <paste slack thread here>`
-
----
-
-### `/smoke-test`
-
-Traces and verifies that something works end-to-end in any environment. Builds a check plan from natural language input, confirms it, then runs each check reporting pass/fail. Use when validating deployments, pipelines, features, or migrations.
-
-**Usage:** `/smoke-test <describe what to verify>`
-
----
-
-### `/sync-branch`
-
-Merges one branch into another with conflict handling. Stashes work, updates both branches, merges, resolves conflicts preserving both sides, pushes, and restores state. Use when keeping a long-lived branch in sync with its upstream.
-
-**Usage:** `/sync-branch [source] [target] [--no-push] [--dry-run]`
-
----
-
-### `/thread-to-action`
-
-Parses a pasted thread (Slack, email, GitHub, Teams), analyzes it against current git, Linear, and session context, and suggests actionable next steps — then executes them with confirmation. Use when pasting a conversation that implies developer actions.
-
-**Usage:** `/thread-to-action <paste thread here>`
-
----
-
-### `/whats-next`
-
-Suggests the 3 most impactful next actions based on full developer context — git, Linear, PRs, and current conversation. Prioritizes blockers, unblocked items, and momentum. Use when deciding what to work on next or after finishing a task.
-
-**Usage:** `/whats-next [optional focus area]`
-
----
-
-## Design Guide
-
-These skills follow a consistent [design guide](SKILLS_GUIDE.md) with:
-- CLI-style help, config, and reset subcommands
-- Persistent preferences per skill
-- First-time setup guidance
-- Learning from user corrections
-
-## License
-
-MIT
+*Built with Claude Code and too many terminal tabs.*
