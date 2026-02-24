@@ -132,17 +132,19 @@ On first invocation, detect if `preferences.md` exists. If not:
 
 ## Dynamic context injection
 
-Use `!`command`` to pre-fetch context before Claude sees the prompt. This saves tool calls.
+**Avoid `!` backtick interpolation** — Claude Code's Bash sandbox blocks commands that:
+- Access paths outside the working directory (e.g., `~/.claude/`, `~/Desktop`)
+- Use `||` or `&&` operators (flagged as "multiple operations")
+
+Instead, instruct the agent to gather context at runtime using Bash/Read tools:
 
 ```markdown
 ## Context
-- Branch: !`git branch --show-current 2>/dev/null || echo "not a git repo"`
-- Status: !`git status --short 2>/dev/null || echo "clean"`
-- Stack: !`ls package.json Cargo.toml pyproject.toml go.mod 2>/dev/null || echo "unknown"`
+
+_On startup, use Bash to detect: current git branch, git status, and project stack files. Skip any that fail._
 ```
 
-Use for: git state, project detection, file existence checks.
-Don't use for: large outputs, commands that may hang, anything requiring auth.
+This approach is more reliable and works regardless of sandbox restrictions.
 
 ---
 
@@ -192,4 +194,6 @@ Don't use for: large outputs, commands that may hang, anything requiring auth.
 | `/publish-skills` | Publish skills to GitHub repo | Yes (commits, pushes) | No |
 | `/skill-creator` | Create new skills interactively | Yes (creates files) | No |
 | `/test-on-pilot` | Merge feature branch + all-demos for pilot deploy | Yes (creates branches, pushes) | No |
+| `/daily-brief` | Morning catchup digest from GitHub, Linear, Slack, Notion | No (read-only) | Linear, Notion |
 | `/git-cleanup` | Smart cleanup of stale branches, remotes, worktrees | Yes (deletes branches) | Linear |
+| `/enrich-message` | Enrich draft messages with code refs, tickets, and facts | No (read-only) | Linear |

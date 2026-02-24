@@ -27,10 +27,7 @@ _Read `~/.claude/skills/post-pr-for-review/preferences.md` using the Read tool. 
 
 ## Context
 
-- Branch: !`git branch --show-current 2>/dev/null || echo "not a git repo"`
-- Current repo: !`basename $(git rev-parse --show-toplevel 2>/dev/null) 2>/dev/null || echo "unknown"`
-- Org: !`gh repo view --json owner -q .owner.login 2>/dev/null || echo "unknown"`
-- My open PRs: !`gh pr list --author @me --state open --limit 5 --json number,title,url,headRefName -q '.[] | "#\(.number) \(.title) [\(.headRefName)]"' 2>/dev/null || echo "none"`
+_On startup, use Bash to detect: current git branch, repo name, org (`gh repo view --json owner -q .owner.login`), and your open PRs (`gh pr list --author @me --state open --limit 5`). Skip any that fail._
 
 ## Command Routing
 

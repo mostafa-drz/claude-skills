@@ -25,8 +25,7 @@ _Read `~/.claude/skills/investigate-ci/preferences.md` using the Read tool. If n
 
 ## Context
 
-- Current repo: !`gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || echo "not in a repo"`
-- Default org: !`gh repo view --json owner -q .owner.login 2>/dev/null || echo "unknown"`
+_On startup, use Bash to detect: current repo (`gh repo view --json nameWithOwner -q .nameWithOwner`) and default org (`gh repo view --json owner -q .owner.login`). Skip any that fail._
 
 ## Command Routing
 

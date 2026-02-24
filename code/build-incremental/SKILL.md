@@ -26,10 +26,7 @@ _Read `~/.claude/skills/build-incremental/preferences.md` using the Read tool. I
 
 ## Project context
 
-- Stack: !`ls package.json Cargo.toml pyproject.toml go.mod Makefile 2>/dev/null || echo "unknown"`
-- CLAUDE.md: !`test -f CLAUDE.md && echo "present" || echo "not found"`
-- Branch: !`git branch --show-current 2>/dev/null || echo "not a git repo"`
-- Status: !`git status --short 2>/dev/null || echo "clean"`
+_On startup, use Bash to detect: project stack files (`ls package.json Cargo.toml pyproject.toml go.mod Makefile`), CLAUDE.md presence, current git branch, and git status. Skip any that fail._
 
 ## Command routing
 

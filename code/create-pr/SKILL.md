@@ -26,10 +26,7 @@ _Read `~/.claude/skills/create-pr/preferences.md` using the Read tool. If not fo
 
 ## Context
 
-- Branch: !`git branch --show-current 2>/dev/null || echo "not a git repo"`
-- Upstream: !`git rev-parse --abbrev-ref @{upstream} 2>/dev/null || echo "no upstream"`
-- Ahead: !`git rev-list --count @{upstream}..HEAD 2>/dev/null || echo "unknown"`
-- Repo: !`gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || echo "unknown"`
+_On startup, use Bash to detect: current branch (`git branch --show-current`), upstream branch, commits ahead of upstream, and repo name (`gh repo view --json nameWithOwner -q .nameWithOwner`). Skip any that fail._
 
 ## Command routing
 

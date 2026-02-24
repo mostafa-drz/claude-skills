@@ -37,10 +37,7 @@ _Read `~/.claude/skills/thread-to-action/preferences.md` using the Read tool. If
 
 ## Context
 
-- Branch: !`git branch --show-current 2>/dev/null || echo "not a git repo"`
-- Recent commits: !`git log --oneline -5 2>/dev/null || echo "no git history"`
-- Git status: !`git status --short 2>/dev/null || echo "clean"`
-- Open PRs: !`gh pr list --author @me --state open --limit 5 2>/dev/null || echo "gh not available"`
+_On startup, use Bash to detect: current git branch, recent commits (`git log --oneline -5`), git status, and open PRs (`gh pr list --author @me --state open --limit 5`). Skip any that fail._
 
 ## Command routing
 

@@ -27,9 +27,7 @@ _Read `~/.claude/skills/smoke-test/preferences.md` using the Read tool. If not f
 
 ## Project context
 
-- CLAUDE.md: !`test -f CLAUDE.md && echo "present" || echo "not found"`
-- Stack: !`ls package.json Cargo.toml pyproject.toml go.mod requirements.txt 2>/dev/null || echo "unknown"`
-- Git branch: !`git branch --show-current 2>/dev/null || echo "not a git repo"`
+_On startup, use Bash to detect: CLAUDE.md presence, project stack files (`ls package.json Cargo.toml pyproject.toml go.mod requirements.txt`), and current git branch. Skip any that fail._
 
 ## Command routing
 

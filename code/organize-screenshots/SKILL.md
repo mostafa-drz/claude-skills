@@ -23,8 +23,7 @@ _Read `~/.claude/skills/organize-screenshots/preferences.md` using the Read tool
 
 ## Context
 
-- Branch: !`git branch --show-current 2>/dev/null || echo "not a git repo"`
-- Recent screenshots: _Use Bash to count recent screenshots in ~/Desktop at runtime_
+_On startup, use Bash to detect: current git branch and count recent screenshots in the source folder (default ~/Desktop). Skip any that fail._
 
 ## Command routing
 

@@ -31,8 +31,7 @@ _Read `~/.claude/skills/address-pr-comments/preferences.md` using the Read tool.
 
 ## Context
 
-- Branch: !`git branch --show-current 2>/dev/null || echo "not a git repo"`
-- Repo: !`gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || echo "unknown"`
+_On startup, use Bash to detect: current git branch and repo name (`gh repo view --json nameWithOwner -q .nameWithOwner`). Skip any that fail._
 
 ## Command routing
 

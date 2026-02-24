@@ -21,9 +21,7 @@ _Read `~/.claude/skills/sync-branch/preferences.md` using the Read tool. If not 
 
 ## Context
 
-- Branch: !`git branch --show-current 2>/dev/null || echo "not a git repo"`
-- Status: !`git status --short 2>/dev/null || echo "clean"`
-- Remote: !`git remote get-url origin 2>/dev/null || echo "no remote"`
+_On startup, use Bash to detect: current git branch, git status, and remote URL (`git remote get-url origin`). Skip any that fail._
 
 ## Command routing
 

@@ -187,7 +187,7 @@ Assemble the complete SKILL.md following all conventions:
 - [ ] `context: fork` — set if confirmed self-contained
 - [ ] `allowed-tools` — minimal list from Step 3
 - [ ] Preferences section with dynamic injection
-- [ ] Context section with relevant `!`backtick`` commands
+- [ ] Context section with runtime Bash/Read instructions (no `!` backtick interpolation)
 - [ ] Command routing (help, config, reset, default)
 - [ ] Help block in CLI format
 - [ ] Config block with AskUserQuestion
@@ -199,7 +199,14 @@ Assemble the complete SKILL.md following all conventions:
 
 ### Dynamic context injection
 
-Choose relevant pre-fetch commands based on the skill's needs:
+**Do NOT use `!` backtick interpolation** — it fails due to Bash sandbox restrictions (blocks `||`, `&&`, paths outside working directory). Instead, write a runtime instruction:
+
+```markdown
+## Context
+_On startup, use Bash to detect: current git branch, git status, and repo name. Skip any that fail._
+```
+
+Choose relevant context based on the skill's needs:
 - Git-aware skills: branch, status, recent commits, remotes
 - Project-aware skills: package.json, Cargo.toml, etc.
 - PR-aware skills: open PRs, current PR

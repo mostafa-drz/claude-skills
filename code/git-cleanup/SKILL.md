@@ -29,9 +29,7 @@ Before starting, use the `Read` tool to read `~/.claude/skills/git-cleanup/prefe
 
 ## Context
 
-- Working directory: !`echo $PWD`
-- Git repos in cwd: !`ls -d */ 2>/dev/null | while read d; do [ -d "$d/.git" ] && echo "$d"; done | tr '\n' ', '`
-- Current repo branch: !`git branch --show-current 2>/dev/null || echo "not a git repo"`
+_On startup, use Bash to detect: working directory, git repos in cwd (directories with `.git`), and current git branch. Skip any that fail._
 
 ## Command routing
 
