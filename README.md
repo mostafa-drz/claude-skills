@@ -15,7 +15,8 @@ claude-skills/
 │   └── ...
 ├── desktop/               # Claude Desktop / claude.ai skills
 │   ├── README.md          # Install guide for Desktop
-│   └── research-assistant/
+│   ├── research-assistant/
+│   └── inbox-catchup/
 ```
 
 ---
@@ -79,6 +80,7 @@ Requires Pro, Max, Team, or Enterprise plan. See the [Desktop install guide](des
 | Skill | Description |
 |-------|-------------|
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Systematic topic research with structured briefing output |
+| [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans connected comms (Gmail, Slack, Calendar), builds prioritized briefing, helps draft replies |
 
 ---
 

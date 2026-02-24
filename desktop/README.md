@@ -41,6 +41,7 @@ Desktop skills are best for **knowledge work** — research, writing, analysis, 
 | Skill | Description |
 |-------|-------------|
 | [`research-assistant`](research-assistant/SKILL.md) | Systematic topic research with structured briefing output |
+| [`inbox-catchup`](inbox-catchup/SKILL.md) | Scans Gmail, Slack, Calendar and other connected sources, builds a prioritized briefing, and helps draft replies |
 
 ## Further Reading
 
