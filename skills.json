@@ -1,0 +1,168 @@
+{
+  "updated": "2026-02-24",
+  "repo": "https://github.com/mostafa-drz/claude-skills",
+  "skills": [
+    {
+      "name": "inbox-catchup",
+      "platform": "desktop",
+      "description": "Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. Helps triage messages and draft replies.",
+      "trigger": "Starting the day, returning from a break, or catching up on communications.",
+      "tags": ["communication", "email", "productivity", "triage"],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/inbox-catchup/SKILL.md"
+    },
+    {
+      "name": "research-assistant",
+      "platform": "desktop",
+      "description": "Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary.",
+      "trigger": "Researching something, preparing a briefing, or compiling background on a topic.",
+      "tags": ["research", "writing", "analysis"],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/research-assistant/SKILL.md"
+    },
+    {
+      "name": "address-pr-comments",
+      "platform": "code",
+      "description": "Fetches unresolved PR comments, categorizes them (must-fix, suggestion, question, nit), proposes fixes or replies for each, and executes approved actions.",
+      "trigger": "Addressing PR review feedback or when someone requests changes on your PR.",
+      "tags": ["git", "code review", "github"],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/address-pr-comments/SKILL.md"
+    },
+    {
+      "name": "audit-skills",
+      "platform": "code",
+      "description": "Audits all personal Claude skills against the SKILLS_GUIDE.md manifest, latest official documentation, and best practices. Reports issues and improvement suggestions.",
+      "trigger": "Keeping skills healthy, consistent, and up-to-date with the latest standards.",
+      "tags": ["meta", "quality", "maintenance"],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/audit-skills/SKILL.md"
+    },
+    {
+      "name": "build-incremental",
+      "platform": "code",
+      "description": "Implements code in progressive, verified increments — auto-detects the project's toolchain, builds each unit, runs checks, fixes errors, and commits with semantic messages.",
+      "trigger": "Building features, implementing milestones, or making multi-step changes.",
+      "tags": ["coding", "automation", "testing"],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/build-incremental/SKILL.md"
+    },
+    {
+      "name": "create-pr",
+      "platform": "code",
+      "description": "Creates a well-structured pull request with product-focused summary, change highlights, and test steps. Auto-detects base branch and links Linear issues.",
+      "trigger": "Ready to open a PR or when asking to create a pull request.",
+      "tags": ["git", "github", "linear"],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/create-pr/SKILL.md"
+    },
+    {
+      "name": "git-cleanup",
+      "platform": "code",
+      "description": "Identifies and removes stale git branches, orphaned remote branches, and unused worktrees. Cross-references with Linear to check issue status before deleting.",
+      "trigger": "Repos have accumulated stale branches and you want to tidy up.",
+      "tags": ["git", "maintenance", "linear"],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/git-cleanup/SKILL.md"
+    },
+    {
+      "name": "investigate-ci",
+      "platform": "code",
+      "description": "Investigates GitHub Actions workflow failures for any repo. Fetches recent runs, identifies failures, extracts error logs, diagnoses root causes, and suggests fixes.",
+      "trigger": "A deploy or CI workflow fails and you need to understand why.",
+      "tags": ["ci/cd", "github", "debugging"],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/investigate-ci/SKILL.md"
+    },
+    {
+      "name": "organize-screenshots",
+      "platform": "code",
+      "description": "Scans a folder for recent screenshots, visually classifies which ones are relevant to current work, and organizes them into a target directory with descriptive filenames.",
+      "trigger": "Collecting screenshots for PRs, bug reports, docs, or Linear issues.",
+      "tags": ["files", "organization", "productivity"],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/organize-screenshots/SKILL.md"
+    },
+    {
+      "name": "post-pr-for-review",
+      "platform": "code",
+      "description": "Generates a contextual Slack message for posting a PR to the team's review channel. Pulls context from PR diff, Linear ticket, and session conversation.",
+      "trigger": "Posting a PR for team review in Slack.",
+      "tags": ["slack", "github", "communication"],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/post-pr-for-review/SKILL.md"
+    },
+    {
+      "name": "post-ticket-summary",
+      "platform": "code",
+      "description": "Posts a structured implementation summary comment to a Linear issue — what was built, key decisions, reuse patterns, and how to test.",
+      "trigger": "After completing work on a ticket to document the implementation for the team.",
+      "tags": ["linear", "documentation", "communication"],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/post-ticket-summary/SKILL.md"
+    },
+    {
+      "name": "publish-skills",
+      "platform": "code",
+      "description": "Publishes personal Claude skills to a GitHub repository for sharing. Copies skill files, generates a README catalog, commits, and pushes.",
+      "trigger": "Ready to share skill updates or after creating/updating skills.",
+      "tags": ["meta", "git", "automation"],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/publish-skills/SKILL.md"
+    },
+    {
+      "name": "skill-creator",
+      "platform": "code",
+      "description": "Creates new Claude Code skills interactively by asking contextual questions about purpose, side effects, tools, and workflow. Generates a complete SKILL.md.",
+      "trigger": "Creating a new skill or scaffolding a skill from scratch.",
+      "tags": ["meta", "automation"],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/skill-creator/SKILL.md"
+    },
+    {
+      "name": "slack-to-ticket",
+      "platform": "code",
+      "description": "Creates a Linear issue from a pasted Slack thread. Parses the conversation, infers title, priority, category, and description, checks for duplicates.",
+      "trigger": "Pasting a Slack thread to turn it into a trackable issue.",
+      "tags": ["slack", "linear", "productivity"],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/slack-to-ticket/SKILL.md"
+    },
+    {
+      "name": "smoke-test",
+      "platform": "code",
+      "description": "Traces and verifies that something works end-to-end in any environment. Builds a check plan from natural language input, then runs each check reporting pass/fail.",
+      "trigger": "Validating deployments, pipelines, features, or migrations.",
+      "tags": ["testing", "verification", "devops"],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/smoke-test/SKILL.md"
+    },
+    {
+      "name": "sync-branch",
+      "platform": "code",
+      "description": "Merges one branch into another with conflict handling. Stashes work, updates both branches, merges, resolves conflicts, pushes, and restores state.",
+      "trigger": "Keeping a long-lived branch in sync with its upstream.",
+      "tags": ["git", "automation"],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/sync-branch/SKILL.md"
+    },
+    {
+      "name": "thread-to-action",
+      "platform": "code",
+      "description": "Parses a pasted thread (Slack, email, GitHub, Teams), analyzes it against current context, and suggests actionable next steps — then executes them with confirmation.",
+      "trigger": "Pasting a conversation that implies developer actions.",
+      "tags": ["communication", "automation", "linear"],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/thread-to-action/SKILL.md"
+    },
+    {
+      "name": "whats-next",
+      "platform": "code",
+      "description": "Suggests the 3 most impactful next actions based on full developer context — git, Linear, PRs, and current conversation. Prioritizes blockers and momentum.",
+      "trigger": "Deciding what to work on next or after finishing a task.",
+      "tags": ["productivity", "linear", "planning"],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/whats-next/SKILL.md"
+    }
+  ]
+}
