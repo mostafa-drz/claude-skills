@@ -102,6 +102,10 @@ Both use the same `SKILL.md` format with YAML frontmatter + Markdown instruction
 
 ---
 
+## 🌐 Browse Skills
+
+View the full skill catalog with filtering and descriptions: **[Skill Catalog](https://mostafa-drz.github.io/claude-skills/)** (enable GitHub Pages to host, or open `index.html` locally).
+
 ## 📚 Further Reading
 
 - [Agent Skills Overview](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview) — Official spec

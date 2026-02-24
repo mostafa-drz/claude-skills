@@ -279,6 +279,17 @@ For the catalog table:
 - Short description: first sentence of the frontmatter description (up to the first period)
 - Side effects: "Yes" if `disable-model-invocation: true`, "No" otherwise
 
+### 5b. Update index.html catalog
+
+The repo includes an `index.html` skill catalog page. After generating the README, also update the HTML:
+
+1. Read `{repo-path}/index.html`
+2. For each **new** skill: add a `<div class="skill-card">` block inside `<div id="skills-grid">`, following the existing card format — include `data-platform="code"` or `data-platform="desktop"`, skill name, tags, description, and "Use when" trigger
+3. For each **removed** skill: delete its `<div class="skill-card">` block
+4. For each **changed** skill: update the description and trigger text in its card
+5. Update the skill counts in the `<div class="stats">` section and the tab buttons
+6. Stage `index.html` along with the other files
+
 ### 6. Commit and push
 
 **If `--preview`:**
@@ -292,7 +303,7 @@ Run `git -C {repo-path} diff` and show, then stop.
 Stage only the approved files:
 ```bash
 cd {repo-path}
-git add code/{approved-skill-1}/ code/{approved-skill-2}/ README.md code/SKILLS_GUIDE.md
+git add code/{approved-skill-1}/ code/{approved-skill-2}/ README.md code/SKILLS_GUIDE.md index.html
 git status --short
 ```
 
@@ -337,6 +348,7 @@ Published {N} skills to {remote-url}
   Repo:   {remote-url}
 
   README catalog updated with {N} skills.
+  index.html catalog updated.
 ```
 
 ### 9. Learn
@@ -349,7 +361,7 @@ If user consistently uses --preview first, note that pattern.
 
 - **Always confirm before publishing** — show what changed, let the user pick which skills to include, confirm before commit/push. Never auto-publish.
 - **Never publish preferences** — preferences.md is user-specific and stays local.
-- **Always generate README** — the catalog is the main value of the GitHub repo.
+- **Always generate README and update index.html** — the catalogs are the main value of the GitHub repo.
 - **Non-destructive** — copies files, never modifies the source ~/.claude/skills/ directory.
 - **Atomic publish** — one commit per publish with a clear summary.
 - **Idempotent** — running twice without changes produces no new commits.
