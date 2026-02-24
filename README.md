@@ -41,6 +41,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/smoke-test`](code/smoke-test/SKILL.md) | Traces and verifies that something works end-to-end in any environment. |
 | [`/sync-branch`](code/sync-branch/SKILL.md) | Merges one branch into another with conflict handling. |
 | [`/thread-to-action`](code/thread-to-action/SKILL.md) | Parses a pasted thread (Slack, email, GitHub, Teams), analyzes it against current git, Linear, and session context, and suggests actionable next steps. |
+| [`/weather`](code/weather/SKILL.md) | Checks the current weather for the user's location using live online data. |
 | [`/whats-next`](code/whats-next/SKILL.md) | Suggests the 3 most impactful next actions based on full developer context -- git, Linear, PRs, and current conversation. |
 
 ### Desktop Skills
@@ -252,6 +253,16 @@ Parses a pasted thread (Slack, email, GitHub, Teams), analyzes it against curren
 
 ---
 
+### `/weather`
+
+Checks the current weather for the user's location using live online data. Asks for location on first use and saves it for future runs. Use when you want a quick weather check or forecast.
+
+**Usage:** `/weather [city name]`
+
+[View SKILL.md ->](code/weather/SKILL.md)
+
+---
+
 ### `/whats-next`
 
 Suggests the 3 most impactful next actions based on full developer context -- git, Linear, PRs, and current conversation. Prioritizes blockers, unblocked items, and momentum. Use when deciding what to work on next or after finishing a task.
@@ -280,7 +291,7 @@ Researches a topic systematically and produces a structured briefing. Gathers ke
 
 ## Design Guide
 
-These skills follow a consistent [design guide](code/SKILLS_GUIDE.md).
+These skills follow a consistent [design guide](SKILLS_GUIDE.md).
 
 ## License
 
