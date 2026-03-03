@@ -8,7 +8,7 @@ argument-hint: <repo, workflow URL, or run URL>
 context: fork
 allowed-tools:
   - AskUserQuestion
-  - Bash
+  - Bash(gh *)
   - Read
   - Glob
   - Grep

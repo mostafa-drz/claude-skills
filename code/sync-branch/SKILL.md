@@ -6,9 +6,11 @@ description: >-
   Use when keeping a long-lived branch in sync with its upstream.
 argument-hint: [source] [target] [--no-push] [--dry-run]
 disable-model-invocation: true
+context: fork
 allowed-tools:
   - AskUserQuestion
   - Bash
+  - Read
 ---
 
 # Sync Branch

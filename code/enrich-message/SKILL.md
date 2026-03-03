@@ -6,6 +6,7 @@ description: >-
   markdown with proper links, ready to copy-paste. Use when responding to PR reviews,
   Slack threads, or any discussion where you want referenceable, factual responses.
 argument-hint: [url] [--brief] [--no-linear]
+disable-model-invocation: true
 allowed-tools:
   - AskUserQuestion
   - Bash
@@ -14,6 +15,7 @@ allowed-tools:
   - Grep
   - WebSearch
   - WebFetch
+  - Write
   - mcp__claude_ai_Linear__list_issues
   - mcp__claude_ai_Linear__get_issue
   - mcp__claude_ai_Linear__list_comments
@@ -32,10 +34,7 @@ Before starting, use the `Read` tool to read `~/.claude/skills/enrich-message/pr
 
 ## Context
 
-- Branch: !`git branch --show-current 2>/dev/null || echo "not a git repo"`
-- Remotes: !`git remote -v 2>/dev/null | head -4 || echo "none"`
-- Repo root: !`git rev-parse --show-toplevel 2>/dev/null || echo "unknown"`
-- Recent commits: !`git log --oneline -5 2>/dev/null || echo "none"`
+_On startup, use Bash to detect: current git branch, remotes, repo root, and recent commits (last 5). Skip any that fail._
 
 ## Command routing
 

@@ -5,6 +5,7 @@ description: >-
   to build a concise situational summary. Use when picking up work after
   another agent, resuming a session, or onboarding to a branch mid-flight.
 argument-hint: [AIS-XXXX | extra context]
+context: fork
 allowed-tools:
   - Bash
   - Read

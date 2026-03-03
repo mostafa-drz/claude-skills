@@ -3,7 +3,8 @@ name: post-pr-for-review
 description: >-
   Generates a contextual Slack message for posting a PR to the team's review channel.
   Pulls context from PR diff, Linear ticket, session conversation, and related PRs to
-  write a concise, informative review request. Configurable tone, detail level, and format.
+  write a concise, informative review request. Use when sharing a PR for review, posting
+  to the review channel, or preparing a review request message.
 argument-hint: <PR number or URL> [repo-name]
 disable-model-invocation: true
 allowed-tools:

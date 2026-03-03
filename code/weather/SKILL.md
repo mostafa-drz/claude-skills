@@ -5,6 +5,7 @@ description: >-
   Asks for location on first use and saves it for future runs.
   Use when the user wants a quick weather check or forecast.
 argument-hint: "[city name]"
+disable-model-invocation: true
 context: fork
 allowed-tools:
   - AskUserQuestion

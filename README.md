@@ -28,6 +28,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/create-pr`](code/create-pr/SKILL.md) | Creates a well-structured pull request with product-focused summary, change highlights, and test steps. |
 | [`/daily-brief`](code/daily-brief/SKILL.md) | Surfaces recent updates relevant to you from GitHub, Linear, Slack, and other configured sources -- PR reviews, new assignments, ticket changes, mentions, and CI failures. |
 | [`/enrich-message`](code/enrich-message/SKILL.md) | Enriches a draft message with code references, Linear tickets, GitHub links, and factual data from the codebase and all available integrations. |
+| [`/exploration-to-spec`](code/exploration-to-spec/SKILL.md) | Converts an exploration conversation into a structured technical specification document (roadmap, design doc, ADR, or RFC). |
 | [`/get-up-to-speed`](code/get-up-to-speed/SKILL.md) | Reviews the latest git history, branch state, Linear ticket, and open work to build a concise situational summary. |
 | [`/git-cleanup`](code/git-cleanup/SKILL.md) | Identifies and removes stale git branches, orphaned remote branches, and unused worktrees. |
 | [`/guide-from-screenshots`](code/guide-from-screenshots/SKILL.md) | Generates polished markdown guides from a directory of screenshots and a narrative. |
@@ -36,6 +37,8 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/post-pr-for-review`](code/post-pr-for-review/SKILL.md) | Generates a contextual Slack message for posting a PR to the team's review channel. |
 | [`/post-ticket-summary`](code/post-ticket-summary/SKILL.md) | Posts a structured implementation summary comment to a Linear issue -- what was built, key decisions, reuse patterns, and how to test. |
 | [`/publish-skills`](code/publish-skills/SKILL.md) | Publishes personal Claude skills to a GitHub repository for sharing. |
+| [`/repo-timeline`](code/repo-timeline/SKILL.md) | Analyzes a repository or branch and generates an engineer-friendly timeline of changes grouped into logical units. |
+| [`/respond-to-message`](code/respond-to-message/SKILL.md) | Crafts a response to a pasted message (LinkedIn, Slack, Gmail, Teams, etc.) in the user's configured tone and voice. |
 | [`/skill-creator`](code/skill-creator/SKILL.md) | Creates new Claude Code skills interactively by asking contextual questions about purpose, side effects, tools, and workflow. |
 | [`/slack-to-ticket`](code/slack-to-ticket/SKILL.md) | Creates a Linear issue from a pasted Slack thread. |
 | [`/smoke-test`](code/smoke-test/SKILL.md) | Traces and verifies that something works end-to-end in any environment. |
@@ -43,6 +46,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/thread-to-action`](code/thread-to-action/SKILL.md) | Parses a pasted thread (Slack, email, GitHub, Teams), analyzes it against current git, Linear, and session context, and suggests actionable next steps. |
 | [`/weather`](code/weather/SKILL.md) | Checks the current weather for the user's location using live online data. |
 | [`/whats-next`](code/whats-next/SKILL.md) | Suggests the 3 most impactful next actions based on full developer context -- git, Linear, PRs, and current conversation. |
+| [`/workday-summary`](code/workday-summary/SKILL.md) | Summarizes work done today into timesheet-ready bullet points from conversation history, git, Linear, and GitHub. |
 
 ### Desktop Skills
 
@@ -120,6 +124,16 @@ Enriches a draft message with code references, Linear tickets, GitHub links, and
 **Usage:** `/enrich-message [url] [--brief] [--no-linear]`
 
 [View SKILL.md ->](code/enrich-message/SKILL.md)
+
+---
+
+### `/exploration-to-spec`
+
+Converts an exploration conversation (architecture discussions, codebase analysis, design decisions) into a structured technical specification document. Supports roadmaps, design docs, ADRs, and RFCs. Use when an exploration conversation has produced enough clarity to write a spec, design doc, ADR, or RFC.
+
+**Usage:** `/exploration-to-spec [--type roadmap|design|adr|rfc] [--output path]`
+
+[View SKILL.md ->](code/exploration-to-spec/SKILL.md)
 
 ---
 
@@ -203,6 +217,26 @@ Publishes personal Claude skills to a GitHub repository for sharing. Copies skil
 
 ---
 
+### `/repo-timeline`
+
+Analyzes a repository or branch and generates a meaningful, engineer-friendly timeline of changes — grouping commits into logical units with short and detailed descriptions, using git history, changelogs, GitHub PRs, and Linear tickets. Use when you want to understand what changed, when, and why in a codebase.
+
+**Usage:** `/repo-timeline [branch] [--since date] [--depth N]`
+
+[View SKILL.md ->](code/repo-timeline/SKILL.md)
+
+---
+
+### `/respond-to-message`
+
+Crafts a response to a pasted message (LinkedIn, Slack, Gmail, Teams, etc.) in the user's configured tone and voice. Loads platform-specific context and formatting rules, generates a response matching the platform's conventions, and copies it to clipboard. Use when you receive a message and need to reply in your own voice.
+
+**Usage:** `/respond-to-message [--platform slack|linkedin|email|teams]`
+
+[View SKILL.md ->](code/respond-to-message/SKILL.md)
+
+---
+
 ### `/skill-creator`
 
 Creates new Claude Code skills interactively by asking contextual questions about purpose, side effects, tools, and workflow. Generates a complete SKILL.md following all conventions from SKILLS_GUIDE.md. Use when creating a new skill or when asking to scaffold a skill.
@@ -270,6 +304,16 @@ Suggests the 3 most impactful next actions based on full developer context -- gi
 **Usage:** `/whats-next [optional focus area]`
 
 [View SKILL.md ->](code/whats-next/SKILL.md)
+
+---
+
+### `/workday-summary`
+
+Summarizes work done today into timesheet-ready bullet points. Analyzes conversation history, git commits, Linear tickets, and GitHub PRs to infer accomplishments. Use when ending a session, filling a timesheet, preparing for standup, writing a daily log, or when asked what was worked on.
+
+**Usage:** `/workday-summary [--today | --yesterday | --week | --since "date"] [--format bullets|table|full-markdown|plain]`
+
+[View SKILL.md ->](code/workday-summary/SKILL.md)
 
 ---
 

@@ -4,7 +4,7 @@ description: >-
   Publishes personal Claude skills to a GitHub repository for sharing. Copies skill files,
   generates a README catalog, commits, and pushes. Use when ready to share skill updates
   or after creating/updating skills.
-argument-hint: [--preview] [--diff]
+argument-hint: [--preview] [--diff] [--skip-audit]
 disable-model-invocation: true
 allowed-tools:
   - AskUserQuestion
@@ -37,6 +37,7 @@ Check `$ARGUMENTS`:
 - **`reset`** → delete `~/.claude/skills/publish-skills/preferences.md`, confirm, stop
 - **`--preview`** → show what would be published, don't commit/push
 - **`--diff`** → show diff between local skills and published repo
+- **`--skip-audit`** → publish without running pre-publish audit checks
 - **anything else** (including empty) → publish
 
 ### Help
@@ -48,6 +49,7 @@ Usage:
   /publish-skills                    Publish all skills to GitHub repo
   /publish-skills --preview          Show what would change without publishing
   /publish-skills --diff             Show diff between local and published
+  /publish-skills --skip-audit       Publish without pre-publish audit checks
   /publish-skills config             Set repo path and GitHub remote
   /publish-skills reset              Clear preferences
   /publish-skills help               This help
@@ -154,6 +156,28 @@ Categorize each skill:
 - **Removed** — exists in repo but not locally
 
 Also check if `SKILLS_GUIDE.md` changed.
+
+### 2.5 Quick audit before publishing
+
+**Skip this step if `--skip-audit` flag is present.**
+
+For each skill being considered for publish (new or changed), run these quick checks inline:
+- [ ] `description` present and third-person
+- [ ] `disable-model-invocation` matches side-effect profile (has Write/Edit/Bash mutations = needs `true`)
+- [ ] `allowed-tools` present
+- [ ] No `preferences.md` files being included
+
+If any skill fails checks, show warnings alongside the diff summary:
+```
+  ⚠️  /skill-name: missing disable-model-invocation (has side effects)
+  ⚠️  /skill-name: description not third-person
+```
+
+Use **`AskUserQuestion`**: "{N} skills have audit warnings. Publish anyway? / Fix first / Skip those skills"
+
+- **Publish anyway** — continue with all selected skills despite warnings
+- **Fix first** — stop and let the user fix issues before retrying
+- **Skip those skills** — remove skills with warnings from the publish set, continue with the rest
 
 ### 3. Present changes and confirm
 
@@ -337,6 +361,11 @@ Published {N} skills to {remote-url}
   Repo:   {remote-url}
 
   README catalog updated with {N} skills.
+```
+
+If any skills had audit warnings during step 2.5, append:
+```
+Tip: run /audit-skills --fix to resolve all issues before publishing.
 ```
 
 ### 9. Learn
