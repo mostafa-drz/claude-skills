@@ -381,25 +381,55 @@ Generate a single self-contained `report.html` (no external JS dependencies — 
 - **Verdict-forward** — the hero of the page IS the verdict, not the product grid
 - **Data-dense but scannable** — pill chips for key specs, inline stars for ratings, mini bar charts for review distribution (pure CSS, no libs), side-by-side spec table for comparison mode
 - **No emoji soup** — use color + typography to signal meaning
+- **Interactive, one-file** — inline `<script>` for live filtering; NEVER split into multiple HTML files. The "open anywhere, no server" property matters
 
 Structure:
-1. **Header** — inline the SVG from `~/.claude/skills/should-i-buy/icon.svg` at ~32px next to the H1 with `color: var(--accent)` so it themes with light/dark mode. Title reflects the decision (e.g., "Standing desk under $500 — REI vs. Amazon"). Date, context, budget as pill chips.
-2. **Verdict hero** — big, unmissable. One of:
-   - `BUY THIS: {option}` + 2-3 bullet reasons + score
-   - `PICK {option A} OVER {option B}` + the single deciding factor
-   - `WAIT — {reason}` + recommended trigger ("buy when it drops under $X")
-   - `SKIP ALL — {reason}` + one-line advice on what to search for instead
-3. **Side-by-side comparison table** (if 2+ options) — spec-by-spec, with winner per row lightly highlighted
-4. **Option deep-dives** — one section per option with:
+
+1. **Header** — inline the SVG from `~/.claude/skills/should-i-buy/icon.svg` at ~32px next to the H1 with `color: var(--accent)` so it themes with light/dark mode. Title reflects the decision (e.g., "Standing desk under $500 — REI vs. Amazon"). Date + a muted timestamp.
+
+2. **Interactive context chips** (below the title) — every input that shaped the verdict is a live chip, not a label:
+   - `Priority: {value}` — clickable, cycles through the Q1 options (or opens a small inline dropdown)
+   - `Dealbreakers: {chip list}` — each dealbreaker is a separate × removable chip; plus an inline "+ add" affordance to toggle others back on
+   - `Budget style: {value}` — clickable, cycles value / premium / bargain
+   - `Context: {context}` — display-only (can't usefully re-filter free-text)
+   - Chip styling: pill shape, subtle border, cursor pointer on the interactive ones, hover state. Priority chip gets the warm accent treatment when selected.
+
+3. **Verdict hero** — the big unmissable card. Layout **must** be a two-column split on desktop, stacked on mobile:
+   - **Left column** — the winner's `hero.png` rendered as a large square (~280-320px on desktop, full-width on mobile), rounded corners, subtle border. This is the quick-identify surface.
+   - **Right column** — the verdict prose. One of:
+     - `BUY THIS: {option}` + 3-5 bullet reasons
+     - `PICK {option A} OVER {option B}` + the single deciding factor + when-to-flip note
+     - `WAIT — {reason}` + recommended trigger ("buy when it drops under $X")
+     - `SKIP ALL — {reason}` + one-line advice on what to search for instead
+   - Below the split: runner-up and skip mini-cards with 64-80px thumbnails each (hero.png of those options), single-line framing ("Runner-up: X — flip to this if Y", "Skip: Z — triggers your fake-wood dealbreaker").
+
+4. **Stale banner + gray-out on chip change** — CRITICAL UX rule. The verdict card stores its original chip values in a data attribute. Inline JS listens for changes on the interactive chips. When ANY current chip value differs from the original:
+   - Add a `.stale` class to the verdict card: `opacity: 0.55; filter: saturate(0.6)`.
+   - Render a banner above the verdict: *"Verdict was computed with {original values}. Re-run `/should-i-buy` for a fresh call with these filters."* (in a subtle warm amber, not alarming red).
+   - The verdict prose stays fully readable — the gray-out signals staleness, it doesn't hide.
+   - The comparison table (below) DOES re-sort live — so the user can preview the new weighting while the verdict itself stays preserved as "this was the original reasoning."
+   - Clicking a "restore original" link in the banner resets all chips and un-stales the verdict.
+
+5. **Side-by-side comparison table** (if 2+ options) — spec-by-spec grid. Every row shows all options; the winner on that row is lightly highlighted. Column headers are clickable for re-sort (by score, price, rating). Rows for options that currently fail any active dealbreaker fade to `opacity: 0.4` rather than disappearing — the user still sees what's being filtered out and why.
+
+6. **Option deep-dives** — one section per option with:
    - Hero image
-   - Price, rating, review count, score ring
+   - Price, rating, review count, score ring (pure-CSS conic-gradient, no libs)
    - Pros (3-5 bullets) and Cons (3-5 bullets)
    - One positive + one critical review quote
    - External review excerpt (if found) — cite the source
    - "Good to know" row: warranty, return window, shipping, stock
    - Deep link to the product page
-5. **Deal intel** (if price history gathered) — sparkline of price trend, note any upcoming sale events
-6. **Footer** — sources, criteria recap, "rate this verdict" prompt → `/should-i-buy feedback`
+
+7. **Deal intel** (if price history gathered) — sparkline of price trend (pure SVG), note any upcoming sale events.
+
+8. **Footer** — sources, criteria recap, "rate this verdict" prompt → `/should-i-buy feedback`.
+
+Inline JS responsibilities (keep it ~150 lines max, vanilla, no framework):
+- Read the original chip state from a `<script type="application/json" id="session">` payload embedded in the page
+- Wire click handlers on interactive chips
+- On any chip change: compute `isStale = current !== original`, toggle the `.stale` class and banner visibility
+- On any chip change: recompute scores client-side using the same weighting logic used server-side (ship a small `scoreOption(option, weights, dealbreakers)` function in the JSON payload's `_recompute` hint, or inline it), re-sort the comparison table, re-dim filtered rows
 
 Reference `~/.claude/skills/should-i-buy/reference/report-template.html` if it exists (load on demand; otherwise generate from scratch following the aesthetic above).
 
@@ -424,6 +454,26 @@ Open it?  (y/N)  — or rate the call with:  /should-i-buy feedback
 ```
 
 If `open-report: true`, run `open {output-root}/{slug}/report.html`.
+
+### Step 8.5 — Offer to save as a docs example
+
+After opening the report, ask ONCE via AskUserQuestion (skip if the user has said "don't ask again" in the past — save that as a preference):
+
+> **Save a copy of this report as a reference example in the skill's `examples/` folder?** The next time you run `/publish-skills` it'll be pushed to the public skills repo and linked from the README, so anyone browsing `/should-i-buy` can see what the output actually looks like.
+
+Options: `Yes` / `No, this one` / `Never ask` / `Edit first` (opens the file so the user can scrub anything sensitive before saving).
+
+On **Yes**:
+1. Derive a clean example filename from the decision slug: `{kebab-summary}.html` (strip the date prefix — examples don't need chronology).
+2. Copy `{output-root}/{slug}/report.html` → `~/.claude/skills/should-i-buy/examples/{filename}.html`.
+3. If `~/.claude/skills/should-i-buy/examples/index.md` doesn't exist, create it with a header; append a link entry: `- [{decision title}]({filename}.html) — {one-line verdict summary}`.
+4. Remind the user: *"Saved. This will be published publicly when you next run `/publish-skills` — if there's anything sensitive (recipient name, personal notes, private URLs) in the report, open `examples/{filename}.html` and redact now."*
+
+On **Edit first**: run `open -e {output-root}/{slug}/report.html` so the user can hand-scrub before saving, then re-prompt.
+
+On **Never ask**: save `ask-save-example: never` in `preferences.md`.
+
+The `examples/` folder is already picked up by `/publish-skills` (it copies `examples/` recursively per skill), so no separate publish flow is needed.
 
 ### Step 9 — Invite feedback
 
@@ -464,7 +514,10 @@ The journal is human-editable. Respect whatever the user writes there directly.
 ## Principles
 
 1. **Verdict-forward** — the report exists to deliver a decision, not to present data neutrally. Say what to do, then justify.
-2. **Minimum interruption onboarding** — at most two sharp questions up front; infer the rest from URLs and feedback history.
+2. **Hero image leads the verdict, not text** — the winner's product image is the quick-identify surface. If the user has to read to know which one won, the card failed.
+3. **Interactive chips, gray-out on change** — input chips are live, not labels. When the user re-weights mid-report, the comparison table re-scores live, but the verdict card grays out and shows a "computed under different assumptions" banner. Never silently recompute the verdict — the original call is preserved; a fresh call requires a fresh run.
+4. **One HTML file, inline JS, vanilla only** — no external scripts, no framework. The report must open anywhere without a server.
+5. **Minimum interruption onboarding** — at most two sharp questions up front; infer the rest from URLs and feedback history.
 3. **Real Chrome, explicit tabs** — always `tabs_context_mcp` first; always create a new tab with `tabs_create_mcp` rather than reusing one from a prior session.
 4. **Structured over scraped** — prefer `javascript_tool` returning clean JSON over dumping `get_page_text`. Smaller context, higher accuracy.
 5. **Per-decision isolation** — one folder per session; never delete or overwrite anything outside the current decision folder.
