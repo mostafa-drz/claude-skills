@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-18",
+  "updated": "2026-04-19",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -119,6 +119,16 @@
       "sideEffects": true,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/shop-research/SKILL.md",
       "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/code/shop-research/icon.svg"
+    },
+    {
+      "name": "should-i-buy",
+      "platform": "code",
+      "description": "Takes product URLs under consideration, asks two sharp clarifying questions about needs and dealbreakers, opens each link in real Chrome to extract price, specs, reviews, returns and stock, cross-checks independent reviews and price history, then ships a 2026 HTML report with a clear verdict — buy, wait, pick X over Y, or skip. Learns from thumbs-up/down and past regrets to personalize future calls.",
+      "trigger": "Pasting one or more product links and asking whether to buy, which one to pick, or whether to wait.",
+      "tags": ["shopping", "decision", "browser-automation", "claude-in-chrome"],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/should-i-buy/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/code/should-i-buy/icon.svg"
     },
     {
       "name": "skill-creator",
