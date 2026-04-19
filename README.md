@@ -39,7 +39,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/publish-skills`](code/publish-skills/SKILL.md) | Publishes personal Claude skills to a GitHub repository for sharing. |
 | [`/repo-timeline`](code/repo-timeline/SKILL.md) | Analyzes a repository or branch and generates an engineer-friendly timeline of changes grouped into logical units. |
 | [`/respond-to-message`](code/respond-to-message/SKILL.md) | Crafts a response to a pasted message (LinkedIn, Slack, Gmail, Teams, etc.) in the user's configured tone and voice. |
-| <img src="code/shop-research/icon.svg" width="18" height="18" alt="/shop-research icon" valign="middle"> [`/shop-research`](code/shop-research/SKILL.md) | Researches products across Amazon, Google Shopping, and specialty sites via the Claude-in-Chrome extension; produces a 2026 single-file HTML report with pros/cons, reviews, and picks. Learns from feedback to personalize future searches. |
+| <img src="code/shop-research/icon.svg" width="22" height="22" alt="/shop-research icon" valign="middle"> &nbsp; [`/shop-research`](code/shop-research/SKILL.md) | Researches products across Amazon, Google Shopping, and specialty sites via the Claude-in-Chrome extension; produces a 2026 single-file HTML report with pros/cons, reviews, and picks. Learns from feedback to personalize future searches. |
 | [`/skill-creator`](code/skill-creator/SKILL.md) | Creates new Claude Code skills interactively by asking contextual questions about purpose, side effects, tools, and workflow. |
 | [`/slack-to-ticket`](code/slack-to-ticket/SKILL.md) | Creates a Linear issue from a pasted Slack thread. |
 | [`/smoke-test`](code/smoke-test/SKILL.md) | Traces and verifies that something works end-to-end in any environment. |

@@ -161,17 +161,20 @@
     }
 
     .skill-icon {
-      width: 20px;
-      height: 20px;
+      width: 28px;
+      height: 28px;
       flex-shrink: 0;
-      color: var(--accent);
-      opacity: 0.9;
-      transition: opacity 0.15s, transform 0.15s;
+      display: inline-block;
+      background-color: currentColor;
+      color: var(--text);
+      -webkit-mask: var(--icon) center/contain no-repeat;
+      mask: var(--icon) center/contain no-repeat;
+      transition: transform 0.18s ease, color 0.18s ease;
     }
 
     .skill-card:hover .skill-icon {
-      opacity: 1;
-      transform: scale(1.05);
+      color: var(--accent);
+      transform: scale(1.08);
     }
 
     .skill-name {
@@ -490,14 +493,7 @@ zip -r inbox-catchup.zip inbox-catchup/
 
         <div class="skill-card" data-platform="code">
           <div class="skill-card-header">
-            <svg class="skill-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="1.75"/><circle cx="24" cy="12" r="1.75"/>
-              <circle cx="12" cy="24" r="1.75"/><circle cx="24" cy="24" r="1.75"/>
-              <circle cx="12" cy="36" r="1.75"/><circle cx="24" cy="36" r="1.75"/>
-              <circle cx="36" cy="36" r="1.75"/><circle cx="36" cy="24" r="1.75"/>
-              <circle cx="36" cy="12" r="2.8" fill="currentColor" stroke="none"/>
-              <circle cx="36" cy="12" r="6"/>
-            </svg>
+            <span class="skill-icon" style="--icon: url('code/shop-research/icon.svg');" role="img" aria-label="/shop-research icon"></span>
             <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/shop-research/SKILL.md">/shop-research</a></span>
             <span class="tag tag-code">Code</span>
             <span class="tag tag-side-effects">Side Effects</span>
