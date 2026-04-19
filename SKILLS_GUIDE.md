@@ -11,21 +11,36 @@ Standards and conventions for all personal skills in `~/.claude/skills/`.
 name: skill-name                          # lowercase, hyphens, max 64 chars
 description: >-                           # MUST be third person, include trigger keywords
   Creates X from Y. Analyzes Z and suggests actions.
-  Use when [trigger scenario].
+  Use when [trigger scenario]. Max 1024 chars.
 argument-hint: <arg> [optional-arg]       # shown in autocomplete
 disable-model-invocation: true            # REQUIRED for skills with side effects
+user-invocable: false                     # optional: false = hidden from menu, Claude-only
+context: fork                             # optional: fork = self-contained subagent execution
+agent: Explore                            # optional: agent type when context: fork (Explore, Plan, general-purpose, or custom)
+model: claude-opus-4-6                    # optional: override model for reasoning-heavy skills
 allowed-tools:                            # only tools the skill actually needs
   - AskUserQuestion
-  - Bash
+  - Bash(git *)                           # supports glob patterns for fine-grained scoping
+  - Bash(gh *)
 ---
 ```
 
+### Invocation control matrix
+
+| Frontmatter | User can invoke | Claude can invoke | Description in context |
+|---|---|---|---|
+| (default) | Yes | Yes | Always in context |
+| `disable-model-invocation: true` | Yes | No | NOT in context |
+| `user-invocable: false` | No | Yes (hidden) | Always in context |
+| Both above | No | No | NOT in context |
+
 ### Rules
 
-1. **Descriptions are third person** — they're injected into the system prompt as metadata. "Creates..." not "Create...".
+1. **Descriptions are third person and "pushy"** — they're injected into the system prompt as metadata. "Creates..." not "Create...". Make them broad with trigger keywords — Claude under-triggers skills. Max 1024 chars.
 2. **`disable-model-invocation: true`** — required for any skill that creates, modifies, pushes, or posts anything (PRs, tickets, comments, branches, files outside the repo).
-3. **`allowed-tools`** — list only what's needed. Don't grant `Write`/`Edit` to read-only skills.
-4. **MCP tools** — use `mcp__claude_ai_Linear__*` as the canonical Linear prefix (cloud-hosted, always available). Do NOT duplicate with `mcp__linear-server__*`.
+3. **`allowed-tools`** — list only what's needed. Supports glob patterns: `Bash(gh *)`, `Bash(git *)`. Don't grant `Write`/`Edit` to read-only skills.
+4. **`context: fork`** — use for self-contained skills that don't need conversation history. Pair with `agent:` to specify subagent type.
+5. **MCP tools** — use `mcp__claude_ai_Linear__*` as the canonical Linear prefix (cloud-hosted, always available). Do NOT use `mcp__linear-server__*`.
 
 ---
 
@@ -132,11 +147,9 @@ On first invocation, detect if `preferences.md` exists. If not:
 
 ## Dynamic context injection
 
-**Avoid `!` backtick interpolation** — Claude Code's Bash sandbox blocks commands that:
-- Access paths outside the working directory (e.g., `~/.claude/`, `~/Desktop`)
-- Use `||` or `&&` operators (flagged as "multiple operations")
+**`!` backtick interpolation** — Officially supported for project-scoped skills. Example: `` !`git branch --show-current` ``. However, for personal skills at `~/.claude/` (outside the project sandbox), backtick interpolation is blocked for paths outside the working directory and commands using `||`/`&&`.
 
-Instead, instruct the agent to gather context at runtime using Bash/Read tools:
+**Recommended approach for personal skills** — use runtime Bash/Read instructions instead:
 
 ```markdown
 ## Context
@@ -144,7 +157,15 @@ Instead, instruct the agent to gather context at runtime using Bash/Read tools:
 _On startup, use Bash to detect: current git branch, git status, and project stack files. Skip any that fail._
 ```
 
-This approach is more reliable and works regardless of sandbox restrictions.
+**Variable substitution reference:**
+
+| Variable | Description |
+|---|---|
+| `$ARGUMENTS` | All arguments as a string |
+| `$0`, `$1`, `$2` | Positional args (shorthand for `$ARGUMENTS[N]`) |
+| `${CLAUDE_SESSION_ID}` | Current session ID |
+
+**Context loading budget** — Skill descriptions use ~2% of context window (16K char fallback). Override with `SLASH_COMMAND_TOOL_CHAR_BUDGET` env var if needed.
 
 ---
 
@@ -197,3 +218,12 @@ This approach is more reliable and works regardless of sandbox restrictions.
 | `/daily-brief` | Morning catchup digest from GitHub, Linear, Slack, Notion | No (read-only) | Linear, Notion |
 | `/git-cleanup` | Smart cleanup of stale branches, remotes, worktrees | Yes (deletes branches) | Linear |
 | `/enrich-message` | Enrich draft messages with code refs, tickets, and facts | No (read-only) | Linear |
+| `/respond-to-message` | Craft replies in your voice, matched to the platform | No (clipboard only) | No |
+| `/repo-timeline` | Engineer-friendly timeline of repo changes, grouped and narrated | No (read-only) | Linear |
+| `/exploration-to-spec` | Convert exploration conversations into technical specs (roadmap, design doc, ADR, RFC) | Yes (creates files) | No |
+| `/workday-summary` | Summarizes today's work as bullet points for timesheets and standups | No (read-only) | Linear (optional) |
+| `/timesheet-review` | Fills timesheet gaps day by day using author-verified git history + Linear tickets | Yes (writes to CSV) | Linear |
+| `/workflow-advisor` | Reviews recent Claude conversations + local state, researches latest Claude Code features, suggests one workflow improvement at a time | Yes (saves to memory) | No |
+| `/capture-screens` | Auto-navigates a web app via Playwright MCP, seeds localStorage demo data, captures context-aware named screenshots per feature state. Outputs manifest.json + report. Composable primitive for user-guide and demo-docs skills | Yes (writes screenshots, manifest) | Playwright MCP |
+| `/publish-note` | Publishes a blog post to mostafa.xyz from a flat draft folder. Uploads images to Cloudinary, fills missing frontmatter, runs SEO + content review, creates PR. Use when ready to publish a new note. | Yes (uploads images, writes files, creates PR) | Cloudinary MCP (optional) |
+| `/shop-research` | Researches products across Amazon, Google Shopping, and specialty sites via Chrome extension. Produces a 2026-aesthetic HTML report with pros/cons, review highlights, and picks. Learns from feedback to personalize future searches. | Yes (writes folders, screenshots, HTML report) | claude-in-chrome |

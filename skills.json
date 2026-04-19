@@ -1,5 +1,5 @@
 {
-  "updated": "2026-02-24",
+  "updated": "2026-04-18",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -109,6 +109,15 @@
       "tags": ["meta", "git", "automation"],
       "sideEffects": true,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/publish-skills/SKILL.md"
+    },
+    {
+      "name": "shop-research",
+      "platform": "code",
+      "description": "Researches products across Amazon, Google Shopping, and specialty sites via the Claude-in-Chrome extension; produces a 2026 single-file HTML report with pros/cons, review highlights, and picks. Learns from feedback to personalize future searches.",
+      "trigger": "Shopping for something, comparing products, finding a gift, or researching purchases before buying.",
+      "tags": ["shopping", "browser-automation", "research", "claude-in-chrome"],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/shop-research/SKILL.md"
     },
     {
       "name": "skill-creator",

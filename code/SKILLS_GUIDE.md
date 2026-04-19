@@ -222,3 +222,8 @@ _On startup, use Bash to detect: current git branch, git status, and project sta
 | `/repo-timeline` | Engineer-friendly timeline of repo changes, grouped and narrated | No (read-only) | Linear |
 | `/exploration-to-spec` | Convert exploration conversations into technical specs (roadmap, design doc, ADR, RFC) | Yes (creates files) | No |
 | `/workday-summary` | Summarizes today's work as bullet points for timesheets and standups | No (read-only) | Linear (optional) |
+| `/timesheet-review` | Fills timesheet gaps day by day using author-verified git history + Linear tickets | Yes (writes to CSV) | Linear |
+| `/workflow-advisor` | Reviews recent Claude conversations + local state, researches latest Claude Code features, suggests one workflow improvement at a time | Yes (saves to memory) | No |
+| `/capture-screens` | Auto-navigates a web app via Playwright MCP, seeds localStorage demo data, captures context-aware named screenshots per feature state. Outputs manifest.json + report. Composable primitive for user-guide and demo-docs skills | Yes (writes screenshots, manifest) | Playwright MCP |
+| `/publish-note` | Publishes a blog post to mostafa.xyz from a flat draft folder. Uploads images to Cloudinary, fills missing frontmatter, runs SEO + content review, creates PR. Use when ready to publish a new note. | Yes (uploads images, writes files, creates PR) | Cloudinary MCP (optional) |
+| `/shop-research` | Researches products across Amazon, Google Shopping, and specialty sites via Chrome extension. Produces a 2026-aesthetic HTML report with pros/cons, review highlights, and picks. Learns from feedback to personalize future searches. | Yes (writes folders, screenshots, HTML report) | claude-in-chrome |
