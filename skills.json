@@ -117,7 +117,8 @@
       "trigger": "Shopping for something, comparing products, finding a gift, or researching purchases before buying.",
       "tags": ["shopping", "browser-automation", "research", "claude-in-chrome"],
       "sideEffects": true,
-      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/shop-research/SKILL.md"
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/shop-research/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/code/shop-research/icon.svg"
     },
     {
       "name": "skill-creator",

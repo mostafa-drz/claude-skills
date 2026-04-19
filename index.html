@@ -160,6 +160,20 @@
       margin-bottom: 8px;
     }
 
+    .skill-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      color: var(--accent);
+      opacity: 0.9;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+
+    .skill-card:hover .skill-icon {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+
     .skill-name {
       font-weight: 600;
       font-size: 1rem;
@@ -303,7 +317,7 @@
       <h1>Claude Skills</h1>
       <p>Collection of Agent Skills for Claude Code and Claude Desktop — developer workflows, automation, and productivity.</p>
       <div class="stats">
-        <span class="stat"><strong>16</strong> Code skills</span>
+        <span class="stat"><strong>17</strong> Code skills</span>
         <span class="stat"><strong>2</strong> Desktop skills</span>
         <span class="stat">MIT License</span>
       </div>
@@ -348,8 +362,8 @@ zip -r inbox-catchup.zip inbox-catchup/
       <p>Filter by platform to see what's available for your setup.</p>
 
       <div class="platform-tabs">
-        <button class="platform-tab active" data-filter="all">All (18)</button>
-        <button class="platform-tab" data-filter="code">Code (16)</button>
+        <button class="platform-tab active" data-filter="all">All (19)</button>
+        <button class="platform-tab" data-filter="code">Code (17)</button>
         <button class="platform-tab" data-filter="desktop">Desktop (2)</button>
       </div>
 
@@ -472,6 +486,24 @@ zip -r inbox-catchup.zip inbox-catchup/
           </div>
           <p class="skill-desc">Publishes personal Claude skills to a GitHub repository for sharing. Copies skill files, generates a README catalog, commits, and pushes.</p>
           <p class="skill-trigger"><strong>Use when:</strong> Ready to share skill updates or after creating/updating skills.</p>
+        </div>
+
+        <div class="skill-card" data-platform="code">
+          <div class="skill-card-header">
+            <svg class="skill-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="1.75"/><circle cx="24" cy="12" r="1.75"/>
+              <circle cx="12" cy="24" r="1.75"/><circle cx="24" cy="24" r="1.75"/>
+              <circle cx="12" cy="36" r="1.75"/><circle cx="24" cy="36" r="1.75"/>
+              <circle cx="36" cy="36" r="1.75"/><circle cx="36" cy="24" r="1.75"/>
+              <circle cx="36" cy="12" r="2.8" fill="currentColor" stroke="none"/>
+              <circle cx="36" cy="12" r="6"/>
+            </svg>
+            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/shop-research/SKILL.md">/shop-research</a></span>
+            <span class="tag tag-code">Code</span>
+            <span class="tag tag-side-effects">Side Effects</span>
+          </div>
+          <p class="skill-desc">Researches products across Amazon, Google Shopping, and specialty sites via the Claude-in-Chrome extension; produces a 2026 single-file HTML report with pros/cons, review highlights, and picks. Learns from feedback to personalize future searches.</p>
+          <p class="skill-trigger"><strong>Use when:</strong> Shopping for something, comparing products, finding a gift, or researching purchases before buying.</p>
         </div>
 
         <div class="skill-card" data-platform="code">
