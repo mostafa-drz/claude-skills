@@ -24,6 +24,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/address-pr-comments`](code/address-pr-comments/SKILL.md) | Fetches unresolved PR comments, categorizes them (must-fix, suggestion, question, nit), proposes fixes or replies for each, and executes approved actions. |
 | [`/audit-skills`](code/audit-skills/SKILL.md) | Audits all personal Claude skills against the SKILLS_GUIDE.md manifest, latest official Claude skills documentation, and best practices. |
 | [`/build-incremental`](code/build-incremental/SKILL.md) | Implements code in progressive, verified increments -- auto-detects the project's toolchain, builds each unit, runs checks (typecheck, lint, test), fixes errors, and commits with semantic messages. |
+| <img src="code/chunk-pr/icon.svg" width="22" height="22" alt="/chunk-pr icon" valign="middle"> &nbsp; [`/chunk-pr`](code/chunk-pr/SKILL.md) | Analyzes a big PR, branch, or commit range and proposes a sequence of smaller, dependency-aware, merge-safe PRs. Suggests a plan; on approval, creates chunk branches, cherry-picks commits, pushes, and opens draft PRs. Parent branch stays untouched. |
 | [`/compliance-audit`](code/compliance-audit/SKILL.md) | Audits codebases against compliance frameworks (SOC2, HIPAA, PCI-DSS, GDPR, ISO27001, etc.) using parallel agents per subdirectory/sub-repo. |
 | [`/create-pr`](code/create-pr/SKILL.md) | Creates a well-structured pull request with product-focused summary, change highlights, and test steps. |
 | [`/daily-brief`](code/daily-brief/SKILL.md) | Surfaces recent updates relevant to you from GitHub, Linear, Slack, and other configured sources -- PR reviews, new assignments, ticket changes, mentions, and CI failures. |
@@ -44,6 +45,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/skill-creator`](code/skill-creator/SKILL.md) | Creates new Claude Code skills interactively by asking contextual questions about purpose, side effects, tools, and workflow. |
 | [`/slack-to-ticket`](code/slack-to-ticket/SKILL.md) | Creates a Linear issue from a pasted Slack thread. |
 | [`/smoke-test`](code/smoke-test/SKILL.md) | Traces and verifies that something works end-to-end in any environment. |
+| [`/svg-art`](code/svg-art/SKILL.md) | Generates artistic SVGs directly as code — minimal line icons, geometric marks, generative patterns, hand-drawn compositions — plus a 2026 HTML gallery preview. Learns aesthetic preferences from per-session feedback. |
 | [`/sync-branch`](code/sync-branch/SKILL.md) | Merges one branch into another with conflict handling. |
 | [`/thread-to-action`](code/thread-to-action/SKILL.md) | Parses a pasted thread (Slack, email, GitHub, Teams), analyzes it against current git, Linear, and session context, and suggests actionable next steps. |
 | [`/weather`](code/weather/SKILL.md) | Checks the current weather for the user's location using live online data. |
@@ -86,6 +88,16 @@ Implements code in progressive, verified increments -- auto-detects the project'
 **Usage:** `/build-incremental <what to build>`
 
 [View SKILL.md ->](code/build-incremental/SKILL.md)
+
+---
+
+### `/chunk-pr`
+
+Analyzes a large pull request, branch, or commit range and proposes a sequence of smaller, dependency-aware, merge-safe PRs following review best practices — schema before API before UI, refactor before feature, one concern per PR. Suggests a plan; the user approves. On approval, creates chunk branches, cherry-picks commits, pushes, opens draft PRs, and links them to the parent Linear issue. The parent branch stays untouched. Use when a PR is too big to review, when reviewers ask "can you split this up?", or when planning how to ship a large feature incrementally.
+
+**Usage:** `/chunk-pr [pr-or-branch-or-range] [--base branch] [--max-lines N] [--strategy conservative|balanced|aggressive] [--dry-run] [--draft]`
+
+[View SKILL.md ->](code/chunk-pr/SKILL.md)
 
 ---
 
@@ -276,6 +288,16 @@ Merges one branch into another with conflict handling. Stashes work, updates bot
 **Usage:** `/sync-branch [source] [target] [--no-push] [--dry-run]`
 
 [View SKILL.md ->](code/sync-branch/SKILL.md)
+
+---
+
+### `/svg-art`
+
+Generates artistic SVGs directly as code — minimal line icons, geometric marks, generative patterns, or hand-drawn compositions — and assembles a modern 2026 HTML gallery preview. Saves each session to its own semantically named folder. Learns from feedback across sessions: which styles landed, which compositions were rejected, which stroke weights and palettes you return to. The aesthetic gets more personalized each session. Use when you want icons for a product, a branded mark, a generative poster, or a set of decorative SVGs for a page, blog, or app.
+
+**Usage:** `/svg-art [what to generate] [--style mode] [--count N] [--palette colors] [--stroke px] [--canvas WxH] [--notes text]`
+
+[View SKILL.md ->](code/svg-art/SKILL.md)
 
 ---
 

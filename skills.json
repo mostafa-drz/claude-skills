@@ -1,34 +1,7 @@
 {
-  "updated": "2026-04-19",
+  "updated": "2026-04-21",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
-    {
-      "name": "inbox-catchup",
-      "platform": "desktop",
-      "description": "Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. Helps triage messages and draft replies.",
-      "trigger": "Starting the day, returning from a break, or catching up on communications.",
-      "tags": [
-        "communication",
-        "email",
-        "productivity",
-        "triage"
-      ],
-      "sideEffects": true,
-      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/inbox-catchup/SKILL.md"
-    },
-    {
-      "name": "research-assistant",
-      "platform": "desktop",
-      "description": "Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary.",
-      "trigger": "Researching something, preparing a briefing, or compiling background on a topic.",
-      "tags": [
-        "research",
-        "writing",
-        "analysis"
-      ],
-      "sideEffects": false,
-      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/research-assistant/SKILL.md"
-    },
     {
       "name": "address-pr-comments",
       "platform": "code",
@@ -67,6 +40,23 @@
       ],
       "sideEffects": true,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/build-incremental/SKILL.md"
+    },
+    {
+      "name": "chunk-pr",
+      "platform": "code",
+      "description": "Analyzes a large pull request, branch, or commit range and proposes a sequence of smaller, dependency-aware, merge-safe PRs following review best practices — schema before API before UI, refactor before feature, one concern per PR. Suggests a plan; the user approves. On approval, creates chunk branches, cherry-picks commits, pushes, opens draft PRs, and links them to the parent Linear issue. The parent branch stays untouched.",
+      "trigger": "A PR is too big to review, a branch has accumulated unrelated changes, a reviewer asks \"can you split this up?\", or planning how to ship a large feature incrementally.",
+      "tags": [
+        "git",
+        "github",
+        "pull-requests",
+        "code review",
+        "linear",
+        "workflow"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/chunk-pr/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/code/chunk-pr/icon.svg"
     },
     {
       "name": "create-pr",
@@ -244,6 +234,22 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/smoke-test/SKILL.md"
     },
     {
+      "name": "svg-art",
+      "platform": "code",
+      "description": "Generates artistic SVGs directly as code — minimal line icons, geometric marks, generative patterns, or hand-drawn compositions — and assembles a modern 2026 HTML gallery preview. Saves each session to its own semantically named folder. Learns from feedback across sessions: which styles landed, which compositions were rejected, which stroke weights and palettes you return to.",
+      "trigger": "Needing icons for a product, a brand mark, a generative poster, or a set of decorative SVGs for a page, blog, or app.",
+      "tags": [
+        "design",
+        "svg",
+        "icons",
+        "creative",
+        "visual",
+        "generative"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/svg-art/SKILL.md"
+    },
+    {
       "name": "sync-branch",
       "platform": "code",
       "description": "Merges one branch into another with conflict handling. Stashes work, updates both branches, merges, resolves conflicts, pushes, and restores state.",
@@ -280,6 +286,33 @@
       ],
       "sideEffects": false,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/whats-next/SKILL.md"
+    },
+    {
+      "name": "inbox-catchup",
+      "platform": "desktop",
+      "description": "Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. Helps triage messages and draft replies.",
+      "trigger": "Starting the day, returning from a break, or catching up on communications.",
+      "tags": [
+        "communication",
+        "email",
+        "productivity",
+        "triage"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/inbox-catchup/SKILL.md"
+    },
+    {
+      "name": "research-assistant",
+      "platform": "desktop",
+      "description": "Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary.",
+      "trigger": "Researching something, preparing a briefing, or compiling background on a topic.",
+      "tags": [
+        "research",
+        "writing",
+        "analysis"
+      ],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/research-assistant/SKILL.md"
     }
   ]
 }
