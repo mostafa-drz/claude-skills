@@ -36,12 +36,15 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | <img src="code/extract-skill/icon.svg" width="22" height="22" alt="/extract-skill icon" valign="middle"> &nbsp; [`/extract-skill`](code/extract-skill/SKILL.md) | Scans the current conversation for patterns worth turning into a reusable skill or memory rule — feedback, workflows, corrections, best practices. Classifies each candidate as skill (multi-step workflow) or memory (single rule), cross-checks against existing skills + MEMORY.md, then hands off to `/skill-creator` or writes the memory entry directly. |
 | [`/get-up-to-speed`](code/get-up-to-speed/SKILL.md) | Reviews the latest git history, branch state, Linear ticket, and open work to build a concise situational summary. |
 | [`/git-cleanup`](code/git-cleanup/SKILL.md) | Identifies and removes stale git branches, orphaned remote branches, and unused worktrees. |
+| [`/next-steps`](code/next-steps/SKILL.md) | Generates a stakeholder-aligned next-steps checklist for a multi-stakeholder project from the current conversation and connected context (Linear, PR, Slack, Notion). Grouped by owner, prioritised, pasteable into Slack/Notion/Linear. |
 | [`/guide-from-screenshots`](code/guide-from-screenshots/SKILL.md) | Generates polished markdown guides from a directory of screenshots and a narrative. |
 | [`/investigate-ci`](code/investigate-ci/SKILL.md) | Investigates GitHub Actions workflow failures for any repo. |
 | [`/organize-screenshots`](code/organize-screenshots/SKILL.md) | Scans a folder for recent screenshots, visually classifies which ones are relevant to current work, and organizes them into a target directory with descriptive filenames. |
 | [`/post-pr-for-review`](code/post-pr-for-review/SKILL.md) | Generates a contextual Slack message for posting a PR to the team's review channel. |
 | [`/post-ticket-summary`](code/post-ticket-summary/SKILL.md) | Posts a structured implementation summary comment to a Linear issue -- what was built, key decisions, reuse patterns, and how to test. |
+| [`/project-updates`](code/project-updates/SKILL.md) | Drafts Linear project status updates (Done / In Progress / Next / Blockers) for each project you lead, gathering context from Linear, git, GitHub, Slack, Notion, Gmail, Calendar. All site-specific values (repos, project list, Linear org) configured via preferences. Never auto-posts. |
 | [`/publish-skills`](code/publish-skills/SKILL.md) | Publishes personal Claude skills to a GitHub repository for sharing. |
+| [`/release-notes`](code/release-notes/SKILL.md) | Generates brief, truth-based release notes for a release PR by listing each squash-merged PR with a one-paragraph summary and linked tracker tickets. Tracker-agnostic — Linear, Jira, GitHub Issues, Asana, ClickUp, Shortcut, Plane, or any tracker via a URL template. |
 | [`/repo-timeline`](code/repo-timeline/SKILL.md) | Analyzes a repository or branch and generates an engineer-friendly timeline of changes grouped into logical units. |
 | [`/respond-to-message`](code/respond-to-message/SKILL.md) | Crafts a response to a pasted message (LinkedIn, Slack, Gmail, Teams, etc.) in the user's configured tone and voice. |
 | <img src="code/shop-research/icon.svg" width="22" height="22" alt="/shop-research icon" valign="middle"> &nbsp; [`/shop-research`](code/shop-research/SKILL.md) | Researches products across Amazon, Google Shopping, and specialty sites via the Claude-in-Chrome extension; produces a 2026 single-file HTML report with pros/cons, reviews, and picks. Learns from feedback to personalize future searches. |
@@ -216,6 +219,16 @@ Identifies and removes stale git branches, orphaned remote branches, and unused 
 
 ---
 
+### `/next-steps`
+
+Generates a stakeholder-aligned next-steps checklist for a multi-stakeholder project from the current Claude conversation and any connected context (Linear ticket, PR, Slack thread, Notion doc). Output is grouped by owner (PM, design, engineering, leadership), prioritised, and pasteable into Slack/Notion/Linear. Use when you've just had a working session and now need to align teammates on what happens next, who owns it, and what's blocked.
+
+**Usage:** `/next-steps [scope-hint]`
+
+[View SKILL.md ->](code/next-steps/SKILL.md)
+
+---
+
 ### `/guide-from-screenshots`
 
 Generates polished markdown guides from a directory of screenshots and a narrative. Visually reads each image, filters out redundant or irrelevant captures, organizes them contextually, and produces a Notion-compatible markdown file with image placeholders and structured sections. Use when you have screenshots and want to create a product guide, demo walkthrough, or tool guide.
@@ -266,6 +279,16 @@ Posts a structured implementation summary comment to a Linear issue -- what was 
 
 ---
 
+### `/project-updates`
+
+Drafts Linear project status updates for each project the user leads, following the Done / In Progress / Next / Blockers template. Gathers context from Linear issues and comments, git history across configured repos, GitHub PRs, Slack mentions, Notion edits, and Gmail/Calendar. Never auto-posts — always shows the draft so the user can paste it into Linear. All site-specific values (repos root, repo list, Linear org slug) are configured via `preferences.md` — no hardcoded paths. Use when preparing daily or end-of-day Linear updates, writing project status, or prepping for standup.
+
+**Usage:** `/project-updates [--since "24h"] [--projects "slug1,slug2"] [--sources linear,git,github,slack,notion] [--project <slug>] [--dry-run]`
+
+[View SKILL.md ->](code/project-updates/SKILL.md)
+
+---
+
 ### `/publish-skills`
 
 Publishes personal Claude skills to a GitHub repository for sharing. Copies skill files, generates a README catalog, commits, and pushes. Use when ready to share skill updates or after creating/updating skills.
@@ -273,6 +296,16 @@ Publishes personal Claude skills to a GitHub repository for sharing. Copies skil
 **Usage:** `/publish-skills [--preview] [--diff]`
 
 [View SKILL.md ->](code/publish-skills/SKILL.md)
+
+---
+
+### `/release-notes`
+
+Generates brief, truth-based release notes for a release PR (typically main → prod) by listing each squash-merged PR with a one-paragraph summary drawn from each PR body, plus the linked issue-tracker tickets. **Tracker-agnostic** — works with Linear, Jira, GitHub Issues, Asana, ClickUp, Shortcut, Plane, Notion, or any tracker via a configurable `ticket-url-template` with a `{TICKET}` placeholder. If no template is configured, ticket IDs render as plain text. Use when opening or updating a release PR.
+
+**Usage:** `/release-notes [pr-number]`
+
+[View SKILL.md ->](code/release-notes/SKILL.md)
 
 ---
 

@@ -155,6 +155,20 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/investigate-ci/SKILL.md"
     },
     {
+      "name": "next-steps",
+      "platform": "code",
+      "description": "Generates a stakeholder-aligned next-steps checklist for a multi-stakeholder project from the current conversation and connected context (Linear ticket, PR, Slack, Notion). Output is grouped by owner, prioritised, and pasteable into Slack/Notion/Linear.",
+      "trigger": "After a working session, when you need to align teammates (PM, design, engineering, leadership) on what happens next, who owns it, and what's blocked.",
+      "tags": [
+        "project-management",
+        "linear",
+        "communication",
+        "planning"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/next-steps/SKILL.md"
+    },
+    {
       "name": "organize-screenshots",
       "platform": "code",
       "description": "Scans a folder for recent screenshots, visually classifies which ones are relevant to current work, and organizes them into a target directory with descriptive filenames.",
@@ -194,6 +208,22 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/post-ticket-summary/SKILL.md"
     },
     {
+      "name": "project-updates",
+      "platform": "code",
+      "description": "Drafts Linear project status updates (Done / In Progress / Next / Blockers) for each project the user leads, gathering context from Linear issues, git commits across configured repos, GitHub PRs, Slack mentions, Notion edits, and Gmail/Calendar. Never auto-posts — always shows the draft for review. All site-specific values (repos, project list, Linear org) live in preferences.",
+      "trigger": "Preparing daily or end-of-day Linear project updates, writing project status, prepping for standup, or when asked what your project updates should say.",
+      "tags": [
+        "linear",
+        "project-management",
+        "status-updates",
+        "git",
+        "slack",
+        "notion"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/project-updates/SKILL.md"
+    },
+    {
       "name": "publish-skills",
       "platform": "code",
       "description": "Publishes personal Claude skills to a GitHub repository for sharing. Copies skill files, generates a README catalog, commits, and pushes.",
@@ -205,6 +235,21 @@
       ],
       "sideEffects": true,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/publish-skills/SKILL.md"
+    },
+    {
+      "name": "release-notes",
+      "platform": "code",
+      "description": "Generates brief, truth-based release notes for a release PR by listing each squash-merged PR, a one-paragraph summary drawn from each PR body, and the linked issue-tracker tickets. Tracker-agnostic — works with Linear, Jira, GitHub Issues, Asana, ClickUp, Shortcut, Plane, or any tracker via a configurable URL template.",
+      "trigger": "Opening or updating a release PR (typically main → prod) that bundles multiple squash-merged PRs.",
+      "tags": [
+        "release",
+        "github",
+        "pull-requests",
+        "documentation",
+        "issue-tracker"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/release-notes/SKILL.md"
     },
     {
       "name": "shop-research",
