@@ -31,6 +31,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/daily-brief`](code/daily-brief/SKILL.md) | Surfaces recent updates relevant to you from GitHub, Linear, Slack, and other configured sources -- PR reviews, new assignments, ticket changes, mentions, and CI failures. |
 | [`/enrich-message`](code/enrich-message/SKILL.md) | Enriches a draft message with code references, Linear tickets, GitHub links, and factual data from the codebase and all available integrations. |
 | [`/exploration-to-spec`](code/exploration-to-spec/SKILL.md) | Converts an exploration conversation into a structured technical specification document (roadmap, design doc, ADR, or RFC). |
+| <img src="code/extract-skill/icon.svg" width="22" height="22" alt="/extract-skill icon" valign="middle"> &nbsp; [`/extract-skill`](code/extract-skill/SKILL.md) | Scans the current conversation for patterns worth turning into a reusable skill or memory rule — feedback, workflows, corrections, best practices. Classifies each candidate as skill (multi-step workflow) or memory (single rule), cross-checks against existing skills + MEMORY.md, then hands off to `/skill-creator` or writes the memory entry directly. |
 | [`/get-up-to-speed`](code/get-up-to-speed/SKILL.md) | Reviews the latest git history, branch state, Linear ticket, and open work to build a concise situational summary. |
 | [`/git-cleanup`](code/git-cleanup/SKILL.md) | Identifies and removes stale git branches, orphaned remote branches, and unused worktrees. |
 | [`/guide-from-screenshots`](code/guide-from-screenshots/SKILL.md) | Generates polished markdown guides from a directory of screenshots and a narrative. |
@@ -159,6 +160,16 @@ Converts an exploration conversation (architecture discussions, codebase analysi
 **Usage:** `/exploration-to-spec [--type roadmap|design|adr|rfc] [--output path]`
 
 [View SKILL.md ->](code/exploration-to-spec/SKILL.md)
+
+---
+
+### `/extract-skill`
+
+Scans the current conversation for patterns worth turning into a reusable skill or memory rule — feedback you've given Claude, workflows you've walked through, corrections, best practices, recurring setups. Proposes candidates, classifies each as skill (multi-step workflow) or memory (single rule), cross-checks against existing skills and MEMORY.md to avoid duplicates, then hands off to `/skill-creator` (for skills) or writes the memory entry directly. Use when the conversation contains reusable knowledge you don't want to teach Claude again.
+
+**Usage:** `/extract-skill [--memory-only] [--skill-only] [--dry-run]`
+
+[View SKILL.md ->](code/extract-skill/SKILL.md)
 
 ---
 

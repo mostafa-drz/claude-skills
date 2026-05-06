@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-21",
+  "updated": "2026-05-06",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -85,6 +85,19 @@
       ],
       "sideEffects": true,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/create-pr/SKILL.md"
+    },
+    {
+      "name": "extract-skill",
+      "platform": "code",
+      "description": "Scans the current conversation for patterns worth turning into a reusable skill or memory rule — feedback, workflows, corrections, best practices. Classifies each candidate as skill (multi-step workflow) or memory (single rule), cross-checks against existing skills and MEMORY.md, then hands off to /skill-creator or writes the memory entry directly.",
+      "trigger": "The conversation contains reusable knowledge you don't want to teach Claude again — \"capture this\", \"turn this into a skill\", \"save this workflow\".",
+      "tags": [
+        "meta",
+        "skills",
+        "memory"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/extract-skill/SKILL.md"
     },
     {
       "name": "git-cleanup",
