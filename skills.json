@@ -59,6 +59,21 @@
       "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/code/chunk-pr/icon.svg"
     },
     {
+      "name": "clean-copy",
+      "platform": "code",
+      "description": "Cleans terminal-formatted text and copies it to the macOS clipboard via pbcopy, formatted for the target platform (Gmail, Slack, LinkedIn, plain, markdown). Strips uniform leading indentation, trailing whitespace, and soft-wrapped paragraphs that come from copying out of a terminal, then applies platform conventions (Slack *bold* vs Gmail plain prose, etc.).",
+      "trigger": "You want to paste a draft from the chat into Gmail, Slack, LinkedIn, or another tool without nightmare terminal formatting (extra whitespace, hard wraps, indented blocks) coming along.",
+      "tags": [
+        "clipboard",
+        "formatting",
+        "communication",
+        "productivity"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/clean-copy/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/code/clean-copy/icon.svg"
+    },
+    {
       "name": "create-pr",
       "platform": "code",
       "description": "Creates a well-structured pull request with product-focused summary, change highlights, and test steps. Auto-detects base branch and links Linear issues.",

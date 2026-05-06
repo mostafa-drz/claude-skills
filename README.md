@@ -25,6 +25,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/audit-skills`](code/audit-skills/SKILL.md) | Audits all personal Claude skills against the SKILLS_GUIDE.md manifest, latest official Claude skills documentation, and best practices. |
 | [`/build-incremental`](code/build-incremental/SKILL.md) | Implements code in progressive, verified increments -- auto-detects the project's toolchain, builds each unit, runs checks (typecheck, lint, test), fixes errors, and commits with semantic messages. |
 | <img src="code/chunk-pr/icon.svg" width="22" height="22" alt="/chunk-pr icon" valign="middle"> &nbsp; [`/chunk-pr`](code/chunk-pr/SKILL.md) | Analyzes a big PR, branch, or commit range and proposes a sequence of smaller, dependency-aware, merge-safe PRs. Suggests a plan; on approval, creates chunk branches, cherry-picks commits, pushes, and opens draft PRs. Parent branch stays untouched. |
+| <img src="code/clean-copy/icon.svg" width="22" height="22" alt="/clean-copy icon" valign="middle"> &nbsp; [`/clean-copy`](code/clean-copy/SKILL.md) | Cleans terminal-formatted text (uniform indent, trailing whitespace, soft-wrapped paragraphs) and copies it to the macOS clipboard formatted for the target platform — Gmail, Slack, LinkedIn, plain, or markdown. |
 | [`/compliance-audit`](code/compliance-audit/SKILL.md) | Audits codebases against compliance frameworks (SOC2, HIPAA, PCI-DSS, GDPR, ISO27001, etc.) using parallel agents per subdirectory/sub-repo. |
 | [`/create-pr`](code/create-pr/SKILL.md) | Creates a well-structured pull request with product-focused summary, change highlights, and test steps. |
 | [`/daily-brief`](code/daily-brief/SKILL.md) | Surfaces recent updates relevant to you from GitHub, Linear, Slack, and other configured sources -- PR reviews, new assignments, ticket changes, mentions, and CI failures. |
@@ -98,6 +99,16 @@ Analyzes a large pull request, branch, or commit range and proposes a sequence o
 **Usage:** `/chunk-pr [pr-or-branch-or-range] [--base branch] [--max-lines N] [--strategy conservative|balanced|aggressive] [--dry-run] [--draft]`
 
 [View SKILL.md ->](code/chunk-pr/SKILL.md)
+
+---
+
+### `/clean-copy`
+
+Cleans terminal-formatted text and copies it to the macOS clipboard formatted for the target platform (Gmail, Slack, LinkedIn, plain, markdown). Strips uniform leading indentation, trailing whitespace, and soft-wrapped paragraphs that come from copying out of a terminal, then applies platform conventions (Slack `*bold*` vs Gmail plain prose, etc.). Use when the user wants to paste a draft from chat into Gmail, Slack, LinkedIn, or another tool without nightmare terminal formatting coming along.
+
+**Usage:** `/clean-copy <platform> [--source last|paste|file:<path>] [--no-reflow] [--preview]`
+
+[View SKILL.md ->](code/clean-copy/SKILL.md)
 
 ---
 
