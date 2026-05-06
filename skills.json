@@ -16,6 +16,21 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/address-pr-comments/SKILL.md"
     },
     {
+      "name": "address-pr-feedback",
+      "platform": "code",
+      "description": "Comprehensively addresses PR feedback by fetching all comments, deploying parallel agents for critical analysis of each suggestion, making implementation decisions, then systematically implementing fixes with incremental commits and browser validation.",
+      "trigger": "You need to systematically process and implement all PR review feedback with due-diligence validation, especially for larger reviews where each suggestion deserves independent analysis.",
+      "tags": [
+        "git",
+        "github",
+        "code review",
+        "pull-requests",
+        "browser-automation"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/address-pr-feedback/SKILL.md"
+    },
+    {
       "name": "audit-skills",
       "platform": "code",
       "description": "Audits all personal Claude skills against the SKILLS_GUIDE.md manifest, latest official documentation, and best practices. Reports issues and improvement suggestions.",
@@ -40,6 +55,20 @@
       ],
       "sideEffects": true,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/build-incremental/SKILL.md"
+    },
+    {
+      "name": "capture-screens",
+      "platform": "code",
+      "description": "Automatically navigates a web app using Playwright MCP and captures context-aware named screenshots at each product feature state. Names each file semantically (e.g., checkout-payment-form-filled.png), outputs a manifest.json mapping filenames to descriptions and a summary report. Composable primitive — other skills consume its manifest.json output.",
+      "trigger": "Documenting product features, generating demo screenshots, building user guides, or creating visual test assets for any web application.",
+      "tags": [
+        "playwright",
+        "screenshots",
+        "documentation",
+        "browser-automation"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/capture-screens/SKILL.md"
     },
     {
       "name": "chunk-pr",
@@ -314,6 +343,20 @@
       ],
       "sideEffects": false,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/whats-next/SKILL.md"
+    },
+    {
+      "name": "workflow-advisor",
+      "platform": "code",
+      "description": "Analyzes recent Claude Code conversations and local Claude state (skills, settings, memory files, CLAUDE.md), researches the latest Claude Code features and best practices online, and suggests one workflow improvement at a time with reasoning and a concrete action item. Can save accepted suggestions to memory for tracking.",
+      "trigger": "You want to discover underused Claude Code features, improve your development workflow, stay current with the latest Claude Code capabilities, or get a periodic workflow health-check.",
+      "tags": [
+        "claude-code",
+        "meta",
+        "workflow",
+        "productivity"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/workflow-advisor/SKILL.md"
     },
     {
       "name": "inbox-catchup",

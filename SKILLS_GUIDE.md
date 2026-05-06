@@ -205,6 +205,7 @@ _On startup, use Bash to detect: current git branch, git status, and project sta
 | `/smoke-test` | E2E trace and verification | No (read-only) | No |
 | `/whats-next` | Suggest top 3 next actions | Yes (executes actions) | Linear |
 | `/address-pr-comments` | PR comment review + fixes | Yes (edits code, posts replies) | Linear |
+| `/address-pr-feedback` | Comprehensive PR-feedback workflow with parallel-agent critique + browser-validated commits (heavier due-diligence variant of `/address-pr-comments`) | Yes (edits code, commits, pushes) | claude-in-chrome |
 | `/build-incremental` | Incremental verified coding | Yes (commits code) | No |
 | `/create-pr` | Create structured PRs | Yes (creates PR) | Linear |
 | `/organize-screenshots` | Organize screenshots | Yes (copies files) | No |

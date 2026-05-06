@@ -22,8 +22,10 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | Skill | Description |
 |-------|-------------|
 | [`/address-pr-comments`](code/address-pr-comments/SKILL.md) | Fetches unresolved PR comments, categorizes them (must-fix, suggestion, question, nit), proposes fixes or replies for each, and executes approved actions. |
+| [`/address-pr-feedback`](code/address-pr-feedback/SKILL.md) | Comprehensive PR-feedback workflow: parallel agents critique each comment, then implement fixes with incremental commits and browser validation. Heavier due-diligence variant of `/address-pr-comments`. |
 | [`/audit-skills`](code/audit-skills/SKILL.md) | Audits all personal Claude skills against the SKILLS_GUIDE.md manifest, latest official Claude skills documentation, and best practices. |
 | [`/build-incremental`](code/build-incremental/SKILL.md) | Implements code in progressive, verified increments -- auto-detects the project's toolchain, builds each unit, runs checks (typecheck, lint, test), fixes errors, and commits with semantic messages. |
+| [`/capture-screens`](code/capture-screens/SKILL.md) | Drives a web app through Playwright MCP and takes context-aware named screenshots per feature state. Outputs manifest.json + summary. Composable primitive — other skills (user-guide, demo-docs) consume its manifest. |
 | <img src="code/chunk-pr/icon.svg" width="22" height="22" alt="/chunk-pr icon" valign="middle"> &nbsp; [`/chunk-pr`](code/chunk-pr/SKILL.md) | Analyzes a big PR, branch, or commit range and proposes a sequence of smaller, dependency-aware, merge-safe PRs. Suggests a plan; on approval, creates chunk branches, cherry-picks commits, pushes, and opens draft PRs. Parent branch stays untouched. |
 | <img src="code/clean-copy/icon.svg" width="22" height="22" alt="/clean-copy icon" valign="middle"> &nbsp; [`/clean-copy`](code/clean-copy/SKILL.md) | Cleans terminal-formatted text (uniform indent, trailing whitespace, soft-wrapped paragraphs) and copies it to the macOS clipboard formatted for the target platform — Gmail, Slack, LinkedIn, plain, or markdown. |
 | [`/compliance-audit`](code/compliance-audit/SKILL.md) | Audits codebases against compliance frameworks (SOC2, HIPAA, PCI-DSS, GDPR, ISO27001, etc.) using parallel agents per subdirectory/sub-repo. |
@@ -53,6 +55,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/weather`](code/weather/SKILL.md) | Checks the current weather for the user's location using live online data. |
 | [`/whats-next`](code/whats-next/SKILL.md) | Suggests the 3 most impactful next actions based on full developer context -- git, Linear, PRs, and current conversation. |
 | [`/workday-summary`](code/workday-summary/SKILL.md) | Summarizes work done today into timesheet-ready bullet points from conversation history, git, Linear, and GitHub. |
+| [`/workflow-advisor`](code/workflow-advisor/SKILL.md) | Analyzes recent Claude Code conversations and local Claude state, researches the latest Claude Code features, and suggests one workflow improvement at a time with reasoning and a concrete action item. |
 
 ### Desktop Skills
 
@@ -73,6 +76,16 @@ Fetches unresolved PR comments, categorizes them (must-fix, suggestion, question
 
 ---
 
+### `/address-pr-feedback`
+
+Comprehensively addresses PR feedback by fetching all comments, deploying parallel agents for critical analysis of each suggestion, making implementation decisions, then systematically implementing fixes with incremental commits and browser validation. Use when you need to systematically process and implement all PR review feedback with due-diligence validation — distinct from `/address-pr-comments`, which is the lighter triage variant.
+
+**Usage:** `/address-pr-feedback <pr-number|url> [--dry-run] [--auto-push] [--no-browser]`
+
+[View SKILL.md ->](code/address-pr-feedback/SKILL.md)
+
+---
+
 ### `/audit-skills`
 
 Audits all personal Claude skills against the SKILLS_GUIDE.md manifest, latest official Claude skills documentation, and best practices. Reports issues, missing patterns, and improvement suggestions per skill. Use to keep skills healthy, consistent, and up-to-date with the latest standards.
@@ -90,6 +103,16 @@ Implements code in progressive, verified increments -- auto-detects the project'
 **Usage:** `/build-incremental <what to build>`
 
 [View SKILL.md ->](code/build-incremental/SKILL.md)
+
+---
+
+### `/capture-screens`
+
+Automatically navigates a web app using Playwright MCP and captures context-aware named screenshots at each product feature state. Names each file semantically (e.g., `checkout-payment-form-filled.png`), outputs a `manifest.json` mapping filenames to descriptions, and a summary report. Use when documenting product features, generating demo screenshots, building user guides, or creating visual test assets for any web application. Composable primitive — other skills (user-guide, demo-docs) consume its `manifest.json` output.
+
+**Usage:** `/capture-screens [context-description] [--url <url>] [--features <list>] [--output <dir>] [--no-highlight] [--viewport <WxH>] [--auth <instructions>] [--inject-js <file>]`
+
+[View SKILL.md ->](code/capture-screens/SKILL.md)
 
 ---
 
@@ -360,6 +383,16 @@ Summarizes work done today into timesheet-ready bullet points. Analyzes conversa
 **Usage:** `/workday-summary [--today | --yesterday | --week | --since "date"] [--format bullets|table|full-markdown|plain]`
 
 [View SKILL.md ->](code/workday-summary/SKILL.md)
+
+---
+
+### `/workflow-advisor`
+
+Analyzes recent Claude Code conversations and local Claude state (skills, settings, memory files, CLAUDE.md), researches the latest Claude Code features and best practices online, and suggests one workflow improvement at a time with reasoning and a concrete action item. Can save accepted suggestions to memory for tracking. Use when you want to discover underused Claude Code features, improve your development workflow, stay current with the latest Claude Code capabilities, or get a periodic workflow health-check.
+
+**Usage:** `/workflow-advisor [--all] [--count <n>]`
+
+[View SKILL.md ->](code/workflow-advisor/SKILL.md)
 
 ---
 
