@@ -182,7 +182,7 @@ Use **`AskUserQuestion`** (multiSelect: true):
 
 **For replies:**
 ```
-gh api repos/<org>/<repo>/pulls/<number>/comments/<id>/replies -f body="<reply>"
+gh api repos/<org>/<repo>/pulls/<number>/comments --method POST --field body="<reply>" --field in_reply_to=<comment_id>
 ```
 
 **After all actions** (based on preference):
@@ -219,3 +219,4 @@ If user prefers certain reply styles, save pattern.
 - **Batch smartly**: Group changes in the same file.
 - **Don't auto-resolve**: Let reviewers resolve their own comments.
 - **Preserve intent**: Don't change the approach unless explicitly asked.
+- **Never edit original reviewer comments**: Always add replies to comment threads, never modify someone else's feedback.

@@ -1,10 +1,14 @@
 ---
 name: skill-creator
 description: >-
-  Creates new Claude Code skills interactively by asking contextual questions
-  about purpose, side effects, tools, and workflow. Generates a complete SKILL.md
-  following all conventions from SKILLS_GUIDE.md. Use when creating a new skill
-  or when asking to scaffold a skill.
+  Creates new Claude Code skills interactively, enforcing every convention in
+  SKILLS_GUIDE.md plus the learning, configurability, and feedback patterns
+  used by the best in-tree skills (svg-art, should-i-buy, step-through). Asks
+  contextual questions about purpose, side effects, tools, and workflow, then
+  generates a complete SKILL.md with three-tier preferences (Defaults /
+  Profile / Learned), a feedback subcommand, a session log, and a feedback
+  journal — unless the skill is genuinely stateless. Use when creating a new
+  skill or scaffolding one.
 argument-hint: [skill-name] [--from-description "..."]
 disable-model-invocation: true
 allowed-tools:
@@ -20,22 +24,25 @@ allowed-tools:
 
 # Skill Creator
 
-Create new Claude Code skills interactively, following all conventions from SKILLS_GUIDE.md.
+Create new Claude Code skills interactively, following all conventions from `SKILLS_GUIDE.md` **and** the learning/configurability/feedback patterns proven in the best existing skills.
 
 ## Preferences
 
-Before starting, use the `Read` tool to read `~/.claude/skills/skill-creator/preferences.md`. If the file does not exist, treat as "no preferences set".
+_On startup, use the `Read` tool to load `~/.claude/skills/skill-creator/preferences.md`. If missing, treat as "no preferences set"._
 
 ## Context
 
-Before starting, use the `Glob` tool to discover existing skills at `~/.claude/skills/*/SKILL.md` and check if `~/.claude/skills/SKILLS_GUIDE.md` exists (read it in Step 3).
+Before starting:
+- Use the `Glob` tool to discover existing skills at `~/.claude/skills/*/SKILL.md` (so you don't reinvent or collide with a name).
+- Read `~/.claude/skills/SKILLS_GUIDE.md` once at Step 3 — it's the canonical manifest.
+- Treat `svg-art`, `should-i-buy`, and `step-through` as the gold-standard reference for learning + feedback patterns.
 
 ## Command routing
 
 Check `$ARGUMENTS`:
 
-- **`help`** → display help then stop
-- **`config`** → interactive setup then stop
+- **`help`** → display help, then stop
+- **`config`** → interactive setup, then stop
 - **`reset`** → delete `~/.claude/skills/skill-creator/preferences.md`, confirm, stop
 - **`--from-description "..."`** → skip Q1, use the quoted text as the skill's purpose
 - **anything else** (including empty) → run the skill
@@ -43,7 +50,7 @@ Check `$ARGUMENTS`:
 ### Help
 
 ```
-Skill Creator — Creates new Claude Code skills interactively
+Skill Creator — Creates Claude Code skills, manifest-compliant by default
 
 Usage:
   /skill-creator                             Interactive skill creation
@@ -56,218 +63,324 @@ Usage:
 Examples:
   /skill-creator                             Full interactive walkthrough
   /skill-creator deploy-preview              Create a skill named "deploy-preview"
-  /skill-creator --from-description "A skill that checks my PR for common issues before I submit it"
+  /skill-creator --from-description "A skill that triages PR comments"
 
 Current preferences:
-  (shown above under Preferences)
+  (loaded from ~/.claude/skills/skill-creator/preferences.md)
 ```
 
 ### Config
 
 Use `AskUserQuestion` to collect:
 
-- **Q1: Default skill location** — `~/.claude/skills/` (standard) or custom path
-- **Q2: Auto-update inventory** — Yes/No — whether to update SKILLS_GUIDE.md inventory after creation
-- **Q3: Publish repo path** — path to the GitHub publish repo (e.g., `~/Dev/claude-skills`), or "none"
+- **Q1** — Default skill location: `~/.claude/skills/` (standard) or custom path
+- **Q2** — Auto-update inventory in `SKILLS_GUIDE.md` after creation: yes/no
+- **Q3** — Publish repo path (e.g. `~/Dev/claude-skills`) or "none"
+- **Q4** — Default learning posture: `learning-on` (include feedback + journal + sessions) / `learning-off` (stateless tool by default) / `ask-each-time`
 
 Save to `~/.claude/skills/skill-creator/preferences.md`.
 
 ### Reset
 
-Delete `~/.claude/skills/skill-creator/preferences.md` and confirm: "Preferences cleared. Using defaults."
+Delete `~/.claude/skills/skill-creator/preferences.md` and confirm: `Preferences cleared. Using defaults.`
 
 ## First-time detection
 
-If no preferences file exists, show:
+If no preferences file exists:
 
-> First time using /skill-creator? Run `/skill-creator config` to set defaults, or just continue with sensible defaults.
+> First time using `/skill-creator`? Run `/skill-creator config` to set defaults, or just continue with sensible defaults.
 
 Then proceed.
 
-## Step 1: Understand the skill's purpose
+---
 
-If `$ARGUMENTS` contains `--from-description`, use that text. If `$ARGUMENTS` is a bare name, pre-fill the name and ask the rest. Otherwise, ask everything.
+## Manifest patterns reference (read once, apply every time)
 
-Use **AskUserQuestion** — single question:
+Every generated SKILL.md **must** satisfy these — no exceptions unless explicitly justified to the user.
 
-> **What should this skill do?** Describe the workflow in a sentence or two. Example: "Fetch my open PRs, check which ones have failing CI, and offer to investigate."
+### Required (from `SKILLS_GUIDE.md`)
 
-After the user answers, extract:
-- **Working name** — derive a kebab-case name (or use the one from `$ARGUMENTS`)
-- **Core verb** — what it does (creates, analyzes, fetches, organizes, etc.)
-- **Trigger** — when should a user reach for this skill
+1. **Frontmatter** — `name` (kebab-case, ≤64 chars), `description` (third-person, "Use when …" trigger, ≤1024 chars), `argument-hint`, minimal `allowed-tools`.
+2. **`disable-model-invocation: true`** — required for any skill that creates / modifies / pushes / posts.
+3. **`AskUserQuestion`** in `allowed-tools` — every skill needs it for help/config/reset.
+4. **Subcommand pattern** — `help`, `config`, `reset`, default behaviour.
+5. **`Read` of preferences on startup** — never `!` backtick interpolation for `~/.claude/` paths.
+6. **First-time detection** — warm one-liner, never blocking.
+7. **No `!` backtick interpolation** — use runtime "_On startup, use Bash to …_" instructions instead.
+8. **Under 500 lines** — push reference material to `reference/` or `examples/`.
+9. **Numbered workflow** — checklists, not prose.
+10. **Graceful degradation** — every external read/tool call must have a fallback.
+11. **Validation loops** — after any action, verify before moving on.
 
-Confirm with the user:
-> I'll call this **`/skill-name`** — a skill that _[one-liner]_. Sound right?
+### Required for skills with discrete sessions / outputs (default ON unless stateless)
 
-## Step 2: Determine side effects and context
+12. **Three-tier preferences format**:
+    ```markdown
+    # /<skill> preferences
+    Updated: YYYY-MM-DD
 
-Based on the description, infer whether the skill has side effects and whether it needs conversation context. Then confirm with the user using **AskUserQuestion** (2 questions):
+    ## Defaults
+    - knob: value
 
-**Q1: Side effects** — Does this skill create, modify, push, or post anything?
-- "Yes — it writes/creates/modifies things" → `disable-model-invocation: true`
-- "No — read-only, just analyzes and reports" → omit `disable-model-invocation`
-- Pre-select based on the description (if it mentions "create", "post", "push", "update", "write", "deploy", default to Yes)
+    ## Profile (optional — edit freely)
+    - user-editable bias
 
-**Q2: Context needs** — Does this skill need the current conversation history?
-- "Yes — it builds on what we've been discussing" → no `context` field
-- "No — it's self-contained, works from its own inputs" → `context: fork`
-- Pre-select: if the skill processes external input (pasted text, URLs, file paths), default to fork
+    ## Learned
+    - (populated from feedback over time)
+    ```
+13. **`feedback` subcommand** — `/skill feedback` collects ratings on the most recent session via `AskUserQuestion`.
+14. **`feedback-journal.md`** — append a per-session block with a `Signal:` one-liner generalisation.
+15. **`sessions/YYYY-MM-DD-HHMM.md`** — incremental session log when the skill has discrete invocations worth tracking.
+16. **Promotion rule** — when 3+ sessions show the same signal, promote it to `## Learned` in `preferences.md`. Mention once: "Noticed you consistently … Saved as standing default."
+17. **Drift correction** — when a Learned rule is contradicted in 2 newer sessions, demote it (log the demotion in the journal). Never leave stale rules.
+18. **`Step 0 — Load learning context`** — read `preferences.md` and `feedback-journal.md` before the main workflow. Continue silently on missing files.
+19. **Invite feedback line** at the end of the workflow: `Run /<skill> feedback — even one rating helps me sharpen defaults.`
+20. **Reset clears the lot** — `preferences.md`, `feedback-journal.md`, `sessions/`, any `resume-state.md`.
 
-## Step 3: Identify tools needed
+### Recommended (apply when relevant)
 
-Read `~/.claude/skills/SKILLS_GUIDE.md` to reference the conventions.
+21. **`resume-state.md` + `/<skill> resume`** — for any skill where the user can stop mid-flow.
+22. **Confirmation policy** — destructive-only by default; configurable to "every action" via preferences.
+23. **Pre-selection logic in `AskUserQuestion`** — bias the default option using `Learned` rules.
+24. **Configurability ≥ 3 knobs** — depth, verbosity, output format, source selection, confirmation policy. A skill with only 1 knob is under-specified.
 
-Based on the skill's purpose, determine the minimal set of tools. Walk through categories with **AskUserQuestion** (multiSelect, 1 question):
+### When to skip the learning tier (12–20)
 
-> **Which capabilities does this skill need?** (select all that apply)
+Skip only if **all** of the following are true:
+- The skill has no per-session output worth rating (e.g. `aws-mfa` writes a credential file — there's nothing to thumbs-up).
+- The skill is purely procedural and identical every run.
+- There's no per-severity / per-output category that could be biased over time.
 
-Options:
-- **Read files** — Read, Glob, Grep (for analyzing code, configs, logs)
-- **Edit files** — Write, Edit (for modifying code, creating files)
-- **Run commands** — Bash (for git, npm, CLI tools, API calls)
-- **Ask questions** — AskUserQuestion (for interactive decisions during the skill)
-- **Web access** — WebSearch, WebFetch (for looking up docs, APIs, external data)
-- **Linear integration** — Linear MCP tools (for issues, projects, comments)
-- **Vercel integration** — Vercel MCP tools (for deployments, logs, projects)
+If skipping, document it in the SKILL.md's Principles section: `Stateless by design — no feedback loop because [reason].`
 
-Map selections to specific `allowed-tools` entries:
-- Read files → `Read`, `Glob`, `Grep`
-- Edit files → `Write`, `Edit`
-- Run commands → `Bash`
-- Ask questions → `AskUserQuestion`
-- Web access → `WebSearch`, `WebFetch`
-- Linear → determine which Linear MCP tools based on the skill's actions:
-  - Reading: `mcp__claude_ai_Linear__list_issues`, `mcp__claude_ai_Linear__get_issue`, `mcp__claude_ai_Linear__list_comments`, `mcp__claude_ai_Linear__list_projects`, `mcp__claude_ai_Linear__get_project`, `mcp__claude_ai_Linear__list_teams`
-  - Writing: above + `mcp__claude_ai_Linear__create_issue`, `mcp__claude_ai_Linear__update_issue`, `mcp__claude_ai_Linear__create_comment`
-- Vercel → determine which Vercel MCP tools based on the skill's actions
+---
 
-Always include `AskUserQuestion` — every skill needs it for help/config/reset at minimum.
+## Step 1 — Understand the skill's purpose
 
-## Step 4: Design the workflow
+If `$ARGUMENTS` contains `--from-description`, use that text. If `$ARGUMENTS` is a bare name, pre-fill the name and ask the rest. Otherwise, ask:
 
-Think through the skill's steps. Consider:
+> **What should this skill do?** Describe the workflow in a sentence or two.
 
-1. **What context does it need upfront?** → dynamic context injection candidates
-2. **What's the happy-path workflow?** → numbered steps
-3. **What are the decision points?** → where to use AskUserQuestion
-4. **What could go wrong?** → graceful degradation
-5. **What's worth learning?** → preferences to save
+Extract:
+- **Working name** (kebab-case)
+- **Core verb** (creates, analyses, fetches, organises, walks through, …)
+- **Trigger phrase** (when should the user reach for it)
 
-Draft the workflow as numbered steps. Keep it to 4-8 steps. Present the outline to the user:
+Confirm with the user: `I'll call this /skill-name — a skill that [one-liner]. Sound right?`
 
-> Here's the workflow I'm planning:
+## Step 2 — Determine side effects, context, and learning posture
+
+Use **AskUserQuestion** with **3 questions in one batch**:
+
+**Q1 — Side effects:** Does this skill create, modify, push, or post anything?
+- `Yes` → `disable-model-invocation: true`
+- `No (read-only)` → omit `disable-model-invocation`
+- Pre-select Yes if the description mentions create/post/push/update/write/deploy.
+
+**Q2 — Context needs:** Does this skill need the current conversation history?
+- `Yes` (builds on what we've discussed) → no `context` field
+- `No` (self-contained, works from its own inputs) → `context: fork`
+- Pre-select fork if the skill processes external input only (URLs, file paths, pasted text).
+
+**Q3 — Learning posture:** Should this skill learn from per-session feedback?
+- `Yes — full learning tier` (preferences + journal + sessions + feedback subcommand) — pre-select for any skill with discrete outputs, decisions, or judgement calls
+- `No — stateless tool` — pre-select only for purely procedural skills (e.g. credential refresh, fixed pipeline runners)
+- If `Yes`, items 12–20 of the manifest reference are now mandatory.
+
+## Step 3 — Identify tools needed
+
+Read `~/.claude/skills/SKILLS_GUIDE.md` to confirm conventions.
+
+Use **AskUserQuestion** (multiSelect):
+
+> **Which capabilities does this skill need?**
+
+- **Read files** → `Read`, `Glob`, `Grep`
+- **Edit files** → `Write`, `Edit`
+- **Run commands** → `Bash` (use `Bash(git *)` / `Bash(gh *)` glob patterns when scoping)
+- **Ask questions** → `AskUserQuestion` (always include — auto-add even if not picked)
+- **Web access** → `WebSearch`, `WebFetch`
+- **Linear** → use `mcp__claude_ai_Linear__*` (NOT `mcp__linear-server__*`):
+  - Read: `list_issues`, `get_issue`, `list_comments`, `list_projects`, `get_project`, `list_teams`
+  - Write: above + `create_issue`, `update_issue`, `create_comment`
+- **Vercel / Slack / Notion / Chrome / Playwright** → pick specific MCP tools by action
+
+Always include `AskUserQuestion`. Always keep the list **minimal** — granting `Write`/`Edit` to a read-only skill is a bug.
+
+## Step 4 — Design the workflow
+
+Apply the manifest reference. Draft a numbered workflow that includes (in order, when learning tier is on):
+
+1. **Step 0 — Load learning context** (read preferences + journal)
+2. Domain-specific steps (4–8 of them)
+3. **Step N–1 — Final summary**
+4. **Step N — Invite feedback** (one-line pointer to `/<skill> feedback`)
+
+For stateless skills, drop steps 0 and N.
+
+Identify ≥3 configurability knobs (depth, verbosity, format, source, confirmation policy, …). Identify the 1–3 decision points that get an `AskUserQuestion`. Identify what the `feedback` subcommand will rate (per-severity defaults? per-output style? per-source pace?).
+
+Present the outline:
+> Here's the workflow:
+> 1. Load learning context
+> 2. …
+> N. Invite feedback
 >
-> 1. Gather context (branch, status, etc.)
-> 2. [Step specific to this skill]
-> 3. ...
-> N. Report results / offer next actions
->
-> Want to adjust anything?
+> Configurability knobs: [list]. Feedback dimensions: [list]. Want to adjust?
 
-## Step 5: Determine arguments and flags
+## Step 5 — Determine arguments and flags
 
-Based on the workflow, propose:
-- **Positional argument** — the main input (if any)
-- **Flags** — optional modifiers (e.g., `--dry-run`, `--verbose`, `--preview`)
+Propose:
+- Positional argument (if any)
+- Standard flags: `--filter`, `--start`, `--from`, `--dry-run`, `--verbose` (only those that fit)
+- Subcommands beyond the standard four: `feedback`, `resume` (if applicable)
 
-Confirm with the user via **AskUserQuestion** or inline confirmation.
+Confirm via `AskUserQuestion` or inline.
 
-## Step 6: Generate the SKILL.md
+## Step 6 — Generate the SKILL.md
 
-Assemble the complete SKILL.md following all conventions:
+Assemble. Use the structure checklist below. Walk through it top to bottom — every box must be ticked or explicitly justified as "skip" with a Principles note.
 
 ### Structure checklist
 
-- [ ] YAML frontmatter with all required fields
-- [ ] `name` — kebab-case, matches directory name
-- [ ] `description` — third-person, includes "Use when" trigger
-- [ ] `argument-hint` — reflects arguments and flags
-- [ ] `disable-model-invocation` — set if side effects confirmed
-- [ ] `context: fork` — set if confirmed self-contained
-- [ ] `allowed-tools` — minimal list from Step 3
-- [ ] Preferences section with dynamic injection
-- [ ] Context section with runtime Bash/Read instructions (no `!` backtick interpolation)
-- [ ] Command routing (help, config, reset, default)
-- [ ] Help block in CLI format
-- [ ] Config block with AskUserQuestion
-- [ ] Reset block
-- [ ] First-time detection
-- [ ] Numbered workflow steps from Step 4
-- [ ] Principles section (3-5 rules specific to this skill)
-- [ ] Under 500 lines total
+**Frontmatter**
+- [ ] `name` — kebab-case, matches directory
+- [ ] `description` — third-person, includes "Use when …" trigger, ≤1024 chars, mentions learning if applicable
+- [ ] `argument-hint` — reflects positional + flags + subcommands
+- [ ] `disable-model-invocation: true` — set if side effects confirmed in Step 2
+- [ ] `context: fork` — set if confirmed self-contained in Step 2
+- [ ] `allowed-tools` — minimal list from Step 3, includes `AskUserQuestion`
+
+**Top-level sections**
+- [ ] `## Preferences` — runtime Read instruction for `preferences.md` + Defaults list
+- [ ] `## Context` — runtime Bash/Read instructions, no `!` backticks
+- [ ] `## Command routing` — help / config / reset / **feedback** (if learning) / **resume** (if applicable) / default
+- [ ] `### Help` block — CLI format with Current preferences line
+- [ ] `### Config` block — `AskUserQuestion` + write to `preferences.md` in **three-tier format**
+- [ ] `### Reset` block — deletes preferences + **journal + sessions + resume-state** when learning tier is on
+- [ ] `## First-time detection` — warm one-liner, non-blocking
+
+**Workflow**
+- [ ] `### Step 0 — Load learning context` (skip only for stateless)
+- [ ] Numbered domain steps (4–8)
+- [ ] `### Step N — Final summary` with one follow-up `AskUserQuestion`
+- [ ] `### Step N+1 — Invite feedback` line (skip only for stateless)
+
+**Learning tier (when on)**
+- [ ] `## Feedback & learning` section with: `feedback` subcommand handler, journal append format with `Signal:`, **promotion rule** (3+ sessions), **drift correction** (2 contradictions → demote)
+- [ ] Pre-selection in domain `AskUserQuestion`s biased by `Learned` rules
+
+**Closing**
+- [ ] `## Principles` — 5–8 rules. Always include: "Graceful degradation on missing learning state" and "Destructive actions still need confirmation" if any side effects
+- [ ] Total ≤500 lines (push reference material to `reference/` if over)
 
 ### Dynamic context injection
 
-**Do NOT use `!` backtick interpolation** — it fails due to Bash sandbox restrictions (blocks `||`, `&&`, paths outside working directory). Instead, write a runtime instruction:
+Never use `` !`...` `` backtick interpolation in personal skills. Use runtime instructions:
 
 ```markdown
 ## Context
-_On startup, use Bash to detect: current git branch, git status, and repo name. Skip any that fail._
+_On startup, use Bash to detect: current git branch, git status, repo name. Skip any that fail._
 ```
 
-Choose relevant context based on the skill's needs:
-- Git-aware skills: branch, status, recent commits, remotes
-- Project-aware skills: package.json, Cargo.toml, etc.
-- PR-aware skills: open PRs, current PR
-- Linear-aware skills: skip (fetch at runtime via MCP)
+### Preferences file format (mandatory three-tier when learning tier is on)
 
-### Config questions
+```markdown
+# /<skill-name> preferences
+Updated: YYYY-MM-DD
 
-Design 2-4 config questions specific to this skill's configurable aspects (default branch, output format, verbosity, etc.).
+## Defaults
+- knob: value
+- knob: value
 
-### Principles
+## Profile (optional — edit freely)
+- user-editable bias lines
 
-Write 3-5 principles that capture the skill's core behavioral rules. Examples:
-- "Non-destructive by default" for tools that could delete things
-- "Always confirm before posting" for skills that publish externally
-- "Fail fast on missing context" for skills that need specific inputs
+## Learned
+- (populated from feedback over time)
+```
 
-## Step 7: Write the files
+### Feedback subcommand template (when learning tier is on)
 
-1. Create the directory: `~/.claude/skills/<skill-name>/`
-2. Write `SKILL.md` with the generated content
-3. If reference material exceeds 100 lines, split into `reference/` files
-4. Show the user a summary of what was created
+```markdown
+## Feedback & learning
 
-## Step 8: Post-creation actions
+When invoked as `/<skill> feedback`:
+
+1. Find the most recent `sessions/YYYY-MM-DD-HHMM.md`. If none, say `No recent session found.` and stop.
+2. Print a one-line summary of that session.
+3. Ask via `AskUserQuestion` (3–4 questions in one batch). Tailor questions to the skill's output dimensions.
+4. Append to `~/.claude/skills/<skill>/feedback-journal.md`:
+   ```
+   ## {session slug} — {date}
+   - {dimension}: {answer}
+   - Signal: {one-line generalisation}
+   ```
+5. Promotion rule: 3+ sessions same signal → promote to `## Learned` in `preferences.md`. Mention once.
+6. Drift correction: 2 contradictions on a Learned rule → demote, log in journal.
+```
+
+### Principles starter set
+
+Include these by default; cull or rewrite as needed:
+
+- **Graceful degradation** — continue with built-in defaults if `preferences.md` / `feedback-journal.md` can't be read
+- **Learn quietly** — promote a rule only after 3+ consistent signals; mention once when promoting
+- **No fabricated structure** — if input is ambiguous, ask rather than invent
+- **Destructive actions need confirmation** — auto mode does not bypass file deletes / pushes / external posts
+- **Stop means stop** — when user halts, save resume state if applicable, do not continue in-flight work
+- **Skill orchestrates, does not re-judge** — preserve user inputs verbatim where applicable
+
+## Step 7 — Write the files
+
+1. Create `~/.claude/skills/<skill-name>/`.
+2. Write `SKILL.md`.
+3. If reference material exceeds 100 lines, split into `reference/` files.
+4. Do **not** pre-create `preferences.md`, `feedback-journal.md`, or `sessions/` — those are created on first use.
+
+## Step 8 — Self-audit (mandatory)
+
+After writing, **re-read the generated `SKILL.md`** and tick every box in the Structure checklist (Step 6). For each box that is unticked, either:
+- Edit the SKILL.md to fix it, or
+- Add a one-line note in the Principles section justifying the skip (e.g. `Stateless by design — no feedback loop because [reason]`).
+
+Then run a quick line-count check via Bash. If over 500 lines, propose a split into `reference/`.
+
+Print the audit result to the user:
+
+```
+Manifest audit: 23/24 boxes ticked.
+Skipped: feedback subcommand — stateless by design (per Step 2 Q3).
+File: ~/.claude/skills/<skill-name>/SKILL.md (LINE_COUNT lines)
+```
+
+## Step 9 — Post-creation actions
 
 Present options via **AskUserQuestion**:
 
-- **Test it** — "Run `/skill-name help` to verify the help output"
-- **Configure it** — "Run `/skill-name config` to set initial preferences"
-- **Update inventory** — if a publish repo is configured, offer to update SKILLS_GUIDE.md and README.md
-- **Done** — "All set! Your new skill is ready at `~/.claude/skills/<skill-name>/`"
+- **Test it** — `Run /<skill-name> help to verify the help output`
+- **Configure it** — `Run /<skill-name> config to set initial preferences`
+- **Update inventory** — only if a publish repo is configured: copy skill to publish repo, add row to `SKILLS_GUIDE.md` inventory table, add section to `README.md`. Don't commit.
+- **Done** — `All set! Your new skill is ready at ~/.claude/skills/<skill-name>/`
 
-If the user chose "Update inventory" and a publish repo is configured:
-1. Copy the new skill directory to the publish repo
-2. Add an entry to SKILLS_GUIDE.md inventory table
-3. Add a section to README.md
-4. Report what was updated (don't commit — leave that to the user or `/publish-skills`)
+## Step 10 — Learn from this session
 
-## Step 9: Learn
+Silently update `~/.claude/skills/skill-creator/preferences.md` if the user:
+- Renamed the skill (record the rename pattern, e.g. "user prefers verb-led names")
+- Removed/added tools you proposed (record the trim/add bias)
+- Toggled learning posture against your pre-selection (record the override)
+- Cut sections from your draft (record what they consider unnecessary)
 
-If the user made any corrections during the process (renamed the skill, changed tools, adjusted workflow), silently save those patterns to preferences:
+Mention once: `Noted: you prefer X. Saved for next time.`
 
-```markdown
-# /skill-creator preferences
-Updated: {date}
-
-## Defaults
-- skill-location: ~/.claude/skills/
-- auto-update-inventory: yes/no
-- publish-repo: path or none
-
-## Learned
-- User prefers [pattern observed]
-```
-
-Mention: "Noted: you prefer X. Saved for next time."
+---
 
 ## Principles
 
-- **Convention over configuration** — follow SKILLS_GUIDE.md strictly; don't let the user accidentally create a non-conforming skill.
-- **Ask, don't assume** — when the skill's purpose is ambiguous (side effects unclear, tools uncertain), ask rather than guess.
-- **Minimal viable skill** — start with the simplest version that works. The user can always add complexity later.
-- **Show before write** — always present the planned workflow and key decisions before generating the file.
-- **Learn and improve** — save patterns from user corrections to make future skill creation faster.
+1. **Manifest first.** Every generated skill ticks the Structure checklist — no exceptions without an explicit Principles-section justification.
+2. **Three-tier preferences are the default.** Defaults / Profile / Learned, even for small skills. Stateless is the exception, not the rule.
+3. **Feedback loop is the default.** A skill without a `/feedback` subcommand should be the rare case. Bias toward learning-on in Step 2 Q3.
+4. **Self-audit is non-negotiable.** Step 8 is a checkpoint, not a formality. Don't ship a skill that fails its own audit.
+5. **Minimal viable skill.** Start with the simplest version that works — but "simplest" still includes the learning tier when applicable.
+6. **Show before write.** Always present the planned workflow, knobs, and feedback dimensions before generating the file.
+7. **Learn and improve.** Save patterns from user corrections to make future skill creation faster and more aligned to their style.

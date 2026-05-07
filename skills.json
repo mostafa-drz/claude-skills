@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-06",
+  "updated": "2026-05-07",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -334,6 +334,20 @@
       ],
       "sideEffects": true,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/smoke-test/SKILL.md"
+    },
+    {
+      "name": "step-through",
+      "platform": "code",
+      "description": "Walks through a long enumerated response (PR review findings, audit list, refactor plan, action items) one item at a time, with a per-item decision: dive deeper, take action, defer, or skip.",
+      "trigger": "After an assistant produces a long enumerated list and you want to triage items one at a time instead of all at once.",
+      "tags": [
+        "walkthrough",
+        "triage",
+        "decisions",
+        "productivity"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/step-through/SKILL.md"
     },
     {
       "name": "svg-art",
