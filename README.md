@@ -55,6 +55,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/svg-art`](code/svg-art/SKILL.md) | Generates artistic SVGs directly as code — minimal line icons, geometric marks, generative patterns, hand-drawn compositions — plus a 2026 HTML gallery preview. Learns aesthetic preferences from per-session feedback. |
 | [`/sync-branch`](code/sync-branch/SKILL.md) | Merges one branch into another with conflict handling. |
 | [`/thread-to-action`](code/thread-to-action/SKILL.md) | Parses a pasted thread (Slack, email, GitHub, Teams), analyzes it against current git, Linear, and session context, and suggests actionable next steps. |
+| [`/ui-test`](code/ui-test/SKILL.md) | Runs UI tests described in plain English by driving real Chrome via the Claude-in-Chrome extension. Covers e2e flows (clicks, forms, assertions), visual checks (screenshot + optional baseline diff), accessibility (axe-core), performance (Web Vitals + light Lighthouse-style metrics), plus an interactive `--debug` mode that tails console + network. Accepts inline descriptions or `./tests/ui/*.md` files. Per-run folder with artifacts plus a single-file 2026 dashboard report (verdict-forward, bento-grid). Learns from per-run feedback. |
 | [`/weather`](code/weather/SKILL.md) | Checks the current weather for the user's location using live online data. |
 | [`/whats-next`](code/whats-next/SKILL.md) | Suggests the 3 most impactful next actions based on full developer context -- git, Linear, PRs, and current conversation. |
 | [`/workday-summary`](code/workday-summary/SKILL.md) | Summarizes work done today into timesheet-ready bullet points from conversation history, git, Linear, and GitHub. |
@@ -386,6 +387,16 @@ Parses a pasted thread (Slack, email, GitHub, Teams), analyzes it against curren
 **Usage:** `/thread-to-action <paste thread here>`
 
 [View SKILL.md ->](code/thread-to-action/SKILL.md)
+
+---
+
+### `/ui-test`
+
+Runs UI tests described in plain English by driving real Chrome via the Claude-in-Chrome extension. Covers end-to-end flows (clicks, forms, assertions), visual checks (screenshot + optional baseline diff), accessibility (axe-core), performance (Web Vitals + light Lighthouse-style metrics), and an interactive `--debug` mode that tails console + network and surfaces issues without explicit assertions. Accepts inline descriptions or test files in `./tests/ui/*.md`. Per-run folders contain artifacts (screenshots, console, network, axe report, perf metrics) plus a single-file 2026 HTML report with a verdict-forward bento-grid layout (dark + light, mobile-responsive, no external scripts). Learns from per-run feedback to bias future runs (false-positive a11y rules, flaky baselines, screenshot strategy). Use when verifying a UI flow, screenshotting a regression, auditing accessibility, profiling a page, or debugging something visibly broken in a real browser session.
+
+**Usage:** `/ui-test "<description>" | --file <path> | --suite <glob> | --debug <url|description> | record <name>`
+
+[View SKILL.md ->](code/ui-test/SKILL.md)
 
 ---
 

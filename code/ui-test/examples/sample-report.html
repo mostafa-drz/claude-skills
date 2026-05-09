@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ui-test — mostafa.xyz homepage smoke test</title>
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --bg-elev: #111114;
+    --bg-card: rgba(255,255,255,0.025);
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.14);
+    --fg: #e9e9ea;
+    --fg-muted: #9a9aa1;
+    --fg-dim: #5a5a62;
+    --accent: #10b981;
+    --accent-soft: rgba(16,185,129,0.12);
+    --warn: #f59e0b;
+    --warn-soft: rgba(245,158,11,0.12);
+    --fail: #f43f5e;
+    --fail-soft: rgba(244,63,94,0.12);
+    --info: #8b9eff;
+    --info-soft: rgba(139,158,255,0.10);
+    --grid-gap: 16px;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.3);
+    --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", "Segoe UI", sans-serif;
+    --font-mono: "SF Mono", "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #fafaf9;
+      --bg-elev: #ffffff;
+      --bg-card: rgba(0,0,0,0.018);
+      --border: rgba(0,0,0,0.07);
+      --border-strong: rgba(0,0,0,0.12);
+      --fg: #0a0a0b;
+      --fg-muted: #4d4d52;
+      --fg-dim: #9a9aa1;
+      --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 20px rgba(0,0,0,0.05);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(ellipse 800px 400px at 20% -10%, rgba(16,185,129,0.06), transparent 60%),
+      radial-gradient(ellipse 600px 400px at 90% 0%, rgba(139,158,255,0.05), transparent 60%);
+  }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 32px 28px 80px; }
+
+  /* ---------- top bar ---------- */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; margin-bottom: 28px;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-mono); font-size: 12px; color: var(--fg-muted);
+    letter-spacing: 0.02em;
+  }
+  .brand .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
+  .topbar-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 11px; border-radius: 999px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-muted);
+    transition: all 120ms;
+  }
+  .chip strong { color: var(--fg); font-weight: 500; }
+  .chip.interactive { cursor: pointer; }
+  .chip.interactive:hover { border-color: var(--border-strong); color: var(--fg); }
+  .chip.accent { color: var(--accent); border-color: var(--accent-soft); background: var(--accent-soft); }
+
+  /* ---------- title ---------- */
+  h1 { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 6px; }
+  .subtitle { color: var(--fg-muted); font-size: 14px; margin-bottom: 24px; }
+  .subtitle a { color: var(--fg); text-decoration: none; border-bottom: 1px solid var(--border); }
+
+  /* ---------- bento grid ---------- */
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--grid-gap);
+  }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  .card-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+
+  /* verdict hero */
+  .verdict {
+    grid-column: span 12;
+    padding: 32px;
+    background:
+      radial-gradient(ellipse 600px 200px at 0% 0%, var(--warn-soft), transparent 60%),
+      var(--bg-card);
+    border: 1px solid var(--warn-soft);
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 28px;
+  }
+  .verdict-screenshot {
+    width: 100%; aspect-ratio: 4/3;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1a1a1f 0%, #0d0d10 100%);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--fg-dim); font-family: var(--font-mono); font-size: 11px;
+    position: relative; overflow: hidden;
+  }
+  .verdict-screenshot::before {
+    content: ''; position: absolute; inset: 14px;
+    border-radius: 8px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 30%),
+      repeating-linear-gradient(90deg, transparent 0 60px, rgba(255,255,255,0.03) 60px 61px);
+  }
+  .verdict-screenshot::after {
+    content: 'mostafa.xyz · screenshot';
+    position: relative; z-index: 1;
+    color: var(--fg-dim);
+  }
+  .verdict-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px; border-radius: 999px;
+    background: var(--warn-soft); color: var(--warn);
+    font-family: var(--font-mono); font-size: 11.5px;
+    letter-spacing: 0.05em; text-transform: uppercase; font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .verdict-pill .pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--warn); }
+  .verdict h2 { font-size: 26px; font-weight: 600; margin: 0 0 12px; letter-spacing: -0.015em; }
+  .verdict p { color: var(--fg-muted); font-size: 14.5px; margin: 0 0 18px; max-width: 56ch; }
+  .verdict-stats { display: flex; gap: 28px; flex-wrap: wrap; padding-top: 18px; border-top: 1px solid var(--border); }
+  .verdict-stat { display: flex; flex-direction: column; gap: 2px; }
+  .verdict-stat .v { font-family: var(--font-mono); font-size: 18px; font-weight: 500; }
+  .verdict-stat .l { font-size: 11px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+  .v.pass { color: var(--accent); }
+  .v.fail { color: var(--fail); }
+  .v.warn { color: var(--warn); }
+
+  /* metric ring */
+  .metric-card { grid-column: span 3; }
+  .metric-card .row { display: flex; align-items: center; justify-content: space-between; }
+  .metric-card .num { font-family: var(--font-mono); font-size: 30px; font-weight: 500; letter-spacing: -0.02em; }
+  .metric-card .unit { font-family: var(--font-mono); font-size: 13px; color: var(--fg-dim); margin-left: 2px; }
+  .metric-card .delta { font-family: var(--font-mono); font-size: 11.5px; }
+  .ring {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: conic-gradient(var(--accent) calc(var(--p) * 1%), var(--border) 0);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ring::after {
+    content: ''; width: 44px; height: 44px; border-radius: 50%; background: var(--bg-elev);
+  }
+  .ring-num {
+    position: absolute; font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted);
+  }
+  .ring-wrap { position: relative; display: flex; align-items: center; justify-content: center; }
+  .metric-card .budget { color: var(--fg-dim); font-family: var(--font-mono); font-size: 11px; margin-top: 8px; }
+
+  /* timeline */
+  .timeline-card { grid-column: span 8; }
+  .step {
+    display: grid;
+    grid-template-columns: 32px 1fr auto auto;
+    align-items: center; gap: 14px;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+    cursor: pointer; transition: all 120ms;
+  }
+  .step:last-child { border-bottom: none; }
+  .step:hover { background: var(--bg-card); margin: 0 -10px; padding: 12px 10px; border-radius: 8px; }
+  .step-dot {
+    width: 10px; height: 10px; border-radius: 50%; margin-left: 11px;
+    box-shadow: 0 0 0 4px transparent;
+    transition: box-shadow 120ms;
+  }
+  .step.pass .step-dot { background: var(--accent); }
+  .step.fail .step-dot { background: var(--fail); }
+  .step.warn .step-dot { background: var(--warn); }
+  .step.skip .step-dot { background: var(--fg-dim); }
+  .step:hover .step-dot { box-shadow: 0 0 0 4px var(--accent-soft); }
+  .step.fail:hover .step-dot { box-shadow: 0 0 0 4px var(--fail-soft); }
+  .step-name { font-size: 13.5px; }
+  .step-name code { font-family: var(--font-mono); font-size: 12.5px; color: var(--fg-muted); padding: 1px 5px; background: var(--bg-card); border-radius: 4px; border: 1px solid var(--border); }
+  .step-time { font-family: var(--font-mono); font-size: 11.5px; color: var(--fg-dim); }
+  .step-kind {
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--fg-muted); padding: 3px 8px;
+    border-radius: 6px; background: var(--bg-card); border: 1px solid var(--border);
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+
+  /* a11y panel */
+  .a11y-card { grid-column: span 4; }
+  .a11y-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+  .a11y-item {
+    display: grid; grid-template-columns: auto 1fr; gap: 10px;
+    padding: 12px; border-radius: var(--radius-sm);
+    background: var(--bg-card); border: 1px solid var(--border);
+  }
+  .severity-badge {
+    font-family: var(--font-mono); font-size: 10px;
+    padding: 3px 8px; border-radius: 5px;
+    text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600;
+    align-self: start; white-space: nowrap;
+  }
+  .severity-badge.moderate { background: var(--warn-soft); color: var(--warn); }
+  .severity-badge.serious { background: var(--fail-soft); color: var(--fail); }
+  .a11y-rule { font-size: 12.5px; font-weight: 500; margin-bottom: 2px; }
+  .a11y-loc { font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted); }
+
+  /* perf grid */
+  .perf-grid {
+    grid-column: span 12;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--grid-gap);
+  }
+
+  /* visual strip */
+  .visual-card { grid-column: span 12; }
+  .visual-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+  .visual-tile {
+    aspect-ratio: 16/10; border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, #1a1a1f 0%, #0d0d10 100%);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--fg-dim); font-family: var(--font-mono); font-size: 11px;
+    position: relative; overflow: hidden;
+  }
+  .visual-tile::before {
+    content: ''; position: absolute; inset: 12px; border-radius: 6px;
+    background: repeating-linear-gradient(90deg, transparent 0 50px, rgba(255,255,255,0.03) 50px 51px);
+  }
+  .visual-tile span { position: relative; z-index: 1; }
+  .visual-tile.diff { background: linear-gradient(135deg, var(--accent-soft) 0%, transparent 80%); }
+  .visual-label {
+    position: absolute; top: 8px; left: 10px; z-index: 2;
+    font-family: var(--font-mono); font-size: 9.5px;
+    color: var(--fg-dim); letter-spacing: 0.06em; text-transform: uppercase;
+  }
+
+  /* coverage */
+  .coverage-card { grid-column: span 12; padding: 18px 22px; }
+  .coverage-card .row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .coverage-card .label {
+    font-family: var(--font-mono); font-size: 11.5px;
+    color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .coverage-card .text { color: var(--fg-muted); font-size: 13px; }
+
+  /* footer */
+  footer {
+    margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    color: var(--fg-dim); font-family: var(--font-mono); font-size: 11.5px;
+    flex-wrap: wrap; gap: 12px;
+  }
+  footer a { color: var(--fg-muted); text-decoration: none; border-bottom: 1px dashed var(--border-strong); }
+  footer a:hover { color: var(--fg); }
+
+  /* sparkline */
+  .sparkline { width: 100%; height: 32px; display: block; margin-top: 8px; }
+
+  /* responsive */
+  @media (max-width: 900px) {
+    .verdict { grid-template-columns: 1fr; }
+    .verdict-screenshot { aspect-ratio: 16/9; }
+    .timeline-card, .a11y-card, .metric-card { grid-column: span 12; }
+    .perf-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .wrap { padding: 18px 14px 60px; }
+    h1 { font-size: 22px; }
+    .perf-grid { grid-template-columns: 1fr; }
+    .visual-strip { grid-template-columns: 1fr; }
+  }
+
+  /* filter chips state */
+  .chip[data-active="true"] {
+    background: var(--accent-soft); color: var(--accent); border-color: var(--accent-soft);
+  }
+  .step.hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- top bar -->
+  <div class="topbar">
+    <div class="brand">
+      <span class="dot"></span>
+      <span>ui-test · v0.1</span>
+    </div>
+    <div class="topbar-meta">
+      <span class="chip">env <strong>https://mostafa.xyz</strong></span>
+      <span class="chip">viewport <strong>1440×900</strong></span>
+      <span class="chip">2026-05-08 · 14:30</span>
+    </div>
+  </div>
+
+  <h1>mostafa.xyz · homepage smoke test</h1>
+  <p class="subtitle">5 steps · 4 categories · 1.8s · <a href="https://mostafa.xyz" target="_blank">mostafa.xyz</a></p>
+
+  <!-- bento -->
+  <div class="bento">
+
+    <!-- verdict hero -->
+    <div class="verdict card">
+      <div class="verdict-screenshot"></div>
+      <div>
+        <span class="verdict-pill"><span class="pulse"></span> Pass with issues</span>
+        <h2>Flow ships, but a11y has 2 moderate violations.</h2>
+        <p>All 5 e2e steps passed. Performance is well inside budget. Visual diff matches baseline. Two color-contrast issues in the footer block the run from a clean pass — promote the link color and you're green.</p>
+        <div class="verdict-stats">
+          <div class="verdict-stat"><span class="v pass">5/5</span><span class="l">e2e steps</span></div>
+          <div class="verdict-stat"><span class="v warn">2</span><span class="l">a11y moderate</span></div>
+          <div class="verdict-stat"><span class="v pass">0</span><span class="l">visual diffs</span></div>
+          <div class="verdict-stat"><span class="v pass">1.4s</span><span class="l">LCP</span></div>
+          <div class="verdict-stat"><span class="v">87ms</span><span class="l">INP</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- perf row -->
+    <div class="perf-grid">
+
+      <div class="card metric-card">
+        <div class="card-label">LCP</div>
+        <div class="row">
+          <div>
+            <div class="num">1.4<span class="unit">s</span></div>
+            <div class="delta" style="color: var(--accent);">−1.1s under budget</div>
+          </div>
+          <div class="ring-wrap">
+            <div class="ring" style="--p: 56;"></div>
+            <div class="ring-num">56%</div>
+          </div>
+        </div>
+        <svg class="sparkline" viewBox="0 0 100 32" preserveAspectRatio="none">
+          <polyline fill="none" stroke="var(--accent)" stroke-width="1.5" points="0,18 12,16 25,20 38,14 50,17 62,15 75,12 88,14 100,11"/>
+        </svg>
+        <div class="budget">budget &lt;= 2500ms</div>
+      </div>
+
+      <div class="card metric-card">
+        <div class="card-label">CLS</div>
+        <div class="row">
+          <div>
+            <div class="num">0.02</div>
+            <div class="delta" style="color: var(--accent);">excellent</div>
+          </div>
+          <div class="ring-wrap">
+            <div class="ring" style="--p: 80;"></div>
+            <div class="ring-num">80%</div>
+          </div>
+        </div>
+        <svg class="sparkline" viewBox="0 0 100 32" preserveAspectRatio="none">
+          <polyline fill="none" stroke="var(--accent)" stroke-width="1.5" points="0,28 14,27 30,26 46,28 60,27 76,28 90,26 100,27"/>
+        </svg>
+        <div class="budget">budget &lt;= 0.10</div>
+      </div>
+
+      <div class="card metric-card">
+        <div class="card-label">INP</div>
+        <div class="row">
+          <div>
+            <div class="num">87<span class="unit">ms</span></div>
+            <div class="delta" style="color: var(--accent);">snappy</div>
+          </div>
+          <div class="ring-wrap">
+            <div class="ring" style="--p: 43;"></div>
+            <div class="ring-num">43%</div>
+          </div>
+        </div>
+        <svg class="sparkline" viewBox="0 0 100 32" preserveAspectRatio="none">
+          <polyline fill="none" stroke="var(--accent)" stroke-width="1.5" points="0,22 14,18 28,20 42,15 56,18 70,16 84,14 100,12"/>
+        </svg>
+        <div class="budget">budget &lt;= 200ms</div>
+      </div>
+
+      <div class="card metric-card">
+        <div class="card-label">JS Heap</div>
+        <div class="row">
+          <div>
+            <div class="num">18<span class="unit">MB</span></div>
+            <div class="delta" style="color: var(--accent);">lean</div>
+          </div>
+          <div class="ring-wrap">
+            <div class="ring" style="--p: 36;"></div>
+            <div class="ring-num">36%</div>
+          </div>
+        </div>
+        <svg class="sparkline" viewBox="0 0 100 32" preserveAspectRatio="none">
+          <polyline fill="none" stroke="var(--accent)" stroke-width="1.5" points="0,24 14,22 28,21 42,20 56,19 70,19 84,18 100,17"/>
+        </svg>
+        <div class="budget">budget &lt;= 50MB</div>
+      </div>
+
+    </div>
+
+    <!-- timeline + a11y -->
+    <div class="card timeline-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <div class="card-label" style="margin: 0;">Step timeline</div>
+        <div style="display: flex; gap: 6px;">
+          <span class="chip interactive" data-filter="all" data-active="true">All</span>
+          <span class="chip interactive" data-filter="fail">Failed</span>
+          <span class="chip interactive" data-filter="slow">Slow</span>
+        </div>
+      </div>
+
+      <div class="step pass" data-status="pass" data-duration="340">
+        <div class="step-dot"></div>
+        <div class="step-name"><code>navigate</code> → /</div>
+        <div class="step-kind">e2e</div>
+        <div class="step-time">340ms</div>
+      </div>
+      <div class="step pass" data-status="pass" data-duration="50">
+        <div class="step-dot"></div>
+        <div class="step-name">expect <code>h1</code> visible</div>
+        <div class="step-kind">e2e</div>
+        <div class="step-time">50ms</div>
+      </div>
+      <div class="step pass" data-status="pass" data-duration="120">
+        <div class="step-dot"></div>
+        <div class="step-name">click "Latest"</div>
+        <div class="step-kind">e2e</div>
+        <div class="step-time">120ms</div>
+      </div>
+      <div class="step pass" data-status="pass" data-duration="200">
+        <div class="step-dot"></div>
+        <div class="step-name">expect <code>article</code> visible</div>
+        <div class="step-kind">e2e</div>
+        <div class="step-time">200ms</div>
+      </div>
+      <div class="step pass" data-status="pass" data-duration="180">
+        <div class="step-dot"></div>
+        <div class="step-name">screenshot full-page</div>
+        <div class="step-kind">visual</div>
+        <div class="step-time">180ms</div>
+      </div>
+    </div>
+
+    <div class="card a11y-card">
+      <div class="card-label">Accessibility · 2 moderate</div>
+      <div class="a11y-list">
+        <div class="a11y-item">
+          <span class="severity-badge moderate">moderate</span>
+          <div>
+            <div class="a11y-rule">color-contrast</div>
+            <div class="a11y-loc">.footer-link · 3.9:1 (need 4.5:1)</div>
+          </div>
+        </div>
+        <div class="a11y-item">
+          <span class="severity-badge moderate">moderate</span>
+          <div>
+            <div class="a11y-rule">label</div>
+            <div class="a11y-loc">input[type=search] · missing &lt;label&gt;</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top: 14px; font-family: var(--font-mono); font-size: 11px; color: var(--fg-dim);">
+        floor: serious · 0 above floor
+      </div>
+    </div>
+
+    <!-- visual strip -->
+    <div class="card visual-card">
+      <div class="card-label">Visual · 1 snapshot · 0 diffs</div>
+      <div class="visual-strip">
+        <div class="visual-tile"><span class="visual-label">baseline</span><span>1440 × 900</span></div>
+        <div class="visual-tile"><span class="visual-label">current</span><span>1440 × 900</span></div>
+        <div class="visual-tile diff"><span class="visual-label">diff</span><span>0.00% delta</span></div>
+      </div>
+    </div>
+
+    <!-- coverage gaps -->
+    <div class="card coverage-card" style="border-color: var(--accent-soft);">
+      <div class="row">
+        <span class="label">Coverage</span>
+        <span class="text">Full coverage — every category ran with no logged gaps. axe-core loaded from CDN, perf observers attached, baseline captured.</span>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <span>ui-test · sample report · /Users/mostafa/.claude/skills/ui-test/examples/sample-report.html</span>
+    <span>Rate this run: <a href="#">/ui-test feedback</a></span>
+  </footer>
+
+</div>
+
+<script>
+  // step filter chips
+  const chips = document.querySelectorAll('.chip.interactive[data-filter]');
+  const steps = document.querySelectorAll('.step');
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      chips.forEach(c => c.dataset.active = 'false');
+      chip.dataset.active = 'true';
+      const f = chip.dataset.filter;
+      steps.forEach(s => {
+        const isFail = s.dataset.status === 'fail';
+        const isSlow = parseInt(s.dataset.duration, 10) > 250;
+        const show = f === 'all' || (f === 'fail' && isFail) || (f === 'slow' && isSlow);
+        s.classList.toggle('hidden', !show);
+      });
+    });
+  });
+  // step row expand (placeholder — full version expands to show console + network)
+  steps.forEach(s => s.addEventListener('click', () => s.classList.toggle('expanded')));
+</script>
+</body>
+</html>

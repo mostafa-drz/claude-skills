@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-07",
+  "updated": "2026-05-08",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -389,6 +389,21 @@
       ],
       "sideEffects": true,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/thread-to-action/SKILL.md"
+    },
+    {
+      "name": "ui-test",
+      "platform": "code",
+      "description": "Runs UI tests described in plain English by driving real Chrome via the Claude-in-Chrome extension. Covers end-to-end flows, visual checks (screenshot + optional baseline diff), accessibility (axe-core), performance (Web Vitals + light Lighthouse), and an interactive --debug mode that tails console + network. Per-run folder of artifacts plus a single-file 2026 HTML dashboard report (verdict-forward, bento-grid). Learns from per-run feedback.",
+      "trigger": "Verifying a UI flow, screenshotting regressions, auditing accessibility, profiling a page, or debugging something visibly broken in a real browser session.",
+      "tags": [
+        "testing",
+        "browser-automation",
+        "accessibility",
+        "performance",
+        "claude-in-chrome"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/ui-test/SKILL.md"
     },
     {
       "name": "whats-next",
