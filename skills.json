@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-08",
+  "updated": "2026-05-10",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -114,6 +114,20 @@
       ],
       "sideEffects": true,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/create-pr/SKILL.md"
+    },
+    {
+      "name": "docs-doctor",
+      "platform": "code",
+      "description": "Audits a repository's documentation for unused docs, wrong details, missing coverage, inaccurate data, broken structure, and writing best-practices. Generates a markdown report (HTML optional) with severity ratings.",
+      "trigger": "Want a 'docs doctor' pass on a repo before a release, after a refactor, or as a recurring DX health check.",
+      "tags": [
+        "docs",
+        "audit",
+        "developer-experience",
+        "quality"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/docs-doctor/SKILL.md"
     },
     {
       "name": "extract-skill",
@@ -404,6 +418,20 @@
       ],
       "sideEffects": true,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/ui-test/SKILL.md"
+    },
+    {
+      "name": "ux-interview",
+      "platform": "code",
+      "description": "Plays the role of a real user in an interview-style usability test. Drives real Chrome via the claude-in-chrome extension to explore the product think-aloud style — flagging confusion, friction, and delight, capturing GIFs/screenshots of friction moments, and producing a severity-ranked UX report.",
+      "trigger": "You want a real-user-perspective audit of a web product to catch UX/UI/product issues that automated tests can't catch.",
+      "tags": [
+        "ux",
+        "usability",
+        "browser-automation",
+        "research"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/ux-interview/SKILL.md"
     },
     {
       "name": "whats-next",

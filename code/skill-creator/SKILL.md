@@ -143,6 +143,7 @@ Every generated SKILL.md **must** satisfy these — no exceptions unless explici
 22. **Confirmation policy** — destructive-only by default; configurable to "every action" via preferences.
 23. **Pre-selection logic in `AskUserQuestion`** — bias the default option using `Learned` rules.
 24. **Configurability ≥ 3 knobs** — depth, verbosity, output format, source selection, confirmation policy. A skill with only 1 knob is under-specified.
+25. **Templates (`templates/<name>.md`)** — when a skill has a recurring "preset workflow" with parameterized inputs (e.g. `/publish-note --from-template=raw-idea "<idea>"`), expose it as a template file inside the skill directory. Each template is a YAML-frontmatter + markdown file declaring `inputs`, `tasks`, `constraints`, `tools`, `postProcesses`. The skill should support `--from-template=<name>` routing in addition to its standard flow. See `~/.claude/skills/publish-note/templates/raw-idea.md` for the canonical example. Templates are how a skill compresses an entire conversational workflow ("I want X, with these constraints, ending in Y") into a single command.
 
 ### When to skip the learning tier (12–20)
 
@@ -237,6 +238,54 @@ Propose:
 
 Confirm via `AskUserQuestion` or inline.
 
+## Step 5.5 — Templates (optional, ask once)
+
+Ask once via `AskUserQuestion`:
+
+> **Will this skill have parameterized preset workflows (templates)?**
+> - **Yes** — I expect users to invoke this with a recurring pattern of inputs/constraints (e.g. "raw idea → finished output with these tools and constraints"). Add `templates/<name>.md` directory + `--from-template=<name>` routing.
+> - **No** — single workflow only.
+> - **Maybe later** — leave the directory off; can be added later via `/skill-templates` (planned skill).
+
+If **Yes**:
+1. Create `~/.claude/skills/<skill-name>/templates/` directory.
+2. For each template the user names, scaffold `templates/<name>.md` with the canonical frontmatter:
+   ```markdown
+   ---
+   name: <template-name>
+   description: >-
+     <one-liner — what this template does, what it skips, what it adds>
+   inputs:
+     <input>:
+       type: string | list
+       required: true | false
+       default: <value>  # if not required
+   tasks: [<ordered list of step keywords>]
+   constraints: [<rules the run must respect>]
+   tools: [<preferred tools>]
+   postProcesses: [<actions after main work>]
+   ---
+
+   # Template: <name>
+
+   ## When to use
+   <trigger scenario>
+
+   ## Flow (default tasks)
+   1. **<task>** — <how to execute>
+   ...
+
+   ## Default constraints (why each one)
+   - **<constraint>** — <reason>
+
+   ## Examples (from prior runs)
+   - <date>: <what happened>
+   ```
+3. Add `templates` and `--from-template=<name>` routes to the skill's Command routing block.
+4. Add a `## Templates` section in the SKILL.md explaining the convention and how the skill loads/parses templates.
+
+Reference: `~/.claude/skills/publish-note/templates/raw-idea.md` is the canonical example.
+
 ## Step 6 — Generate the SKILL.md
 
 Assemble. Use the structure checklist below. Walk through it top to bottom — every box must be ticked or explicitly justified as "skip" with a Principles note.
@@ -269,6 +318,12 @@ Assemble. Use the structure checklist below. Walk through it top to bottom — e
 **Learning tier (when on)**
 - [ ] `## Feedback & learning` section with: `feedback` subcommand handler, journal append format with `Signal:`, **promotion rule** (3+ sessions), **drift correction** (2 contradictions → demote)
 - [ ] Pre-selection in domain `AskUserQuestion`s biased by `Learned` rules
+
+**Templates (when Step 5.5 = Yes)**
+- [ ] `templates/` directory exists with at least one scaffolded template
+- [ ] Each `templates/<name>.md` has the canonical frontmatter (`inputs`, `tasks`, `constraints`, `tools`, `postProcesses`)
+- [ ] `## Templates` section in SKILL.md documents loading + parsing
+- [ ] Command routing handles `templates` (list) and `--from-template=<name>` (run)
 
 **Closing**
 - [ ] `## Principles` — 5–8 rules. Always include: "Graceful degradation on missing learning state" and "Destructive actions still need confirmation" if any side effects
