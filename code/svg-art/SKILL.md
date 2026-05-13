@@ -193,21 +193,27 @@ If **what** is missing, ask ONE AskUserQuestion with 2-4 concrete options (subje
 
 ### Step 2 — Draft the visual system
 
-Before generating, commit to a *system* that will give the set coherence. Write out:
+Before generating, commit to a *system* AND an **axis of variation**. Variants are explorations of ONE idea along ONE parameter, not N independent concepts in parallel — the 2026-05-13 emotional-recap session promoted this. A set of 6 should be 6 doses of one concept (e.g. "heart visibility: full → faint → from-dots → with-axes → centroid → pulse-traced"), not 6 different concepts. Independent concepts feel like flailing; parametric variants feel like iterating.
+
+Write out:
 
 ```
 Visual system:
   Subject:        [interpretation of the brief]
+  Vocabulary:     [match the tool's semantic from preferences.md matrix — rank+halo / multi-state dots / vessel-mosaic / field+halo / vertical-dashes]
   Style:          [mode — e.g., line-icon minimal, 1.5px stroke]
   Canvas:         [WxH]
   Palette:        [monochrome / hex list / duotone relationship]
   Composition:    [3-5 rules — e.g., single focal point, 10% negative-space margin, stroke caps rounded]
-  Concepts (N):   [list of N distinct ideas that will become SVGs]
+  Axis of variation: [the ONE parameter the set explores — e.g. "container shape: cross / circle / heart / wheel"]
+  Concepts (N):   [N points along that axis; each gets a content-derived name]
 
 Reply 'go' to generate, or tweak any of the above.
 ```
 
-Wait for confirmation — this is the one gate. The system prevents the set from feeling like N unrelated drawings.
+**If you can't articulate a single axis of variation, the set isn't cohesive yet — go back to the brief.** A first pass exploring N parallel metaphors is acceptable to find the territory; the second pass MUST pick the territory and vary one parameter within it.
+
+Wait for confirmation — this is the one gate. The system + axis prevents the set from feeling like N unrelated drawings.
 
 ### Step 3 — Create the session folder
 
@@ -340,9 +346,10 @@ Full details in `reference/styles.md` (generate on first session if not present)
 ## Principles
 
 1. **SVG is code — write it directly** — no image API, no PNG round-trip. Paste-ready, edit-friendly.
-2. **A system, not a grab-bag** — commit to stroke weight, palette, and composition rules upfront; consistency across the set matters more than any single SVG being perfect.
+2. **System AND story, not a grab-bag** — commit to (a) a design system (stroke / palette / composition rules) and (b) **one axis of variation** along which the set explores. A set of 6 is 6 doses of one concept, not 6 concepts. Independent metaphors feel like AI flailing; parametric variants feel like designer iterating. If you can't name the axis in one sentence, the set isn't cohesive yet (2026-05-13 emotional-recap session promoted this).
 3. **`currentColor` is the default** — themeable for free; override only when duotone or brand-palette is explicit.
 4. **Small files, round numbers** — 1KB is the goal for icons; 12-decimal coords are a smell.
 5. **Learn quietly** — the feedback journal is the brain; after 3-5 sessions the bias should be visibly sharper without the user having to configure anything.
 6. **Warm, terse CLI tone** — one friendly line at start and end; no corporate filler, no emoji-heavy output.
 7. **Graceful degradation** — if a concept won't fit the style (e.g., "photorealistic portrait" in line-icon mode), say so upfront and propose an alternative rather than producing a weak SVG.
+8. **Iteration is a feature, not failure** — a v1 set that explores N parallel metaphors is acceptable as territory-finding. The v2 set must pick the territory and explore ONE axis within it. Plan for both passes when the brief is ambiguous.

@@ -130,6 +130,20 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/docs-doctor/SKILL.md"
     },
     {
+      "name": "emotional-recap",
+      "platform": "code",
+      "description": "Reviews recent Claude Code conversations from a wellbeing perspective — sentiment, tone, emotional arc, recurring patterns — and generates a supportive, science-grounded Markdown + HTML report. Uses recognised emotion frameworks (Plutchik, Ekman, Russell's circumplex, Pennebaker linguistic markers) and cites the science behind every observation.",
+      "trigger": "Wanting an emotional/wellbeing recap, mood check, sentiment review, or to understand ups and downs across recent work sessions.",
+      "tags": [
+        "wellbeing",
+        "sentiment",
+        "self-awareness",
+        "reflection"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/emotional-recap/SKILL.md"
+    },
+    {
       "name": "extract-skill",
       "platform": "code",
       "description": "Scans the current conversation for patterns worth turning into a reusable skill or memory rule — feedback, workflows, corrections, best practices. Classifies each candidate as skill (multi-step workflow) or memory (single rule), cross-checks against existing skills and MEMORY.md, then hands off to /skill-creator or writes the memory entry directly.",

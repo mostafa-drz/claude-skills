@@ -137,6 +137,52 @@ Every generated SKILL.md **must** satisfy these — no exceptions unless explici
 19. **Invite feedback line** at the end of the workflow: `Run /<skill> feedback — even one rating helps me sharpen defaults.`
 20. **Reset clears the lot** — `preferences.md`, `feedback-journal.md`, `sessions/`, any `resume-state.md`.
 
+### Required for skills that render UI (HTML, React, SVG, posters, dashboards, reports)
+
+26. **`DESIGN.md` is mandatory.** Any skill that generates user-facing UI — HTML reports, React components, SVG artefacts, Markdown with structured visuals, posters, slide decks — must include a `DESIGN.md` at the skill root. The DESIGN.md is the **renderer contract**: it specifies aesthetic direction, type system, colour tokens, layout, visualisation principles, anti-patterns to avoid, and accessibility guarantees. Renderers reach for `DESIGN.md` before generating any markup, and prefer its tokens over hard-coded values.
+27. **At runtime, the skill MUST `Read` `DESIGN.md` before rendering any UI** — and the workflow must explicitly cite it (e.g. "_Step N — Load `DESIGN.md`. Apply its tokens, type system, anti-patterns, and a11y contract to every emitted artefact._"). Treat missing DESIGN.md the same as missing preferences: degrade gracefully with built-in defaults, but never silently ignore it when present.
+28. **DESIGN.md sections (canonical structure)**:
+    ```markdown
+    # /<skill> design
+
+    ## Aesthetic direction
+    The committed point of view. References, tone, what this is NOT.
+
+    ## Type system
+    Display font + body font + mono font, with fallbacks. Scale, weights, letter-spacing.
+
+    ## Colour tokens
+    CSS custom properties. AA-compliant for any token used as text. Dark-mode mirrors.
+
+    ## Layout
+    Max widths, spatial moments, grid/asymmetry rules.
+
+    ## Visualisation principles
+    How charts encode data. Density binning, sparse-data fallback, redundancy beyond colour.
+
+    ## Anti-patterns to avoid
+    Project-specific don'ts, plus the universal slop list.
+
+    ## Renderer contract
+    Hard guarantees: ARIA on every SVG; contrast ≥4.5:1 for text; no color-only encoding; no
+    `title`-only tooltips; pre-computed colour-mix fallbacks; anonymisation rules; etc.
+
+    ## Component patterns
+    The reusable HTML/JSX/SVG snippets — each shown inline, using tokens not hex values.
+    ```
+29. **DESIGN.md vs preferences.md** — DESIGN.md is the **skill's** aesthetic contract (versioned in the skill, identical for every user). `preferences.md` is the **user's** runtime configuration (per-machine, edited freely). When they conflict, user preferences win for runtime knobs (e.g. tone, depth, framework); DESIGN.md wins for renderer guarantees (e.g. a11y contract, anti-patterns). Encode this priority in the workflow: load DESIGN.md, then preferences, and only let preferences override DESIGN.md tokens flagged as `user-tunable`.
+30. **Anti-pattern baseline.** Every UI-rendering skill must include the universal slop list in its DESIGN.md's "Anti-patterns" section (with `[[from skill-creator]]` link):
+    - Inter / Roboto / Arial as primary font choice — pick distinctive pairings
+    - Purple gradients on white
+    - Glassmorphism / backdrop-blur for decoration
+    - Hero metrics without scale legend
+    - Color-only encoding (must pair with shape/size/position/texture)
+    - Tooltips via `title=""` only (need focusable + visible alternatives)
+    - Nested cards (cards inside cards)
+    - Bounce / spring easing on serious / professional content
+    - `font-feature-settings: "ss01", "cv11"` applied to non-Inter fallback fonts (dead code)
+    - `-webkit-font-smoothing: antialiased` (harms low-vision users)
+
 ### Recommended (apply when relevant)
 
 21. **`resume-state.md` + `/<skill> resume`** — for any skill where the user can stop mid-flow.
@@ -238,6 +284,24 @@ Propose:
 
 Confirm via `AskUserQuestion` or inline.
 
+## Step 5.4 — DESIGN.md (ask if the skill renders UI)
+
+If Step 2 / 3 / 4 surfaced that the skill emits user-facing UI (HTML files, React components, SVG artefacts, slide decks, posters, structured-visual markdown), ask once via `AskUserQuestion`:
+
+> **This skill renders UI. Scaffold a `DESIGN.md` design contract?**
+> - **Yes — canonical structure** _(recommended)_ — adds `DESIGN.md` with the eight standard sections (aesthetic direction, type system, colour tokens, layout, visualisation principles, anti-patterns, renderer contract, component patterns). Workflow gets a "_Load DESIGN.md before rendering_" step. Renderer references tokens, not hex values.
+> - **Yes — minimal stub** — `DESIGN.md` is created with section headings only; user fills in.
+> - **No** — skip. (Acceptable only if the skill emits raw text / data, no styling decisions.)
+
+If Yes:
+1. Create `~/.claude/skills/<skill-name>/DESIGN.md` with the canonical structure (see manifest item 28 and the example at `~/.claude/skills/emotional-recap/DESIGN.md`).
+2. Add to the skill's `## Context` section: _On startup, use the `Read` tool to load `DESIGN.md`. Apply its tokens, type system, anti-patterns, and renderer contract to every emitted artefact. If missing, fall back to built-in defaults but flag once._
+3. Add a workflow step before the render step: `### Step N — Load DESIGN.md`.
+4. In the structure checklist (Step 6), tick the "DESIGN.md loaded before any render" box.
+5. Seed the **Anti-patterns** section with the universal slop list from manifest item 30.
+
+DESIGN.md is the skill's **renderer contract**: aesthetic + accessibility + token guarantees, versioned in the skill repo. It is distinct from `preferences.md` (which is per-user runtime configuration). When they conflict, DESIGN.md wins for renderer guarantees (a11y, anti-patterns); preferences wins for user-tunable knobs (tone, depth, framework choice).
+
 ## Step 5.5 — Templates (optional, ask once)
 
 Ask once via `AskUserQuestion`:
@@ -318,6 +382,14 @@ Assemble. Use the structure checklist below. Walk through it top to bottom — e
 **Learning tier (when on)**
 - [ ] `## Feedback & learning` section with: `feedback` subcommand handler, journal append format with `Signal:`, **promotion rule** (3+ sessions), **drift correction** (2 contradictions → demote)
 - [ ] Pre-selection in domain `AskUserQuestion`s biased by `Learned` rules
+
+**DESIGN.md (when Step 5.4 = Yes — i.e. skill renders UI)**
+- [ ] `DESIGN.md` exists at skill root with the 8 canonical sections (aesthetic / type / colour / layout / visualisation / anti-patterns / renderer contract / component patterns)
+- [ ] Anti-patterns section seeded with the universal slop list (manifest item 30)
+- [ ] Renderer contract section enumerates: ARIA on every SVG, contrast ≥4.5:1 for text, no color-only encoding, no `title`-only tooltips, pre-computed color-mix fallbacks, anonymisation rules (if user content is rendered)
+- [ ] `## Context` of SKILL.md instructs runtime to `Read` DESIGN.md before any render
+- [ ] At least one workflow step explicitly references DESIGN.md tokens ("apply tokens from DESIGN.md")
+- [ ] Renderer / report-structure references DESIGN.md tokens rather than hard-coded hex values
 
 **Templates (when Step 5.5 = Yes)**
 - [ ] `templates/` directory exists with at least one scaffolded template

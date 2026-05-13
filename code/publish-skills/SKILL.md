@@ -146,7 +146,8 @@ Also note if the skill has `reference/` or `examples/` directories.
 **Compare with published repo** to detect changes:
 ```bash
 # For each local skill, diff against published version
-diff ~/.claude/skills/{skill-name}/SKILL.md {repo-path}/skills/{skill-name}/SKILL.md
+# (this repo uses code/ as the skill directory, not skills/)
+diff ~/.claude/skills/{skill-name}/SKILL.md {repo-path}/code/{skill-name}/SKILL.md
 ```
 
 Categorize each skill:
@@ -217,26 +218,50 @@ Only copy the skills the user approved:
 
 **For each approved skill:**
 ```bash
-# Create skill dir in repo
-mkdir -p {repo-path}/skills/{skill-name}
+# Create skill dir in repo (this repo uses code/, not skills/)
+mkdir -p {repo-path}/code/{skill-name}
 
-# Copy SKILL.md
-cp ~/.claude/skills/{skill-name}/SKILL.md {repo-path}/skills/{skill-name}/
+# Copy SKILL.md (always)
+cp ~/.claude/skills/{skill-name}/SKILL.md {repo-path}/code/{skill-name}/
+
+# Copy DESIGN.md if exists (renderer contract for UI-rendering skills —
+# convention added by skill-creator manifest items 26-30, 2026-05-13)
+if [ -f ~/.claude/skills/{skill-name}/DESIGN.md ]; then
+  cp ~/.claude/skills/{skill-name}/DESIGN.md {repo-path}/code/{skill-name}/
+fi
+
+# Copy icon if exists (icon.svg or icon.png at the skill root)
+for ext in svg png; do
+  if [ -f ~/.claude/skills/{skill-name}/icon.$ext ]; then
+    cp ~/.claude/skills/{skill-name}/icon.$ext {repo-path}/code/{skill-name}/
+  fi
+done
 
 # Copy reference/ if exists
 if [ -d ~/.claude/skills/{skill-name}/reference ]; then
-  cp -r ~/.claude/skills/{skill-name}/reference {repo-path}/skills/{skill-name}/
+  cp -r ~/.claude/skills/{skill-name}/reference {repo-path}/code/{skill-name}/
 fi
 
 # Copy examples/ if exists
 if [ -d ~/.claude/skills/{skill-name}/examples ]; then
-  cp -r ~/.claude/skills/{skill-name}/examples {repo-path}/skills/{skill-name}/
+  cp -r ~/.claude/skills/{skill-name}/examples {repo-path}/code/{skill-name}/
+fi
+
+# Copy templates/ if exists (skill-creator manifest item 25)
+if [ -d ~/.claude/skills/{skill-name}/templates ]; then
+  cp -r ~/.claude/skills/{skill-name}/templates {repo-path}/code/{skill-name}/
 fi
 ```
 
+**Never copy** these (user-specific or runtime artefacts, must stay local):
+- `preferences.md` · `feedback-journal.md` · `anonymise.deny`
+- `reports/` · `sessions/` · `resume-state.md` · `last-audit.md`
+
+These are also `.gitignore`'d in the publish repo as defense-in-depth.
+
 **For each approved removal:**
 ```bash
-rm -rf {repo-path}/skills/{skill-name}
+rm -rf {repo-path}/code/{skill-name}
 ```
 
 **Copy SKILLS_GUIDE.md** (if changed and user approved):

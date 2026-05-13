@@ -3,3 +3,9 @@ last-audit.md
 feedback-journal.md
 .DS_Store
 .claude/
+
+# Skill runtime artefacts — user-specific, never publish
+anonymise.deny
+reports/
+sessions/
+resume-state.md
