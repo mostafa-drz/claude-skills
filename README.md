@@ -2,6 +2,8 @@
 
 Personal collection of Claude Code skills for developer workflows.
 
+> 🤖 **Automation**: a new Claude Desktop skill is added here every morning by the [Daily Skill Factory](./automation/README.md) — a routine running on Claude infrastructure that researches one workflow, builds the skill, and opens a PR for review.
+
 ## Quick Start
 
 To use these skills, copy them to your `~/.claude/skills/` directory:
