@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 24 24"
+     fill="none"
+     stroke="currentColor"
+     stroke-width="1.5"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+  <title>Meeting prep — calendar grid with next event highlighted and briefing notes</title>
+  <!-- Calendar body -->
+  <rect x="2" y="3" width="20" height="18" rx="2"/>
+  <!-- Binding pins (calendar rings) -->
+  <line x1="7" y1="1" x2="7" y2="5"/>
+  <line x1="17" y1="1" x2="17" y2="5"/>
+  <!-- Month header separator -->
+  <line x1="2" y1="8" x2="22" y2="8"/>
+  <!-- Column dividers — light grid -->
+  <line x1="9.5" y1="8" x2="9.5" y2="21" stroke-width="0.75" opacity="0.3"/>
+  <line x1="16.5" y1="8" x2="16.5" y2="21" stroke-width="0.75" opacity="0.3"/>
+  <!-- Row divider — splits upper and lower event rows -->
+  <line x1="2" y1="14.5" x2="22" y2="14.5" stroke-width="0.75" opacity="0.3"/>
+  <!-- Next meeting — accent dot on the "now" cell (top-left of grid) -->
+  <circle cx="5.75" cy="11.25" r="1.75" fill="#ff5722" stroke="none"/>
+  <!-- Briefing notes — two short lines in lower-right cell (context ready) -->
+  <line x1="18" y1="16.75" x2="21" y2="16.75" stroke-width="0.75" opacity="0.6"/>
+  <line x1="18" y1="18.75" x2="20.5" y2="18.75" stroke-width="0.75" opacity="0.4"/>
+</svg>

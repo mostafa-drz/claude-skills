@@ -7,3 +7,4 @@ Schema and semantics: see [`daily-skill-routine.md` §8](./daily-skill-routine.m
 | date       | skill_slug | skills_pr | status | note_pr | notes |
 |------------|------------|-----------|--------|---------|-------|
 <!-- routine appends rows below this line -->
+| 2026-05-15 | desktop/meeting-prep | <!-- PR_URL --> | open | | First run. support.claude.com URLs returned 403 (not all three down); Phase B proceeded with platform docs. |

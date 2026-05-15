@@ -489,6 +489,22 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/inbox-catchup/SKILL.md"
     },
     {
+      "name": "meeting-prep",
+      "platform": "desktop",
+      "description": "Retrieves the next upcoming meeting from Google Calendar, pulls related Drive documents and recent Gmail threads from attendees, and delivers a focused briefing so you walk in prepared.",
+      "trigger": "About to join a call, asking 'prep me for my 3pm', 'brief me before [meeting name]', or any request to surface context before a scheduled event.",
+      "tags": [
+        "calendar",
+        "gmail",
+        "drive",
+        "meetings",
+        "productivity"
+      ],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/meeting-prep/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/meeting-prep/icon.svg"
+    },
+    {
       "name": "research-assistant",
       "platform": "desktop",
       "description": "Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary.",
