@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1",
+  "meta": {
+    "title": "Example Audit — Sample App",
+    "date": "2026-05-15",
+    "tester": "Mostafa",
+    "surface": "/dashboard",
+    "branch": "feat/example",
+    "scopeIncluded": ["main dashboard view", "filters", "row drawer"],
+    "scopeExcluded": ["downloads", "admin settings"]
+  },
+  "findings": [
+    {
+      "id": "B1",
+      "severity": "critical",
+      "category": "bug",
+      "title": "Bulk Delete has no confirmation modal",
+      "where": "Toolbar > Delete button when rows selected",
+      "symptom": "Click Delete → items immediately destroyed, no 'Are you sure?'.",
+      "impact": "Data loss in one click; misclick risk near the X button.",
+      "repro": "Select 3 rows → click Delete → notice they vanish without prompt.",
+      "triage": "Wire into a confirmation modal using the existing Dialog primitive."
+    },
+    {
+      "id": "U1",
+      "severity": "low",
+      "category": "ux",
+      "title": "Filter pills have near-invisible active state",
+      "where": "Top filter bar (Pending / All)",
+      "symptom": "Active pill is white-on-light; both options look identical.",
+      "impact": "Reader can't tell which filter is active without checking URL.",
+      "repro": "Toggle between Pending and All — notice the pill barely changes.",
+      "triage": "Stronger contrast on active (border or filled color)."
+    },
+    {
+      "id": "C1",
+      "severity": "info",
+      "category": "console",
+      "title": "Console warns: Missing aria-describedby on Dialog",
+      "where": "Every modal using shadcn Dialog",
+      "symptom": "Console: `Warning: Missing 'Description' or 'aria-describedby={undefined}'`",
+      "impact": "Screen readers won't announce dialog purpose properly.",
+      "repro": "Open any modal → check console.",
+      "triage": "Add <DialogDescription>, or explicitly set aria-describedby={undefined}."
+    }
+  ],
+  "positives": [
+    "Deep linking works cleanly via URL params",
+    "Drawer Escape/X/overlay-close all consistent"
+  ],
+  "notes": [
+    "Side effect: 3 example items added then deleted during testing."
+  ]
+}

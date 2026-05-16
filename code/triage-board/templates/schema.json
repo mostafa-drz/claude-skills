@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.local/triage-board.schema.json",
+  "title": "Beginner-Mind Test Report",
+  "description": "Structured record of UX/QA findings from a manual exploration session. The report itself is immutable — tracking state (status, comments) is overlaid by the viewer via localStorage so the source-of-truth findings don't drift across reviewers.",
+  "type": "object",
+  "required": ["meta", "findings"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1",
+      "description": "Schema major version. Bump when breaking changes to the shape land."
+    },
+    "meta": { "$ref": "#/$defs/Meta" },
+    "findings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Finding" },
+      "minItems": 0
+    },
+    "positives": {
+      "type": "array",
+      "description": "Things observed to work well. Kept short — anchors morale and signals what NOT to regress.",
+      "items": { "type": "string" }
+    },
+    "notes": {
+      "type": "array",
+      "description": "Side effects of testing (data destroyed, accounts created, etc.) the reader should know about.",
+      "items": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "Meta": {
+      "type": "object",
+      "required": ["title", "date", "surface"],
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string", "description": "Short report title shown in the viewer header." },
+        "date": { "type": "string", "format": "date", "description": "ISO date the session ran." },
+        "tester": { "type": "string", "description": "Who ran the session." },
+        "surface": { "type": "string", "description": "Product surface tested (e.g. URL path, feature name)." },
+        "branch": { "type": "string", "description": "Git branch / commit reviewed, when relevant." },
+        "scopeIncluded": { "type": "array", "items": { "type": "string" } },
+        "scopeExcluded": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "Finding": {
+      "type": "object",
+      "required": ["id", "severity", "category", "title"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z]+[0-9]+$",
+          "description": "Stable identifier scoped to the report. Convention: B# for bugs, U# for UX gaps, C# for console/perf/a11y."
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["critical", "high", "medium", "low", "info"]
+        },
+        "category": {
+          "type": "string",
+          "enum": ["bug", "ux", "accessibility", "content", "performance", "console"]
+        },
+        "title": { "type": "string", "description": "One-line summary." },
+        "where": { "type": "string", "description": "Specific surface/component/file." },
+        "symptom": { "type": "string", "description": "What the tester saw." },
+        "impact": { "type": "string", "description": "Why it matters to a user." },
+        "repro": { "type": "string", "description": "Step-by-step to reproduce." },
+        "triage": { "type": "string", "description": "Suggested fix direction. Not prescriptive." },
+        "ticket": {
+          "type": "string",
+          "description": "Optional Linear/GitHub issue ref (e.g. AIS-2060, #977)."
+        }
+      }
+    }
+  }
+}

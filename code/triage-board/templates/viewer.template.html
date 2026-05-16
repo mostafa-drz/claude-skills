@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Triage Board</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+  :root {
+    --bg: #fafbfc;
+    --surface: #ffffff;
+    --text: #0f172a;
+    --text-muted: #475569;
+    --text-faint: #94a3b8;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+
+    --critical-bg: #fef2f2; --critical-fg: #b91c1c; --critical-bd: #fecaca;
+    --high-bg:     #fff7ed; --high-fg:     #c2410c; --high-bd:     #fed7aa;
+    --medium-bg:   #fefce8; --medium-fg:   #a16207; --medium-bd:   #fde68a;
+    --low-bg:      #eff6ff; --low-fg:      #1d4ed8; --low-bd:      #bfdbfe;
+    --info-bg:     #f1f5f9; --info-fg:     #475569; --info-bd:     #cbd5e1;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font: 14px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+  }
+  button {
+    font: inherit; cursor: pointer;
+    border: 1px solid var(--border); background: var(--surface); color: var(--text);
+    border-radius: 8px; padding: 6px 10px;
+    transition: background 120ms, border-color 120ms;
+  }
+  button:hover { border-color: var(--border-strong); }
+
+  header.report-header {
+    background-image:
+      linear-gradient(to bottom, rgba(255,255,255,0.7) 60%, rgba(255,255,255,0) 100%),
+      linear-gradient(to right, rgba(197,214,255,0.45) 0%, rgba(255,200,237,0.35) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 32px 18px;
+  }
+  .header-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+  }
+  .header-left { min-width: 0; flex: 1; }
+  .report-title { font-size: 20px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .report-sub { color: var(--text-muted); font-size: 13px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .report-sub b { color: var(--text); font-weight: 600; }
+
+  .header-actions {
+    display: flex; gap: 6px; align-items: center; flex-shrink: 0;
+  }
+  .header-actions .download-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .header-actions .download-btn:hover {
+    background: white;
+    border-color: var(--text-muted);
+  }
+  .header-actions .ext {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .stats { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .stat-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 9999px;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text-muted); font-size: 12px;
+  }
+  .stat-pill .count { font-weight: 600; color: var(--text); min-width: 18px; text-align: right; }
+  .stat-pill .dot { width: 8px; height: 8px; border-radius: 9999px; background: var(--text-faint); }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 18px 24px 64px; }
+
+  .filter-bar {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    padding: 12px 16px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    margin-bottom: 16px;
+    position: sticky; top: 8px; z-index: 5;
+  }
+  .filter-bar .label { font-size: 12px; color: var(--text-muted); margin-right: 4px; }
+  .filter-bar select, .filter-bar input[type="text"] {
+    font: inherit; border: 1px solid var(--border); background: var(--surface);
+    border-radius: 8px; padding: 6px 10px; color: var(--text);
+  }
+  .filter-bar input[type="text"] { width: 240px; flex: 1; min-width: 180px; }
+  .filter-bar .spacer { flex: 1; }
+  .filter-bar .reset { color: var(--text-muted); font-size: 12px; }
+
+  .findings { display: flex; flex-direction: column; gap: 12px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden; transition: border-color 120ms;
+  }
+  .card:hover { border-color: var(--border-strong); }
+  .card[data-severity="critical"] { border-left: 4px solid var(--critical-fg); }
+  .card[data-severity="high"]     { border-left: 4px solid var(--high-fg); }
+  .card[data-severity="medium"]   { border-left: 4px solid var(--medium-fg); }
+  .card[data-severity="low"]      { border-left: 4px solid var(--low-fg); }
+  .card[data-severity="info"]     { border-left: 4px solid var(--info-fg); }
+
+  .card-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px; cursor: pointer; user-select: none;
+  }
+  .card-head:hover { background: rgba(0,0,0,0.015); }
+
+  .severity-chip {
+    display: inline-flex; align-items: center;
+    padding: 2px 8px; border-radius: 6px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase;
+    border: 1px solid var(--info-bd); background: var(--info-bg); color: var(--info-fg);
+  }
+  .severity-chip.sev-critical { background: var(--critical-bg); color: var(--critical-fg); border-color: var(--critical-bd); }
+  .severity-chip.sev-high     { background: var(--high-bg);     color: var(--high-fg);     border-color: var(--high-bd); }
+  .severity-chip.sev-medium   { background: var(--medium-bg);   color: var(--medium-fg);   border-color: var(--medium-bd); }
+  .severity-chip.sev-low      { background: var(--low-bg);      color: var(--low-fg);      border-color: var(--low-bd); }
+  .severity-chip.sev-info     { background: var(--info-bg);     color: var(--info-fg);     border-color: var(--info-bd); }
+
+  .id-chip, .category-chip {
+    font-size: 11px; color: var(--text-muted);
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 2px 8px;
+  }
+  .id-chip { font-family: ui-monospace, "SF Mono", Menlo, monospace; padding: 2px 6px; }
+  .card-title { flex: 1; font-weight: 600; color: var(--text); }
+  .caret { font-size: 12px; color: var(--text-faint); transition: transform 150ms; margin-left: 4px; }
+  .card.is-open .caret { transform: rotate(90deg); }
+
+  .card-body { display: none; padding: 0 16px 14px 38px; border-top: 1px solid var(--border); }
+  .card.is-open .card-body { display: block; }
+
+  .field { margin-top: 10px; }
+  .field-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-faint); margin-bottom: 2px; font-weight: 600; }
+  .field-value { color: var(--text); white-space: pre-wrap; }
+
+  .card-actions {
+    display: flex; gap: 8px; align-items: center;
+    margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border);
+  }
+  .copy-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px; padding: 5px 10px;
+    cursor: pointer;
+  }
+  .copy-btn:hover { background: var(--bg); border-color: var(--text-muted); }
+  .copy-btn.copied { background: #f0fdf4; border-color: #86efac; color: #15803d; }
+  .copy-btn .icon { font-size: 13px; }
+
+  .positives, .notes-block {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; margin-top: 20px;
+  }
+  .positives h3, .notes-block h3 {
+    margin: 0 0 8px; font-size: 13px; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--text-faint);
+  }
+  .positives ul, .notes-block ul { margin: 0; padding-left: 18px; color: var(--text); }
+  .positives li, .notes-block li { margin-bottom: 4px; }
+
+  .empty {
+    text-align: center; color: var(--text-faint);
+    padding: 40px 20px; border: 1px dashed var(--border); border-radius: 12px;
+  }
+</style>
+</head>
+<body>
+
+<header class="report-header">
+  <div class="header-top">
+    <div class="header-left">
+      <h1 class="report-title" id="meta-title">Triage Board</h1>
+      <div class="report-sub" id="meta-sub"></div>
+    </div>
+    <div class="header-actions">
+      <button class="download-btn" id="dl-md" title="Download as Markdown">
+        <span class="icon">↓</span><span class="ext">MD</span>
+      </button>
+      <button class="download-btn" id="dl-csv" title="Download as CSV (spreadsheet-ready)">
+        <span class="icon">↓</span><span class="ext">CSV</span>
+      </button>
+      <button class="download-btn" id="dl-json" title="Download as JSON (schema-conformant)">
+        <span class="icon">↓</span><span class="ext">JSON</span>
+      </button>
+    </div>
+  </div>
+  <div class="stats" id="stats"></div>
+</header>
+
+<main>
+  <div class="filter-bar">
+    <span class="label">Severity</span>
+    <select id="filter-severity">
+      <option value="">all</option>
+      <option value="critical">critical</option>
+      <option value="high">high</option>
+      <option value="medium">medium</option>
+      <option value="low">low</option>
+      <option value="info">info</option>
+    </select>
+    <span class="label">Category</span>
+    <select id="filter-category">
+      <option value="">all</option>
+      <option value="bug">bug</option>
+      <option value="ux">ux</option>
+      <option value="content">content</option>
+      <option value="accessibility">accessibility</option>
+      <option value="performance">performance</option>
+      <option value="console">console</option>
+    </select>
+    <input type="text" id="filter-search" placeholder="Search title / id / details…" />
+    <span class="spacer"></span>
+    <button id="reset-filters" class="reset">Reset filters</button>
+  </div>
+
+  <div class="findings" id="findings"></div>
+
+  <div class="positives" id="positives-block" style="display:none">
+    <h3>What worked well</h3>
+    <ul id="positives-list"></ul>
+  </div>
+
+  <div class="notes-block" id="notes-block" style="display:none">
+    <h3>Notes / side effects</h3>
+    <ul id="notes-list"></ul>
+  </div>
+</main>
+
+<script>
+const REPORT = /*REPORT_JSON_START*/{
+  "schemaVersion": "1",
+  "meta": { "title": "Triage Board", "date": "1970-01-01", "surface": "" },
+  "findings": [],
+  "positives": [],
+  "notes": []
+}/*REPORT_JSON_END*/;
+
+const filters = { severity: "", category: "", q: "" };
+const expanded = new Set();
+
+function escapeHtml(s) {
+  if (s == null) return "";
+  return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function severityRank(s) {
+  return { critical: 0, high: 1, medium: 2, low: 3, info: 4 }[s] ?? 5;
+}
+
+function renderHeader() {
+  document.title = REPORT.meta.title || "Triage Board";
+  document.getElementById("meta-title").textContent = REPORT.meta.title || "";
+  const bits = [];
+  if (REPORT.meta.date) bits.push(`<span><b>${REPORT.meta.date}</b></span>`);
+  if (REPORT.meta.tester) bits.push(`<span>by <b>${escapeHtml(REPORT.meta.tester)}</b></span>`);
+  if (REPORT.meta.surface) bits.push(`<span>surface: <b>${escapeHtml(REPORT.meta.surface)}</b></span>`);
+  if (REPORT.meta.branch) bits.push(`<span>branch: <b>${escapeHtml(REPORT.meta.branch)}</b></span>`);
+  document.getElementById("meta-sub").innerHTML = bits.join("");
+}
+
+function renderStats() {
+  const sev = { critical: 0, high: 0, medium: 0, low: 0, info: 0 };
+  for (const f of REPORT.findings) sev[f.severity] = (sev[f.severity] || 0) + 1;
+  document.getElementById("stats").innerHTML = `
+    <span class="stat-pill"><span class="dot" style="background:var(--critical-fg)"></span>critical <span class="count">${sev.critical}</span></span>
+    <span class="stat-pill"><span class="dot" style="background:var(--high-fg)"></span>high <span class="count">${sev.high}</span></span>
+    <span class="stat-pill"><span class="dot" style="background:var(--medium-fg)"></span>medium <span class="count">${sev.medium}</span></span>
+    <span class="stat-pill"><span class="dot" style="background:var(--low-fg)"></span>low <span class="count">${sev.low}</span></span>
+    <span class="stat-pill"><span class="dot" style="background:var(--info-fg)"></span>info <span class="count">${sev.info}</span></span>
+    <span class="stat-pill" style="margin-left:6px">total <span class="count">${REPORT.findings.length}</span></span>
+  `;
+}
+
+function matchesFilter(f) {
+  if (filters.severity && f.severity !== filters.severity) return false;
+  if (filters.category && f.category !== filters.category) return false;
+  if (filters.q) {
+    const q = filters.q.toLowerCase();
+    const hay = [f.id, f.title, f.where, f.symptom, f.impact, f.repro, f.triage].join(" ").toLowerCase();
+    if (!hay.includes(q)) return false;
+  }
+  return true;
+}
+
+function renderFindings() {
+  const root = document.getElementById("findings");
+  const visible = REPORT.findings
+    .filter(matchesFilter)
+    .sort((a, b) => severityRank(a.severity) - severityRank(b.severity));
+  if (!visible.length) { root.innerHTML = `<div class="empty">No findings match the current filters.</div>`; return; }
+  root.innerHTML = visible.map(renderCard).join("");
+  for (const f of visible) wireCard(f);
+}
+
+function renderCard(f) {
+  const openClass = expanded.has(f.id) ? "is-open" : "";
+  return `
+    <article class="card ${openClass}" data-id="${f.id}" data-severity="${f.severity}">
+      <header class="card-head" data-toggle="${f.id}">
+        <span class="severity-chip sev-${f.severity}">${f.severity}</span>
+        <span class="id-chip">${f.id}</span>
+        <span class="category-chip">${f.category}</span>
+        <span class="card-title">${escapeHtml(f.title)}</span>
+        <span class="caret">▶</span>
+      </header>
+      <div class="card-body">
+        ${field("Where", f.where)}
+        ${field("Symptom", f.symptom)}
+        ${field("Impact", f.impact)}
+        ${field("Repro", f.repro)}
+        ${field("Triage", f.triage)}
+        <div class="card-actions">
+          <button class="copy-btn" data-copy="${f.id}">
+            <span class="icon">⧉</span>Copy as Markdown
+          </button>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function field(label, value) {
+  if (!value) return "";
+  return `<div class="field"><div class="field-label">${label}</div><div class="field-value">${escapeHtml(value)}</div></div>`;
+}
+
+function wireCard(f) {
+  const card = document.querySelector(`.card[data-id="${f.id}"]`);
+  if (!card) return;
+  card.querySelector("[data-toggle]").addEventListener("click", () => {
+    if (expanded.has(f.id)) expanded.delete(f.id); else expanded.add(f.id);
+    card.classList.toggle("is-open");
+  });
+  const copyBtn = card.querySelector(`[data-copy="${f.id}"]`);
+  copyBtn.addEventListener("click", async () => {
+    const md = findingToMarkdown(f);
+    try {
+      await navigator.clipboard.writeText(md);
+      copyBtn.classList.add("copied");
+      copyBtn.innerHTML = '<span class="icon">✓</span>Copied!';
+      setTimeout(() => {
+        copyBtn.classList.remove("copied");
+        copyBtn.innerHTML = '<span class="icon">⧉</span>Copy as Markdown';
+      }, 1600);
+    } catch {
+      // Fallback: select + execCommand
+      const ta = document.createElement("textarea");
+      ta.value = md; document.body.appendChild(ta);
+      ta.select(); document.execCommand("copy");
+      document.body.removeChild(ta);
+      copyBtn.classList.add("copied");
+      copyBtn.innerHTML = '<span class="icon">✓</span>Copied!';
+      setTimeout(() => {
+        copyBtn.classList.remove("copied");
+        copyBtn.innerHTML = '<span class="icon">⧉</span>Copy as Markdown';
+      }, 1600);
+    }
+  });
+}
+
+function findingToMarkdown(f) {
+  const lines = [];
+  lines.push(`## [${f.id}] ${f.title}`);
+  lines.push("");
+  lines.push(`**Severity:** \`${f.severity}\` · **Category:** \`${f.category}\``);
+  lines.push("");
+  if (f.where)   { lines.push(`**Where**`); lines.push(""); lines.push(f.where); lines.push(""); }
+  if (f.symptom) { lines.push(`**Symptom**`); lines.push(""); lines.push(f.symptom); lines.push(""); }
+  if (f.impact)  { lines.push(`**Impact**`); lines.push(""); lines.push(f.impact); lines.push(""); }
+  if (f.repro)   { lines.push(`**Repro**`); lines.push(""); lines.push(f.repro); lines.push(""); }
+  if (f.triage)  { lines.push(`**Triage**`); lines.push(""); lines.push(f.triage); lines.push(""); }
+  const src = [REPORT.meta.title, REPORT.meta.date].filter(Boolean).join(" · ");
+  if (src) { lines.push(`---`); lines.push(`_From: ${src}${REPORT.meta.surface ? ` · ${REPORT.meta.surface}` : ""}_`); }
+  return lines.join("\n");
+}
+
+function reportToMarkdown() {
+  const lines = [];
+  lines.push(`# ${REPORT.meta.title || "Triage Board"}`);
+  lines.push("");
+  const metaBits = [];
+  if (REPORT.meta.date) metaBits.push(`**Date:** ${REPORT.meta.date}`);
+  if (REPORT.meta.tester) metaBits.push(`**Tester:** ${REPORT.meta.tester}`);
+  if (REPORT.meta.surface) metaBits.push(`**Surface:** \`${REPORT.meta.surface}\``);
+  if (REPORT.meta.branch) metaBits.push(`**Branch:** \`${REPORT.meta.branch}\``);
+  if (metaBits.length) { lines.push(metaBits.join("  \n")); lines.push(""); }
+
+  const tiers = [
+    ["critical", "🚨 Critical"],
+    ["high", "High"],
+    ["medium", "Medium"],
+    ["low", "Low"],
+    ["info", "Info"],
+  ];
+  const sorted = [...REPORT.findings].sort((a, b) => severityRank(a.severity) - severityRank(b.severity));
+  for (const [sev, label] of tiers) {
+    const group = sorted.filter(f => f.severity === sev);
+    if (!group.length) continue;
+    lines.push(`## ${label}`); lines.push("");
+    for (const f of group) {
+      lines.push(`### [${f.id}] ${f.title}`);
+      lines.push("");
+      lines.push(`**Category:** \`${f.category}\``);
+      lines.push("");
+      if (f.where)   { lines.push(`**Where:** ${f.where}`); }
+      if (f.symptom) { lines.push(`**Symptom:** ${f.symptom}`); }
+      if (f.impact)  { lines.push(`**Impact:** ${f.impact}`); }
+      if (f.repro)   { lines.push(`**Repro:** ${f.repro}`); }
+      if (f.triage)  { lines.push(`**Triage:** ${f.triage}`); }
+      lines.push("");
+    }
+  }
+
+  if (REPORT.positives?.length) {
+    lines.push(`## What worked well`); lines.push("");
+    for (const p of REPORT.positives) lines.push(`- ${p}`);
+    lines.push("");
+  }
+  if (REPORT.notes?.length) {
+    lines.push(`## Notes / side effects`); lines.push("");
+    for (const n of REPORT.notes) lines.push(`- ${n}`);
+    lines.push("");
+  }
+  return lines.join("\n");
+}
+
+function csvEscape(v) {
+  if (v == null) return "";
+  const s = String(v);
+  return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+function reportToCsv() {
+  const headers = ["id", "severity", "category", "title", "where", "symptom", "impact", "repro", "triage"];
+  const rows = [headers.join(",")];
+  for (const f of REPORT.findings) {
+    rows.push([
+      f.id, f.severity, f.category, f.title,
+      f.where || "", f.symptom || "", f.impact || "", f.repro || "", f.triage || "",
+    ].map(csvEscape).join(","));
+  }
+  return rows.join("\n");
+}
+
+function downloadBlob(text, mime, filename) {
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function renderPositives() {
+  const block = document.getElementById("positives-block");
+  if (!REPORT.positives?.length) { block.style.display = "none"; return; }
+  block.style.display = "";
+  document.getElementById("positives-list").innerHTML = REPORT.positives.map(p => `<li>${escapeHtml(p)}</li>`).join("");
+}
+function renderNotes() {
+  const block = document.getElementById("notes-block");
+  if (!REPORT.notes?.length) { block.style.display = "none"; return; }
+  block.style.display = "";
+  document.getElementById("notes-list").innerHTML = REPORT.notes.map(n => `<li>${escapeHtml(n)}</li>`).join("");
+}
+
+function render() {
+  renderHeader();
+  renderStats();
+  renderFindings();
+  renderPositives();
+  renderNotes();
+}
+
+document.getElementById("filter-severity").addEventListener("change", (e) => { filters.severity = e.target.value; render(); });
+document.getElementById("filter-category").addEventListener("change", (e) => { filters.category = e.target.value; render(); });
+document.getElementById("filter-search").addEventListener("input", (e) => { filters.q = e.target.value; render(); });
+document.getElementById("reset-filters").addEventListener("click", () => {
+  Object.assign(filters, { severity: "", category: "", q: "" });
+  document.getElementById("filter-severity").value = "";
+  document.getElementById("filter-category").value = "";
+  document.getElementById("filter-search").value = "";
+  render();
+});
+
+const slug = (REPORT.meta.date || "report").replace(/[^a-z0-9-]/gi, "-");
+document.getElementById("dl-md").addEventListener("click", () => {
+  downloadBlob(reportToMarkdown(), "text/markdown;charset=utf-8", `report-${slug}.md`);
+});
+document.getElementById("dl-csv").addEventListener("click", () => {
+  downloadBlob(reportToCsv(), "text/csv;charset=utf-8", `report-${slug}.csv`);
+});
+document.getElementById("dl-json").addEventListener("click", () => {
+  downloadBlob(JSON.stringify(REPORT, null, 2), "application/json;charset=utf-8", `report-${slug}.json`);
+});
+
+render();
+</script>
+
+</body>
+</html>

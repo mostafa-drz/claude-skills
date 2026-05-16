@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-10",
+  "updated": "2026-05-16",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -42,6 +42,23 @@
       ],
       "sideEffects": true,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/audit-skills/SKILL.md"
+    },
+    {
+      "name": "audit-ui-e2e",
+      "platform": "code",
+      "description": "Runs a beginner-mind end-to-end UI audit of any running app — local dev server, staging, production, or any URL. Drives Chrome through every interactive element in the target scope, collects structured findings (severity, category, where, symptom, impact, repro, triage), and hands off to /triage-board which produces a Desktop folder with schema + JSON + Markdown + single-file HTML viewer (MD/CSV/JSON exports + per-finding Copy as Markdown). Skips destructive actions by default.",
+      "trigger": "Before shipping a feature, before review, before a demo, or any time the UI deserves a careful poke with fresh eyes. Works on localhost, staging, prod, PR previews — anywhere a browser reaches.",
+      "tags": [
+        "audit",
+        "qa",
+        "ui",
+        "e2e",
+        "browser-automation",
+        "review",
+        "beginner-mind"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/audit-ui-e2e/SKILL.md"
     },
     {
       "name": "build-incremental",
@@ -417,6 +434,23 @@
       ],
       "sideEffects": true,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/thread-to-action/SKILL.md"
+    },
+    {
+      "name": "triage-board",
+      "platform": "code",
+      "description": "Generates a structured triage artifact from session findings — a Desktop folder with JSON Schema, schema-conformant report.json, prose markdown, and a single-file HTML viewer with MD/CSV/JSON download buttons and a per-finding 'Copy as Markdown' action for pasting into Linear/GitHub/Notion. Stateless: triage state lives in the user's ticket system, not the viewer.",
+      "trigger": "After a beginner-mind audit, QA exploration, code review, or any session where you accumulated discrete findings worth handing off to a ticket system.",
+      "tags": [
+        "triage",
+        "qa",
+        "audit",
+        "review",
+        "report",
+        "findings",
+        "html-viewer"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/triage-board/SKILL.md"
     },
     {
       "name": "ui-test",
