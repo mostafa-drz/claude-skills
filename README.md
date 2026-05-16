@@ -71,6 +71,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | Skill | Description |
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
+| <img src="desktop/expense-report/icon.svg" width="22" height="22" alt="expense-report icon" valign="middle"> &nbsp; [`expense-report`](desktop/expense-report/SKILL.md) | Scans Gmail for receipts within a date range, extracts merchant, amount, and category from each, and builds a clean expense table grouped by category with totals. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 
 ## Skill Details
@@ -450,6 +451,14 @@ Analyzes recent Claude Code conversations and local Claude state (skills, settin
 Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. Helps triage messages and draft replies. Use when starting the day, returning from a break, or needing to quickly catch up on communications.
 
 [View SKILL.md ->](desktop/inbox-catchup/SKILL.md)
+
+---
+
+### `expense-report` (Desktop)
+
+Scans Gmail for receipts and invoice emails within a date range, extracts merchant, amount, date, and category from each, then produces a clean expense table grouped by category with totals. Flags personal-looking items for review. Offers to save to Drive or export as a CSV-style table. Use when building an expense report, pulling receipts for reimbursement, or reviewing spending by category for any month or quarter.
+
+[View SKILL.md ->](desktop/expense-report/SKILL.md)
 
 ---
 
