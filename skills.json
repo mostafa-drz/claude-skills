@@ -509,6 +509,23 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/workflow-advisor/SKILL.md"
     },
     {
+      "name": "follow-up-tracker",
+      "platform": "desktop",
+      "description": "Scans Gmail for threads where the user sent the last message and no reply has arrived. Groups pending conversations by urgency tier (overdue 14+ days, aging 7–13 days, pending 2–6 days) and optionally drafts a polite follow-up nudge for each stuck thread. Never sends without explicit approval.",
+      "trigger": "Asking what conversations are stuck, who hasn't replied, what emails need chasing, before going on leave, at the end of a sprint, or at the start of a new week.",
+      "tags": [
+        "gmail",
+        "follow-up",
+        "communication",
+        "email",
+        "google-workspace",
+        "productivity"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/follow-up-tracker/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/follow-up-tracker/icon.svg"
+    },
+    {
       "name": "inbox-catchup",
       "platform": "desktop",
       "description": "Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. Helps triage messages and draft replies.",

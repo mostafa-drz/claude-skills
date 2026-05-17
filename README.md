@@ -72,6 +72,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 
 | Skill | Description |
 |-------|-------------|
+| <img src="desktop/follow-up-tracker/icon.svg" width="22" height="22" alt="follow-up-tracker icon" valign="middle"> &nbsp; [`follow-up-tracker`](desktop/follow-up-tracker/SKILL.md) | Scans Gmail for threads where the user sent the last message and no reply has arrived, groups them by age (overdue / aging / pending), and optionally drafts follow-up nudges. |
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 
@@ -444,6 +445,14 @@ Analyzes recent Claude Code conversations and local Claude state (skills, settin
 **Usage:** `/workflow-advisor [--all] [--count <n>]`
 
 [View SKILL.md ->](code/workflow-advisor/SKILL.md)
+
+---
+
+### `follow-up-tracker` (Desktop)
+
+Scans Gmail for threads where the user sent the last message and no reply has arrived. Identifies awaiting-reply threads, groups them by urgency (overdue 14+ days, aging 7–13 days, pending 2–6 days), and optionally drafts a polite follow-up nudge for any stuck conversation. Never sends without explicit approval. Use when starting a week, before a deadline, before going on leave, or when asking what conversations are stuck.
+
+[View SKILL.md ->](desktop/follow-up-tracker/SKILL.md)
 
 ---
 
