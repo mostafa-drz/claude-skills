@@ -523,6 +523,23 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/inbox-catchup/SKILL.md"
     },
     {
+      "name": "expense-report",
+      "platform": "desktop",
+      "description": "Scans Gmail for receipts and invoice emails within a date range, extracts merchant, amount, date, and category from each, then builds a clean expense table grouped by category with totals. Flags personal-looking items for review. Offers to save to Drive or export as a CSV-style table.",
+      "trigger": "Building an expense report, pulling receipts for reimbursement, reviewing spending by category, or compiling work expenses for any month or quarter.",
+      "tags": [
+        "expenses",
+        "gmail",
+        "google-drive",
+        "finance",
+        "receipts",
+        "productivity"
+      ],
+      "sideEffects": true,
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/expense-report/icon.svg",
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/expense-report/SKILL.md"
+    },
+    {
       "name": "research-assistant",
       "platform": "desktop",
       "description": "Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary.",
