@@ -70,6 +70,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 
 | Skill | Description |
 |-------|-------------|
+| <img src="desktop/focus-finder/icon.svg" width="22" height="22" alt="focus-finder icon" valign="middle"> &nbsp; [`focus-finder`](desktop/focus-finder/SKILL.md) | Analyzes the next 7–14 days of Google Calendar to find contiguous 90+ minute focus blocks, sorted by cognitive quality (Prime morning / Solid afternoon / Light). Optionally suggests work allocation per block. |
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 
@@ -442,6 +443,14 @@ Analyzes recent Claude Code conversations and local Claude state (skills, settin
 **Usage:** `/workflow-advisor [--all] [--count <n>]`
 
 [View SKILL.md ->](code/workflow-advisor/SKILL.md)
+
+---
+
+### `focus-finder` (Desktop)
+
+Analyzes the next 7–14 days of Google Calendar to surface every contiguous free window ≥ 90 minutes. Groups blocks by cognitive quality — Prime (morning, best for deep work), Solid (afternoon), and Light (late afternoon) — so you can see at a glance where you actually have time to focus. Optionally suggests which type of work to slot into each block. Requires Google Calendar via Google Workspace. Use when asking when focus time is available, where to schedule deep work, or what days look light this week.
+
+[View SKILL.md ->](desktop/focus-finder/SKILL.md)
 
 ---
 
