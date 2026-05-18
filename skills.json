@@ -509,6 +509,22 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/workflow-advisor/SKILL.md"
     },
     {
+      "name": "focus-finder",
+      "platform": "desktop",
+      "description": "Analyzes the next 7–14 days of Google Calendar to find contiguous focus blocks (90+ minutes without meetings), sorted by cognitive quality tier: Prime (morning), Solid (afternoon), Light (late afternoon). Optionally suggests work allocation per block. Requires Google Calendar.",
+      "trigger": "Asking when focus time is available this week, where to schedule deep work, what days look light, or needing a 2-hour block for a project.",
+      "tags": [
+        "calendar",
+        "focus",
+        "productivity",
+        "scheduling",
+        "deep-work"
+      ],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/focus-finder/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/focus-finder/icon.svg"
+    },
+    {
       "name": "inbox-catchup",
       "platform": "desktop",
       "description": "Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. Helps triage messages and draft replies.",

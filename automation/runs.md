@@ -7,3 +7,7 @@ Schema and semantics: see [`daily-skill-routine.md` §8](./daily-skill-routine.m
 | date       | skill_slug | skills_pr | status | note_pr | notes |
 |------------|------------|-----------|--------|---------|-------|
 <!-- routine appends rows below this line -->
+| 2026-05-15 | desktop/meeting-prep | https://github.com/mostafa-drz/claude-skills/pull/6 | open | | |
+| 2026-05-16 | desktop/expense-report | https://github.com/mostafa-drz/claude-skills/pull/7 | open | | meeting-prep (#6) still open; picked new topic |
+| 2026-05-17 | desktop/follow-up-tracker | https://github.com/mostafa-drz/claude-skills/pull/8 | open | | meeting-prep (#6) and expense-report (#7) both open; picked follow-up-tracker |
+| 2026-05-18 | desktop/focus-finder | https://github.com/mostafa-drz/claude-skills/pull/9 | open | | PRs #6 #7 #8 all open (meeting-prep, expense-report, follow-up-tracker); picked focus-finder as distinct topic |
