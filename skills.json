@@ -534,6 +534,23 @@
       ],
       "sideEffects": false,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/research-assistant/SKILL.md"
+    },
+    {
+      "name": "weekly-review",
+      "platform": "desktop",
+      "description": "Pulls the past 7 days from Google Calendar, Gmail, and Google Drive and synthesizes a structured weekly review document: how time was spent, key conversations and commitments, what got done vs. what slipped, and what to carry into next week.",
+      "trigger": "Doing a weekly review, end-of-week reflection, personal retrospective, reviewing what happened this week, or preparing for the week ahead.",
+      "tags": [
+        "productivity",
+        "calendar",
+        "gmail",
+        "google-workspace",
+        "reflection",
+        "gtd"
+      ],
+      "sideEffects": false,
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/weekly-review/icon.svg",
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/weekly-review/SKILL.md"
     }
   ]
 }
