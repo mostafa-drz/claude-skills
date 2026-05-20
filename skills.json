@@ -509,6 +509,21 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/workflow-advisor/SKILL.md"
     },
     {
+      "name": "doc-review",
+      "platform": "desktop",
+      "description": "Reviews a Google Doc, spec, proposal, or memo before it gets shared — surfaces missing context, unstated assumptions, unclear decisions, and gaps a first reader would hit. Produces tiered feedback (must-fix / worth fixing / polish) with specific quotes and a verdict.",
+      "trigger": "Preparing to share a document, wanting a second opinion on a spec, checking if a memo is clear, asking 'is this ready to send?', or reviewing a proposal before a meeting.",
+      "tags": [
+        "writing",
+        "review",
+        "google-drive",
+        "productivity",
+        "documents"
+      ],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/doc-review/SKILL.md"
+    },
+    {
       "name": "inbox-catchup",
       "platform": "desktop",
       "description": "Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. Helps triage messages and draft replies.",
