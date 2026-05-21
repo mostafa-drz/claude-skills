@@ -73,6 +73,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | Skill | Description |
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
+| <img src="desktop/newsletter-digest/icon.svg" width="22" height="22" alt="newsletter-digest icon" valign="middle"> &nbsp; [`newsletter-digest`](desktop/newsletter-digest/SKILL.md) | Scans Gmail for newsletter emails, curates them into a tiered reading digest — must-reads, quick takes, and low-signal sources — and optionally saves to Drive. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 
 ## Skill Details
@@ -452,6 +453,14 @@ Analyzes recent Claude Code conversations and local Claude state (skills, settin
 Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. Helps triage messages and draft replies. Use when starting the day, returning from a break, or needing to quickly catch up on communications.
 
 [View SKILL.md ->](desktop/inbox-catchup/SKILL.md)
+
+---
+
+### `newsletter-digest` (Desktop)
+
+Scans Gmail for newsletter emails from the past week, groups them by publication, and produces a curated reading digest with three tiers: must-reads (2–4 highest-signal items), quick takes (headlines worth a skim), and low-signal sources worth unsubscribing from. Optionally saves the digest to Google Drive. Use when catching up on newsletters, asking what you missed this week, or wanting a curated reading list from your inbox.
+
+[View SKILL.md ->](desktop/newsletter-digest/SKILL.md)
 
 ---
 

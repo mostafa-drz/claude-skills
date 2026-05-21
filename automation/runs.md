@@ -7,3 +7,10 @@ Schema and semantics: see [`daily-skill-routine.md` §8](./daily-skill-routine.m
 | date       | skill_slug | skills_pr | status | note_pr | notes |
 |------------|------------|-----------|--------|---------|-------|
 <!-- routine appends rows below this line -->
+| 2026-05-15 | desktop/meeting-prep | https://github.com/mostafa-drz/claude-skills/pull/6 | open | | |
+| 2026-05-16 | desktop/expense-report | https://github.com/mostafa-drz/claude-skills/pull/7 | open | | |
+| 2026-05-17 | desktop/follow-up-tracker | https://github.com/mostafa-drz/claude-skills/pull/8 | open | | |
+| 2026-05-18 | desktop/focus-finder | https://github.com/mostafa-drz/claude-skills/pull/9 | open | | |
+| 2026-05-19 | desktop/weekly-review | https://github.com/mostafa-drz/claude-skills/pull/10 | open | | |
+| 2026-05-20 | desktop/doc-review | https://github.com/mostafa-drz/claude-skills/pull/11 | open | | |
+| 2026-05-21 | desktop/newsletter-digest | placeholder | open | | Phase A skipped: no merged PRs on main. weekly-review already built (PR #10); picked newsletter-digest. support.claude.com 403 persistent. |

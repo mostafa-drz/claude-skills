@@ -523,6 +523,23 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/inbox-catchup/SKILL.md"
     },
     {
+      "name": "newsletter-digest",
+      "platform": "desktop",
+      "description": "Scans Gmail for newsletter emails from the past week, groups them by publication, and produces a curated reading digest with three tiers: must-reads (2–4 highest-signal items), quick takes (headlines worth a skim), and low-signal sources worth unsubscribing from. Optionally saves the digest to Google Drive.",
+      "trigger": "Catching up on newsletters, asking what you missed this week, wanting a curated reading list, or when asked for a newsletter digest or reading summary.",
+      "tags": [
+        "email",
+        "reading",
+        "curation",
+        "gmail",
+        "productivity",
+        "newsletters"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/newsletter-digest/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/newsletter-digest/icon.svg"
+    },
+    {
       "name": "research-assistant",
       "platform": "desktop",
       "description": "Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary.",
