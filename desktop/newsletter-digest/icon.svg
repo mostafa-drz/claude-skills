@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <title>Newsletter digest — curated reading highlight from many sources</title>
+  <!-- Document page with folded corner -->
+  <path d="M 4 2 L 16 2 L 20 6 L 20 22 L 4 22 Z"/>
+  <path d="M 16 2 L 16 6 L 20 6"/>
+  <!-- Content lines: multiple newsletter items at low opacity -->
+  <line x1="7" y1="10" x2="17" y2="10" stroke-width="0.75" opacity="0.3"/>
+  <line x1="7" y1="13" x2="15" y2="13" stroke-width="0.75" opacity="0.3"/>
+  <!-- Highlighted line: the must-read item -->
+  <line x1="8.5" y1="16" x2="17" y2="16"/>
+  <line x1="7" y1="19" x2="14" y2="19" stroke-width="0.75" opacity="0.3"/>
+  <!-- Brand accent dot: marks the highlighted must-read -->
+  <circle cx="7" cy="16" r="1.4" fill="#ff5722" stroke="none"/>
+</svg>
