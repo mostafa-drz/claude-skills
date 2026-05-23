@@ -72,6 +72,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 
 | Skill | Description |
 |-------|-------------|
+| <img src="desktop/contact-brief/icon.svg" width="22" height="22" alt="contact-brief icon" valign="middle"> &nbsp; [`contact-brief`](desktop/contact-brief/SKILL.md) | Researches a person before you reach out — compiling professional background, recent work, and any prior Gmail or Calendar history into a scannable contact brief. |
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 

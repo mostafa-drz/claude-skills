@@ -7,3 +7,4 @@ Schema and semantics: see [`daily-skill-routine.md` §8](./daily-skill-routine.m
 | date       | skill_slug | skills_pr | status | note_pr | notes |
 |------------|------------|-----------|--------|---------|-------|
 <!-- routine appends rows below this line -->
+| 2026-05-23 | desktop/contact-brief | PLACEHOLDER | open | | Phase A skipped — no prior merged rows. Phase B: contact-brief skill. |
