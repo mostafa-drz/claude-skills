@@ -509,6 +509,21 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/workflow-advisor/SKILL.md"
     },
     {
+      "name": "contact-brief",
+      "platform": "desktop",
+      "description": "Researches a person before you reach out — compiling professional background, recent work, and any prior Gmail or Calendar history into a scannable contact brief.",
+      "trigger": "About to send a cold email, message someone on LinkedIn, prepare for a first networking call, research someone before an interview, or scope a potential partnership.",
+      "tags": [
+        "networking",
+        "research",
+        "gmail",
+        "calendar",
+        "outreach"
+      ],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/contact-brief/SKILL.md"
+    },
+    {
       "name": "inbox-catchup",
       "platform": "desktop",
       "description": "Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. Helps triage messages and draft replies.",
