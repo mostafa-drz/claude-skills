@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-16",
+  "updated": "2026-05-24",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -507,6 +507,22 @@
       ],
       "sideEffects": true,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/workflow-advisor/SKILL.md"
+    },
+    {
+      "name": "pending-radar",
+      "platform": "desktop",
+      "description": "Scans Gmail sent threads awaiting reply, Calendar meetings with unresolved action items, and Drive docs with open to-dos to surface what's fallen through the cracks. Produces a two-list breakdown: what you're waiting on others for and what you still owe.",
+      "trigger": "Asking what's pending, what needs follow-up, what am I waiting on, what did I promise, or what's fallen through the cracks.",
+      "tags": [
+        "email",
+        "productivity",
+        "follow-up",
+        "gmail",
+        "calendar",
+        "drive"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/pending-radar/SKILL.md"
     },
     {
       "name": "inbox-catchup",
