@@ -73,6 +73,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | Skill | Description |
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
+| <img src="desktop/pending-radar/icon.svg" width="22" height="22" alt="pending-radar icon" valign="middle"> &nbsp; [`pending-radar`](desktop/pending-radar/SKILL.md) | Scans Gmail sent threads awaiting reply, Calendar meetings with unresolved action items, and Drive docs with open to-dos to surface what's fallen through the cracks — produces a "waiting on" / "you owe" breakdown. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 
 ## Skill Details
@@ -452,6 +453,14 @@ Analyzes recent Claude Code conversations and local Claude state (skills, settin
 Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. Helps triage messages and draft replies. Use when starting the day, returning from a break, or needing to quickly catch up on communications.
 
 [View SKILL.md ->](desktop/inbox-catchup/SKILL.md)
+
+---
+
+### `pending-radar` (Desktop)
+
+Scans Gmail sent threads awaiting reply, Calendar meetings with unresolved action items, and Drive docs with open to-dos. Produces a two-list breakdown: what you're waiting on others for ("Waiting On") and what you still owe ("You Owe"). Use when asking what's pending, what needs follow-up, what you're waiting on, what you promised someone, or what's fallen through the cracks.
+
+[View SKILL.md ->](desktop/pending-radar/SKILL.md)
 
 ---
 

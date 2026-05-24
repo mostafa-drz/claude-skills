@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 24 24"
+     fill="none"
+     stroke="currentColor"
+     stroke-width="1.5"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+  <title>Pending radar — sweep scanning for unanswered threads and open commitments</title>
+  <!-- Outer ring: full scan perimeter -->
+  <circle cx="12" cy="12" r="9"/>
+  <!-- Inner ring: closer proximity zone -->
+  <circle cx="12" cy="12" r="5" stroke-width="0.75"/>
+  <!-- Crosshairs: orientation grid -->
+  <line x1="12" y1="3" x2="12" y2="21" stroke-width="0.75"/>
+  <line x1="3" y1="12" x2="21" y2="12" stroke-width="0.75"/>
+  <!-- Sweep arm: active scan direction (upper-right, 45°) -->
+  <line x1="12" y1="12" x2="18.36" y2="5.64"/>
+  <!-- Detected blip 1: high-priority pending item near sweep arm -->
+  <circle cx="15.5" cy="8.5" r="1.2" fill="#f59e0b" stroke="none"/>
+  <!-- Detected blip 2: secondary pending item in left quadrant -->
+  <circle cx="7.5" cy="15" r="0.9" fill="currentColor" stroke="none"/>
+</svg>
