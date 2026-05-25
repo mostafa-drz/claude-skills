@@ -534,6 +534,22 @@
       ],
       "sideEffects": false,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/research-assistant/SKILL.md"
+    },
+    {
+      "name": "upgrade-brief",
+      "platform": "desktop",
+      "description": "Researches a package upgrade from one version to another — fetches the changelog, identifies breaking changes, surfaces codemods and migration guides, and produces a structured upgrade brief with a migration checklist.",
+      "trigger": "Upgrading a dependency, planning a major version bump, reviewing what changed between package versions, or preparing for a breaking-change migration.",
+      "tags": [
+        "dependencies",
+        "upgrades",
+        "changelog",
+        "migration",
+        "research"
+      ],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/upgrade-brief/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/upgrade-brief/icon.svg"
     }
   ]
 }

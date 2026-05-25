@@ -74,6 +74,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
+| <img src="desktop/upgrade-brief/icon.svg" width="22" height="22" alt="upgrade-brief icon" valign="middle"> &nbsp; [`upgrade-brief`](desktop/upgrade-brief/SKILL.md) | Researches a package upgrade from one version to another — fetches the changelog, identifies breaking changes, surfaces codemods and migration guides, and produces a structured upgrade brief with a migration checklist. |
 
 ## Skill Details
 
@@ -460,6 +461,14 @@ Scans all connected communication channels -- Gmail, Slack, Calendar, and any av
 Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary. Use when asked to research something, prepare a briefing, or compile background on a topic.
 
 [View SKILL.md ->](desktop/research-assistant/SKILL.md)
+
+---
+
+### `upgrade-brief` (Desktop)
+
+Researches a package upgrade from one version to another — fetches the changelog, identifies breaking changes, surfaces codemods and migration guides, and produces a structured upgrade brief with a migration checklist. Use when upgrading a dependency, planning a major version bump, or asking what changed between package versions.
+
+[View SKILL.md ->](desktop/upgrade-brief/SKILL.md)
 
 ---
 
