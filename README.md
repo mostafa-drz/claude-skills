@@ -74,6 +74,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
+| <img src="desktop/weekly-update/icon.svg" width="22" height="22" alt="weekly-update icon" valign="middle"> &nbsp; [`weekly-update`](desktop/weekly-update/SKILL.md) | Synthesizes the past week's activity from Google Calendar, Gmail, and Google Drive into a structured status update ready to share with a manager or team. Use when writing a weekly update, drafting an end-of-week summary, or recapping the week for a manager. |
 
 ## Skill Details
 
@@ -460,6 +461,14 @@ Scans all connected communication channels -- Gmail, Slack, Calendar, and any av
 Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary. Use when asked to research something, prepare a briefing, or compile background on a topic.
 
 [View SKILL.md ->](desktop/research-assistant/SKILL.md)
+
+---
+
+### `weekly-update` (Desktop)
+
+Synthesizes the past week's activity from Google Calendar, Gmail, and Google Drive into a structured status update ready to share with a manager or team. Scans meetings attended, emails sent, and documents created to surface what was done, what's in progress, and what's blocked — without manual tab-switching. Use when writing a weekly update, drafting an end-of-week summary, preparing a status report, or recapping the week for a manager.
+
+[View SKILL.md ->](desktop/weekly-update/SKILL.md)
 
 ---
 

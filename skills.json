@@ -534,6 +534,22 @@
       ],
       "sideEffects": false,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/research-assistant/SKILL.md"
+    },
+    {
+      "name": "weekly-update",
+      "platform": "desktop",
+      "description": "Synthesizes the past week's activity from Google Calendar, Gmail, and Google Drive into a structured status update ready to share with a manager or team. Scans meetings attended, emails sent, and documents created to surface what was done, what's in progress, and what's blocked — without manual tab-switching.",
+      "trigger": "Writing a weekly update, preparing a status report, drafting an end-of-week summary, recapping the week for a manager, or answering 'what did I work on this week?'",
+      "tags": [
+        "productivity",
+        "communication",
+        "google-workspace",
+        "status-update",
+        "weekly"
+      ],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/weekly-update/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/weekly-update/icon.svg"
     }
   ]
 }
