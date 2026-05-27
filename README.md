@@ -72,6 +72,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 
 | Skill | Description |
 |-------|-------------|
+| <img src="desktop/design-doc-review/icon.svg" width="22" height="22" alt="design-doc-review icon" valign="middle"> &nbsp; [`design-doc-review`](desktop/design-doc-review/SKILL.md) | Reads a design document (RFC, ADR, tech spec, PRD) and produces a structured review brief: open questions by priority, structural gaps, and flagged risks. |
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 
@@ -444,6 +445,14 @@ Analyzes recent Claude Code conversations and local Claude state (skills, settin
 **Usage:** `/workflow-advisor [--all] [--count <n>]`
 
 [View SKILL.md ->](code/workflow-advisor/SKILL.md)
+
+---
+
+### `design-doc-review` (Desktop)
+
+Reads a design document (RFC, ADR, tech spec, PRD, or architecture proposal) and produces a structured review brief. Classifies the doc type, reads the full content (including via Google Drive integration), and outputs: a one-paragraph summary, prioritized open questions ([MUST ASK] / [GOOD TO ASK]), structural gaps by category, and 3–5 flagged risks with mitigations. Optionally posts the review as Drive comments, one per question/gap. Use when asked to review a design doc, give feedback on an RFC, prepare for a design review meeting, or find what's missing in a technical document.
+
+[View SKILL.md ->](desktop/design-doc-review/SKILL.md)
 
 ---
 
