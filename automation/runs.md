@@ -7,4 +7,4 @@ Schema and semantics: see [`daily-skill-routine.md` §8](./daily-skill-routine.m
 | date       | skill_slug | skills_pr | status | note_pr | notes |
 |------------|------------|-----------|--------|---------|-------|
 <!-- routine appends rows below this line -->
-| 2026-05-27 | desktop/design-doc-review | placeholder | open | | |
+| 2026-05-27 | desktop/design-doc-review | https://github.com/mostafa-drz/claude-skills/pull/17 | open | | |
