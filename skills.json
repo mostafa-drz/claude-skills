@@ -509,6 +509,23 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/workflow-advisor/SKILL.md"
     },
     {
+      "name": "design-doc-review",
+      "platform": "desktop",
+      "description": "Reads and reviews a design document — RFC, ADR, tech spec, PRD, or architecture proposal — and produces a structured review brief with prioritized open questions, structural gaps, and flagged risks. Applies the right review lens per doc type. Reads from Google Drive or pasted text.",
+      "trigger": "Reviewing a design doc, giving feedback on an RFC, preparing for a design review meeting, critiquing an architecture proposal, or finding what's missing in a technical document.",
+      "tags": [
+        "review",
+        "design",
+        "documentation",
+        "rfc",
+        "google-drive",
+        "productivity"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/design-doc-review/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/design-doc-review/icon.svg"
+    },
+    {
       "name": "inbox-catchup",
       "platform": "desktop",
       "description": "Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. Helps triage messages and draft replies.",
