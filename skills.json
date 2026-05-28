@@ -534,6 +534,23 @@
       ],
       "sideEffects": false,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/research-assistant/SKILL.md"
+    },
+    {
+      "name": "sprint-planner",
+      "platform": "desktop",
+      "description": "Prepares a suggested sprint scope by pulling prioritized backlog issues from Linear, computing capacity from team Calendar availability, and proposing what to commit to this sprint — with carry-over, blocker flags, and a risk summary.",
+      "trigger": "Starting sprint planning, grooming the backlog before a cycle kickoff, entering a planning meeting, or asked what to commit to the sprint.",
+      "tags": [
+        "planning",
+        "linear",
+        "sprint",
+        "agile",
+        "calendar",
+        "productivity"
+      ],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/sprint-planner/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/sprint-planner/icon.svg"
     }
   ]
 }

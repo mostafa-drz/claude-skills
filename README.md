@@ -74,6 +74,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
+| <img src="desktop/sprint-planner/icon.svg" width="22" height="22" alt="sprint-planner icon" valign="middle"> &nbsp; [`sprint-planner`](desktop/sprint-planner/SKILL.md) | Prepares a suggested sprint scope by pulling prioritized Linear backlog issues, checking team Calendar availability, and proposing what to commit — with carry-over, blocker flags, and a risk summary. |
 
 ## Skill Details
 
@@ -460,6 +461,14 @@ Scans all connected communication channels -- Gmail, Slack, Calendar, and any av
 Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary. Use when asked to research something, prepare a briefing, or compile background on a topic.
 
 [View SKILL.md ->](desktop/research-assistant/SKILL.md)
+
+---
+
+### `sprint-planner` (Desktop)
+
+Prepares a suggested sprint scope by pulling prioritized backlog issues from Linear, computing capacity from team Calendar availability, and proposing what to commit to this sprint — with carry-over, blocker flags, and a risk summary. Use when starting sprint planning, grooming the backlog before a cycle kickoff, entering a planning meeting, or asked "what should we commit to this sprint?"
+
+[View SKILL.md ->](desktop/sprint-planner/SKILL.md)
 
 ---
 
