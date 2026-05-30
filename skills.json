@@ -509,6 +509,22 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/workflow-advisor/SKILL.md"
     },
     {
+      "name": "focus-planner",
+      "platform": "desktop",
+      "description": "Plans focus blocks for the upcoming week by reading Google Calendar for open slots, asking which projects need deep-work time, and scheduling protected sessions with approval. Surfaces honest constraints when a week has no viable focus windows.",
+      "trigger": "Planning the week, protecting focus time, time-blocking for a project, scheduling deep work, weekly planning, or when the calendar feels too packed to make real progress.",
+      "tags": [
+        "calendar",
+        "productivity",
+        "planning",
+        "deep-work",
+        "time-blocking"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/focus-planner/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/focus-planner/icon.svg"
+    },
+    {
       "name": "inbox-catchup",
       "platform": "desktop",
       "description": "Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. Helps triage messages and draft replies.",
