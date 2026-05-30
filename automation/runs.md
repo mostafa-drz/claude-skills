@@ -7,3 +7,4 @@ Schema and semantics: see [`daily-skill-routine.md` §8](./daily-skill-routine.m
 | date       | skill_slug | skills_pr | status | note_pr | notes |
 |------------|------------|-----------|--------|---------|-------|
 <!-- routine appends rows below this line -->
+| 2026-05-30 | desktop/focus-planner | https://github.com/mostafa-drz/claude-skills/pull/19 | open | | First run — Phase A skipped (no prior rows). Two of three upstream doc URLs returned 403; platform docs available. |

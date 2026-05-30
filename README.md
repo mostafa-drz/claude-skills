@@ -72,6 +72,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 
 | Skill | Description |
 |-------|-------------|
+| <img src="desktop/focus-planner/icon.svg" width="22" height="22" alt="focus-planner icon" valign="middle"> &nbsp; [`focus-planner`](desktop/focus-planner/SKILL.md) | Plans focus blocks for the upcoming week by reading Google Calendar for open slots, asking which projects need deep-work time, and scheduling protected sessions with approval. |
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 
@@ -444,6 +445,14 @@ Analyzes recent Claude Code conversations and local Claude state (skills, settin
 **Usage:** `/workflow-advisor [--all] [--count <n>]`
 
 [View SKILL.md ->](code/workflow-advisor/SKILL.md)
+
+---
+
+### `focus-planner` (Desktop)
+
+Plans focus blocks for the upcoming week by reading Google Calendar for open slots, asking which projects need deep-work time, and scheduling protected sessions with approval. Surfaces honest constraints — if a week has no viable focus windows, it says so. Use when planning the week, protecting focus time, time-blocking, or when the calendar feels too packed to make real progress.
+
+[View SKILL.md ->](desktop/focus-planner/SKILL.md)
 
 ---
 
