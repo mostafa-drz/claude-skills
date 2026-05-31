@@ -509,6 +509,23 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/workflow-advisor/SKILL.md"
     },
     {
+      "name": "decision-brief",
+      "platform": "desktop",
+      "description": "Researches the options in a significant decision, scores them against your stated criteria using a weighted comparison matrix, and produces a one-page brief with a recommendation and one honest caveat. Uses web search for independent data, Drive for context docs, and Gmail for relevant prior correspondence.",
+      "trigger": "Choosing between job offers, vendors, tools, architectural approaches, services, or any decision where the options deserve honest comparison rather than gut feeling — especially when you need to explain the reasoning to someone else.",
+      "tags": [
+        "decisions",
+        "research",
+        "productivity",
+        "analysis",
+        "gmail",
+        "drive"
+      ],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/decision-brief/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/decision-brief/icon.svg"
+    },
+    {
       "name": "inbox-catchup",
       "platform": "desktop",
       "description": "Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. Helps triage messages and draft replies.",
