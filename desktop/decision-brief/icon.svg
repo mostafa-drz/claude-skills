@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 24 24"
+     fill="none"
+     stroke="currentColor"
+     stroke-width="1.5"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+  <title>Decision Brief — balance scale weighing options toward a recommendation</title>
+  <!-- Center pillar -->
+  <line x1="12" y1="5" x2="12" y2="20"/>
+  <!-- Base -->
+  <line x1="8" y1="20" x2="16" y2="20"/>
+  <!-- Balance beam -->
+  <line x1="3" y1="9" x2="21" y2="9"/>
+  <!-- Pivot (filled dot at beam center) -->
+  <circle cx="12" cy="9" r="1.2" fill="currentColor" stroke="none"/>
+  <!-- Left chain (lower pan = heavier = recommended) -->
+  <line x1="5.5" y1="9" x2="5.5" y2="14"/>
+  <!-- Left pan arc -->
+  <path d="M3.5 14 Q5.5 17.5 7.5 14"/>
+  <!-- Right chain (higher pan = lighter) -->
+  <line x1="18.5" y1="9" x2="18.5" y2="12"/>
+  <!-- Right pan arc -->
+  <path d="M16.5 12 Q18.5 15.5 20.5 12"/>
+  <!-- Accent dot: recommendation indicator above the heavier (left) pan -->
+  <circle cx="5.5" cy="6.5" r="1.5" fill="#ff5722" stroke="none"/>
+</svg>

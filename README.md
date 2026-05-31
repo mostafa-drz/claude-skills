@@ -72,6 +72,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 
 | Skill | Description |
 |-------|-------------|
+| <img src="desktop/decision-brief/icon.svg" width="22" height="22" alt="decision-brief icon" valign="middle"> &nbsp; [`decision-brief`](desktop/decision-brief/SKILL.md) | Researches options in a decision, scores them against your criteria, and produces a one-page brief with a recommendation and one honest caveat. |
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 
@@ -444,6 +445,14 @@ Analyzes recent Claude Code conversations and local Claude state (skills, settin
 **Usage:** `/workflow-advisor [--all] [--count <n>]`
 
 [View SKILL.md ->](code/workflow-advisor/SKILL.md)
+
+---
+
+### `decision-brief` (Desktop)
+
+Researches the options in a significant decision — job offers, vendors, tools, architecture choices — scores them against criteria you care about, and produces a one-page brief with a recommendation and one honest caveat. Uses web search for independent data on each option, Drive for existing context docs, and Gmail for prior correspondence. Use when a decision deserves more than gut feeling and you need the reasoning to be visible to others.
+
+[View SKILL.md ->](desktop/decision-brief/SKILL.md)
 
 ---
 
