@@ -72,6 +72,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 
 | Skill | Description |
 |-------|-------------|
+| <img src="desktop/calendar-audit/icon.svg" width="22" height="22" alt="calendar-audit icon" valign="middle"> &nbsp; [`calendar-audit`](desktop/calendar-audit/SKILL.md) | Analyzes Google Calendar for the next two weeks and produces a meeting-hygiene report. Detects overloaded days, back-to-back blocks, missing focus time, and async-conversion candidates. Returns a ranked action plan. |
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 
@@ -444,6 +445,14 @@ Analyzes recent Claude Code conversations and local Claude state (skills, settin
 **Usage:** `/workflow-advisor [--all] [--count <n>]`
 
 [View SKILL.md ->](code/workflow-advisor/SKILL.md)
+
+---
+
+### `calendar-audit` (Desktop)
+
+Analyzes Google Calendar for the next two weeks and produces a meeting-hygiene report. Detects back-to-back meeting blocks, overloaded days, missing deep-focus windows, and recurring meetings that are strong candidates for async conversion. Returns a ranked action plan: what to decline, shorten, convert to async, and where to protect focus blocks. Use when the calendar feels overloaded, preparing for a new sprint or quarter, or asked to audit meetings, review your schedule, or find focus time.
+
+[View SKILL.md ->](desktop/calendar-audit/SKILL.md)
 
 ---
 

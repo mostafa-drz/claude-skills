@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 24 24"
+     fill="none"
+     stroke="currentColor"
+     stroke-width="1.5"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+  <title>Calendar audit — identify overloaded days and surface focus time</title>
+  <!-- Calendar body -->
+  <rect x="3" y="4" width="18" height="17" rx="2"/>
+  <!-- Header/body separator -->
+  <line x1="3" y1="9" x2="21" y2="9"/>
+  <!-- Calendar peg mounts -->
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <!-- Horizontal day-row dividers (secondary weight) -->
+  <line x1="5" y1="13.5" x2="19" y2="13.5" stroke-width="0.75"/>
+  <line x1="5" y1="18" x2="19" y2="18" stroke-width="0.75"/>
+  <!-- Vertical column dividers (secondary weight) -->
+  <line x1="9.5" y1="9" x2="9.5" y2="21" stroke-width="0.75"/>
+  <line x1="14.5" y1="9" x2="14.5" y2="21" stroke-width="0.75"/>
+  <!-- Warning dot: top-left cell (heavy day) -->
+  <circle cx="6.25" cy="11.25" r="1.1" fill="#f59e0b" stroke="none"/>
+  <!-- Danger dot: top-center cell (overloaded day) -->
+  <circle cx="12" cy="11.25" r="1.1" fill="#dc2626" stroke="none"/>
+</svg>

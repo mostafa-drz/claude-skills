@@ -509,6 +509,22 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/workflow-advisor/SKILL.md"
     },
     {
+      "name": "calendar-audit",
+      "platform": "desktop",
+      "description": "Analyzes Google Calendar for the next two weeks and produces a meeting-hygiene report. Detects back-to-back meeting blocks, overloaded days, missing focus time, and recurring meetings that are strong candidates for async conversion. Returns a ranked action plan: what to decline, shorten, convert to async, and where to protect focus blocks.",
+      "trigger": "Calendar feels overloaded, preparing for a new sprint or quarter, asked to audit meetings, review my schedule, find focus time, or check if my schedule is sustainable.",
+      "tags": [
+        "calendar",
+        "productivity",
+        "meetings",
+        "focus-time",
+        "google-workspace"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/calendar-audit/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/calendar-audit/icon.svg"
+    },
+    {
       "name": "inbox-catchup",
       "platform": "desktop",
       "description": "Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. Helps triage messages and draft replies.",
