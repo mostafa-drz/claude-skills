@@ -7,4 +7,4 @@ Schema and semantics: see [`daily-skill-routine.md` §8](./daily-skill-routine.m
 | date       | skill_slug | skills_pr | status | note_pr | notes |
 |------------|------------|-----------|--------|---------|-------|
 <!-- routine appends rows below this line -->
-| 2026-06-01 | desktop/calendar-audit | <!-- PR_URL --> | open | | First run — Phase A skipped (no prior merged rows). Phase B: calendar-audit. |
+| 2026-06-01 | desktop/calendar-audit | https://github.com/mostafa-drz/claude-skills/pull/21 | open | | First run — Phase A skipped (no prior merged rows). Phase B: calendar-audit. |
