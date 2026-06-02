@@ -534,6 +534,23 @@
       ],
       "sideEffects": false,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/research-assistant/SKILL.md"
+    },
+    {
+      "name": "week-in-review",
+      "platform": "desktop",
+      "description": "Synthesizes the past week from Google Calendar, Gmail, and Drive into a structured personal retrospective — what was worked on, decisions made, and items still open. Offers to draft a team update or save to Drive.",
+      "trigger": "Doing a weekly review, preparing a team update, writing a weekly log, recapping the week, or when asked 'what happened this week', 'summarize my week', 'weekly retro', or 'week in review'.",
+      "tags": [
+        "productivity",
+        "reflection",
+        "calendar",
+        "gmail",
+        "google-drive",
+        "weekly-review"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/week-in-review/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/week-in-review/icon.svg"
     }
   ]
 }
