@@ -509,6 +509,23 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/workflow-advisor/SKILL.md"
     },
     {
+      "name": "dev-digest",
+      "platform": "desktop",
+      "description": "Scans the web for ecosystem signals on the technologies you care about — recent releases, Hacker News discussions, GitHub activity, changelog highlights — and delivers a weekly tech pulse brief.",
+      "trigger": "Asking what's new in a technology this week, checking for major dependency releases, wanting a curated signal sweep instead of manually scanning HN and GitHub, or requesting a tech digest or weekly tech brief.",
+      "tags": [
+        "developer",
+        "research",
+        "releases",
+        "hacker-news",
+        "ecosystem",
+        "pulse"
+      ],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/dev-digest/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/dev-digest/icon.svg"
+    },
+    {
       "name": "inbox-catchup",
       "platform": "desktop",
       "description": "Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. Helps triage messages and draft replies.",
