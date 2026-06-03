@@ -72,6 +72,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 
 | Skill | Description |
 |-------|-------------|
+| <img src="desktop/dev-digest/icon.svg" width="22" height="22" alt="dev-digest icon" valign="middle"> &nbsp; [`dev-digest`](desktop/dev-digest/SKILL.md) | Scans the web for ecosystem signals on the technologies you care about — recent releases, Hacker News discussions, GitHub activity — and delivers a weekly tech pulse brief. Use when asking what's new in a technology, checking for major dependency releases, or wanting a curated signal sweep. |
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 
