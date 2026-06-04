@@ -74,6 +74,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
+| <img src="desktop/standup-drafter/icon.svg" width="22" height="22" alt="standup-drafter icon" valign="middle"> &nbsp; [`standup-drafter`](desktop/standup-drafter/SKILL.md) | Drafts an async standup update by pulling yesterday's Calendar events, Linear tickets, Gmail threads, and Slack activity — formatted for Slack, Linear, or Notion in under 30 seconds. |
 
 ## Skill Details
 
@@ -460,6 +461,14 @@ Scans all connected communication channels -- Gmail, Slack, Calendar, and any av
 Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary. Use when asked to research something, prepare a briefing, or compile background on a topic.
 
 [View SKILL.md ->](desktop/research-assistant/SKILL.md)
+
+---
+
+### `standup-drafter` (Desktop)
+
+Drafts an async standup update by pulling yesterday's Calendar events, Linear tickets touched, Gmail threads contributed to, and Slack activity — then formats it for Slack, Linear, or Notion in under 30 seconds. Use when writing a daily standup, preparing an async update, or drafting a status message for the team.
+
+[View SKILL.md ->](desktop/standup-drafter/SKILL.md)
 
 ---
 

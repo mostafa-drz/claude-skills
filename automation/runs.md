@@ -7,3 +7,4 @@ Schema and semantics: see [`daily-skill-routine.md` §8](./daily-skill-routine.m
 | date       | skill_slug | skills_pr | status | note_pr | notes |
 |------------|------------|-----------|--------|---------|-------|
 <!-- routine appends rows below this line -->
+| 2026-06-04 | desktop/standup-drafter | https://github.com/mostafa-drz/claude-skills/pull/24 | open | | Phase A skipped (runs.md had no merged rows). Phase B: 3 of 4 doc URLs returned 403/503; proceeded on confirmed local spec. weekly-review and 17 similar topics already in open PRs — chose standup-drafter as non-overlapping. |
