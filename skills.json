@@ -534,6 +534,22 @@
       ],
       "sideEffects": false,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/research-assistant/SKILL.md"
+    },
+    {
+      "name": "standup-drafter",
+      "platform": "desktop",
+      "description": "Drafts an async standup update by pulling yesterday's Calendar events, Linear tickets touched, Gmail threads contributed to, and Slack activity — then formats it for Slack, Linear, or Notion in under 30 seconds.",
+      "trigger": "Writing a daily standup, preparing an async status update, asking what you did yesterday, prepping for a sync standup call, or drafting a team status message.",
+      "tags": [
+        "standup",
+        "communication",
+        "productivity",
+        "linear",
+        "slack"
+      ],
+      "sideEffects": false,
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/standup-drafter/icon.svg",
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/standup-drafter/SKILL.md"
     }
   ]
 }
