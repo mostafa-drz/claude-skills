@@ -72,6 +72,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 
 | Skill | Description |
 |-------|-------------|
+| <img src="desktop/follow-up-radar/icon.svg" width="22" height="22" alt="follow-up-radar icon" valign="middle"> &nbsp; [`follow-up-radar`](desktop/follow-up-radar/SKILL.md) | Scans Gmail sent mail for threads awaiting a reply, groups them by wait time (overdue vs. due), drafts a concise follow-up for each, and presents a report before anything is sent. |
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 
@@ -444,6 +445,14 @@ Analyzes recent Claude Code conversations and local Claude state (skills, settin
 **Usage:** `/workflow-advisor [--all] [--count <n>]`
 
 [View SKILL.md ->](code/workflow-advisor/SKILL.md)
+
+---
+
+### `follow-up-radar` (Desktop)
+
+Scans Gmail sent mail to surface threads awaiting a reply — emails you sent where the last message is still yours. Groups results into overdue (> 7 days) and due (5–7 days) buckets, drafts a short, tone-matched follow-up for each, and presents a clean report before anything is sent. Use when you haven't heard back from someone, feel like something fell through the cracks, or are doing an end-of-week email sweep.
+
+[View SKILL.md ->](desktop/follow-up-radar/SKILL.md)
 
 ---
 
