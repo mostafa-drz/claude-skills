@@ -7,4 +7,4 @@ Schema and semantics: see [`daily-skill-routine.md` §8](./daily-skill-routine.m
 | date       | skill_slug | skills_pr | status | note_pr | notes |
 |------------|------------|-----------|--------|---------|-------|
 <!-- routine appends rows below this line -->
-| 2026-06-05 | desktop/follow-up-radar | TBD | open | | Phase A skipped (no prior merged rows). Phase B: docs-cache written; 2/3 upstream URLs returned 403 (CDN auth), platform docs fetched OK; proceeded. |
+| 2026-06-05 | desktop/follow-up-radar | https://github.com/mostafa-drz/claude-skills/pull/25 | open | | Phase A skipped (no prior merged rows). Phase B: docs-cache written; 2/3 upstream URLs returned 403 (CDN auth), platform docs fetched OK; proceeded. |
