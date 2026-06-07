@@ -7,3 +7,4 @@ Schema and semantics: see [`daily-skill-routine.md` §8](./daily-skill-routine.m
 | date       | skill_slug | skills_pr | status | note_pr | notes |
 |------------|------------|-----------|--------|---------|-------|
 <!-- routine appends rows below this line -->
+| 2026-06-07 | — | — | skipped | | 20 open unreviewed PRs (#6–#25) cover all obvious Desktop workflows; building #21 would be noise. Review queue is the bottleneck. See docs-cache/2026-06-07.md. |
