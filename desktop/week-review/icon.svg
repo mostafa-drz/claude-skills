@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <title>week-review — past week synthesized</title>
+  <!-- Calendar frame -->
+  <rect x="2" y="3.5" width="15" height="15.5" rx="1.5"/>
+  <!-- Calendar header divider -->
+  <line x1="2" y1="8" x2="17" y2="8"/>
+  <!-- Binding pins -->
+  <line x1="6.5" y1="2" x2="6.5" y2="5.5"/>
+  <line x1="12.5" y1="2" x2="12.5" y2="5.5"/>
+  <!-- Reviewed week row (bold = subject of the review) -->
+  <rect x="3.5" y="10" width="11.5" height="2.5" rx="0.5"/>
+  <!-- Adjacent week rows (context, dimmed) -->
+  <rect x="3.5" y="13.5" width="11.5" height="2.5" rx="0.5" opacity="0.3"/>
+  <rect x="3.5" y="17" width="7.5" height="1.5" rx="0.5" opacity="0.15"/>
+  <!-- Retrospective arc: sweeps from bottom back up to top, indicating look-back -->
+  <path d="M 19 16 C 23 14 23 10 19 8" fill="none" stroke-width="1.5"/>
+  <!-- Arrowhead at top of arc pointing back into the week (past) -->
+  <polyline points="17.5,7.5 19,8 18.5,9.5"/>
+  <!-- Accent dot: brand primary at end-of-reviewed-week position -->
+  <circle cx="15.5" cy="11.25" r="1.1" fill="#ff5722" stroke="none"/>
+</svg>

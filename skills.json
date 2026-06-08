@@ -534,6 +534,22 @@
       ],
       "sideEffects": false,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/research-assistant/SKILL.md"
+    },
+    {
+      "name": "week-review",
+      "platform": "desktop",
+      "description": "Synthesizes the past week from Google Calendar, Gmail, and Google Drive into a structured weekly recap — meetings attended, decisions made, notable email threads, documents updated, and open loops not yet resolved. Previews the upcoming week's commitments.",
+      "trigger": "Weekly review, end-of-week wind-down, Monday morning catchup, or any time the question is 'what happened last week and what's coming?'",
+      "tags": [
+        "productivity",
+        "calendar",
+        "email",
+        "review",
+        "google-workspace"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/week-review/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/week-review/icon.svg"
     }
   ]
 }
