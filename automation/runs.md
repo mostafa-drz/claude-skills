@@ -7,4 +7,4 @@ Schema and semantics: see [`daily-skill-routine.md` §8](./daily-skill-routine.m
 | date       | skill_slug | skills_pr | status | note_pr | notes |
 |------------|------------|-----------|--------|---------|-------|
 <!-- routine appends rows below this line -->
-| 2026-06-09 | desktop/weekly-wrap | TBD | open | | meeting-prep (PR #6) still open on remote branch; built weekly-wrap instead. |
+| 2026-06-09 | desktop/weekly-wrap | https://github.com/mostafa-drz/claude-skills/pull/28 | open | | meeting-prep (PR #6) still open on remote branch; built weekly-wrap instead. |
