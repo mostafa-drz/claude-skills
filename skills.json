@@ -534,6 +534,24 @@
       ],
       "sideEffects": false,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/research-assistant/SKILL.md"
+    },
+    {
+      "name": "weekly-wrap",
+      "platform": "desktop",
+      "description": "Synthesizes a structured end-of-week summary from Google Calendar events, key Gmail exchanges, and recently edited Drive documents over the past 7 days. Produces a ready-to-paste report organized into delivered work, key discussions, carry-forwards, and next-week priorities.",
+      "trigger": "Asking 'what did I do this week?', 'write my weekly status update', 'summarize my week', 'prep my Friday wrap-up', 'weekly recap', or 'what should I put in my weekly report'.",
+      "tags": [
+        "productivity",
+        "weekly-review",
+        "gmail",
+        "calendar",
+        "google-drive",
+        "status-update",
+        "reporting"
+      ],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/weekly-wrap/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/weekly-wrap/icon.svg"
     }
   ]
 }
