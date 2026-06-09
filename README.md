@@ -74,6 +74,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
+| <img src="desktop/weekly-wrap/icon.svg" width="22" height="22" alt="weekly-wrap icon" valign="middle"> &nbsp; [`weekly-wrap`](desktop/weekly-wrap/SKILL.md) | Synthesizes a structured end-of-week summary from Calendar events, key Gmail exchanges, and Drive document activity over the past 7 days. Ready to paste into a standup update, status email, or personal work log. |
 
 ## Skill Details
 
@@ -460,6 +461,16 @@ Scans all connected communication channels -- Gmail, Slack, Calendar, and any av
 Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary. Use when asked to research something, prepare a briefing, or compile background on a topic.
 
 [View SKILL.md ->](desktop/research-assistant/SKILL.md)
+
+---
+
+### `weekly-wrap` (Desktop)
+
+Synthesizes a structured end-of-week summary from Google Calendar events, key Gmail exchanges, and recently edited Drive documents over the past 7 days. Produces a ready-to-paste accomplishments report — delivered work, key discussions, carry-forwards, and next-week priorities. Use when asking "what did I do this week?", "write my weekly status", "summarize my week", or "prep my Friday wrap-up".
+
+**Requires:** Google Workspace connected (Gmail + Calendar + Drive). Works with partial connectivity.
+
+[View SKILL.md ->](desktop/weekly-wrap/SKILL.md)
 
 ---
 

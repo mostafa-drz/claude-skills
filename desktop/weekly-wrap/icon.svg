@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 24 24"
+     fill="none"
+     stroke="currentColor"
+     stroke-width="1.5"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+  <title>weekly-wrap — five workday activity bars, week complete</title>
+  <!-- Five horizontal bars representing Mon–Fri activity levels -->
+  <!-- Lengths vary to suggest a real workweek, not a uniform chart -->
+  <line x1="3" y1="7"  x2="11" y2="7"  opacity="0.25"/>
+  <line x1="3" y1="10" x2="15" y2="10" opacity="0.35"/>
+  <line x1="3" y1="13" x2="19" y2="13" opacity="0.5"/>
+  <line x1="3" y1="16" x2="14" y2="16" opacity="0.35"/>
+  <line x1="3" y1="19" x2="21" y2="19"/>
+  <!-- Brand-primary accent on peak activity day (Wed, bar 3) -->
+  <circle cx="19" cy="13" r="1.4" fill="#ff5722" stroke="none"/>
+  <!-- Green dot at end of Friday bar = week wrapped / complete -->
+  <circle cx="21" cy="19" r="1.5" fill="#16a34a" stroke="none"/>
+</svg>
