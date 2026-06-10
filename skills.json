@@ -525,19 +525,18 @@
     {
       "name": "meeting-debrief",
       "platform": "desktop",
-      "description": "Generates a structured post-meeting debrief from Google Calendar, Drive docs, and Gmail context. Captures decisions made, action items with owners and due dates, open questions, and next steps. Drafts follow-up emails to action item owners.",
-      "trigger": "After a meeting ends — when you need to write up what was decided, assign ownership to action items, draft follow-up emails from a call, capture meeting notes, or summarize a standup or planning session.",
+      "description": "Captures what happened after a meeting — pulls the Calendar event, attendees, and any linked Drive docs or Gmail threads, then turns a brief verbal recap into a structured debrief with decisions, action items (owner + deadline), and a ready-to-send follow-up email.",
+      "trigger": "After a meeting, when asked to write up a meeting, capture outcomes, document decisions, draft a follow-up, or send meeting notes to attendees.",
       "tags": [
         "meetings",
+        "calendar",
+        "email",
         "productivity",
-        "google-calendar",
-        "google-drive",
-        "gmail",
-        "action-items"
+        "documentation"
       ],
       "sideEffects": true,
-      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/meeting-debrief/icon.svg",
-      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/meeting-debrief/SKILL.md"
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/meeting-debrief/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/meeting-debrief/icon.svg"
     },
     {
       "name": "research-assistant",

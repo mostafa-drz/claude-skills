@@ -73,7 +73,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | Skill | Description |
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
-| <img src="desktop/meeting-debrief/icon.svg" width="22" height="22" alt="meeting-debrief icon" valign="middle"> &nbsp; [`meeting-debrief`](desktop/meeting-debrief/SKILL.md) | Generates a structured post-meeting debrief from Calendar, Drive docs, and Gmail context. Captures decisions, action items with owners, open questions, and next steps. Drafts follow-up emails to action item owners. |
+| <img src="desktop/meeting-debrief/icon.svg" width="22" height="22" alt="meeting-debrief icon" valign="middle"> &nbsp; [`meeting-debrief`](desktop/meeting-debrief/SKILL.md) | Pulls the Calendar event, attendees, and linked Drive docs or Gmail threads, then turns a brief verbal recap into a structured debrief with decisions, action items (owner + deadline), and a ready-to-send follow-up email. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 
 ## Skill Details
@@ -458,7 +458,7 @@ Scans all connected communication channels -- Gmail, Slack, Calendar, and any av
 
 ### `meeting-debrief` (Desktop)
 
-Generates a structured post-meeting debrief from Google Calendar, Drive docs, and Gmail context. Captures decisions made, action items with owners and due dates, open questions, and next steps. Offers to save a Google Doc with the notes and draft follow-up emails to action item owners. Use when a meeting just ended and you need to write up what was decided, assign ownership to action items, or draft follow-up emails from a call.
+Captures what happened after a meeting — pulls the Calendar event, attendees, and any linked Drive docs or Gmail threads, then turns a brief verbal recap into a structured debrief with decisions, action items (owner + deadline), and a ready-to-send follow-up email. Use after a meeting, when asked to write up a meeting, capture outcomes, document decisions, or draft a follow-up to attendees.
 
 [View SKILL.md ->](desktop/meeting-debrief/SKILL.md)
 

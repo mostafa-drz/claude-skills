@@ -1,16 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-  <title>Meeting debrief — attendees above the fold, structured captured notes below</title>
-  <!-- Document body -->
-  <rect x="3" y="2" width="18" height="20" rx="2" />
-  <!-- Three attendee circles representing the meeting participants -->
-  <circle cx="9" cy="8" r="1.5" />
-  <circle cx="12" cy="8" r="1.5" />
-  <circle cx="15" cy="8" r="1.5" />
-  <!-- Divider — transition from meeting to captured output -->
-  <line x1="3" y1="12" x2="21" y2="12" stroke-width="0.75" opacity="0.4" />
-  <!-- Structured notes lines (decisions, action items) -->
-  <line x1="7" y1="15.5" x2="17" y2="15.5" />
-  <line x1="7" y1="18.5" x2="14" y2="18.5" />
-  <!-- Orange accent dot — this meeting, right now -->
-  <circle cx="17.5" cy="5.5" r="2" fill="#ff5722" stroke="none" />
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 24 24"
+     fill="none"
+     stroke="currentColor"
+     stroke-width="1.5"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+  <title>Meeting debrief — calendar event with captured decisions and action items</title>
+  <!-- calendar frame -->
+  <rect x="2" y="4" width="20" height="18" rx="2"/>
+  <!-- binding clips (calendar pin tabs above the frame) -->
+  <line x1="7" y1="2" x2="7" y2="6"/>
+  <line x1="17" y1="2" x2="17" y2="6"/>
+  <!-- header/body divider -->
+  <line x1="2" y1="9" x2="22" y2="9"/>
+  <!-- captured note lines (decisions + action items) -->
+  <line x1="6" y1="13" x2="18" y2="13"/>
+  <line x1="6" y1="16" x2="18" y2="16"/>
+  <line x1="6" y1="19" x2="13" y2="19"/>
+  <!-- orange accent dot: debrief in progress / pending capture -->
+  <circle cx="18" cy="19" r="1.75" fill="#ff5722" stroke="none"/>
 </svg>
