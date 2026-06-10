@@ -523,6 +523,23 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/inbox-catchup/SKILL.md"
     },
     {
+      "name": "meeting-debrief",
+      "platform": "desktop",
+      "description": "Generates a structured post-meeting debrief from Google Calendar, Drive docs, and Gmail context. Captures decisions made, action items with owners and due dates, open questions, and next steps. Drafts follow-up emails to action item owners.",
+      "trigger": "After a meeting ends — when you need to write up what was decided, assign ownership to action items, draft follow-up emails from a call, capture meeting notes, or summarize a standup or planning session.",
+      "tags": [
+        "meetings",
+        "productivity",
+        "google-calendar",
+        "google-drive",
+        "gmail",
+        "action-items"
+      ],
+      "sideEffects": true,
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/meeting-debrief/icon.svg",
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/meeting-debrief/SKILL.md"
+    },
+    {
       "name": "research-assistant",
       "platform": "desktop",
       "description": "Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary.",

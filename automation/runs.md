@@ -7,3 +7,4 @@ Schema and semantics: see [`daily-skill-routine.md` §8](./daily-skill-routine.m
 | date       | skill_slug | skills_pr | status | note_pr | notes |
 |------------|------------|-----------|--------|---------|-------|
 <!-- routine appends rows below this line -->
+| 2026-06-10 | desktop/meeting-debrief | PENDING | open | | First run — no prior cache; support.claude.com URLs returned 403 (auth-gated), platform docs fetched OK |
