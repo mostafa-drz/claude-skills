@@ -523,6 +523,22 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/inbox-catchup/SKILL.md"
     },
     {
+      "name": "meeting-debrief",
+      "platform": "desktop",
+      "description": "Captures what happened after a meeting — pulls the Calendar event, attendees, and any linked Drive docs or Gmail threads, then turns a brief verbal recap into a structured debrief with decisions, action items (owner + deadline), and a ready-to-send follow-up email.",
+      "trigger": "After a meeting, when asked to write up a meeting, capture outcomes, document decisions, draft a follow-up, or send meeting notes to attendees.",
+      "tags": [
+        "meetings",
+        "calendar",
+        "email",
+        "productivity",
+        "documentation"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/meeting-debrief/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/meeting-debrief/icon.svg"
+    },
+    {
       "name": "research-assistant",
       "platform": "desktop",
       "description": "Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary.",

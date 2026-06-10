@@ -73,6 +73,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | Skill | Description |
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
+| <img src="desktop/meeting-debrief/icon.svg" width="22" height="22" alt="meeting-debrief icon" valign="middle"> &nbsp; [`meeting-debrief`](desktop/meeting-debrief/SKILL.md) | Pulls the Calendar event, attendees, and linked Drive docs or Gmail threads, then turns a brief verbal recap into a structured debrief with decisions, action items (owner + deadline), and a ready-to-send follow-up email. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 
 ## Skill Details
@@ -452,6 +453,14 @@ Analyzes recent Claude Code conversations and local Claude state (skills, settin
 Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. Helps triage messages and draft replies. Use when starting the day, returning from a break, or needing to quickly catch up on communications.
 
 [View SKILL.md ->](desktop/inbox-catchup/SKILL.md)
+
+---
+
+### `meeting-debrief` (Desktop)
+
+Captures what happened after a meeting — pulls the Calendar event, attendees, and any linked Drive docs or Gmail threads, then turns a brief verbal recap into a structured debrief with decisions, action items (owner + deadline), and a ready-to-send follow-up email. Use after a meeting, when asked to write up a meeting, capture outcomes, document decisions, or draft a follow-up to attendees.
+
+[View SKILL.md ->](desktop/meeting-debrief/SKILL.md)
 
 ---
 
