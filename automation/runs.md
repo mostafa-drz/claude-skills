@@ -7,4 +7,4 @@ Schema and semantics: see [`daily-skill-routine.md` §8](./daily-skill-routine.m
 | date       | skill_slug | skills_pr | status | note_pr | notes |
 |------------|------------|-----------|--------|---------|-------|
 <!-- routine appends rows below this line -->
-| 2026-06-11 | desktop/sprint-retro | TBD | open | | First run. Weekly-review rejected (duplicate of PR #10). Retried with sprint-retro. 2/3 source URLs 403. |
+| 2026-06-11 | desktop/sprint-retro | https://github.com/mostafa-drz/claude-skills/pull/30 | open | | First run. Weekly-review rejected (duplicate of PR #10). Retried with sprint-retro. 2/3 source URLs 403. |
