@@ -534,6 +534,22 @@
       ],
       "sideEffects": false,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/research-assistant/SKILL.md"
+    },
+    {
+      "name": "sprint-retro",
+      "platform": "desktop",
+      "description": "Prepares a data-grounded sprint retrospective by pulling the completed sprint's shipped tickets, incomplete items, blockers, and velocity from Linear, then framing What Went Well / What Didn't / What to Try with actual evidence instead of recollection.",
+      "trigger": "Preparing a sprint retrospective, running a team retro, or when asked what shipped last sprint, what stalled, what the velocity was, or what to change next sprint.",
+      "tags": [
+        "agile",
+        "retrospective",
+        "linear",
+        "sprint",
+        "team"
+      ],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/sprint-retro/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/sprint-retro/icon.svg"
     }
   ]
 }

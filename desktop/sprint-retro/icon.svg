@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <title>Sprint retrospective board — three columns: went well, didn't, to try</title>
+  <!-- Outer board frame -->
+  <rect x="2" y="3" width="20" height="18" rx="1.5"/>
+  <!-- Header strip -->
+  <line x1="2" y1="8" x2="22" y2="8" stroke-width="1"/>
+  <!-- Column dividers -->
+  <line x1="9" y1="8" x2="9" y2="21" stroke-width="0.75" opacity="0.45"/>
+  <line x1="16" y1="8" x2="16" y2="21" stroke-width="0.75" opacity="0.45"/>
+  <!-- Column accent dots in header: green (went well), red (didn't), amber (to try) -->
+  <circle cx="5.5" cy="5.5" r="1.4" fill="#16a34a" stroke="none"/>
+  <circle cx="12.5" cy="5.5" r="1.4" fill="#dc2626" stroke="none"/>
+  <circle cx="19.5" cy="5.5" r="1.4" fill="#f59e0b" stroke="none"/>
+  <!-- Column 1 cards (went well) — two items -->
+  <rect x="3.5" y="10" width="4" height="2.5" rx="0.5" opacity="0.7"/>
+  <rect x="3.5" y="14" width="4" height="2.5" rx="0.5" opacity="0.7"/>
+  <!-- Column 2 cards (didn't go well) — one item -->
+  <rect x="10.5" y="10" width="4" height="2.5" rx="0.5" opacity="0.7"/>
+  <!-- Column 3 cards (to try) — one item -->
+  <rect x="17.5" y="10" width="3" height="2.5" rx="0.5" opacity="0.7"/>
+</svg>
