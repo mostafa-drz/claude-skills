@@ -74,6 +74,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
+| <img src="desktop/sprint-retro/icon.svg" width="22" height="22" alt="sprint-retro icon" valign="middle"> &nbsp; [`sprint-retro`](desktop/sprint-retro/SKILL.md) | Prepares a data-grounded sprint retrospective from Linear — shipped tickets, stalled items, velocity, blockers — framed into What Went Well / What Didn't / What to Try with evidence rather than recollection. |
 
 ## Skill Details
 
