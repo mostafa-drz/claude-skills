@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-16",
+  "updated": "2026-06-12",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -534,6 +534,23 @@
       ],
       "sideEffects": false,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/research-assistant/SKILL.md"
+    },
+    {
+      "name": "travel-brief",
+      "platform": "desktop",
+      "description": "Compiles a structured trip brief from Gmail booking confirmations, Google Calendar events during the trip window, and live destination information — time zone, weather forecast, currency, and practical notes.",
+      "trigger": "Preparing for a trip, asking 'prep me for my trip to X', 'what do I need for my flight to Tokyo', 'brief me on my Boston trip', or 'what meetings do I have while traveling'.",
+      "tags": [
+        "travel",
+        "calendar",
+        "gmail",
+        "google-workspace",
+        "productivity",
+        "briefing"
+      ],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/travel-brief/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/travel-brief/icon.svg"
     }
   ]
 }

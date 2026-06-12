@@ -7,3 +7,4 @@ Schema and semantics: see [`daily-skill-routine.md` §8](./daily-skill-routine.m
 | date       | skill_slug | skills_pr | status | note_pr | notes |
 |------------|------------|-----------|--------|---------|-------|
 <!-- routine appends rows below this line -->
+| 2026-06-12 | desktop/travel-brief | https://github.com/mostafa-drz/claude-skills/pull/31 | open | | First run. meeting-prep skipped — PR #6 already open for that slug. |
