@@ -74,6 +74,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
+| <img src="desktop/travel-brief/icon.svg" width="22" height="22" alt="travel-brief icon" valign="middle"> &nbsp; [`travel-brief`](desktop/travel-brief/SKILL.md) | Compiles a trip brief from Gmail booking confirmations, Calendar events during the trip, and live destination info — time zone, weather, currency, practical notes. |
 
 ## Skill Details
 
@@ -460,6 +461,14 @@ Scans all connected communication channels -- Gmail, Slack, Calendar, and any av
 Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary. Use when asked to research something, prepare a briefing, or compile background on a topic.
 
 [View SKILL.md ->](desktop/research-assistant/SKILL.md)
+
+---
+
+### `travel-brief` (Desktop)
+
+Compiles a structured trip brief from Gmail booking confirmations, Google Calendar events during the trip, and live destination info (time zone, weather, currency, practical notes). Use when preparing for a trip, asking "prep me for my Boston trip", or "what do I need to know before I fly to Tokyo".
+
+[View SKILL.md ->](desktop/travel-brief/SKILL.md)
 
 ---
 
