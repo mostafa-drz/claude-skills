@@ -74,6 +74,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
+| <img src="desktop/week-ahead/icon.svg" width="22" height="22" alt="week-ahead icon" valign="middle"> &nbsp; [`week-ahead`](desktop/week-ahead/SKILL.md) | Builds a structured week-ahead briefing by scanning Google Calendar for the next 7 days, surfacing linked Drive documents per event, and checking Gmail for pending threads. Produces a day-by-day plan with per-meeting prep notes and suggested focus blocks. |
 
 ## Skill Details
 
@@ -460,6 +461,14 @@ Scans all connected communication channels -- Gmail, Slack, Calendar, and any av
 Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary. Use when asked to research something, prepare a briefing, or compile background on a topic.
 
 [View SKILL.md ->](desktop/research-assistant/SKILL.md)
+
+---
+
+### `week-ahead` (Desktop)
+
+Builds a structured week-ahead briefing by scanning Google Calendar for the next 7 days, surfacing linked Drive documents per event, and checking Gmail for pending threads with attendees. Produces a day-by-day plan with per-meeting prep notes, pending action items from email, and suggested focus blocks. Use when planning the week, preparing for Monday, or asking what's coming up this week.
+
+[View SKILL.md ->](desktop/week-ahead/SKILL.md)
 
 ---
 

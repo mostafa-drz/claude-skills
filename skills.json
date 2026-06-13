@@ -534,6 +534,23 @@
       ],
       "sideEffects": false,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/research-assistant/SKILL.md"
+    },
+    {
+      "name": "week-ahead",
+      "platform": "desktop",
+      "description": "Builds a structured week-ahead briefing by scanning Google Calendar for the next 7 days, surfacing linked Drive documents per event, and checking Gmail for pending threads with attendees. Produces a day-by-day plan with per-meeting prep notes, pending action items, and suggested focus blocks.",
+      "trigger": "Planning the week, preparing for Monday, asking what's coming up this week, wanting a Sunday-evening preview, or saying 'what do I have this week.'",
+      "tags": [
+        "calendar",
+        "planning",
+        "gmail",
+        "drive",
+        "productivity",
+        "google-workspace"
+      ],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/week-ahead/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/week-ahead/icon.svg"
     }
   ]
 }
