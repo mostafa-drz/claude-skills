@@ -7,3 +7,4 @@ Schema and semantics: see [`daily-skill-routine.md` §8](./daily-skill-routine.m
 | date       | skill_slug | skills_pr | status | note_pr | notes |
 |------------|------------|-----------|--------|---------|-------|
 <!-- routine appends rows below this line -->
+| 2026-06-14 | — | — | skipped | | PR queue saturated (25+ open desktop skill PRs); no topic passes §4 without duplicating an open PR in spirit. See docs-cache/2026-06-14.md. |
