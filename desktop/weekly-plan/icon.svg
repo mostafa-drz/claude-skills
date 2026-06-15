@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <title>Weekly plan — five-day calendar with priority focus marker</title>
+  <!-- Calendar frame -->
+  <rect x="2" y="4" width="20" height="16" rx="2"/>
+  <!-- Calendar nubs (attachment points at top) -->
+  <line x1="8" y1="2" x2="8" y2="6"/>
+  <line x1="16" y1="2" x2="16" y2="6"/>
+  <!-- Header / date bar -->
+  <line x1="2" y1="9" x2="22" y2="9"/>
+  <!-- Four dividers creating five equal day columns (Mon–Fri) -->
+  <line x1="6" y1="9" x2="6" y2="20" stroke-width="0.75"/>
+  <line x1="10" y1="9" x2="10" y2="20" stroke-width="0.75"/>
+  <line x1="14" y1="9" x2="14" y2="20" stroke-width="0.75"/>
+  <line x1="18" y1="9" x2="18" y2="20" stroke-width="0.75"/>
+  <!-- Monday column: lightly filled to mark start-of-week / today -->
+  <rect x="2.1" y="9.1" width="3.8" height="10.8" fill="currentColor" fill-opacity="0.14" stroke="none"/>
+  <!-- Tuesday column: a scheduled focus block (protected deep work) -->
+  <rect x="6.3" y="10.5" width="3.4" height="5" rx="0.5" fill="currentColor" fill-opacity="0.28" stroke="none"/>
+  <!-- Priority badge: orange dot in top-right of header area — marks this week as planned -->
+  <circle cx="20.5" cy="6.5" r="2" fill="#ff5722" stroke="none"/>
+</svg>

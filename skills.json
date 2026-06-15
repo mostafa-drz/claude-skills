@@ -534,6 +534,23 @@
       ],
       "sideEffects": false,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/research-assistant/SKILL.md"
+    },
+    {
+      "name": "weekly-plan",
+      "platform": "desktop",
+      "description": "Synthesizes a forward-looking week plan from Calendar, Gmail, and Linear. Scans the coming seven days of meetings, surfaces email threads needing action this week, and pulls current-cycle Linear priorities, then produces a structured plan: meeting density by day, top 3 outcomes to own, open focus windows, and a defer list.",
+      "trigger": "Planning the week ahead, asking what to focus on this week, Monday morning planning, weekly review, or when asked 'what's my week look like'.",
+      "tags": [
+        "planning",
+        "calendar",
+        "email",
+        "linear",
+        "productivity",
+        "focus"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/weekly-plan/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/weekly-plan/icon.svg"
     }
   ]
 }
