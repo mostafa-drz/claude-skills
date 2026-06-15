@@ -74,6 +74,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
+| <img src="desktop/weekly-plan/icon.svg" width="22" height="22" alt="weekly-plan icon" valign="middle"> &nbsp; [`weekly-plan`](desktop/weekly-plan/SKILL.md) | Synthesizes a forward-looking week plan from Calendar, Gmail, and Linear — meeting density, top 3 outcomes, focus windows, and a defer list. |
 
 ## Skill Details
 
@@ -460,6 +461,14 @@ Scans all connected communication channels -- Gmail, Slack, Calendar, and any av
 Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary. Use when asked to research something, prepare a briefing, or compile background on a topic.
 
 [View SKILL.md ->](desktop/research-assistant/SKILL.md)
+
+---
+
+### `weekly-plan` (Desktop)
+
+Synthesizes a forward-looking week plan from Calendar, Gmail, and Linear. Scans the coming seven days of meetings, surfaces email threads needing action, and pulls current-cycle Linear priorities, then produces a structured plan: meeting density by day, top 3 outcomes to own, open focus windows, and a defer list. Use when planning the week ahead, asking what to focus on this week, Monday morning planning, or preparing for standup.
+
+[View SKILL.md ->](desktop/weekly-plan/SKILL.md)
 
 ---
 
