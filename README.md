@@ -73,6 +73,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | Skill | Description |
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
+| <img src="desktop/project-context-pack/icon.svg" width="22" height="22" alt="project-context-pack icon" valign="middle"> &nbsp; [`project-context-pack`](desktop/project-context-pack/SKILL.md) | Pulls together all available context on a named project — Drive documents, Gmail threads, and Calendar meetings — into a structured brief. Surfaces recent decisions, open questions, and key contributors so you can re-engage quickly after time away. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 
 ## Skill Details
@@ -452,6 +453,14 @@ Analyzes recent Claude Code conversations and local Claude state (skills, settin
 Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. Helps triage messages and draft replies. Use when starting the day, returning from a break, or needing to quickly catch up on communications.
 
 [View SKILL.md ->](desktop/inbox-catchup/SKILL.md)
+
+---
+
+### `project-context-pack` (Desktop)
+
+Pulls together all available context on a named project — Drive documents, Gmail threads, and Calendar meetings — into a structured brief. Surfaces recent decisions, open questions, key contributors, and last activity timestamp so you can re-engage quickly after time away. Use when picking up a project you haven't touched in a while, onboarding to someone else's work, or when asked to catch up on any project.
+
+[View SKILL.md ->](desktop/project-context-pack/SKILL.md)
 
 ---
 

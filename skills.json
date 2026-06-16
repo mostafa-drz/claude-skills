@@ -523,6 +523,25 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/inbox-catchup/SKILL.md"
     },
     {
+      "name": "project-context-pack",
+      "platform": "desktop",
+      "description": "Pulls together all available context on a named project — Drive documents, Gmail threads, and Calendar meetings — into a structured brief. Surfaces recent decisions, open questions, key contributors, and last activity so you can re-engage quickly after time away.",
+      "trigger": "Picking up a project after time away, onboarding to someone else's work, preparing for a project review, or when asked to catch up on, summarize, or brief yourself on any project.",
+      "tags": [
+        "projects",
+        "context",
+        "gmail",
+        "google-drive",
+        "calendar",
+        "google-workspace",
+        "productivity",
+        "briefing"
+      ],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/project-context-pack/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/project-context-pack/icon.svg"
+    },
+    {
       "name": "research-assistant",
       "platform": "desktop",
       "description": "Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary.",
