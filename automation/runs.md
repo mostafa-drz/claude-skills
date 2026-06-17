@@ -7,3 +7,4 @@ Schema and semantics: see [`daily-skill-routine.md` §8](./daily-skill-routine.m
 | date       | skill_slug | skills_pr | status | note_pr | notes |
 |------------|------------|-----------|--------|---------|-------|
 <!-- routine appends rows below this line -->
+| 2026-06-17 | — | — | skipped | | First attempt (weekly-review) = duplicate of PR #10. Retry exhausted: 29 open desktop PRs cover all remaining distinctive Google Workspace topics (see PR list). Queue saturation exceeds topic supply — skip per §9. |
