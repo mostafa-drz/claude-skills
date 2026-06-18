@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 24 24"
+     fill="none"
+     stroke="currentColor"
+     stroke-width="1.5"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+  <title>Follow-up Finder — sent envelope awaiting reply, with elapsed-time clock</title>
+  <!-- Envelope body: the email you sent -->
+  <rect x="1.5" y="7.5" width="15" height="11" rx="1.5"/>
+  <!-- Envelope V-crease: diagonal flap lines -->
+  <polyline points="1.5,7.5 9,14 16.5,7.5"/>
+  <!-- Clock badge: time elapsed since sending -->
+  <circle cx="19.5" cy="4.5" r="3.5"/>
+  <!-- Hour hand (pointing to 12) -->
+  <line x1="19.5" y1="4.5" x2="19.5" y2="2.2" stroke-width="1"/>
+  <!-- Minute hand (pointing to 3 — quarter-hour, waiting) -->
+  <line x1="19.5" y1="4.5" x2="21.8" y2="4.5" stroke-width="1"/>
+  <!-- Center dot: pending/attention indicator -->
+  <circle cx="19.5" cy="4.5" r="1.1" fill="#f59e0b" stroke="none"/>
+</svg>

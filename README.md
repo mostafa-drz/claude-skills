@@ -72,6 +72,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 
 | Skill | Description |
 |-------|-------------|
+| <img src="desktop/follow-up-finder/icon.svg" width="22" height="22" alt="follow-up-finder icon" valign="middle"> &nbsp; [`follow-up-finder`](desktop/follow-up-finder/SKILL.md) | Scans Gmail sent mail for threads where you sent the last message and got no reply, surfaces a prioritized follow-up queue, and drafts follow-up messages on request. |
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 
@@ -444,6 +445,16 @@ Analyzes recent Claude Code conversations and local Claude state (skills, settin
 **Usage:** `/workflow-advisor [--all] [--count <n>]`
 
 [View SKILL.md ->](code/workflow-advisor/SKILL.md)
+
+---
+
+### `follow-up-finder` (Desktop)
+
+Scans Gmail sent mail for threads where you sent the last message and got no reply. Groups results into Overdue, At-Risk, and Sent Recently tiers. Helps draft follow-up messages — never sends automatically. Use when checking pending emails, finding unanswered outbound threads, or asking "did anyone reply to X?"
+
+**Requires:** Gmail connected via Google Workspace integration.
+
+[View SKILL.md ->](desktop/follow-up-finder/SKILL.md)
 
 ---
 
