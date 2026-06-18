@@ -509,6 +509,22 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/workflow-advisor/SKILL.md"
     },
     {
+      "name": "follow-up-finder",
+      "platform": "desktop",
+      "description": "Scans Gmail sent mail for threads where you sent the last message and received no reply. Groups results into Overdue, At-Risk, and Sent Recently tiers. Drafts follow-up messages on request — never sends automatically.",
+      "trigger": "Checking pending emails, finding unanswered outbound threads, reviewing what you're still waiting on, or asking 'did anyone reply to X?'",
+      "tags": [
+        "email",
+        "gmail",
+        "follow-up",
+        "productivity",
+        "communication"
+      ],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/follow-up-finder/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/follow-up-finder/icon.svg"
+    },
+    {
       "name": "inbox-catchup",
       "platform": "desktop",
       "description": "Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. Helps triage messages and draft replies.",
