@@ -73,6 +73,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | Skill | Description |
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
+| <img src="desktop/meeting-followup/icon.svg" width="22" height="22" alt="meeting-followup icon" valign="middle"> &nbsp; [`meeting-followup`](desktop/meeting-followup/SKILL.md) | Drafts group and individual follow-up emails after a meeting, drawing from Google Calendar event details, linked Drive notes, and the attendee list. Shows all drafts for approval before sending. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 
 ## Skill Details
@@ -452,6 +453,14 @@ Analyzes recent Claude Code conversations and local Claude state (skills, settin
 Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. Helps triage messages and draft replies. Use when starting the day, returning from a break, or needing to quickly catch up on communications.
 
 [View SKILL.md ->](desktop/inbox-catchup/SKILL.md)
+
+---
+
+### `meeting-followup` (Desktop)
+
+Drafts group and individual follow-up emails after a meeting, drawing from Google Calendar event details, linked Drive notes, and the attendee list. Produces a group recap (decisions + action table) and a short personalized message per action owner. All drafts shown for approval before anything sends. Use after any meeting, call, or standup to capture decisions and push action items into the right inboxes.
+
+[View SKILL.md ->](desktop/meeting-followup/SKILL.md)
 
 ---
 

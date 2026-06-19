@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 24 24"
+     fill="none"
+     stroke="currentColor"
+     stroke-width="1.5"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+  <title>Meeting follow-up — calendar event generating outgoing messages</title>
+
+  <!-- Calendar body -->
+  <rect x="2" y="3" width="14" height="15" rx="1.5"/>
+
+  <!-- Calendar header rule -->
+  <line x1="2" y1="7" x2="16" y2="7"/>
+
+  <!-- Binding pegs at top -->
+  <line x1="6" y1="1.5" x2="6" y2="4.5"/>
+  <line x1="12" y1="1.5" x2="12" y2="4.5"/>
+
+  <!-- Date grid — three rows of small marks representing a week -->
+  <line x1="5" y1="11" x2="7" y2="11" stroke-width="0.75"/>
+  <line x1="9" y1="11" x2="11" y2="11" stroke-width="0.75"/>
+  <line x1="5" y1="14" x2="7" y2="14" stroke-width="0.75"/>
+  <line x1="9" y1="14" x2="11" y2="14" stroke-width="0.75"/>
+
+  <!-- Outgoing arrow — departs from right edge of calendar toward top-right -->
+  <polyline points="15,12 21,9"/>
+  <polyline points="18,9 21,9 21,12"/>
+
+  <!-- Accent dot on arrowhead: action dispatched (brand primary) -->
+  <circle cx="21" cy="9" r="1.75" fill="#ff5722" stroke="none"/>
+</svg>
