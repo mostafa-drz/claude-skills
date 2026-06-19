@@ -523,6 +523,22 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/inbox-catchup/SKILL.md"
     },
     {
+      "name": "meeting-followup",
+      "platform": "desktop",
+      "description": "Drafts group and individual follow-up emails after a meeting, drawing from Google Calendar event details, linked Drive notes, and the attendee list. Produces a group recap (decisions made, action items table with owners and due dates) and a short personalized message per action owner. All drafts shown for approval before anything sends.",
+      "trigger": "After a meeting, call, or standup to send follow-ups, recap a session, document decisions, capture action items, or summarize agreements for the team.",
+      "tags": [
+        "communication",
+        "email",
+        "calendar",
+        "productivity",
+        "google-workspace"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/meeting-followup/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/meeting-followup/icon.svg"
+    },
+    {
       "name": "research-assistant",
       "platform": "desktop",
       "description": "Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary.",
