@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <title>Incident debrief — timeline reconstruction leading to root cause</title>
+  <!-- Vertical timeline spine -->
+  <line x1="7" y1="4" x2="7" y2="20"/>
+  <!-- Timeline event nodes: three moments in the incident -->
+  <circle cx="7" cy="6" r="1.5" fill="currentColor" stroke="none"/>
+  <circle cx="7" cy="12" r="1.5" fill="currentColor" stroke="none"/>
+  <circle cx="7" cy="18" r="1.5" fill="currentColor" stroke="none"/>
+  <!-- Horizontal event labels (lines representing text) -->
+  <line x1="10" y1="6" x2="19" y2="6"/>
+  <line x1="10" y1="12" x2="19" y2="12"/>
+  <line x1="10" y1="18" x2="16" y2="18"/>
+  <!-- Root cause accent: red dot at the middle event (the moment of failure) -->
+  <circle cx="7" cy="12" r="2.5" fill="#dc2626" stroke="none"/>
+  <!-- Resolution accent: green dot at the bottom event -->
+  <circle cx="7" cy="18" r="2.5" fill="#16a34a" stroke="none"/>
+</svg>

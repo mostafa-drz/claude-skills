@@ -523,6 +523,23 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/inbox-catchup/SKILL.md"
     },
     {
+      "name": "incident-debrief",
+      "platform": "desktop",
+      "description": "Drafts a structured post-incident review by reconstructing the incident timeline from Slack threads, Linear tickets, and GitHub deploys. Produces root-cause analysis, impact summary, and specific blameless action items. Never posts automatically.",
+      "trigger": "An incident or outage is resolved, when writing a post-mortem or incident review, when asked 'can you help with the incident report?', or when reconstructing what happened during a production issue.",
+      "tags": [
+        "incident",
+        "post-mortem",
+        "sre",
+        "linear",
+        "slack",
+        "reliability"
+      ],
+      "sideEffects": false,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/incident-debrief/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/incident-debrief/icon.svg"
+    },
+    {
       "name": "research-assistant",
       "platform": "desktop",
       "description": "Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary.",
