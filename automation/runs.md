@@ -7,4 +7,4 @@ Schema and semantics: see [`daily-skill-routine.md` §8](./daily-skill-routine.m
 | date       | skill_slug | skills_pr | status | note_pr | notes |
 |------------|------------|-----------|--------|---------|-------|
 <!-- routine appends rows below this line -->
-| 2026-06-20 | desktop/incident-debrief | PENDING | open | | Phase A: skipped (runs.md empty). Phase B: support.claude.com 403; platform docs OK. sprint-retro rejected (open PR #30 already exists); incident-debrief chosen as non-duplicate. |
+| 2026-06-20 | desktop/incident-debrief | https://github.com/mostafa-drz/claude-skills/pull/39 | open | | Phase A: skipped (runs.md empty). Phase B: support.claude.com 403; platform docs OK. sprint-retro rejected (open PR #30 exists); incident-debrief chosen as non-duplicate. |
