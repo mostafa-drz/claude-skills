@@ -73,6 +73,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | Skill | Description |
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
+| <img src="desktop/incident-debrief/icon.svg" width="22" height="22" alt="incident-debrief icon" valign="middle"> &nbsp; [`incident-debrief`](desktop/incident-debrief/SKILL.md) | Drafts a structured post-incident review by reconstructing the incident timeline from Slack, Linear, and GitHub, then producing root-cause analysis, impact summary, and blameless action items. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 
 ## Skill Details
@@ -452,6 +453,14 @@ Analyzes recent Claude Code conversations and local Claude state (skills, settin
 Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. Helps triage messages and draft replies. Use when starting the day, returning from a break, or needing to quickly catch up on communications.
 
 [View SKILL.md ->](desktop/inbox-catchup/SKILL.md)
+
+---
+
+### `incident-debrief` (Desktop)
+
+Drafts a structured post-incident review (post-mortem) by reconstructing the incident timeline from Slack threads, Linear tickets, and GitHub deploys. Produces a root-cause analysis, impact summary, and specific blameless action items. Use when an incident is resolved, when writing a post-mortem, or when asked to reconstruct what happened during an outage.
+
+[View SKILL.md ->](desktop/incident-debrief/SKILL.md)
 
 ---
 
