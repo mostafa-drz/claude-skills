@@ -7,3 +7,4 @@ Schema and semantics: see [`daily-skill-routine.md` §8](./daily-skill-routine.m
 | date       | skill_slug | skills_pr | status | note_pr | notes |
 |------------|------------|-----------|--------|---------|-------|
 <!-- routine appends rows below this line -->
+| 2026-06-21 | — | — | skipped | | PR queue saturated — 30 open desktop skill PRs (#6–#39), 0 merged since project inception. Skipping Phase B to avoid further unreviewed backlog growth. |
