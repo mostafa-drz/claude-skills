@@ -534,6 +534,22 @@
       ],
       "sideEffects": false,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/research-assistant/SKILL.md"
+    },
+    {
+      "name": "weekly-review",
+      "platform": "desktop",
+      "description": "Pulls this week's Calendar events, Gmail threads, and any connected integrations into a structured retrospective. Synthesizes what shipped, what slipped, and what patterns emerged, then produces a forward-look for next week.",
+      "trigger": "Doing a weekly review, end-of-week reflection, GTD weekly review, Friday retrospective, or preparing for the week ahead.",
+      "tags": [
+        "productivity",
+        "reflection",
+        "calendar",
+        "email",
+        "planning"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/weekly-review/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/weekly-review/icon.svg"
     }
   ]
 }
