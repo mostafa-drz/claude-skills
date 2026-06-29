@@ -74,6 +74,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
+| <img src="desktop/weekly-review/icon.svg" width="22" height="22" alt="weekly-review icon" valign="middle"> &nbsp; [`weekly-review`](desktop/weekly-review/SKILL.md) | Pulls this week's Calendar events, Gmail threads, and connected integrations into a structured retrospective — what shipped, what slipped, patterns, and a forward-look for next week. |
 
 ## Skill Details
 
