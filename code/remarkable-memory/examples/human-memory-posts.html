@@ -1,0 +1,214 @@
+<!--
+  Sample output of /remarkable-memory — a rendered cluster page.
+  Self-contained (no external scripts/fonts/images); thumbnails are inline SVG
+  stand-ins for real page renders. Open directly in any browser to preview the
+  look. Content is illustrative.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Human Memory — post ideas · reMarkable Memory</title>
+<style>
+  :root {
+    --bg:#ffffff; --surface:rgba(0,0,0,0.02); --surface-2:rgba(0,0,0,0.04);
+    --border:rgba(0,0,0,0.10); --text:#16181d; --text-2:#5b616e;
+    --primary:#ff5722; --secondary:#0389c7; --good:#1a8f4b; --warn:#b26a00;
+    --radius:14px; --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --bg:#121212; --surface:rgba(255,255,255,0.02); --surface-2:rgba(255,255,255,0.04);
+    --border:rgba(255,255,255,0.10); --text:#ececec; --text-2:#9aa0ab;
+    --primary:#ff5722; --secondary:#03a9f4; --good:#37d67a; --warn:#f0b429;
+  }}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto;padding:40px 20px 80px}
+  header{display:flex;align-items:flex-start;gap:14px;margin-bottom:6px}
+  header .icon{width:32px;height:32px;color:var(--primary);flex:0 0 auto;margin-top:4px}
+  header .icon svg{width:100%;height:100%;display:block}
+  h1{font-size:1.7rem;line-height:1.2;margin:0;letter-spacing:-0.01em}
+  .summary{color:var(--text-2);margin:8px 0 0;max-width:62ch}
+  .meta{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:20px 0 8px;color:var(--text-2);font-size:.86rem}
+  .meta b{color:var(--text);font-weight:600}
+  .meter{display:inline-flex;align-items:center;gap:8px}
+  .meter .track{width:120px;height:7px;border-radius:99px;background:var(--surface-2);overflow:hidden;border:1px solid var(--border)}
+  .meter .fill{height:100%;background:linear-gradient(90deg,var(--warn),var(--good))}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 4px}
+  .chip{font-size:.76rem;padding:3px 10px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--text-2)}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 14px}
+  .toolbar button{font:inherit;font-size:.82rem;cursor:pointer;padding:6px 13px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--text-2)}
+  .toolbar button.active{color:var(--bg);background:var(--primary);border-color:var(--primary)}
+  .grid{display:grid;gap:16px}
+  .card{border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);padding:18px 18px 16px}
+  .card.flag{border-left:3px solid var(--warn)}
+  .card .head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+  .badge{font-size:.72rem;font-weight:600;padding:2px 9px;border-radius:99px;border:1px solid transparent}
+  .badge.good{color:var(--good);border-color:rgba(55,214,122,.4);background:rgba(55,214,122,.12);border-color:color-mix(in srgb,var(--good) 40%,transparent);background:color-mix(in srgb,var(--good) 12%,transparent)}
+  .badge.warn{color:var(--warn);border-color:rgba(240,180,41,.4);background:rgba(240,180,41,.12);border-color:color-mix(in srgb,var(--warn) 40%,transparent);background:color-mix(in srgb,var(--warn) 12%,transparent)}
+  .type{font-size:.72rem;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em}
+  .prov{font-size:.78rem;color:var(--text-2);margin-left:auto}
+  .card .body{font-size:.95rem}
+  .card .body :first-child{margin-top:0}
+  .card .body ul{padding-left:1.2em}
+  mark.uncertain{background:none;color:var(--warn);border-bottom:1px dotted var(--warn)}
+  .card .foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .thumb{margin-top:12px;border:1px solid var(--border);border-radius:10px;overflow:hidden;max-width:260px;background:var(--surface-2)}
+  .thumb svg{display:block;width:100%;height:auto}
+  .review-hint{font-size:.76rem;color:var(--warn)}
+  .review-hint code{font-size:.72rem;padding:1px 5px;border-radius:5px;background:var(--surface-2);border:1px solid var(--border)}
+  footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--border);color:var(--text-2);font-size:.8rem}
+  a{color:var(--secondary);text-decoration:none}a:hover{text-decoration:underline}
+  @media (max-width:560px){.wrap{padding:28px 14px 60px}h1{font-size:1.4rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="8" width="20" height="26" rx="2.5"/><path d="M11 15h12" stroke="#03a9f4"/><path d="M11 20h12" opacity="0.55"/><path d="M11 25h8" opacity="0.55"/><path d="M27 26c6 0 6-8 12-8" stroke="#ff5722"/><circle cx="39" cy="18" r="3" fill="#ff5722" stroke="none"/><circle cx="35" cy="32" r="1.75" stroke="#ff5722"/><circle cx="42" cy="30" r="1.75" stroke="#ff5722"/><path d="M39 21v6M39 27l-4 5M39 27l3 3" stroke="#ff5722" opacity="0.5"/></svg></span>
+    <div>
+      <h1>Human Memory — post ideas</h1>
+      <p class="summary">Neuroscience notes and figure ideas for the Human Memory series — encoding, consolidation, and recall. Several pages sketch diagrams.</p>
+    </div>
+  </header>
+
+  <div class="meta">
+    <span><b>5</b> notes</span>
+    <span>2026-07-24 → 2026-08-11</span>
+    <span class="meter" title="average extraction confidence">
+      avg confidence
+      <span class="track"><span class="fill" style="width:79%"></span></span>
+      <b>79%</b>
+    </span>
+  </div>
+
+  <div class="chips" aria-label="entities">
+    <span class="chip">hippocampus</span><span class="chip">encoding</span>
+    <span class="chip">consolidation</span><span class="chip">recall</span>
+    <span class="chip">sleep</span><span class="chip">spaced repetition</span>
+  </div>
+
+  <div class="toolbar" role="group" aria-label="filter">
+    <button data-filter="all" class="active">All</button>
+    <button data-filter="flagged">⚠ Needs review</button>
+    <button data-sort="confidence">Sort: confidence</button>
+    <button data-sort="recent">Sort: recent</button>
+  </div>
+
+  <div class="grid" id="grid">
+
+    <article class="card" data-confidence="0.94" data-modified="2026-08-11">
+      <div class="head"><span class="badge good">94%</span><span class="type">idea</span>
+        <span class="prov">📓 Human Memory · p.7 · synced 2026-08-12</span></div>
+      <div class="body">
+        <p><b>Post angle:</b> "Your memory isn't a recording — it's a re-write." Each recall
+        edits the trace (reconsolidation). Lead with the courtroom-witness example.</p>
+        <ul><li>Hook: memory as a living document, not a hard drive</li>
+        <li>Payoff: why re-telling a story changes it</li></ul>
+      </div>
+      <div class="foot"><span class="chip">recall</span><span class="chip">blog-idea</span></div>
+    </article>
+
+    <article class="card" data-confidence="0.88" data-modified="2026-08-04">
+      <div class="head"><span class="badge good">88%</span><span class="type">diagram</span>
+        <span class="prov">📓 Human Memory · p.5 · synced 2026-08-12</span></div>
+      <div class="body">
+        <p>Three-stage loop figure: <b>encode → consolidate (sleep) → retrieve</b>, with
+        retrieval feeding back into re-encoding. Label the feedback arrow "reconsolidation".</p>
+      </div>
+      <div class="thumb" aria-label="sketch of a three-stage memory loop">
+        <svg viewBox="0 0 260 120" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#8a8f98" stroke-width="1.6" stroke-linecap="round">
+          <rect x="14" y="44" width="56" height="32" rx="5"/><rect x="102" y="44" width="56" height="32" rx="5"/><rect x="190" y="44" width="56" height="32" rx="5"/>
+          <path d="M70 60h32M158 60h32" stroke="#ff5722"/><path d="M96 56l6 4-6 4M184 56l6 4-6 4" stroke="#ff5722"/>
+          <path d="M218 76c0 26-140 26-176 8" stroke="#03a9f4" stroke-dasharray="4 4"/><path d="M46 82l-6 2 3-6" stroke="#03a9f4"/>
+          <text x="42" y="63" font-size="9" fill="#8a8f98" stroke="none" text-anchor="middle">encode</text>
+          <text x="130" y="63" font-size="8" fill="#8a8f98" stroke="none" text-anchor="middle">consolidate</text>
+          <text x="218" y="63" font-size="9" fill="#8a8f98" stroke="none" text-anchor="middle">retrieve</text>
+        </svg>
+      </div>
+      <div class="foot"><span class="chip">encoding</span><span class="chip">consolidation</span><span class="chip">figure</span></div>
+    </article>
+
+    <article class="card" data-confidence="0.81" data-modified="2026-07-30">
+      <div class="head"><span class="badge good">81%</span><span class="type">note</span>
+        <span class="prov">📓 Human Memory · p.4 · synced 2026-08-12</span></div>
+      <div class="body">
+        <p>Spaced repetition works because each near-forgotten retrieval is a
+        high-effort re-encode. "Desirable difficulty" — struggle is the mechanism,
+        not a side effect.</p>
+      </div>
+      <div class="foot"><span class="chip">spaced repetition</span><span class="chip">recall</span></div>
+    </article>
+
+    <article class="card flag" data-confidence="0.64" data-modified="2026-07-28">
+      <div class="head"><span class="badge warn">64%</span><span class="type">idea</span>
+        <span class="prov">📓 Human Memory · p.3 · synced 2026-08-12</span></div>
+      <div class="body">
+        <p>Encoding <mark class="uncertain">recall?</mark> loop via <mark class="uncertain">HM?</mark>
+        → consolidation during sleep. Ties the hippocampus to the sleep-replay story.</p>
+        <ul><li>Figure idea: overnight replay compresses the day's traces</li></ul>
+      </div>
+      <div class="thumb" aria-label="rough sketch, hippocampus to cortex arrows">
+        <svg viewBox="0 0 260 120" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#8a8f98" stroke-width="1.6" stroke-linecap="round">
+          <path d="M40 70c6-22 26-30 42-20 10-16 34-10 34 8 14 2 16 22 2 28-6 12-30 12-40 2-16 6-46-4-40-26z"/>
+          <path d="M150 60h70" stroke="#ff5722" stroke-dasharray="3 4"/><path d="M214 55l7 5-7 5" stroke="#ff5722"/>
+          <text x="86" y="98" font-size="9" fill="#8a8f98" stroke="none" text-anchor="middle">hippocampus</text>
+          <text x="210" y="44" font-size="9" fill="#8a8f98" stroke="none" text-anchor="middle">cortex</text>
+        </svg>
+      </div>
+      <div class="foot"><span class="chip">hippocampus</span><span class="chip">sleep</span>
+        <span class="review-hint">Flagged — run <code>/remarkable-memory review</code></span></div>
+    </article>
+
+    <article class="card flag" data-confidence="0.58" data-modified="2026-07-24">
+      <div class="head"><span class="badge warn">58%</span><span class="type">quote</span>
+        <span class="prov">📓 Human Memory · p.1 · synced 2026-08-12</span></div>
+      <div class="body">
+        <p>"We are our memory, … this <mark class="uncertain">chimerical?</mark> museum of
+        shifting shapes." — attributed to Borges. Verify the exact wording before quoting.</p>
+      </div>
+      <div class="foot"><span class="chip">epigraph</span>
+        <span class="review-hint">Flagged — run <code>/remarkable-memory review</code></span></div>
+    </article>
+
+  </div>
+
+  <footer>
+    Sample cluster generated by <b>/remarkable-memory</b>. Every card cites its source
+    page — the memory is auditable. Two pages read below the confidence threshold are
+    flagged; fix them with <code>/remarkable-memory review</code> and the reader learns
+    your hand for next time.
+  </footer>
+</div>
+
+<script>
+  (function () {
+    var grid = document.getElementById('grid');
+    var cards = Array.prototype.slice.call(grid.querySelectorAll('.card'));
+    function setActive(btn, attr){
+      document.querySelectorAll('.toolbar [data-'+attr+']').forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');
+    }
+    document.querySelectorAll('.toolbar button').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (btn.dataset.filter) {
+          setActive(btn,'filter');
+          cards.forEach(function (c) {
+            c.style.display = (btn.dataset.filter === 'flagged' && !c.classList.contains('flag')) ? 'none' : '';
+          });
+        }
+        if (btn.dataset.sort) {
+          setActive(btn,'sort');
+          cards.slice().sort(function (a, b) {
+            return btn.dataset.sort === 'confidence'
+              ? parseFloat(a.dataset.confidence) - parseFloat(b.dataset.confidence)
+              : (b.dataset.modified || '').localeCompare(a.dataset.modified || '');
+          }).forEach(function (c) { grid.appendChild(c); });
+        }
+      });
+    });
+  })();
+</script>
+</body>
+</html>

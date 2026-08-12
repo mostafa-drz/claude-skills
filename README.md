@@ -50,6 +50,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/project-updates`](code/project-updates/SKILL.md) | Drafts Linear project status updates (Done / In Progress / Next / Blockers) for each project you lead, gathering context from Linear, git, GitHub, Slack, Notion, Gmail, Calendar. All site-specific values (repos, project list, Linear org) configured via preferences. Never auto-posts. |
 | [`/publish-skills`](code/publish-skills/SKILL.md) | Publishes personal Claude skills to a GitHub repository for sharing. |
 | [`/release-notes`](code/release-notes/SKILL.md) | Generates brief, truth-based release notes for a release PR by listing each squash-merged PR with a one-paragraph summary and linked tracker tickets. Tracker-agnostic — Linear, Jira, GitHub Issues, Asana, ClickUp, Shortcut, Plane, or any tracker via a URL template. |
+| <img src="code/remarkable-memory/icon.svg" width="22" height="22" alt="/remarkable-memory icon" valign="middle"> &nbsp; [`/remarkable-memory`](code/remarkable-memory/SKILL.md) | Turns handwritten reMarkable notes into a queryable semantic memory. Syncs pages from a reMarkable tablet, reads the handwriting with Claude vision (no OCR key), and extracts each page into confidence-scored, human-editable Markdown + JSON with full provenance. Clusters notes by topic and project, renders a clean single-file HTML view per cluster, answers natural-language questions over them, and learns your handwriting and shorthand from every correction. |
 | [`/repo-timeline`](code/repo-timeline/SKILL.md) | Analyzes a repository or branch and generates an engineer-friendly timeline of changes grouped into logical units. |
 | [`/respond-to-message`](code/respond-to-message/SKILL.md) | Crafts a response to a pasted message (LinkedIn, Slack, Gmail, Teams, etc.) in the user's configured tone and voice. |
 | <img src="code/shop-research/icon.svg" width="22" height="22" alt="/shop-research icon" valign="middle"> &nbsp; [`/shop-research`](code/shop-research/SKILL.md) | Researches products across Amazon, Google Shopping, and specialty sites via the Claude-in-Chrome extension; produces a 2026 single-file HTML report with pros/cons, reviews, and picks. Learns from feedback to personalize future searches. |
@@ -73,6 +74,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | Skill | Description |
 |-------|-------------|
 | [`inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels -- Gmail, Slack, Calendar, and any available integrations -- then produces a prioritized catchup briefing. |
+| [`remarkable-memory`](desktop/remarkable-memory/SKILL.md) | Turns handwritten reMarkable notes into a queryable semantic memory on Claude Desktop. Pulls pages through a connected reMarkable MCP server, reads handwriting with Claude vision, stores confidence-scored, provenance-tagged notes in a connected memory (Filesystem, Drive, or Notion), clusters by topic/project, renders an HTML artifact per cluster, and learns from corrections. |
 | [`research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. |
 
 ## Skill Details
@@ -314,6 +316,16 @@ Generates brief, truth-based release notes for a release PR (typically main → 
 **Usage:** `/release-notes [pr-number]`
 
 [View SKILL.md ->](code/release-notes/SKILL.md)
+
+---
+
+### `/remarkable-memory`
+
+Turns handwritten reMarkable notes into a queryable semantic memory. Syncs pages from a reMarkable tablet (via the reMarkable MCP server, rmapi, or a USB/SSH bridge), reads the handwriting with Claude vision — no OCR key — and extracts each page into confidence-scored, human-editable Markdown + JSON with full provenance (which notebook, which page, when synced). Clusters notes by topic and project, renders a clean single-file 2026 HTML view per cluster, and answers natural-language questions against the memory. Flags low-confidence extractions for review, and learns your handwriting and shorthand from every correction. The memory is a plain, git-versioned folder — every note is a file you can open, edit, or revert. Ships as both a Claude Code skill (filesystem-backed) and a Claude Desktop companion (connector + artifacts). Use when syncing, extracting, organizing, searching, or reasoning over reMarkable notes, or building a second brain from handwritten pages.
+
+**Usage:** `/remarkable-memory [sync|review|clusters|feedback|config|setup] [--notebook <name>] [--project <name>] [--since <Nd>] [text query...]`
+
+[View SKILL.md ->](code/remarkable-memory/SKILL.md)
 
 ---
 
