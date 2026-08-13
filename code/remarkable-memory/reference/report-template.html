@@ -1,0 +1,224 @@
+<!--
+  reMarkable Memory — cluster page template (reference)
+
+  A single self-contained HTML file. No external scripts, fonts, or styles.
+  The skill fills the {{TOKENS}} below when rendering a cluster; the top-level
+  html/index.html reuses the same shell with a cluster-card grid instead of
+  note cards.
+
+  Tokens:
+    {{CLUSTER_TITLE}}        e.g. "Human Memory — post ideas"
+    {{CLUSTER_SUMMARY}}      one-line summary
+    {{DATE_RANGE}}           "2026-07-30 → 2026-08-11"
+    {{NOTE_COUNT}}           integer
+    {{AVG_CONFIDENCE}}       0-100 (percent, for the meter)
+    {{ICON_SVG}}             inline contents of icon.svg, ~32px, currentColor
+    {{ENTITY_CHIPS}}         <span class="chip">hippocampus</span> ...
+    {{NOTE_CARDS}}           repeated .card blocks (see the sample below)
+    {{GENERATED_AT}}         ISO timestamp
+
+  Confidence badge rule: green when confidence ≥ threshold, amber below. Cards
+  below threshold also get the .flag class (amber left border + review chip).
+  Uncertain inline words: wrap in <mark class="uncertain">recall?</mark>.
+
+  Colors match the site vocabulary: ground #121212, primary #ff5722,
+  secondary #03a9f4, hairline borders, faint surfaces. Light mode inverts.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{CLUSTER_TITLE}} — reMarkable Memory</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: rgba(0,0,0,0.02);
+    --surface-2: rgba(0,0,0,0.04);
+    --border: rgba(0,0,0,0.10);
+    --text: #16181d;
+    --text-2: #5b616e;
+    --primary: #ff5722;
+    --secondary: #0389c7;
+    --good: #1a8f4b;
+    --warn: #b26a00;
+    --radius: 14px;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121212;
+      --surface: rgba(255,255,255,0.02);
+      --surface-2: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.10);
+      --text: #ececec;
+      --text-2: #9aa0ab;
+      --primary: #ff5722;
+      --secondary: #03a9f4;
+      --good: #37d67a;
+      --warn: #f0b429;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--font); line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 40px 20px 80px; }
+  header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 6px; }
+  header .icon { width: 32px; height: 32px; color: var(--primary); flex: 0 0 auto; margin-top: 4px; }
+  header .icon svg { width: 100%; height: 100%; display: block; }
+  h1 { font-size: 1.7rem; line-height: 1.2; margin: 0; letter-spacing: -0.01em; }
+  .summary { color: var(--text-2); margin: 8px 0 0; max-width: 62ch; }
+  .meta { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center;
+          margin: 20px 0 8px; color: var(--text-2); font-size: 0.86rem; }
+  .meta b { color: var(--text); font-weight: 600; }
+  .meter { display: inline-flex; align-items: center; gap: 8px; }
+  .meter .track { width: 120px; height: 7px; border-radius: 99px; background: var(--surface-2);
+                  overflow: hidden; border: 1px solid var(--border); }
+  .meter .fill { height: 100%; background: linear-gradient(90deg, var(--warn), var(--good)); }
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 14px 0 4px; }
+  .chip { font-size: 0.76rem; padding: 3px 10px; border-radius: 99px;
+          border: 1px solid var(--border); background: var(--surface);
+          color: var(--text-2); }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 26px 0 14px; }
+  .toolbar button { font: inherit; font-size: 0.82rem; cursor: pointer;
+          padding: 6px 13px; border-radius: 99px; border: 1px solid var(--border);
+          background: var(--surface); color: var(--text-2); }
+  .toolbar button.active { color: var(--bg); background: var(--primary);
+          border-color: var(--primary); }
+  .grid { display: grid; gap: 16px; }
+  .card { border: 1px solid var(--border); border-radius: var(--radius);
+          background: var(--surface); padding: 18px 18px 16px; }
+  .card.flag { border-left: 3px solid var(--warn); }
+  .card .head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+          margin-bottom: 10px; }
+  .badge { font-size: 0.72rem; font-weight: 600; padding: 2px 9px; border-radius: 99px;
+          border: 1px solid transparent; }
+  /* rgba fallbacks first for engines without color-mix(); color-mix wins where supported */
+  .badge.good { color: var(--good); border-color: rgba(55,214,122,0.4); background: rgba(55,214,122,0.12);
+          border-color: color-mix(in srgb, var(--good) 40%, transparent);
+          background: color-mix(in srgb, var(--good) 12%, transparent); }
+  .badge.warn { color: var(--warn); border-color: rgba(240,180,41,0.4); background: rgba(240,180,41,0.12);
+          border-color: color-mix(in srgb, var(--warn) 40%, transparent);
+          background: color-mix(in srgb, var(--warn) 12%, transparent); }
+  .type { font-size: 0.72rem; color: var(--text-2); text-transform: uppercase;
+          letter-spacing: 0.06em; }
+  .prov { font-size: 0.78rem; color: var(--text-2); margin-left: auto; }
+  .card .body { font-size: 0.95rem; }
+  .card .body :first-child { margin-top: 0; }
+  .card .body ul { padding-left: 1.2em; }
+  mark.uncertain { background: none; color: var(--warn);
+          border-bottom: 1px dotted var(--warn); }
+  .card .foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+          margin-top: 12px; }
+  .thumb { margin-top: 12px; border: 1px solid var(--border); border-radius: 10px;
+          overflow: hidden; max-width: 260px; }
+  .thumb img { display: block; width: 100%; height: auto; }
+  .review-hint { font-size: 0.76rem; color: var(--warn); }
+  .review-hint code { font-size: 0.72rem; padding: 1px 5px; border-radius: 5px;
+          background: var(--surface-2); border: 1px solid var(--border); }
+  footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--border);
+          color: var(--text-2); font-size: 0.8rem; }
+  a { color: var(--secondary); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  @media (max-width: 560px) { .wrap { padding: 28px 14px 60px; } h1 { font-size: 1.4rem; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="icon">{{ICON_SVG}}</span>
+    <div>
+      <h1>{{CLUSTER_TITLE}}</h1>
+      <p class="summary">{{CLUSTER_SUMMARY}}</p>
+    </div>
+  </header>
+
+  <div class="meta">
+    <span><b>{{NOTE_COUNT}}</b> notes</span>
+    <span>{{DATE_RANGE}}</span>
+    <span class="meter" title="average extraction confidence">
+      avg confidence
+      <span class="track"><span class="fill" style="width:{{AVG_CONFIDENCE}}%"></span></span>
+      <b>{{AVG_CONFIDENCE}}%</b>
+    </span>
+  </div>
+
+  <div class="chips" aria-label="entities">{{ENTITY_CHIPS}}</div>
+
+  <div class="toolbar" role="group" aria-label="filter">
+    <button data-filter="all" class="active">All</button>
+    <button data-filter="flagged">⚠ Needs review</button>
+    <button data-sort="confidence">Sort: confidence</button>
+    <button data-sort="recent">Sort: recent</button>
+  </div>
+
+  <div class="grid" id="grid">
+    {{NOTE_CARDS}}
+    <!--
+    Sample card (repeat per note; data-confidence + data-modified drive filter/sort).
+  The thumbnail src is relative to THIS cluster page — the asset is copied into
+  clusters/<slug>/assets/ at render time (see memory-schema.md "Asset paths"):
+
+    <article class="card flag" data-confidence="0.62" data-modified="2026-08-11">
+      <div class="head">
+        <span class="badge warn">62%</span>
+        <span class="type">idea</span>
+        <span class="prov">📓 Human Memory · p.3 · synced 2026-08-12</span>
+      </div>
+      <div class="body">
+        <p>Encoding <mark class="uncertain">recall?</mark> loop via hippocampus → consolidation during sleep.</p>
+        <ul><li>Figure idea: 3-stage loop</li></ul>
+      </div>
+      <div class="thumb"><img src="assets/human-memory-p3.png" alt="page 3 sketch"></div>
+      <div class="foot">
+        <span class="chip">human-memory</span><span class="chip">encoding</span>
+        <span class="review-hint">Flagged — run <code>/remarkable-memory review</code></span>
+      </div>
+    </article>
+    -->
+  </div>
+
+  <footer>
+    Generated {{GENERATED_AT}} by <b>/remarkable-memory</b>. Every card cites its
+    source page — the memory is auditable. Fix anything with
+    <code>/remarkable-memory review</code>.
+  </footer>
+</div>
+
+<script>
+  // Vanilla, no framework. Filter flagged / sort by confidence or recency.
+  (function () {
+    var grid = document.getElementById('grid');
+    var cards = Array.prototype.slice.call(grid.querySelectorAll('.card'));
+    var buttons = document.querySelectorAll('.toolbar button');
+    function setActive(btn, attr) {
+      document.querySelectorAll('.toolbar [data-' + attr + ']').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+    }
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (btn.dataset.filter) {
+          setActive(btn, 'filter');
+          cards.forEach(function (c) {
+            c.style.display = (btn.dataset.filter === 'flagged' && !c.classList.contains('flag')) ? 'none' : '';
+          });
+        }
+        if (btn.dataset.sort) {
+          setActive(btn, 'sort');
+          var sorted = cards.slice().sort(function (a, b) {
+            if (btn.dataset.sort === 'confidence') {
+              return parseFloat(a.dataset.confidence) - parseFloat(b.dataset.confidence);
+            }
+            return (b.dataset.modified || '').localeCompare(a.dataset.modified || '');
+          });
+          sorted.forEach(function (c) { grid.appendChild(c); });
+        }
+      });
+    });
+  })();
+</script>
+</body>
+</html>

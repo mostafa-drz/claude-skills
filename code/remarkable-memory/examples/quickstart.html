@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>/remarkable-memory — Quickstart</title>
+<meta name="description" content="Copy-paste recipes for the /remarkable-memory Claude Code skill: connect a tablet, sync handwritten pages, ask the memory, and teach it your handwriting.">
+<style>
+  :root{
+    --bg:#ffffff; --surface:#f7f7f8; --surface-2:#f0f0f2; --border:#e3e3e7;
+    --text:#16181d; --muted:#5c6070;
+    --primary:#ff5722; --secondary:#0389c7;
+    --good:#1a8f4b; --warn:#b26a00;
+    --code-bg:#f6f6f8; --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#121212; --surface:#191919; --surface-2:#1f1f1f; --border:#2c2c2e;
+      --text:#ececec; --muted:#9a9aa2;
+      --primary:#ff5722; --secondary:#03a9f4;
+      --good:#37d67a; --warn:#f0b429;
+      --code-bg:#161616; --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 20px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#121212; --surface:#191919; --surface-2:#1f1f1f; --border:#2c2c2e;
+    --text:#ececec; --muted:#9a9aa2;
+    --primary:#ff5722; --secondary:#03a9f4;
+    --good:#37d67a; --warn:#f0b429;
+    --code-bg:#161616; --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 20px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--text);
+    font:16px/1.65 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:0 20px 80px;
+  }
+  .wrap{max-width:820px;margin:0 auto}
+  header{padding:56px 0 28px;border-bottom:1px solid var(--border);margin-bottom:32px}
+  .title{display:flex;align-items:center;gap:14px}
+  .title svg{width:34px;height:34px;color:var(--primary);flex:none}
+  h1{font-size:1.9rem;letter-spacing:-.02em;font-weight:650}
+  .sub{color:var(--muted);margin-top:10px;font-size:1.02rem;max-width:60ch}
+  h2{font-size:1.18rem;margin:40px 0 6px;letter-spacing:-.01em;font-weight:640}
+  h2 .num{color:var(--primary);font-variant-numeric:tabular-nums;margin-right:8px}
+  .lede{color:var(--muted);font-size:.95rem;margin-bottom:14px;max-width:62ch}
+  /* filter bar */
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 4px}
+  .chip{
+    border:1px solid var(--border);background:var(--surface);color:var(--muted);
+    padding:6px 13px;border-radius:999px;font-size:.83rem;cursor:pointer;
+    font-family:inherit;transition:.15s;
+  }
+  .chip:hover{border-color:var(--primary);color:var(--text)}
+  .chip[aria-pressed="true"]{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:550}
+  /* code */
+  .snippet{
+    background:var(--surface);border:1px solid var(--border);border-radius:13px;
+    margin:14px 0 4px;overflow:hidden;box-shadow:var(--shadow);
+  }
+  .snippet-head{
+    display:flex;align-items:center;gap:10px;justify-content:space-between;
+    padding:9px 10px 9px 15px;background:var(--surface-2);border-bottom:1px solid var(--border);
+  }
+  .tag{
+    font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);
+    font-weight:600;
+  }
+  .copy{
+    border:1px solid var(--border);background:var(--bg);color:var(--muted);
+    border-radius:8px;padding:5px 12px;font-size:.78rem;cursor:pointer;
+    font-family:inherit;font-weight:550;transition:.15s;white-space:nowrap;
+  }
+  .copy:hover{border-color:var(--primary);color:var(--primary)}
+  .copy.done{background:var(--good);border-color:var(--good);color:#fff}
+  pre{
+    margin:0;padding:15px;background:var(--code-bg);overflow-x:auto;
+    font:.875rem/1.6 ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace;
+  }
+  pre .c{color:var(--muted)}
+  .why{
+    font-size:.88rem;color:var(--muted);margin:9px 0 0;padding-left:13px;
+    border-left:2px solid var(--border);
+  }
+  .card{margin-bottom:6px}
+  .card[hidden]{display:none}
+  /* callouts */
+  .note{
+    border:1px solid var(--border);border-left:3px solid var(--secondary);
+    background:var(--surface);border-radius:0 11px 11px 0;
+    padding:13px 16px;margin:16px 0;font-size:.92rem;
+  }
+  .note.warn{border-left-color:var(--warn)}
+  .note.good{border-left-color:var(--good)}
+  .note strong{font-weight:620}
+  code:not(pre code){
+    background:var(--surface-2);border:1px solid var(--border);border-radius:5px;
+    padding:1px 6px;font:.86em ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.9rem;display:block;overflow-x:auto}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+  th{font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  td code{white-space:nowrap}
+  footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--border);color:var(--muted);font-size:.87rem}
+  a{color:var(--secondary)}
+  .empty{color:var(--muted);font-size:.9rem;padding:20px 0;display:none}
+  @media(max-width:560px){
+    header{padding-top:36px} h1{font-size:1.55rem} body{padding:0 15px 60px}
+    .snippet-head{padding-left:12px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="title">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="7" y="8" width="20" height="26" rx="2.5"/>
+      <path d="M11 15h12" stroke="#03a9f4"/>
+      <path d="M11 20h12" opacity="0.55"/>
+      <path d="M11 25h8" opacity="0.55"/>
+      <path d="M27 26c6 0 6-8 12-8" stroke="#ff5722"/>
+      <circle cx="39" cy="18" r="3" fill="#ff5722" stroke="none"/>
+      <circle cx="35" cy="32" r="1.75" stroke="#ff5722"/>
+      <circle cx="42" cy="30" r="1.75" stroke="#ff5722"/>
+      <path d="M39 21v6M39 27l-4 5M39 27l3 3" stroke="#ff5722" opacity="0.5"/>
+    </svg>
+    <h1>/remarkable-memory</h1>
+  </div>
+  <p class="sub">Copy-paste recipes for turning handwritten reMarkable pages into a memory you can
+  actually query. Every snippet below is a real command — click <em>Copy</em> and paste it into Claude Code.</p>
+</header>
+
+<div class="filters" role="group" aria-label="Filter recipes">
+  <button class="chip" aria-pressed="true" data-f="all">All</button>
+  <button class="chip" aria-pressed="false" data-f="setup">Setup</button>
+  <button class="chip" aria-pressed="false" data-f="daily">Daily</button>
+  <button class="chip" aria-pressed="false" data-f="ask">Ask</button>
+  <button class="chip" aria-pressed="false" data-f="handoff">Hand off</button>
+  <button class="chip" aria-pressed="false" data-f="learn">Teach it</button>
+</div>
+<p class="empty" id="empty">Nothing in that category.</p>
+
+<!-- ─────────── SETUP ─────────── -->
+<section class="card" data-cat="setup">
+<h2><span class="num">01</span>Connect the tablet</h2>
+<p class="lede">Run once. The skill preflights the connection and walks you through whichever
+transport your tablet supports.</p>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre>/remarkable-memory setup</pre>
+</div>
+<p class="why">Plug in over USB first. The skill checks the link, the port, and the MCP server
+separately, so a failure tells you <em>which</em> of the three is wrong instead of just "no documents".</p>
+
+<div class="note warn">
+  <strong>If the USB web interface won't come up.</strong> A healthy ping with
+  <code>Connection refused</code> on port 80 means the link is fine and the tablet's web server
+  simply isn't listening. Toggle <em>Settings → Storage → USB web interface</em>, and keep the
+  screen awake — it stops serving when the tablet sleeps. If it still refuses, switch to SSH:
+  it ignores the lock screen entirely and is the more reliable path.
+</div>
+<div class="note warn">
+  <strong>Never enable developer mode to "fix" a connection.</strong> It factory resets the
+  device. If <code>nc -z 10.11.99.1 22</code> reports the port open, SSH is already available and
+  developer mode is not needed.
+</div>
+</section>
+
+<section class="card" data-cat="setup">
+<h2><span class="num">02</span>First sync — start narrow</h2>
+<p class="lede">Don't pull twenty notebooks blind. Take one, check how well your handwriting reads,
+then widen.</p>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre>/remarkable-memory sync --notebook "Daily Log" --since 30d</pre>
+</div>
+<p class="why">You get a scoped plan to confirm before anything is extracted. Re-running is safe —
+pages are keyed by <code>doc_id:page:modified</code>, so unchanged pages are skipped without even
+pulling the render.</p>
+<div class="note">
+  Plain English works too, and is often faster than remembering flags:
+  <code>/remarkable-memory sync</code> then <em>"last 30 days of daily logs"</em>.
+</div>
+</section>
+
+<!-- ─────────── DAILY ─────────── -->
+<section class="card" data-cat="daily">
+<h2><span class="num">03</span>The morning ritual</h2>
+<p class="lede">The highest-value habit: sync what you wrote since yesterday, then have Claude
+reflect it back before you plan the day.</p>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre>/remarkable-memory sync since yesterday for my today plan and reflection on yesterday</pre>
+</div>
+<p class="why">Sync and intent in one line. The skill pulls only new pages, then answers from them —
+so the reflection is grounded in what you actually wrote, with a page citation on every claim.</p>
+<div class="note good">
+  <strong>Why this beats reading the pages yourself:</strong> the answer cites
+  <em>notebook · page</em> for every point, so you can always jump back to the original ink.
+</div>
+</section>
+
+<section class="card" data-cat="daily">
+<h2><span class="num">04</span>Catch up after a gap</h2>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre>/remarkable-memory sync --since 7d --yes</pre>
+</div>
+<p class="why"><code>--yes</code> skips the confirmation gate. Use it once you trust the scope —
+handy for a repeat weekly pull.</p>
+</section>
+
+<!-- ─────────── ASK ─────────── -->
+<section class="card" data-cat="ask">
+<h2><span class="num">05</span>Ask the memory</h2>
+<p class="lede">Anything that isn't a known subcommand is treated as a question against your notes.</p>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre>/remarkable-memory what did I write about the agent protocol spec</pre>
+</div>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre>/remarkable-memory summarize my product design thinking from the past 20 days</pre>
+</div>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre>/remarkable-memory which open questions did I write down but never resolve</pre>
+</div>
+<p class="why">That last one is the sort of question a pile of paper can't answer. Answers are
+confidence-aware — if a claim rests on a page read at 0.6, it says so.</p>
+</section>
+
+<section class="card" data-cat="ask">
+<h2><span class="num">06</span>Browse visually</h2>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre>/remarkable-memory clusters</pre>
+</div>
+<p class="why">Re-renders and opens the HTML browser: every cluster as a card, every note with its
+confidence badge, page provenance, and the original page render as a thumbnail. Good for spotting
+misreads at a glance.</p>
+</section>
+
+<!-- ─────────── HANDOFF ─────────── -->
+<section class="card" data-cat="handoff">
+<h2><span class="num">07</span>Hand a topic to another agent</h2>
+<p class="lede">The memory is plain Markdown, which makes it a clean hand-off format between
+sessions, agents, or people.</p>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre>/remarkable-memory the pages about my essay on memory and craft —
+export them to ~/Desktop/essay-notes/ so another agent can pick them up</pre>
+</div>
+<p class="why">Scattered thinking across weeks of pages becomes one folder a fresh session can read
+cold. No context transfer, no re-explaining.</p>
+<div class="note">
+  Because it's a git repo, you can also just point another tool at it:
+  <code>~/remarkable-memory/notes/</code> is greppable Markdown with YAML frontmatter.
+</div>
+</section>
+
+<section class="card" data-cat="handoff">
+<h2><span class="num">08</span>Promote a theme into its own cluster</h2>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre>/remarkable-memory collect everything about the onboarding redesign
+into its own cluster and render it</pre>
+</div>
+<p class="why">Useful when a topic outgrows the notebook it was scribbled in — the cluster becomes
+the working surface for a post, a spec, or a talk.</p>
+</section>
+
+<!-- ─────────── LEARN ─────────── -->
+<section class="card" data-cat="learn">
+<h2><span class="num">09</span>Teach it your handwriting</h2>
+<p class="lede">This is the step most people skip, and it's the one that compounds. Every correction
+is written to a guide the extractor reads on <em>every</em> future sync.</p>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre>/remarkable-memory review</pre>
+</div>
+<p class="why">Starts with the lowest-confidence pages. If more than a handful are flagged it offers
+a bulk path first — you skim them in the HTML view and accept the ones that read fine, then walk
+only the genuinely ambiguous pages one at a time.</p>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre>/remarkable-memory review --min-confidence 0.85</pre>
+</div>
+<p class="why">Widens the net — review anything read below 85% certainty, not just the flagged ones.</p>
+
+<div class="note good">
+  <strong>What "learning" actually means here.</strong> No hidden model, no fine-tune. Corrections
+  land in <code>corrections.md</code>; recurring patterns get promoted into
+  <code>extraction-guide.md</code> — a plain file you can open and edit yourself. Seed it directly
+  if you like: <em>"in my notes, 'EOD' means end of day, and boxed text is always a decision"</em>.
+</div>
+<div class="note warn">
+  <strong>An unreviewed memory stops improving.</strong> If average confidence is sitting near your
+  threshold and <code>extraction-guide.md</code> is still empty, the reader has learned nothing
+  about your hand yet. One review pass is the difference between a memory that stays at 0.75 and
+  one that climbs.
+</div>
+</section>
+
+<!-- ─────────── REFERENCE ─────────── -->
+<section class="card" data-cat="setup">
+<h2><span class="num">10</span>Everything else</h2>
+<table>
+  <tr><th>Command</th><th>What it does</th></tr>
+  <tr><td><code>/remarkable-memory help</code></td><td>Full usage + your current preferences and memory stats</td></tr>
+  <tr><td><code>/remarkable-memory config</code></td><td>Memory root, connection, cluster style, threshold, tone</td></tr>
+  <tr><td><code>/remarkable-memory feedback</code></td><td>Rate the last answer — feeds the same learning loop</td></tr>
+  <tr><td><code>/remarkable-memory reset</code></td><td>Clears <em>preferences only</em>; your notes are never touched</td></tr>
+</table>
+<div class="note">
+  <strong>Where your data lives.</strong> <code>~/remarkable-memory/</code> — a git repo you own.
+  <code>notes/</code> one Markdown file per page, <code>clusters/</code> rendered views,
+  <code>assets/</code> page renders, plus <code>corrections.md</code> and
+  <code>extraction-guide.md</code>. Every sync is a commit, so anything can be diffed or reverted.
+  Nothing leaves your machine.
+</div>
+</section>
+
+<footer>
+  Part of <a href="../SKILL.md">/remarkable-memory</a> ·
+  <a href="index.md">sample cluster output</a> ·
+  <a href="../reference/connection-setup.md">connection reference</a>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  // copy buttons
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var code = btn.closest('.snippet').querySelector('pre').innerText;
+      var done = function(){
+        var old = btn.textContent;
+        btn.textContent = 'Copied'; btn.classList.add('done');
+        setTimeout(function(){ btn.textContent = old; btn.classList.remove('done'); }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(done, fallback);
+      } else { fallback(); }
+      function fallback(){
+        var t = document.createElement('textarea');
+        t.value = code; t.setAttribute('readonly','');
+        t.style.position='fixed'; t.style.top='-1000px';
+        document.body.appendChild(t); t.select();
+        try { document.execCommand('copy'); done(); } catch(e){}
+        document.body.removeChild(t);
+      }
+    });
+  });
+
+  // category filter
+  var chips = document.querySelectorAll('.chip');
+  var cards = document.querySelectorAll('.card');
+  var empty = document.getElementById('empty');
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      var f = chip.dataset.f;
+      chips.forEach(function(c){ c.setAttribute('aria-pressed', String(c === chip)); });
+      var shown = 0;
+      cards.forEach(function(card){
+        var vis = (f === 'all') || (card.dataset.cat === f);
+        card.hidden = !vis;
+        if (vis) shown++;
+      });
+      empty.style.display = shown ? 'none' : 'block';
+    });
+  });
+})();
+</script>
+</body>
+</html>

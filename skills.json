@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-16",
+  "updated": "2026-08-12",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -297,6 +297,24 @@
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/release-notes/SKILL.md"
     },
     {
+      "name": "remarkable-memory",
+      "platform": "code",
+      "description": "Turns handwritten reMarkable notes into a queryable semantic memory. Syncs pages from a reMarkable tablet (reMarkable MCP, rmapi, or USB/SSH), reads the handwriting with Claude vision — no OCR key — and extracts each page into confidence-scored, human-editable Markdown + JSON with full provenance. Clusters notes by topic and project, renders a clean single-file HTML view per cluster, answers natural-language questions over them, and learns your handwriting and shorthand from every correction.",
+      "trigger": "Syncing, extracting, organizing, searching, or reasoning over reMarkable notes — building a second brain from handwritten pages, or turning ink into a structured knowledge base.",
+      "tags": [
+        "remarkable",
+        "memory",
+        "notes",
+        "handwriting",
+        "knowledge-base",
+        "second-brain",
+        "mcp"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/remarkable-memory/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/code/remarkable-memory/icon.svg"
+    },
+    {
       "name": "shop-research",
       "platform": "code",
       "description": "Researches products across Amazon, Google Shopping, and specialty sites via the Claude-in-Chrome extension; produces a 2026 single-file HTML report with pros/cons, review highlights, and picks. Learns from feedback to personalize future searches.",
@@ -521,6 +539,23 @@
       ],
       "sideEffects": true,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/inbox-catchup/SKILL.md"
+    },
+    {
+      "name": "remarkable-memory",
+      "platform": "desktop",
+      "description": "Turns handwritten reMarkable notes into a queryable semantic memory on Claude Desktop. Pulls pages through a connected reMarkable MCP server (or remarkdown), reads handwriting with Claude vision, and stores confidence-scored, provenance-tagged notes in a connected memory (Filesystem, Google Drive, or Notion). Clusters by topic/project, renders a clean HTML artifact per cluster, answers plain-language questions, and learns from corrections.",
+      "trigger": "Syncing, extracting, organizing, searching, or reasoning over reMarkable notes on Claude Desktop; building a second brain from handwritten pages.",
+      "tags": [
+        "remarkable",
+        "memory",
+        "notes",
+        "handwriting",
+        "knowledge-base",
+        "second-brain",
+        "desktop"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/remarkable-memory/SKILL.md"
     },
     {
       "name": "research-assistant",
