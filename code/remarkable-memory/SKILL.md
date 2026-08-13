@@ -44,6 +44,10 @@ Sync handwritten reMarkable notes into a git-versioned semantic memory, cluster
 them by topic, render clean HTML per cluster, answer questions over them, and get
 sharper at reading your hand every time you correct an extraction.
 
+_New here? [`README.md`](./README.md) is the human-facing overview, and
+[`examples/quickstart.html`](./examples/quickstart.html) has copy-paste recipes for
+everyday use._
+
 ## Preferences
 
 _On startup, use Read to load `~/.claude/skills/remarkable-memory/preferences.md`.
