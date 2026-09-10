@@ -34,7 +34,7 @@ Then connect a tablet — USB, SSH, or cloud:
 See [`reference/connection-setup.md`](reference/connection-setup.md) for device-level
 detail.
 
-## The five commands
+## The commands
 
 | Command | What it does |
 |---|---|
@@ -43,7 +43,7 @@ detail.
 | `/remarkable-memory review [--min-confidence <0-1>]` | Correct low-confidence pages — this is what teaches it |
 | `/remarkable-memory review --apply` | Apply a batch of reviews collected in the HTML page |
 | `/remarkable-memory clusters` | Re-render and open the HTML browser |
-| `/remarkable-memory help` | Usage, your preferences, and current memory stats |
+| `/remarkable-memory help` | Usage, your preferences, and where the memory lives |
 
 Plus `config`, `feedback`, `setup`, and `reset` (which clears preferences only — never
 your notes).

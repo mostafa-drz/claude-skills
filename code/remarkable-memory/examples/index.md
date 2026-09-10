@@ -12,7 +12,8 @@ owning a reMarkable or running a sync.
   `⟨uncertain⟩` markers, and two pages flagged for review. **Everything works** —
   click any chip to filter (several at once, they union), flip on ⚠ Needs review to
   narrow to the flagged pages, or hit **Review** on a card to correct it and
-  **Copy for Claude**. Self-contained — open it in any browser (thumbnails are
+  **Copy for Claude** — then paste that block into Claude Code, where
+  `review --apply` writes the corrections and commits them. Self-contained — open it in any browser (thumbnails are
   inline SVG stand-ins for real page renders).
 
 The live skill writes these into `{memory-root}/clusters/<slug>/index.html` and a

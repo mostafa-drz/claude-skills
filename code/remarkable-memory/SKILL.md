@@ -85,9 +85,11 @@ Check `$ARGUMENTS`:
 - `reset` → delete **skill preferences only** (see **Reset**); the memory store is preserved. Confirm first, stop
 - `setup` / `preflight` → run the connection setup/onboarding flow (see **Setup**), stop
 - `sync` → ingest new/changed pages into memory (see **Sync**)
-- `review` → walk low-confidence extractions and capture corrections (see **Review & learning**)
-- `review --apply` → the argument contains a JSON block copied from a cluster page's
-  review popovers; apply those corrections in one pass (see **Applying reviews from the page**)
+- `review --apply` → **test this before plain `review`** — the argument is `--apply`
+  followed by a fenced ```json block copied from a cluster page's review popovers.
+  Apply that batch in one pass (see **Applying reviews from the page**)
+- `review` (without `--apply`) → walk low-confidence extractions one at a time and
+  capture corrections (see **Review & learning**)
 - `clusters` / `browse` → (re)render and open the HTML cluster views (see **Render**)
 - `feedback` → rate the last answer/extraction quality (see **Review & learning**)
 - anything else (free text, optionally with flags) → treat as a **query** against the memory (see **Query**)
@@ -433,6 +435,11 @@ Per-cluster page:
    below the threshold get a subtle amber left-border and a "flagged — low
    confidence" label. `⟨uncertain: word?⟩` markers render as a dotted-underline
    highlight.
+
+   **A note with `reviewed: true` is never flagged**, whatever its confidence — render
+   it with its honest badge and no `.flag` class. The flag means "nobody has checked
+   this yet", not "the score is low", which is what keeps the page's ⚠ Needs review
+   switch and the terminal queue selecting the same notes.
 3. **Entities** — a chip row of the people/places/projects in this cluster.
 4. **Provenance is always visible** — every card says exactly which page it came
    from. The memory is auditable by design.
@@ -463,9 +470,35 @@ a real toggle:
 
 Every card gets a small **Review** button opening a native `[popover]` (light-dismiss
 and Esc for free). Inside: a verdict — **Reads correctly** / **Fix the text** /
-**Wrong tags / cluster** — a textarea pre-filled with the current transcription so a
-fix is an edit rather than a retype, and an optional one-line **lesson** for the
-extractor. Picking "Reads correctly" hides the textarea to keep the popover small.
+**Wrong tags / cluster** — plus an optional one-line **lesson** for the extractor.
+
+Each verdict reveals **only the field it needs**, which keeps the popover small and
+keeps the payload unambiguous:
+
+- **Reads correctly** — no field.
+- **Fix the text** — a textarea pre-filled with the current transcription, so a fix is
+  an edit rather than a retype. Exported as `text`.
+- **Wrong tags / cluster** — a one-line instruction ("which tags or cluster should it
+  have?"). Exported as `reassign`, **never** as `text` — the transcription is not the
+  correction here, and an agent handed the transcription would have nothing to act on.
+
+Because this payload drives destructive edits to real notes, the page is deliberately
+hard to use carelessly:
+
+- **Save stays disabled** until a verdict is chosen *and* the human has supplied what
+  it needs, with an inline reason. For **Fix the text** that means an **actual edit** —
+  a textarea still holding the prefill is not a correction, and sending it back would
+  overwrite the note with a re-flowed copy of itself at full confidence.
+- **Abandoning a popover restores it.** Esc, clicking away, or Discard resets the
+  verdict and fields to the last saved state, so a half-finished edit never sits there
+  looking like a decision that was made.
+- **Switching verdict warns** when it would drop text you typed, rather than silently
+  discarding it.
+- **Anything that can't round-trip is disabled, not ignored**: a card with no
+  `data-note-id`, or two cards sharing one, get their Review button disabled with the
+  reason in the tooltip — they'd otherwise collect reviews that land on the wrong note
+  or none at all. A browser that won't persist (private mode, blocked storage) says so
+  in the handoff bar instead of pretending the batch is safe.
 
 Saved verdicts persist in `localStorage` (keyed by page path, so two cluster pages
 don't overwrite each other), and a sticky **handoff bar** appears: *"3 reviews ready
@@ -516,26 +549,66 @@ human-readable and revertible.
 
 ### Applying reviews from the page
 
-`review --apply` receives a JSON array pasted from a cluster page's **Copy for
-Claude** button:
+`review --apply` receives the block a cluster page's **Copy for Claude** button
+produces: the command line, then a fenced ```json block. Parse the array inside the
+fence and ignore the repeated command line.
 
 ```json
 [
-  { "id": "2026-08-12-human-memory-p3-encoding-loop", "page": 3,
-    "notebook": "Human Memory", "verdict": "fix",
+  { "id": "2026-08-12-human-memory-p3-encoding-loop",
+    "page": 3, "notebook": "Human Memory",
+    "modified": "2026-07-28", "savedAt": "2026-09-10T18:41:02.512Z",
+    "verdict": "fix",
     "text": "Encoding → recall loop via hippocampus → consolidation during sleep.",
+    "reassign": null,
     "lesson": "HM = hippocampus" }
 ]
 ```
 
-For each entry, resolve the note by `id` (fall back to `notebook` + `page` if the id
-has since changed) and apply its verdict:
+Every entry carries the same keys. `text` and `reassign` are **mutually exclusive** —
+exactly one is non-null, decided by `verdict` — and `lesson` is optional on all three.
+`modified` is the page's tablet timestamp when the review was captured; `savedAt` is
+when the human clicked Save.
 
-| `verdict` | What to do |
-|---|---|
-| `ok` | `reviewed: true`, bump confidence toward 1.0 (e.g. `min(0.95, c + 0.15)`). No text change. |
-| `fix` | Replace the note body with `text`, set `reviewed: true`, confidence `0.95`. Log the before/after to `corrections.md`. |
-| `meta` | The text is fine but the tags/cluster are wrong — `text` holds the user's note about what it should be. Re-assign, `reviewed: true`, and re-render both the old and new cluster. |
+**Resolve the note before writing anything.** Match on `id`. If nothing has that id,
+fall back to `notebook` + `page`, and only when **exactly one** note matches. Then
+compare the entry's `modified` against the note's `source.modified`: if they differ,
+the page was re-synced after this review was captured, so the user was reading an
+older render — **skip the entry as stale**, name it, and ask them to re-review that
+card. Never write a note body from an entry you could not confirm points at the
+version the user actually saw.
+
+| `verdict` | Payload | What to do |
+|---|---|---|
+| `ok` | `text: null`, `reassign: null` | The transcription read correctly. Set `reviewed: true` and **leave `confidence` unchanged**. Change nothing else. |
+| `fix` | `text` = the corrected transcription | Replace the note body with `text`, set `reviewed: true`, and set `confidence: 1.0` — the text is now the human's, not the reader's. Log the before/after to `corrections.md`. |
+| `meta` | `reassign` = a one-line instruction, e.g. `cluster: home-design; drop tag "travel"` | The transcription is fine — only the tags/cluster are wrong. Apply the instruction in `reassign`, leave the note body and `confidence` untouched, set `reviewed: true`, and re-render **both** the old and the new cluster. |
+
+**Guard against replay.** The page cannot know you applied a batch — it keeps the
+reviews until the user clicks "Discard all", and a re-rendered page reloads them. So
+before writing, check whether the entry has already landed: if the note is already
+`reviewed: true` **and** its body already equals `text` (or the `reassign` is already
+reflected), this is a re-paste of a batch you applied earlier. Skip it silently, count
+it separately, and say "N already applied" in the summary. Never re-apply a `fix` over
+a note that has changed since — that would clobber a later sync or hand edit.
+
+The page guarantees four things about this payload, so trust them and fail loudly if
+they don't hold: every `verdict` was explicitly clicked by a human (never inferred);
+the field its verdict requires holds content the human supplied — for `fix` that means
+text **actually edited** away from the rendered transcription, not the prefill sent
+back; every entry has a note `id`; and no two entries share one. An entry that
+violates any of these is malformed — skip it and say so.
+
+**Never invent the missing half.** If a `meta` entry's `reassign` is empty, or a `fix`
+entry's `text` is empty, do not guess what the user meant and do not mark the note
+reviewed — report it and move on.
+
+**`reviewed: true` is what clears the flag — never a confidence bump.** `confidence`
+records how well the *machine read the page*; a human agreeing with it does not make
+the reading better, so `ok` leaves it alone. Only `fix` moves it, and only to `1.0`,
+because at that point the text is the human's own. This also keeps the two review
+queues identical: the page's ⚠ Needs review switch and the terminal's
+`reviewed: false` **and** `confidence < threshold` must select the same notes.
 
 Then, exactly as in the interactive path: append every change to `corrections.md`,
 promote any `lesson` (and any pattern you see repeating) into `extraction-guide.md`,

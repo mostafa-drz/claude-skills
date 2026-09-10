@@ -32,12 +32,20 @@
      case-insensitively) so the filter needs no lookup table.
 
   2. REVIEW POPOVER — every card has a "Review" button opening a native
-     [popover] with a verdict (reads correctly / fix the text / wrong tags),
-     an editable transcription and an optional "lesson" line. Verdicts persist in
-     localStorage, and a sticky bar copies them as a `review · apply` block to
-     paste back into Claude Code (see SKILL.md → "Applying reviews from the page").
-     The page never writes to the memory store itself — the agent applies the
-     corrections and commits them.
+     [popover] with a verdict (reads correctly / fix the text / wrong tags). Each
+     verdict reveals only the field it needs: "fix" a textarea prefilled with the
+     transcription, "meta" a one-line "which tags/cluster?" instruction (exported as
+     `reassign`, NOT as `text`). Verdicts persist in localStorage, and a sticky bar
+     copies them as a `review · apply` block to paste back into Claude Code (see
+     SKILL.md, "Applying reviews from the page").
+
+     The payload drives destructive edits to real notes, so Save stays DISABLED
+     until a verdict is chosen AND the human has supplied what it needs — for "fix"
+     that means an ACTUAL edit, since a textarea still holding the prefill is not a
+     correction. Abandoning a popover (Esc, click-away, Discard) restores it rather
+     than leaving a half-edit that reads like a decision. Missing or duplicate note
+     ids, and storage that won't persist, are surfaced instead of failing quietly.
+     The page never writes to the memory store itself; the agent applies and commits.
 
   Colors match the site vocabulary: ground #121212, primary #ff5722,
   secondary #03a9f4, hairline borders, faint surfaces. Light mode inverts.
@@ -146,15 +154,14 @@
           overflow: hidden; max-width: 260px; }
   .thumb img { display: block; width: 100%; height: auto; }
   .review-hint { font-size: 0.76rem; color: var(--warn); }
-  .review-hint code { font-size: 0.72rem; padding: 1px 5px; border-radius: 5px;
-          background: var(--surface-2); border: 1px solid var(--border); }
 
   /* --- Review popover ------------------------------------------------------ */
   .rev-open { font: inherit; font-size: 0.74rem; cursor: pointer; margin-left: auto;
           padding: 3px 11px; border-radius: 99px; border: 1px solid var(--border);
           background: var(--surface-2); color: var(--text-2); }
   .rev-open:hover { border-color: var(--primary); color: var(--primary); }
-  .card[data-reviewed] .rev-open { border-color: var(--good); color: var(--good); }
+  /* a review saved in THIS browser but not yet applied by the agent */
+  .card[data-review-draft] .rev-open { border-color: var(--good); color: var(--good); }
   .pop { border: 1px solid var(--border); border-radius: var(--radius);
           background: var(--bg); color: var(--text); padding: 18px;
           width: min(440px, calc(100vw - 32px)); box-shadow: 0 18px 50px rgba(0,0,0,.35);
@@ -179,6 +186,11 @@
           background: var(--surface); color: var(--text-2); }
   .pop .pop-actions .save { background: var(--primary); border-color: var(--primary);
           color: var(--bg); font-weight: 600; }
+  .pop .pop-actions .save[disabled] { background: var(--surface-2); border-color: var(--border);
+          color: var(--text-2); font-weight: 400; cursor: not-allowed; }
+  .pop-req { margin: 12px 0 0; font-size: 0.76rem; color: var(--warn); }
+  /* a div's default display would otherwise survive the [hidden] attribute here */
+  .pop [hidden] { display: none; }
 
   /* --- Handoff bar (appears once a review is saved) ------------------------- */
   .handoff { position: sticky; bottom: 14px; z-index: 5; display: flex;
@@ -192,6 +204,14 @@
   .handoff .copy { background: var(--primary); border-color: var(--primary);
           color: var(--bg); font-weight: 600; }
   .handoff .hint { color: var(--text-2); }
+  .handoff .hint.warn { color: var(--warn); }
+  .handoff .manual { flex-basis: 100%; }
+  .handoff .manual label { display: block; font-size: 0.76rem; color: var(--warn);
+          margin-bottom: 5px; }
+  .handoff .manual textarea { font: inherit; font-size: 0.76rem; width: 100%;
+          box-sizing: border-box; padding: 8px 10px; border-radius: 9px;
+          border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+  .handoff .manual[hidden] { display: none; }
   /* class selector would otherwise beat the UA [hidden] rule */
   .handoff[hidden] { display: none; }
   @media (prefers-reduced-motion: no-preference) {
@@ -280,12 +300,19 @@
           <button data-verdict="fix" aria-pressed="false">Fix the text</button>
           <button data-verdict="meta" aria-pressed="false">Wrong tags / cluster</button>
         </div>
-        <label for="fix-p3">Corrected transcription</label>
-        <textarea id="fix-p3" data-fix>Encoding ⟨uncertain: recall?⟩ loop via hippocampus → consolidation during sleep.</textarea>
-        <label for="lesson-p3">Lesson for the extractor (optional)</label>
-        <input id="lesson-p3" data-lesson placeholder="e.g. HM = hippocampus, never 'human memory'">
+        <div data-field="fix" hidden>
+          <label for="fix-rev-p3">Corrected transcription</label>
+          <textarea id="fix-rev-p3" data-fix>Encoding ⟨uncertain: recall?⟩ loop via hippocampus → consolidation during sleep.</textarea>
+        </div>
+        <div data-field="meta" hidden>
+          <label for="meta-rev-p3">Which tags or cluster should it have?</label>
+          <input id="meta-rev-p3" data-meta placeholder="e.g. cluster: home-design; drop tag &quot;travel&quot;">
+        </div>
+        <label for="lesson-rev-p3">Lesson for the extractor (optional)</label>
+        <input id="lesson-rev-p3" data-lesson placeholder="e.g. HM = hippocampus, never 'human memory'">
+        <p class="pop-req" data-req>Pick a verdict first.</p>
         <div class="pop-actions">
-          <button class="save" data-save>Save review</button>
+          <button class="save" data-save disabled>Save review</button>
           <button data-discard>Discard</button>
         </div>
       </div>
@@ -298,13 +325,18 @@
     <span><b data-handoff-count>0</b> reviews ready</span>
     <button class="copy" data-copy>Copy for Claude</button>
     <button data-clear-reviews>Discard all</button>
-    <span class="hint">Paste into Claude Code to apply and commit them.</span>
+    <span class="hint" data-handoff-note>Paste into Claude Code to apply and commit them.</span>
+    <div class="manual" hidden data-manual>
+      <label for="manual-block">Couldn't reach the clipboard — select all and copy this:</label>
+      <textarea id="manual-block" rows="4" readonly></textarea>
+    </div>
   </div>
 
   <footer>
     Generated {{GENERATED_AT}} by <b>/remarkable-memory</b>. Every card cites its
-    source page — the memory is auditable. Fix anything with
-    <code>/remarkable-memory review</code>.
+    source page — the memory is auditable. Click any chip to filter (several at
+    once), or <b>Review</b> on a card to correct it — then <b>Copy for Claude</b> and
+    paste the batch back to apply it.
   </footer>
 </div>
 
@@ -313,7 +345,15 @@
    (1) facet filtering — chips are toggles that union (OR), ANDed with "Needs review";
    (2) review popovers — verdicts persist in localStorage and are copied back out as a
        /remarkable-memory review --apply block for the agent to apply and commit.
-   The page is read-only with respect to the memory store: nothing here writes a note. */
+
+   The payload drives DESTRUCTIVE edits to the user's real notes (overwriting bodies,
+   changing confidence, committing to git). So the governing rule is: never emit a
+   judgement the human did not make. Concretely — Save is disabled until a verdict is
+   picked AND the field that verdict needs holds something the human actually supplied
+   (a `fix` whose text still equals the prefill is not a correction); abandoning a
+   popover restores it rather than leaving a half-edit that looks like a decision; and
+   anything the page cannot round-trip safely (missing or duplicate note id, storage
+   that will not persist) is surfaced loudly instead of failing quietly. */
 (function () {
   'use strict';
 
@@ -330,7 +370,9 @@
   var emptyEl = null;
 
   function facetsOf(card) {
-    return (card.dataset.facets || '').toLowerCase().split('|').filter(Boolean);
+    return (card.dataset.facets || '').toLowerCase().split('|')
+      .map(function (s) { return s.trim(); })   // "a | b" must still match chip "b"
+      .filter(Boolean);
   }
 
   function matches(card) {
@@ -351,7 +393,7 @@
 
     // Keep every copy of a chip (header + in-card) visually in sync.
     document.querySelectorAll('.chip[data-facet]').forEach(function (chip) {
-      chip.setAttribute('aria-pressed', active.has(chip.dataset.facet.toLowerCase()));
+      chip.setAttribute('aria-pressed', active.has(chip.dataset.facet.trim().toLowerCase()));
     });
 
     var filtering = active.size > 0 || flagOnly;
@@ -368,7 +410,10 @@
         emptyEl.className = 'empty';
         grid.appendChild(emptyEl);
       }
-      emptyEl.textContent = 'No notes match those filters.';
+      // An empty cluster is not the same as an over-narrow filter.
+      emptyEl.textContent = cards.length === 0
+        ? 'This cluster has no notes yet.'
+        : 'No notes match those filters.';
       emptyEl.hidden = false;
     } else if (emptyEl) {
       emptyEl.hidden = true;
@@ -379,7 +424,7 @@
   document.addEventListener('click', function (e) {
     var chip = e.target.closest('.chip[data-facet]');
     if (!chip) return;
-    var f = chip.dataset.facet.toLowerCase();
+    var f = chip.dataset.facet.trim().toLowerCase();
     if (active.has(f)) active.delete(f); else active.add(f);
     apply();
   });
@@ -409,8 +454,10 @@
       });
       btn.classList.add('active');
       cards.slice().sort(function (a, b) {
+        // A missing data-confidence would otherwise make the comparator return NaN,
+        // which is inconsistent and scrambles the order rather than leaving it alone.
         return btn.dataset.sort === 'confidence'
-          ? parseFloat(a.dataset.confidence) - parseFloat(b.dataset.confidence)
+          ? (parseFloat(a.dataset.confidence) || 0) - (parseFloat(b.dataset.confidence) || 0)
           : (b.dataset.modified || '').localeCompare(a.dataset.modified || '');
       }).forEach(function (c) { grid.appendChild(c); });
       if (emptyEl) grid.appendChild(emptyEl);  // keep the empty notice last
@@ -421,118 +468,285 @@
 
   /* ---------- 2. Review popovers + handoff ------------------------------- */
 
+  var VERDICTS = ['ok', 'fix', 'meta'];
   // Scoped per page so two cluster pages don't overwrite each other's drafts.
   var STORE = 'rm-review:' + location.pathname;
-  var reviews = {};
-  try { reviews = JSON.parse(localStorage.getItem(STORE) || '{}'); } catch (e) { reviews = {}; }
+  var storageBroken = false;
+
+  function load() {
+    var parsed = null;
+    try { parsed = JSON.parse(localStorage.getItem(STORE) || '{}'); } catch (e) { parsed = null; }
+    // A hand-edited or foreign value must not take the whole page down.
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) parsed = {};
+    var clean = Object.create(null);   // no prototype keys to trip over
+    Object.keys(parsed).forEach(function (k) {
+      var v = parsed[k];
+      if (v && typeof v === 'object' && VERDICTS.indexOf(v.verdict) !== -1) clean[k] = v;
+    });
+    return clean;
+  }
+
+  var reviews = load();
 
   var bar = document.querySelector('[data-handoff]');
   var barCount = document.querySelector('[data-handoff-count]');
+  var barNote = document.querySelector('[data-handoff-note]');
   var copyBtn = document.querySelector('[data-copy]');
 
+  var removed = Object.create(null);   // ids discarded in this session
+
+  // Merge into whatever is on disk rather than overwriting it, so a second tab of the
+  // same page can't silently drop reviews saved in the first.
   function persist() {
-    try { localStorage.setItem(STORE, JSON.stringify(reviews)); } catch (e) { /* private mode */ }
+    try {
+      var onDisk = load();
+      Object.keys(removed).forEach(function (k) { delete onDisk[k]; });
+      Object.keys(reviews).forEach(function (k) { onDisk[k] = reviews[k]; });
+      localStorage.setItem(STORE, JSON.stringify(onDisk));
+      // Adopt anything another tab added that this one hasn't seen.
+      Object.keys(onDisk).forEach(function (k) { if (!reviews[k]) reviews[k] = onDisk[k]; });
+      storageBroken = false;
+      return true;
+    } catch (e) {
+      storageBroken = true;   // private mode, blocked cookies, partitioned file://
+      return false;
+    }
+  }
+
+  window.addEventListener('storage', function (e) {
+    if (e.key !== STORE) return;
+    reviews = load();
+    refreshBar();
+  });
+
+  function close(pop) {
+    // hidePopover() throws if the popover isn't showing, and :popover-open throws
+    // SyntaxError outright on engines without the Popover API.
+    try { if (pop.hidePopover) pop.hidePopover(); } catch (e) { /* already closed */ }
   }
 
   function refreshBar() {
-    var n = Object.keys(reviews).length;
-    if (bar) bar.hidden = n === 0;
-    if (barCount) barCount.textContent = n;
-    if (copyBtn) copyBtn.textContent = 'Copy for Claude';
+    var ids = Object.keys(reviews);
+    var copied = ids.filter(function (k) { return reviews[k].copiedAt; }).length;
+    if (bar) bar.hidden = ids.length === 0;
+    if (barCount) barCount.textContent = ids.length;
+    if (copyBtn) copyBtn.textContent = copied && copied === ids.length ? 'Copy again' : 'Copy for Claude';
+    if (barNote) {
+      barNote.textContent = storageBroken
+        ? 'This browser is not saving them — copy the batch before you close the tab.'
+        : copied && copied === ids.length
+          ? 'Copied. Paste into Claude Code to apply, then Discard all.'
+          : 'Paste into Claude Code to apply and commit them.';
+      barNote.classList.toggle('warn', storageBroken);
+    }
     cards.forEach(function (card) {
-      if (reviews[card.dataset.noteId]) card.dataset.reviewed = '1';
-      else delete card.dataset.reviewed;
+      if (card.dataset.noteId && reviews[card.dataset.noteId]) card.dataset.reviewDraft = '1';
+      else delete card.dataset.reviewDraft;
     });
   }
+
+  var seenIds = Object.create(null);
 
   cards.forEach(function (card) {
     var pop = card.querySelector('.pop');
     if (!pop) return;
+    var opener = card.querySelector('.rev-open');
+
+    function disableCard(why) {
+      if (opener) { opener.disabled = true; opener.title = why; }
+    }
+
     var id = card.dataset.noteId;
-    var saved = reviews[id];
-    var verdict = saved ? saved.verdict : null;
+    // Without a stable, unique id the agent cannot match a review back to a note, and
+    // two such cards would share one localStorage entry. Fail loudly, not silently.
+    if (!id) return disableCard('No note id on this card — a review could not be matched back to a note.');
+    if (seenIds[id]) return disableCard('Duplicate note id "' + id + '" — a review here would overwrite another card\'s.');
+    seenIds[id] = true;
 
     var vbtns = pop.querySelectorAll('[data-verdict]');
+    var fixField = pop.querySelector('[data-field="fix"]');
+    var metaField = pop.querySelector('[data-field="meta"]');
     var fix = pop.querySelector('[data-fix]');
+    var meta = pop.querySelector('[data-meta]');
     var lesson = pop.querySelector('[data-lesson]');
+    var saveBtn = pop.querySelector('[data-save]');
+    var discardBtn = pop.querySelector('[data-discard]');
+    var req = pop.querySelector('[data-req]');
 
-    function paintVerdict() {
+    // One malformed popover must not abort the loop and leave every later card — and
+    // the Copy button — unbound.
+    if (!saveBtn || !discardBtn) return disableCard('This card\'s review popover is missing its Save/Discard controls.');
+
+    var PRISTINE = fix ? fix.value : '';   // the transcription as rendered
+    var verdict = null;
+    var justSaved = false;
+
+    function edited() {
+      return !!(fix && fix.value.trim() && fix.value.trim() !== PRISTINE.trim());
+    }
+
+    // A verdict is saveable only once the human has supplied what it needs. For `fix`
+    // that means an ACTUAL edit — the textarea ships pre-filled, so "non-empty" would
+    // be true from the first click and would export the prefill as a correction.
+    function ready() {
+      if (verdict === 'ok') return true;
+      if (verdict === 'fix') return edited();
+      if (verdict === 'meta') return !!(meta && meta.value.trim());
+      return false;
+    }
+
+    function paint() {
       vbtns.forEach(function (b) {
         b.setAttribute('aria-pressed', b.dataset.verdict === verdict);
       });
-      // "Reads correctly" needs no edit — hide the textarea to keep the popover small.
-      if (fix) fix.closest('.pop').querySelectorAll('label')[0].hidden = verdict === 'ok';
-      if (fix) fix.hidden = verdict === 'ok';
+      if (fixField) fixField.hidden = verdict !== 'fix';
+      if (metaField) metaField.hidden = verdict !== 'meta';
+      saveBtn.disabled = !ready();
+      if (!req) return;
+      var msgs = [];
+      if (!verdict) msgs.push('Pick a verdict first.');
+      else if (verdict === 'fix' && !edited()) msgs.push('Edit the transcription — it is still exactly as read.');
+      else if (verdict === 'meta' && !(meta && meta.value.trim())) msgs.push('Say which tags or cluster it should have.');
+      // Warn before a verdict switch throws away work the human typed. This is
+      // additive: a missing-field prompt must not hide a pending data loss.
+      if (verdict && verdict !== 'fix' && edited()) msgs.push('Your text edit will not be sent with this verdict.');
+      if (verdict && verdict !== 'meta' && meta && meta.value.trim()) msgs.push('Your tags note will not be sent with this verdict.');
+      req.textContent = msgs.join(' ');
+      req.hidden = msgs.length === 0;
     }
 
-    if (saved) {
-      if (fix && saved.text) fix.value = saved.text;
-      if (lesson && saved.lesson) lesson.value = saved.lesson;
+    // Restore the popover to the last SAVED state (or pristine). Used on load, on
+    // discard, and when a popover is abandoned via Esc / clicking outside — otherwise
+    // a half-finished edit sits there looking like a decision the human made.
+    function restore() {
+      var saved = reviews[id];
+      verdict = saved ? saved.verdict : null;
+      if (fix) fix.value = (saved && saved.text) || PRISTINE;
+      if (meta) meta.value = (saved && saved.reassign) || '';
+      if (lesson) lesson.value = (saved && saved.lesson) || '';
+      paint();
     }
-    paintVerdict();
+
+    restore();
 
     vbtns.forEach(function (b) {
-      b.addEventListener('click', function () {
-        verdict = b.dataset.verdict;
-        paintVerdict();
-      });
+      b.addEventListener('click', function () { verdict = b.dataset.verdict; paint(); });
+    });
+    if (fix) fix.addEventListener('input', paint);
+    if (meta) meta.addEventListener('input', paint);
+
+    pop.addEventListener('toggle', function (e) {
+      if (e.newState === 'closed' && !justSaved) restore();
+      justSaved = false;
     });
 
-    pop.querySelector('[data-save]').addEventListener('click', function () {
-      if (!verdict) { verdict = fix && fix.value ? 'fix' : 'ok'; paintVerdict(); }
+    saveBtn.addEventListener('click', function () {
+      // No inference: paint() keeps this disabled until ready(), so the verdict here
+      // is always one a human clicked, backed by content a human supplied.
+      if (!ready()) return;
+      var pageNo = card.dataset.page ? Number(card.dataset.page) : null;
       reviews[id] = {
         id: id,
-        page: Number(card.dataset.page) || null,
+        page: (pageNo === null || isNaN(pageNo)) ? null : pageNo,
         notebook: card.dataset.notebook || null,
+        // Lets the agent spot a note re-synced after this review was captured, rather
+        // than overwriting a newer transcription with a stale correction.
+        modified: card.dataset.modified || null,
+        savedAt: new Date().toISOString(),
         verdict: verdict,
-        text: verdict === 'ok' ? null : (fix ? fix.value.trim() : null),
+        text: verdict === 'fix' ? fix.value.trim() : null,
+        reassign: verdict === 'meta' ? meta.value.trim() : null,
         lesson: lesson && lesson.value.trim() ? lesson.value.trim() : null
       };
+      delete removed[id];
       persist();
       refreshBar();
-      pop.hidePopover();
+      justSaved = true;
+      close(pop);
     });
 
-    pop.querySelector('[data-discard]').addEventListener('click', function () {
+    discardBtn.addEventListener('click', function () {
       delete reviews[id];
+      removed[id] = true;
       persist();
       refreshBar();
-      pop.hidePopover();
+      justSaved = true;   // don't let restore() run before the delete is reflected
+      close(pop);
+      restore();          // back to pristine, so a stray click can't resurrect it
     });
   });
 
+  /* ---------- 3. Handing the batch to Claude ----------------------------- */
+
+  function blockText() {
+    var payload = Object.keys(reviews).map(function (k) {
+      var r = reviews[k], out = {};
+      // copiedAt is bookkeeping for this page, not part of the agent's contract.
+      Object.keys(r).forEach(function (f) { if (f !== 'copiedAt') out[f] = r[f]; });
+      return out;
+    });
+    return '/remarkable-memory review --apply\n```json\n' +
+           JSON.stringify(payload, null, 2) + '\n```';
+  }
+
+  function markCopied() {
+    var now = new Date().toISOString();
+    Object.keys(reviews).forEach(function (k) { reviews[k].copiedAt = now; });
+    persist();
+    refreshBar();
+  }
+
   if (copyBtn) {
     copyBtn.addEventListener('click', function () {
-      var payload = Object.keys(reviews).map(function (k) { return reviews[k]; });
-      var block = '/remarkable-memory review --apply\n```json\n' +
-                  JSON.stringify(payload, null, 2) + '\n```';
-      var done = function () { copyBtn.textContent = 'Copied ✓'; };
+      var text = blockText();
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(block).then(done, function () { fallback(block, done); });
+        navigator.clipboard.writeText(text).then(markCopied, function () { manual(text); });
       } else {
-        fallback(block, done);
+        legacyCopy(text);
       }
     });
   }
 
-  // file:// pages without clipboard permission still need to hand the block over.
-  function fallback(text, done) {
+  // Only ever claim success when the copy actually happened — a false "Copied ✓"
+  // loses the whole batch at paste time.
+  function legacyCopy(text) {
     var ta = document.createElement('textarea');
     ta.value = text;
     ta.style.position = 'fixed';
     ta.style.opacity = '0';
     document.body.appendChild(ta);
     ta.select();
-    try { document.execCommand('copy'); done(); } catch (e) { window.prompt('Copy this:', text); }
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
     document.body.removeChild(ta);
+    if (ok) markCopied(); else manual(text);
+  }
+
+  // Last resort. window.prompt() is the wrong carrier for a multi-KB, multi-line JSON
+  // block, so show a real selectable textarea instead.
+  function manual(text) {
+    var box = document.querySelector('[data-manual]');
+    if (!box) { window.prompt('Copy this, then paste it into Claude Code:', text); return; }
+    var ta = box.querySelector('textarea');
+    ta.value = text;
+    box.hidden = false;
+    ta.focus();
+    ta.select();
   }
 
   var clearReviews = document.querySelector('[data-clear-reviews]');
   if (clearReviews) {
     clearReviews.addEventListener('click', function () {
-      reviews = {};
+      var n = Object.keys(reviews).length;
+      if (!n) return;
+      if (!window.confirm('Discard ' + n + ' saved review' + (n === 1 ? '' : 's') +
+                          '? This cannot be undone.')) return;
+      Object.keys(reviews).forEach(function (k) { removed[k] = true; });
+      reviews = Object.create(null);
       persist();
       refreshBar();
+      var box = document.querySelector('[data-manual]');
+      if (box) box.hidden = true;
     });
   }
 
