@@ -499,6 +499,13 @@ hard to use carelessly:
   reason in the tooltip — they'd otherwise collect reviews that land on the wrong note
   or none at all. A browser that won't persist (private mode, blocked storage) says so
   in the handoff bar instead of pretending the batch is safe.
+- **The draft store is versioned.** Saved reviews live under
+  `{ schema: N, entries: {…} }`. A draft written by an older page is discarded on load
+  rather than exported — the fields a newer contract requires are exactly the ones the
+  old shape didn't save, and the human's intent can't be recovered from what it did.
+  The bar says how many were dropped so those cards get redone, instead of the agent
+  receiving entries it will only reject. Bump `SCHEMA` whenever the entry shape
+  changes.
 
 Saved verdicts persist in `localStorage` (keyed by page path, so two cluster pages
 don't overwrite each other), and a sticky **handoff bar** appears: *"3 reviews ready

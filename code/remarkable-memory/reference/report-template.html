@@ -322,7 +322,7 @@
 
   <!-- Shown only once at least one review is saved. -->
   <div class="handoff" hidden data-handoff>
-    <span><b data-handoff-count>0</b> reviews ready</span>
+    <span data-handoff-lead><b data-handoff-count>0</b> reviews ready</span>
     <button class="copy" data-copy>Copy for Claude</button>
     <button data-clear-reviews>Discard all</button>
     <span class="hint" data-handoff-note>Paste into Claude Code to apply and commit them.</span>
@@ -469,19 +469,42 @@
   /* ---------- 2. Review popovers + handoff ------------------------------- */
 
   var VERDICTS = ['ok', 'fix', 'meta'];
+  // Bump whenever the shape of a stored review changes. A draft written by an older
+  // page must never be handed to the agent as if it were current: the fields it is
+  // missing are exactly the ones apply would reject, and the human's intent is not
+  // recoverable from what an older shape happened to save.
+  var SCHEMA = 2;
   // Scoped per page so two cluster pages don't overwrite each other's drafts.
   var STORE = 'rm-review:' + location.pathname;
   var storageBroken = false;
+  var dropped = 0;   // drafts discarded on load, reported in the handoff bar
+
+  // An entry is only usable if it carries what its verdict requires — the same
+  // guarantee the apply contract is documented to rely on.
+  function valid(v) {
+    if (!v || typeof v !== 'object') return false;
+    if (VERDICTS.indexOf(v.verdict) === -1) return false;
+    if (v.verdict === 'fix') return typeof v.text === 'string' && !!v.text.trim();
+    if (v.verdict === 'meta') return typeof v.reassign === 'string' && !!v.reassign.trim();
+    return true;
+  }
 
   function load() {
-    var parsed = null;
-    try { parsed = JSON.parse(localStorage.getItem(STORE) || '{}'); } catch (e) { parsed = null; }
-    // A hand-edited or foreign value must not take the whole page down.
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) parsed = {};
+    var raw = null;
+    try { raw = JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (e) { raw = null; }
     var clean = Object.create(null);   // no prototype keys to trip over
-    Object.keys(parsed).forEach(function (k) {
-      var v = parsed[k];
-      if (v && typeof v === 'object' && VERDICTS.indexOf(v.verdict) !== -1) clean[k] = v;
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return clean;
+
+    // Unversioned stores predate SCHEMA 2 and are discarded wholesale.
+    var entries = (raw.schema && raw.entries) ? raw.entries : null;
+    if (!entries || raw.schema !== SCHEMA) {
+      var stale = entries || raw;
+      dropped = (stale && typeof stale === 'object') ? Object.keys(stale).length : 0;
+      return clean;
+    }
+    Object.keys(entries).forEach(function (k) {
+      // Belt and braces for a hand-edited store even at the right version.
+      if (valid(entries[k])) clean[k] = entries[k]; else dropped++;
     });
     return clean;
   }
@@ -502,7 +525,7 @@
       var onDisk = load();
       Object.keys(removed).forEach(function (k) { delete onDisk[k]; });
       Object.keys(reviews).forEach(function (k) { onDisk[k] = reviews[k]; });
-      localStorage.setItem(STORE, JSON.stringify(onDisk));
+      localStorage.setItem(STORE, JSON.stringify({ schema: SCHEMA, entries: onDisk }));
       // Adopt anything another tab added that this one hasn't seen.
       Object.keys(onDisk).forEach(function (k) { if (!reviews[k]) reviews[k] = onDisk[k]; });
       storageBroken = false;
@@ -528,16 +551,28 @@
   function refreshBar() {
     var ids = Object.keys(reviews);
     var copied = ids.filter(function (k) { return reviews[k].copiedAt; }).length;
-    if (bar) bar.hidden = ids.length === 0;
+    if (bar) bar.hidden = ids.length === 0 && dropped === 0;
     if (barCount) barCount.textContent = ids.length;
+    var lead = document.querySelector('[data-handoff-lead]');
+    if (lead) lead.hidden = ids.length === 0;
+    if (copyBtn) copyBtn.hidden = ids.length === 0;
+    var discardAll = document.querySelector('[data-clear-reviews]');
+    if (discardAll) discardAll.hidden = ids.length === 0;
     if (copyBtn) copyBtn.textContent = copied && copied === ids.length ? 'Copy again' : 'Copy for Claude';
     if (barNote) {
-      barNote.textContent = storageBroken
-        ? 'This browser is not saving them — copy the batch before you close the tab.'
-        : copied && copied === ids.length
-          ? 'Copied. Paste into Claude Code to apply, then Discard all.'
-          : 'Paste into Claude Code to apply and commit them.';
-      barNote.classList.toggle('warn', storageBroken);
+      var stale = dropped
+        ? dropped + (dropped === 1 ? ' older draft was' : ' older drafts were') +
+          ' saved in a format this page no longer reads, and ' +
+          (dropped === 1 ? 'was' : 'were') + ' discarded — redo those cards.'
+        : '';
+      var main = !ids.length ? ''
+        : storageBroken
+          ? 'This browser is not saving them — copy the batch before you close the tab.'
+          : copied && copied === ids.length
+            ? 'Copied. Paste into Claude Code to apply, then Discard all.'
+            : 'Paste into Claude Code to apply and commit them.';
+      barNote.textContent = [main, stale].filter(Boolean).join(' ');
+      barNote.classList.toggle('warn', storageBroken || dropped > 0);
     }
     cards.forEach(function (card) {
       if (card.dataset.noteId && reviews[card.dataset.noteId]) card.dataset.reviewDraft = '1';
