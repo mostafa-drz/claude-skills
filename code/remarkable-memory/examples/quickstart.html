@@ -282,9 +282,16 @@ is written to a guide the extractor reads on <em>every</em> future sync.</p>
   <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
   <pre>/remarkable-memory review</pre>
 </div>
-<p class="why">Starts with the lowest-confidence pages. If more than a handful are flagged it offers
-a bulk path first — you skim them in the HTML view and accept the ones that read fine, then walk
-only the genuinely ambiguous pages one at a time.</p>
+<p class="why">Starts with the lowest-confidence pages. If more than a handful are flagged it sends
+you to the cluster page instead: flip on <strong>⚠ Needs review</strong>, hit <strong>Review</strong>
+on a card to fix it against the page render, then <strong>Copy for Claude</strong>.</p>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre>/remarkable-memory review --apply</pre>
+</div>
+<p class="why">Paste the copied block after that command. It writes every correction, promotes the
+lessons into <code>extraction-guide.md</code>, re-renders the touched clusters and commits — the
+whole batch in one pass, no question-by-question walk.</p>
 <div class="snippet">
   <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
   <pre>/remarkable-memory review --min-confidence 0.85</pre>
