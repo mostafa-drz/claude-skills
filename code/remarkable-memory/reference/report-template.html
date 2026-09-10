@@ -13,13 +13,31 @@
     {{NOTE_COUNT}}           integer
     {{AVG_CONFIDENCE}}       0-100 (percent, for the meter)
     {{ICON_SVG}}             inline contents of icon.svg, ~32px, currentColor
-    {{ENTITY_CHIPS}}         <span class="chip">hippocampus</span> ...
+    {{ENTITY_CHIPS}}         <button class="chip" data-facet="hippocampus" ...> ...
     {{NOTE_CARDS}}           repeated .card blocks (see the sample below)
     {{GENERATED_AT}}         ISO timestamp
 
   Confidence badge rule: green when confidence ≥ threshold, amber below. Cards
   below threshold also get the .flag class (amber left border + review chip).
   Uncertain inline words: wrap in <mark class="uncertain">recall?</mark>.
+
+  Two interactive behaviours (both plain vanilla JS, bottom of file):
+
+  1. FACET FILTERING — every chip (entity chips in the header, tag chips on each
+     card) is a <button class="chip" data-facet="Amsterdam" aria-pressed="false">.
+     Clicking toggles it; several can be on at once and the matches UNION (OR), so
+     turning on more chips widens the result rather than emptying it. The
+     "⚠ Needs review" switch is a separate facet that ANDs with the chips. Each
+     card carries data-facets="tag|tag|Entity|Entity" (pipe-separated, matched
+     case-insensitively) so the filter needs no lookup table.
+
+  2. REVIEW POPOVER — every card has a "Review" button opening a native
+     [popover] with a verdict (reads correctly / fix the text / wrong tags),
+     an editable transcription and an optional "lesson" line. Verdicts persist in
+     localStorage, and a sticky bar copies them as a `review · apply` block to
+     paste back into Claude Code (see SKILL.md → "Applying reviews from the page").
+     The page never writes to the memory store itself — the agent applies the
+     corrections and commits them.
 
   Colors match the site vocabulary: ground #121212, primary #ff5722,
   secondary #03a9f4, hairline borders, faint surfaces. Light mode inverts.
@@ -79,15 +97,26 @@
                   overflow: hidden; border: 1px solid var(--border); }
   .meter .fill { height: 100%; background: linear-gradient(90deg, var(--warn), var(--good)); }
   .chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 14px 0 4px; }
-  .chip { font-size: 0.76rem; padding: 3px 10px; border-radius: 99px;
+  /* Chips are buttons: click to filter, several at a time. aria-pressed is the
+     single source of truth for "on" — style hangs off it, no extra class. */
+  .chip { font: inherit; font-size: 0.76rem; padding: 3px 10px; border-radius: 99px;
           border: 1px solid var(--border); background: var(--surface);
-          color: var(--text-2); }
-  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 26px 0 14px; }
+          color: var(--text-2); cursor: pointer; }
+  .chip:hover { border-color: var(--secondary); color: var(--text); }
+  .chip[aria-pressed="true"] { color: var(--bg); background: var(--secondary);
+          border-color: var(--secondary); font-weight: 600; }
+  .chip:focus-visible, .toolbar button:focus-visible, .rev-open:focus-visible {
+          outline: 2px solid var(--secondary); outline-offset: 2px; }
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+          margin: 26px 0 14px; }
   .toolbar button { font: inherit; font-size: 0.82rem; cursor: pointer;
           padding: 6px 13px; border-radius: 99px; border: 1px solid var(--border);
           background: var(--surface); color: var(--text-2); }
-  .toolbar button.active { color: var(--bg); background: var(--primary);
-          border-color: var(--primary); }
+  .toolbar button.active, .toolbar button[aria-pressed="true"] {
+          color: var(--bg); background: var(--primary); border-color: var(--primary); }
+  .toolbar .count { font-size: 0.8rem; color: var(--text-2); margin-left: auto; }
+  .toolbar .clear { border-style: dashed; }
+  .empty { padding: 30px 0; color: var(--text-2); font-size: 0.9rem; }
   .grid { display: grid; gap: 16px; }
   .card { border: 1px solid var(--border); border-radius: var(--radius);
           background: var(--surface); padding: 18px 18px 16px; }
@@ -119,6 +148,55 @@
   .review-hint { font-size: 0.76rem; color: var(--warn); }
   .review-hint code { font-size: 0.72rem; padding: 1px 5px; border-radius: 5px;
           background: var(--surface-2); border: 1px solid var(--border); }
+
+  /* --- Review popover ------------------------------------------------------ */
+  .rev-open { font: inherit; font-size: 0.74rem; cursor: pointer; margin-left: auto;
+          padding: 3px 11px; border-radius: 99px; border: 1px solid var(--border);
+          background: var(--surface-2); color: var(--text-2); }
+  .rev-open:hover { border-color: var(--primary); color: var(--primary); }
+  .card[data-reviewed] .rev-open { border-color: var(--good); color: var(--good); }
+  .pop { border: 1px solid var(--border); border-radius: var(--radius);
+          background: var(--bg); color: var(--text); padding: 18px;
+          width: min(440px, calc(100vw - 32px)); box-shadow: 0 18px 50px rgba(0,0,0,.35);
+          margin: auto; }
+  .pop::backdrop { background: rgba(0,0,0,.45); }
+  .pop h4 { margin: 0 0 2px; font-size: 0.95rem; }
+  .pop .prov { margin: 0 0 12px; }
+  .pop .verdicts { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .pop .verdicts button { font: inherit; font-size: 0.78rem; cursor: pointer;
+          padding: 5px 11px; border-radius: 99px; border: 1px solid var(--border);
+          background: var(--surface); color: var(--text-2); }
+  .pop .verdicts button[aria-pressed="true"] { color: var(--bg);
+          background: var(--primary); border-color: var(--primary); font-weight: 600; }
+  .pop label { display: block; font-size: 0.76rem; color: var(--text-2); margin: 10px 0 4px; }
+  .pop textarea, .pop input { font: inherit; font-size: 0.85rem; width: 100%;
+          box-sizing: border-box; padding: 8px 10px; border-radius: 9px;
+          border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+  .pop textarea { min-height: 120px; resize: vertical; line-height: 1.5; }
+  .pop .pop-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .pop .pop-actions button { font: inherit; font-size: 0.8rem; cursor: pointer;
+          padding: 6px 14px; border-radius: 99px; border: 1px solid var(--border);
+          background: var(--surface); color: var(--text-2); }
+  .pop .pop-actions .save { background: var(--primary); border-color: var(--primary);
+          color: var(--bg); font-weight: 600; }
+
+  /* --- Handoff bar (appears once a review is saved) ------------------------- */
+  .handoff { position: sticky; bottom: 14px; z-index: 5; display: flex;
+          align-items: center; gap: 12px; flex-wrap: wrap; margin: 26px 0 0;
+          padding: 12px 16px; border-radius: var(--radius);
+          border: 1px solid var(--primary); background: var(--bg);
+          box-shadow: 0 10px 30px rgba(0,0,0,.28); font-size: 0.84rem; }
+  .handoff button { font: inherit; font-size: 0.8rem; cursor: pointer;
+          padding: 6px 14px; border-radius: 99px; border: 1px solid var(--border);
+          background: var(--surface); color: var(--text-2); }
+  .handoff .copy { background: var(--primary); border-color: var(--primary);
+          color: var(--bg); font-weight: 600; }
+  .handoff .hint { color: var(--text-2); }
+  /* class selector would otherwise beat the UA [hidden] rule */
+  .handoff[hidden] { display: none; }
+  @media (prefers-reduced-motion: no-preference) {
+    .chip, .toolbar button, .rev-open { transition: background .12s, color .12s, border-color .12s; }
+  }
   footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--border);
           color: var(--text-2); font-size: 0.8rem; }
   a { color: var(--secondary); text-decoration: none; }
@@ -146,13 +224,16 @@
     </span>
   </div>
 
-  <div class="chips" aria-label="entities">{{ENTITY_CHIPS}}</div>
+  <!-- Entity chips are filter buttons. {{ENTITY_CHIPS}} renders each as:
+       <button class="chip" data-facet="Amsterdam" aria-pressed="false">Amsterdam</button> -->
+  <div class="chips" aria-label="Filter by entity">{{ENTITY_CHIPS}}</div>
 
-  <div class="toolbar" role="group" aria-label="filter">
-    <button data-filter="all" class="active">All</button>
-    <button data-filter="flagged">⚠ Needs review</button>
+  <div class="toolbar" role="group" aria-label="Filter and sort notes">
+    <button data-flag aria-pressed="false">⚠ Needs review</button>
     <button data-sort="confidence">Sort: confidence</button>
     <button data-sort="recent">Sort: recent</button>
+    <button class="clear" data-clear hidden>Clear filters</button>
+    <span class="count" data-count aria-live="polite"></span>
   </div>
 
   <div class="grid" id="grid">
@@ -162,11 +243,19 @@
   The thumbnail src is relative to THIS cluster page — the asset is copied into
   clusters/<slug>/assets/ at render time (see memory-schema.md "Asset paths"):
 
-    <article class="card flag" data-confidence="0.62" data-modified="2026-08-11">
+    data-facets is the card's tags + entities, pipe-separated (matched
+    case-insensitively). data-note-id / data-page / data-notebook identify the note
+    in the review handoff block.
+
+    <article class="card flag" data-confidence="0.62" data-modified="2026-08-11"
+             data-facets="human-memory|encoding|hippocampus"
+             data-note-id="2026-08-12-human-memory-p3-encoding-loop"
+             data-page="3" data-notebook="Human Memory">
       <div class="head">
         <span class="badge warn">62%</span>
         <span class="type">idea</span>
         <span class="prov">📓 Human Memory · p.3 · synced 2026-08-12</span>
+        <button class="rev-open" popovertarget="rev-p3">Review</button>
       </div>
       <div class="body">
         <p>Encoding <mark class="uncertain">recall?</mark> loop via hippocampus → consolidation during sleep.</p>
@@ -174,11 +263,42 @@
       </div>
       <div class="thumb"><img src="assets/human-memory-p3.png" alt="page 3 sketch"></div>
       <div class="foot">
-        <span class="chip">human-memory</span><span class="chip">encoding</span>
-        <span class="review-hint">Flagged — run <code>/remarkable-memory review</code></span>
+        <button class="chip" data-facet="human-memory" aria-pressed="false">human-memory</button>
+        <button class="chip" data-facet="encoding" aria-pressed="false">encoding</button>
+        <span class="review-hint">Flagged — low confidence</span>
+      </div>
+
+      Review popover — one per card, id matches the button's popovertarget.
+      The textarea is pre-filled with the plain-text transcription so a fix is an
+      edit, not a retype.
+
+      <div popover id="rev-p3" class="pop">
+        <h4>p.3 — review</h4>
+        <p class="prov">📓 Human Memory · p.3 · confidence 62%</p>
+        <div class="verdicts" role="group" aria-label="Verdict">
+          <button data-verdict="ok" aria-pressed="false">Reads correctly</button>
+          <button data-verdict="fix" aria-pressed="false">Fix the text</button>
+          <button data-verdict="meta" aria-pressed="false">Wrong tags / cluster</button>
+        </div>
+        <label for="fix-p3">Corrected transcription</label>
+        <textarea id="fix-p3" data-fix>Encoding ⟨uncertain: recall?⟩ loop via hippocampus → consolidation during sleep.</textarea>
+        <label for="lesson-p3">Lesson for the extractor (optional)</label>
+        <input id="lesson-p3" data-lesson placeholder="e.g. HM = hippocampus, never 'human memory'">
+        <div class="pop-actions">
+          <button class="save" data-save>Save review</button>
+          <button data-discard>Discard</button>
+        </div>
       </div>
     </article>
     -->
+  </div>
+
+  <!-- Shown only once at least one review is saved. -->
+  <div class="handoff" hidden data-handoff>
+    <span><b data-handoff-count>0</b> reviews ready</span>
+    <button class="copy" data-copy>Copy for Claude</button>
+    <button data-clear-reviews>Discard all</button>
+    <span class="hint">Paste into Claude Code to apply and commit them.</span>
   </div>
 
   <footer>
@@ -189,36 +309,235 @@
 </div>
 
 <script>
-  // Vanilla, no framework. Filter flagged / sort by confidence or recency.
-  (function () {
-    var grid = document.getElementById('grid');
-    var cards = Array.prototype.slice.call(grid.querySelectorAll('.card'));
-    var buttons = document.querySelectorAll('.toolbar button');
-    function setActive(btn, attr) {
-      document.querySelectorAll('.toolbar [data-' + attr + ']').forEach(function (b) { b.classList.remove('active'); });
-      btn.classList.add('active');
+/* Vanilla, no framework, no build step. Two behaviours:
+   (1) facet filtering — chips are toggles that union (OR), ANDed with "Needs review";
+   (2) review popovers — verdicts persist in localStorage and are copied back out as a
+       /remarkable-memory review --apply block for the agent to apply and commit.
+   The page is read-only with respect to the memory store: nothing here writes a note. */
+(function () {
+  'use strict';
+
+  var grid = document.getElementById('grid');
+  if (!grid) return;
+  var cards = Array.prototype.slice.call(grid.querySelectorAll('.card'));
+
+  /* ---------- 1. Facet filtering ---------------------------------------- */
+
+  var active = new Set();          // lowercased facet values that are switched on
+  var flagOnly = false;
+  var countEl = document.querySelector('[data-count]');
+  var clearBtn = document.querySelector('[data-clear]');
+  var emptyEl = null;
+
+  function facetsOf(card) {
+    return (card.dataset.facets || '').toLowerCase().split('|').filter(Boolean);
+  }
+
+  function matches(card) {
+    if (flagOnly && !card.classList.contains('flag')) return false;
+    if (!active.size) return true;
+    // OR across chips: any one match keeps the card. Turning on more chips widens
+    // the result — an AND would empty the page after two clicks.
+    return facetsOf(card).some(function (f) { return active.has(f); });
+  }
+
+  function apply() {
+    var shown = 0;
+    cards.forEach(function (card) {
+      var ok = matches(card);
+      card.hidden = !ok;
+      if (ok) shown++;
+    });
+
+    // Keep every copy of a chip (header + in-card) visually in sync.
+    document.querySelectorAll('.chip[data-facet]').forEach(function (chip) {
+      chip.setAttribute('aria-pressed', active.has(chip.dataset.facet.toLowerCase()));
+    });
+
+    var filtering = active.size > 0 || flagOnly;
+    if (clearBtn) clearBtn.hidden = !filtering;
+    if (countEl) {
+      countEl.textContent = filtering
+        ? 'showing ' + shown + ' of ' + cards.length
+        : cards.length + ' notes';
     }
-    buttons.forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        if (btn.dataset.filter) {
-          setActive(btn, 'filter');
-          cards.forEach(function (c) {
-            c.style.display = (btn.dataset.filter === 'flagged' && !c.classList.contains('flag')) ? 'none' : '';
-          });
-        }
-        if (btn.dataset.sort) {
-          setActive(btn, 'sort');
-          var sorted = cards.slice().sort(function (a, b) {
-            if (btn.dataset.sort === 'confidence') {
-              return parseFloat(a.dataset.confidence) - parseFloat(b.dataset.confidence);
-            }
-            return (b.dataset.modified || '').localeCompare(a.dataset.modified || '');
-          });
-          sorted.forEach(function (c) { grid.appendChild(c); });
-        }
+
+    if (!shown) {
+      if (!emptyEl) {
+        emptyEl = document.createElement('p');
+        emptyEl.className = 'empty';
+        grid.appendChild(emptyEl);
+      }
+      emptyEl.textContent = 'No notes match those filters.';
+      emptyEl.hidden = false;
+    } else if (emptyEl) {
+      emptyEl.hidden = true;
+    }
+  }
+
+  // Delegated so chips inside cards work too, and chips added later still bind.
+  document.addEventListener('click', function (e) {
+    var chip = e.target.closest('.chip[data-facet]');
+    if (!chip) return;
+    var f = chip.dataset.facet.toLowerCase();
+    if (active.has(f)) active.delete(f); else active.add(f);
+    apply();
+  });
+
+  var flagBtn = document.querySelector('[data-flag]');
+  if (flagBtn) {
+    flagBtn.addEventListener('click', function () {
+      flagOnly = !flagOnly;
+      flagBtn.setAttribute('aria-pressed', flagOnly);
+      apply();
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      active.clear();
+      flagOnly = false;
+      if (flagBtn) flagBtn.setAttribute('aria-pressed', 'false');
+      apply();
+    });
+  }
+
+  document.querySelectorAll('.toolbar [data-sort]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.toolbar [data-sort]').forEach(function (b) {
+        b.classList.remove('active');
+      });
+      btn.classList.add('active');
+      cards.slice().sort(function (a, b) {
+        return btn.dataset.sort === 'confidence'
+          ? parseFloat(a.dataset.confidence) - parseFloat(b.dataset.confidence)
+          : (b.dataset.modified || '').localeCompare(a.dataset.modified || '');
+      }).forEach(function (c) { grid.appendChild(c); });
+      if (emptyEl) grid.appendChild(emptyEl);  // keep the empty notice last
+    });
+  });
+
+  apply();
+
+  /* ---------- 2. Review popovers + handoff ------------------------------- */
+
+  // Scoped per page so two cluster pages don't overwrite each other's drafts.
+  var STORE = 'rm-review:' + location.pathname;
+  var reviews = {};
+  try { reviews = JSON.parse(localStorage.getItem(STORE) || '{}'); } catch (e) { reviews = {}; }
+
+  var bar = document.querySelector('[data-handoff]');
+  var barCount = document.querySelector('[data-handoff-count]');
+  var copyBtn = document.querySelector('[data-copy]');
+
+  function persist() {
+    try { localStorage.setItem(STORE, JSON.stringify(reviews)); } catch (e) { /* private mode */ }
+  }
+
+  function refreshBar() {
+    var n = Object.keys(reviews).length;
+    if (bar) bar.hidden = n === 0;
+    if (barCount) barCount.textContent = n;
+    if (copyBtn) copyBtn.textContent = 'Copy for Claude';
+    cards.forEach(function (card) {
+      if (reviews[card.dataset.noteId]) card.dataset.reviewed = '1';
+      else delete card.dataset.reviewed;
+    });
+  }
+
+  cards.forEach(function (card) {
+    var pop = card.querySelector('.pop');
+    if (!pop) return;
+    var id = card.dataset.noteId;
+    var saved = reviews[id];
+    var verdict = saved ? saved.verdict : null;
+
+    var vbtns = pop.querySelectorAll('[data-verdict]');
+    var fix = pop.querySelector('[data-fix]');
+    var lesson = pop.querySelector('[data-lesson]');
+
+    function paintVerdict() {
+      vbtns.forEach(function (b) {
+        b.setAttribute('aria-pressed', b.dataset.verdict === verdict);
+      });
+      // "Reads correctly" needs no edit — hide the textarea to keep the popover small.
+      if (fix) fix.closest('.pop').querySelectorAll('label')[0].hidden = verdict === 'ok';
+      if (fix) fix.hidden = verdict === 'ok';
+    }
+
+    if (saved) {
+      if (fix && saved.text) fix.value = saved.text;
+      if (lesson && saved.lesson) lesson.value = saved.lesson;
+    }
+    paintVerdict();
+
+    vbtns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        verdict = b.dataset.verdict;
+        paintVerdict();
       });
     });
-  })();
+
+    pop.querySelector('[data-save]').addEventListener('click', function () {
+      if (!verdict) { verdict = fix && fix.value ? 'fix' : 'ok'; paintVerdict(); }
+      reviews[id] = {
+        id: id,
+        page: Number(card.dataset.page) || null,
+        notebook: card.dataset.notebook || null,
+        verdict: verdict,
+        text: verdict === 'ok' ? null : (fix ? fix.value.trim() : null),
+        lesson: lesson && lesson.value.trim() ? lesson.value.trim() : null
+      };
+      persist();
+      refreshBar();
+      pop.hidePopover();
+    });
+
+    pop.querySelector('[data-discard]').addEventListener('click', function () {
+      delete reviews[id];
+      persist();
+      refreshBar();
+      pop.hidePopover();
+    });
+  });
+
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function () {
+      var payload = Object.keys(reviews).map(function (k) { return reviews[k]; });
+      var block = '/remarkable-memory review --apply\n```json\n' +
+                  JSON.stringify(payload, null, 2) + '\n```';
+      var done = function () { copyBtn.textContent = 'Copied ✓'; };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(block).then(done, function () { fallback(block, done); });
+      } else {
+        fallback(block, done);
+      }
+    });
+  }
+
+  // file:// pages without clipboard permission still need to hand the block over.
+  function fallback(text, done) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { window.prompt('Copy this:', text); }
+    document.body.removeChild(ta);
+  }
+
+  var clearReviews = document.querySelector('[data-clear-reviews]');
+  if (clearReviews) {
+    clearReviews.addEventListener('click', function () {
+      reviews = {};
+      persist();
+      refreshBar();
+    });
+  }
+
+  refreshBar();
+})();
 </script>
 </body>
 </html>

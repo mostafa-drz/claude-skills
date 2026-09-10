@@ -86,6 +86,8 @@ Check `$ARGUMENTS`:
 - `setup` / `preflight` → run the connection setup/onboarding flow (see **Setup**), stop
 - `sync` → ingest new/changed pages into memory (see **Sync**)
 - `review` → walk low-confidence extractions and capture corrections (see **Review & learning**)
+- `review --apply` → the argument contains a JSON block copied from a cluster page's
+  review popovers; apply those corrections in one pass (see **Applying reviews from the page**)
 - `clusters` / `browse` → (re)render and open the HTML cluster views (see **Render**)
 - `feedback` → rate the last answer/extraction quality (see **Review & learning**)
 - anything else (free text, optionally with flags) → treat as a **query** against the memory (see **Query**)
@@ -103,6 +105,8 @@ Usage:
   /remarkable-memory <question>            Ask the memory in plain language
   /remarkable-memory review [--min-confidence <0-1>]
                                           Correct low-confidence extractions (teaches the reader)
+  /remarkable-memory review --apply        Apply reviews collected in the HTML page
+                                          (paste the block its "Copy for Claude" button gives you)
   /remarkable-memory clusters | browse     Re-render + open the HTML cluster browser
   /remarkable-memory feedback              Rate the last answer/extraction
   /remarkable-memory config                Set preferences
@@ -426,16 +430,51 @@ Per-cluster page:
 2. **Note cards** — one card per note: the transcribed text (Markdown → HTML), a
    **confidence badge** (green ≥ threshold, amber below), the provenance line
    (📓 notebook · p.N · synced date), tag chips, and any asset thumbnail. Cards
-   below the threshold get a subtle amber left-border and a non-interactive
-   "flagged — run /remarkable-memory review" hint. `⟨uncertain: word?⟩` markers
-   render as a dotted-underline highlight.
+   below the threshold get a subtle amber left-border and a "flagged — low
+   confidence" label. `⟨uncertain: word?⟩` markers render as a dotted-underline
+   highlight.
 3. **Entities** — a chip row of the people/places/projects in this cluster.
 4. **Provenance is always visible** — every card says exactly which page it came
    from. The memory is auditable by design.
 
+### Chips are filters, not labels
+
+Every chip — the entity chips in the header **and** the tag chips on each card — is
+a real toggle:
+
+```html
+<button class="chip" data-facet="Amsterdam" aria-pressed="false">Amsterdam</button>
+```
+
+- **Several can be on at once**, and the matches **union (OR)**: Amsterdam + Dubai
+  shows notes about either. AND would empty the page after two clicks — the point is
+  to widen, not to intersect.
+- Each card carries `data-facets="tag|tag|Entity|Entity"` (pipe-separated, matched
+  case-insensitively), so the filter needs no lookup table.
+- The **⚠ Needs review** switch is a different facet — quality, not subject — so it
+  **ANDs** with the chips: "flagged notes about Amsterdam".
+- A chip appearing in both the header and a card stays visually in sync (`aria-pressed`
+  is the single source of truth; the CSS hangs off it).
+- The toolbar shows a live `showing N of M` count, a **Clear filters** button that
+  appears only while filtering, and the grid shows "No notes match those filters."
+  rather than going silently blank.
+
+### Review popovers
+
+Every card gets a small **Review** button opening a native `[popover]` (light-dismiss
+and Esc for free). Inside: a verdict — **Reads correctly** / **Fix the text** /
+**Wrong tags / cluster** — a textarea pre-filled with the current transcription so a
+fix is an edit rather than a retype, and an optional one-line **lesson** for the
+extractor. Picking "Reads correctly" hides the textarea to keep the popover small.
+
+Saved verdicts persist in `localStorage` (keyed by page path, so two cluster pages
+don't overwrite each other), and a sticky **handoff bar** appears: *"3 reviews ready
+— Copy for Claude"*. The page **never writes to the memory store** — it can't, and
+shouldn't; it hands the batch back to the agent, which applies and commits it.
+
 Top-level `html/index.html`: a card grid of all clusters (title, note count, date
 range, avg confidence, top entities), sorted by most-recently-touched, each linking
-to its cluster page. Inline vanilla JS only for filter/sort — no framework.
+to its cluster page. Inline vanilla JS only — no framework, no build step.
 
 ## Review & learning
 
@@ -446,11 +485,13 @@ human-readable and revertible.
 
 1. Find notes with `reviewed: false` and `confidence < confidence-threshold`
    (or `--min-confidence`). Sort lowest-confidence first.
-2. **Offer a batch path first.** If more than ~5 are flagged, render/refresh the
-   affected cluster HTML and point the user at its "⚠ Needs review" filter so they
-   can eyeball all flagged pages at once, then ask: "Bulk-accept the ones that read
-   correctly, and we'll walk only the genuinely ambiguous ones?" Bulk-accepted notes
-   get `reviewed: true` with a small confidence bump.
+2. **Offer the page first.** If more than ~5 are flagged, render/refresh the affected
+   cluster HTML and send the user there: the **⚠ Needs review** switch shows only the
+   flagged pages, and each card's **Review** popover captures a verdict against the
+   page render — far faster than walking them one at a time in the terminal. Tell them
+   to hit **Copy for Claude** when done and paste it back. Then stop and wait; don't
+   also walk the list in chat.
+   If they'd rather stay in the terminal, continue with step 3.
 3. For each remaining (one at a time), show the page asset + the current
    transcription, then ask via `AskUserQuestion`:
    - **Looks right?** → mark `reviewed: true`, bump confidence, move on.
@@ -472,6 +513,46 @@ human-readable and revertible.
    `{memory-root}/extraction-guide.md` — the file the extractor reads on every
    sync. Tell the user: "Learned: {pattern}. I'll apply it going forward."
 6. `git commit` the corrections so the learning history is itself versioned.
+
+### Applying reviews from the page
+
+`review --apply` receives a JSON array pasted from a cluster page's **Copy for
+Claude** button:
+
+```json
+[
+  { "id": "2026-08-12-human-memory-p3-encoding-loop", "page": 3,
+    "notebook": "Human Memory", "verdict": "fix",
+    "text": "Encoding → recall loop via hippocampus → consolidation during sleep.",
+    "lesson": "HM = hippocampus" }
+]
+```
+
+For each entry, resolve the note by `id` (fall back to `notebook` + `page` if the id
+has since changed) and apply its verdict:
+
+| `verdict` | What to do |
+|---|---|
+| `ok` | `reviewed: true`, bump confidence toward 1.0 (e.g. `min(0.95, c + 0.15)`). No text change. |
+| `fix` | Replace the note body with `text`, set `reviewed: true`, confidence `0.95`. Log the before/after to `corrections.md`. |
+| `meta` | The text is fine but the tags/cluster are wrong — `text` holds the user's note about what it should be. Re-assign, `reviewed: true`, and re-render both the old and new cluster. |
+
+Then, exactly as in the interactive path: append every change to `corrections.md`,
+promote any `lesson` (and any pattern you see repeating) into `extraction-guide.md`,
+re-render the touched clusters, and `git commit`.
+
+Finally, **tell the user to click "Discard all"** on the page — the browser copy is
+the only thing that still holds the applied batch, and the page has no way to know
+you applied it. Report what changed and what you learned, e.g.:
+
+```
+Applied 6 reviews — 4 confirmed, 2 corrected.
+  Learned: "HM" = hippocampus (added to extraction-guide.md)
+  Click "Discard all" on the cluster page to clear the batch.
+```
+
+If an entry can't be matched to a note, skip it, say which, and apply the rest —
+never guess at a target.
 
 ### `/remarkable-memory feedback`
 

@@ -41,6 +41,7 @@ detail.
 | `/remarkable-memory sync [--notebook <name>] [--since <Nd>] [--yes]` | Pull new/changed pages, extract, cluster |
 | `/remarkable-memory <question>` | Ask the memory in plain language |
 | `/remarkable-memory review [--min-confidence <0-1>]` | Correct low-confidence pages — this is what teaches it |
+| `/remarkable-memory review --apply` | Apply a batch of reviews collected in the HTML page |
 | `/remarkable-memory clusters` | Re-render and open the HTML browser |
 | `/remarkable-memory help` | Usage, your preferences, and current memory stats |
 
@@ -59,6 +60,12 @@ skipped without even fetching the render.
 plain file the extractor reads on every sync. Skip it and the reader never learns your
 shorthand; average confidence just sits where it started. You can also seed the guide
 by hand.
+
+The fastest way to do it is in the rendered page: flip on **⚠ Needs review**, hit
+**Review** on a card to fix the text against the page render, then **Copy for Claude**
+and paste the batch back — `review --apply` writes the corrections, promotes the
+lessons, and commits. Chips are filters too: click **Amsterdam**, add **Dubai**, and
+you get notes about either.
 
 **Low confidence is a feature.** A half-read page is flagged rather than silently
 trusted, and uncertain words are marked `⟨uncertain: word?⟩` inline instead of guessed.

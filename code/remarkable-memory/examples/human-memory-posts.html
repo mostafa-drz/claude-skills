@@ -36,10 +36,16 @@
   .meter .track{width:120px;height:7px;border-radius:99px;background:var(--surface-2);overflow:hidden;border:1px solid var(--border)}
   .meter .fill{height:100%;background:linear-gradient(90deg,var(--warn),var(--good))}
   .chips{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 4px}
-  .chip{font-size:.76rem;padding:3px 10px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--text-2)}
-  .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 14px}
+  .chip{font:inherit;font-size:.76rem;padding:3px 10px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);cursor:pointer}
+  .chip:hover{border-color:var(--secondary);color:var(--text)}
+  .chip[aria-pressed="true"]{color:var(--bg);background:var(--secondary);border-color:var(--secondary);font-weight:600}
+  .chip:focus-visible,.toolbar button:focus-visible,.rev-open:focus-visible{outline:2px solid var(--secondary);outline-offset:2px}
+  .toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:26px 0 14px}
   .toolbar button{font:inherit;font-size:.82rem;cursor:pointer;padding:6px 13px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--text-2)}
-  .toolbar button.active{color:var(--bg);background:var(--primary);border-color:var(--primary)}
+  .toolbar button.active,.toolbar button[aria-pressed="true"]{color:var(--bg);background:var(--primary);border-color:var(--primary)}
+  .toolbar .count{font-size:.8rem;color:var(--text-2);margin-left:auto}
+  .toolbar .clear{border-style:dashed}
+  .empty{padding:30px 0;color:var(--text-2);font-size:.9rem}
   .grid{display:grid;gap:16px}
   .card{border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);padding:18px 18px 16px}
   .card.flag{border-left:3px solid var(--warn)}
@@ -56,6 +62,28 @@
   .card .foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}
   .thumb{margin-top:12px;border:1px solid var(--border);border-radius:10px;overflow:hidden;max-width:260px;background:var(--surface-2)}
   .thumb svg{display:block;width:100%;height:auto}
+  .rev-open{font:inherit;font-size:.74rem;cursor:pointer;margin-left:auto;padding:3px 11px;border-radius:99px;border:1px solid var(--border);background:var(--surface-2);color:var(--text-2)}
+  .rev-open:hover{border-color:var(--primary);color:var(--primary)}
+  .card[data-reviewed] .rev-open{border-color:var(--good);color:var(--good)}
+  .pop{border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text);padding:18px;width:min(440px,calc(100vw - 32px));box-shadow:0 18px 50px rgba(0,0,0,.35);margin:auto}
+  .pop::backdrop{background:rgba(0,0,0,.45)}
+  .pop h4{margin:0 0 2px;font-size:.95rem}
+  .pop .prov{margin:0 0 12px}
+  .pop .verdicts{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .pop .verdicts button{font:inherit;font-size:.78rem;cursor:pointer;padding:5px 11px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--text-2)}
+  .pop .verdicts button[aria-pressed="true"]{color:var(--bg);background:var(--primary);border-color:var(--primary);font-weight:600}
+  .pop label{display:block;font-size:.76rem;color:var(--text-2);margin:10px 0 4px}
+  .pop textarea,.pop input{font:inherit;font-size:.85rem;width:100%;box-sizing:border-box;padding:8px 10px;border-radius:9px;border:1px solid var(--border);background:var(--surface);color:var(--text)}
+  .pop textarea{min-height:120px;resize:vertical;line-height:1.5}
+  .pop .pop-actions{display:flex;gap:8px;margin-top:14px}
+  .pop .pop-actions button{font:inherit;font-size:.8rem;cursor:pointer;padding:6px 14px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--text-2)}
+  .pop .pop-actions .save{background:var(--primary);border-color:var(--primary);color:var(--bg);font-weight:600}
+  .handoff{position:sticky;bottom:14px;z-index:5;display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:26px 0 0;padding:12px 16px;border-radius:var(--radius);border:1px solid var(--primary);background:var(--bg);box-shadow:0 10px 30px rgba(0,0,0,.28);font-size:.84rem}
+  .handoff button{font:inherit;font-size:.8rem;cursor:pointer;padding:6px 14px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--text-2)}
+  .handoff .copy{background:var(--primary);border-color:var(--primary);color:var(--bg);font-weight:600}
+  .handoff .hint{color:var(--text-2)}
+  .handoff[hidden]{display:none}
+  @media (prefers-reduced-motion:no-preference){.chip,.toolbar button,.rev-open{transition:background .12s,color .12s,border-color .12s}}
   .review-hint{font-size:.76rem;color:var(--warn)}
   .review-hint code{font-size:.72rem;padding:1px 5px;border-radius:5px;background:var(--surface-2);border:1px solid var(--border)}
   footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--border);color:var(--text-2);font-size:.8rem}
@@ -83,36 +111,61 @@
     </span>
   </div>
 
-  <div class="chips" aria-label="entities">
-    <span class="chip">hippocampus</span><span class="chip">encoding</span>
-    <span class="chip">consolidation</span><span class="chip">recall</span>
-    <span class="chip">sleep</span><span class="chip">spaced repetition</span>
+  <div class="chips" aria-label="Filter by entity">
+    <button class="chip" data-facet="hippocampus" aria-pressed="false">hippocampus</button><button class="chip" data-facet="encoding" aria-pressed="false">encoding</button><button class="chip" data-facet="consolidation" aria-pressed="false">consolidation</button><button class="chip" data-facet="recall" aria-pressed="false">recall</button><button class="chip" data-facet="sleep" aria-pressed="false">sleep</button><button class="chip" data-facet="spaced repetition" aria-pressed="false">spaced repetition</button>
   </div>
 
-  <div class="toolbar" role="group" aria-label="filter">
-    <button data-filter="all" class="active">All</button>
-    <button data-filter="flagged">⚠ Needs review</button>
+  <div class="toolbar" role="group" aria-label="Filter and sort notes">
+    <button data-flag aria-pressed="false">⚠ Needs review</button>
     <button data-sort="confidence">Sort: confidence</button>
     <button data-sort="recent">Sort: recent</button>
+    <button class="clear" data-clear hidden>Clear filters</button>
+    <span class="count" data-count aria-live="polite"></span>
   </div>
 
   <div class="grid" id="grid">
 
-    <article class="card" data-confidence="0.94" data-modified="2026-08-11">
+    <article class="card" data-confidence="0.94" data-modified="2026-08-11"
+             data-facets="recall|blog-idea|hippocampus"
+             data-note-id="human-memory-p7-memory-is-a-rewrite" data-page="7" data-notebook="Human Memory">
       <div class="head"><span class="badge good">94%</span><span class="type">idea</span>
-        <span class="prov">📓 Human Memory · p.7 · synced 2026-08-12</span></div>
+        <span class="prov">📓 Human Memory · p.7 · synced 2026-08-12</span>
+        <button class="rev-open" popovertarget="rev-p7">Review</button></div>
       <div class="body">
         <p><b>Post angle:</b> "Your memory isn't a recording — it's a re-write." Each recall
         edits the trace (reconsolidation). Lead with the courtroom-witness example.</p>
         <ul><li>Hook: memory as a living document, not a hard drive</li>
         <li>Payoff: why re-telling a story changes it</li></ul>
       </div>
-      <div class="foot"><span class="chip">recall</span><span class="chip">blog-idea</span></div>
+      <div class="foot"><button class="chip" data-facet="recall" aria-pressed="false">recall</button><button class="chip" data-facet="blog-idea" aria-pressed="false">blog-idea</button></div>
+    
+      <div popover id="rev-p7" class="pop">
+        <h4>p.7 — review</h4>
+        <p class="prov">📓 Human Memory · p.7 · confidence 94%</p>
+        <div class="verdicts" role="group" aria-label="Verdict">
+          <button data-verdict="ok" aria-pressed="false">Reads correctly</button>
+          <button data-verdict="fix" aria-pressed="false">Fix the text</button>
+          <button data-verdict="meta" aria-pressed="false">Wrong tags / cluster</button>
+        </div>
+        <label for="fix-rev-p7">Corrected transcription</label>
+        <textarea id="fix-rev-p7" data-fix>"Your memory isn't a recording — it's a re-write." Each recall edits the trace (reconsolidation). Lead with the courtroom-witness example.
+- Hook: memory as a living document, not a hard drive
+- Payoff: why re-telling a story changes it</textarea>
+        <label for="lesson-rev-p7">Lesson for the extractor (optional)</label>
+        <input id="lesson-rev-p7" data-lesson placeholder="e.g. HM = hippocampus, never 'human memory'">
+        <div class="pop-actions">
+          <button class="save" data-save>Save review</button>
+          <button data-discard>Discard</button>
+        </div>
+      </div>
     </article>
 
-    <article class="card" data-confidence="0.88" data-modified="2026-08-04">
+    <article class="card" data-confidence="0.88" data-modified="2026-08-04"
+             data-facets="encoding|consolidation|figure|sleep"
+             data-note-id="human-memory-p5-three-stage-loop" data-page="5" data-notebook="Human Memory">
       <div class="head"><span class="badge good">88%</span><span class="type">diagram</span>
-        <span class="prov">📓 Human Memory · p.5 · synced 2026-08-12</span></div>
+        <span class="prov">📓 Human Memory · p.5 · synced 2026-08-12</span>
+        <button class="rev-open" popovertarget="rev-p5">Review</button></div>
       <div class="body">
         <p>Three-stage loop figure: <b>encode → consolidate (sleep) → retrieve</b>, with
         retrieval feeding back into re-encoding. Label the feedback arrow "reconsolidation".</p>
@@ -127,23 +180,65 @@
           <text x="218" y="63" font-size="9" fill="#8a8f98" stroke="none" text-anchor="middle">retrieve</text>
         </svg>
       </div>
-      <div class="foot"><span class="chip">encoding</span><span class="chip">consolidation</span><span class="chip">figure</span></div>
+      <div class="foot"><button class="chip" data-facet="encoding" aria-pressed="false">encoding</button><button class="chip" data-facet="consolidation" aria-pressed="false">consolidation</button><button class="chip" data-facet="figure" aria-pressed="false">figure</button></div>
+    
+      <div popover id="rev-p5" class="pop">
+        <h4>p.5 — review</h4>
+        <p class="prov">📓 Human Memory · p.5 · confidence 88%</p>
+        <div class="verdicts" role="group" aria-label="Verdict">
+          <button data-verdict="ok" aria-pressed="false">Reads correctly</button>
+          <button data-verdict="fix" aria-pressed="false">Fix the text</button>
+          <button data-verdict="meta" aria-pressed="false">Wrong tags / cluster</button>
+        </div>
+        <label for="fix-rev-p5">Corrected transcription</label>
+        <textarea id="fix-rev-p5" data-fix>Three-stage loop figure: encode → consolidate (sleep) → retrieve, with retrieval feeding back into re-encoding. Label the feedback arrow "reconsolidation".</textarea>
+        <label for="lesson-rev-p5">Lesson for the extractor (optional)</label>
+        <input id="lesson-rev-p5" data-lesson placeholder="e.g. HM = hippocampus, never 'human memory'">
+        <div class="pop-actions">
+          <button class="save" data-save>Save review</button>
+          <button data-discard>Discard</button>
+        </div>
+      </div>
     </article>
 
-    <article class="card" data-confidence="0.81" data-modified="2026-07-30">
+    <article class="card" data-confidence="0.81" data-modified="2026-07-30"
+             data-facets="spaced repetition|recall"
+             data-note-id="human-memory-p4-desirable-difficulty" data-page="4" data-notebook="Human Memory">
       <div class="head"><span class="badge good">81%</span><span class="type">note</span>
-        <span class="prov">📓 Human Memory · p.4 · synced 2026-08-12</span></div>
+        <span class="prov">📓 Human Memory · p.4 · synced 2026-08-12</span>
+        <button class="rev-open" popovertarget="rev-p4">Review</button></div>
       <div class="body">
         <p>Spaced repetition works because each near-forgotten retrieval is a
         high-effort re-encode. "Desirable difficulty" — struggle is the mechanism,
         not a side effect.</p>
       </div>
-      <div class="foot"><span class="chip">spaced repetition</span><span class="chip">recall</span></div>
+      <div class="foot"><button class="chip" data-facet="spaced repetition" aria-pressed="false">spaced repetition</button><button class="chip" data-facet="recall" aria-pressed="false">recall</button></div>
+    
+      <div popover id="rev-p4" class="pop">
+        <h4>p.4 — review</h4>
+        <p class="prov">📓 Human Memory · p.4 · confidence 81%</p>
+        <div class="verdicts" role="group" aria-label="Verdict">
+          <button data-verdict="ok" aria-pressed="false">Reads correctly</button>
+          <button data-verdict="fix" aria-pressed="false">Fix the text</button>
+          <button data-verdict="meta" aria-pressed="false">Wrong tags / cluster</button>
+        </div>
+        <label for="fix-rev-p4">Corrected transcription</label>
+        <textarea id="fix-rev-p4" data-fix>Spaced repetition works because each near-forgotten retrieval is a high-effort re-encode. "Desirable difficulty" — struggle is the mechanism, not a side effect.</textarea>
+        <label for="lesson-rev-p4">Lesson for the extractor (optional)</label>
+        <input id="lesson-rev-p4" data-lesson placeholder="e.g. HM = hippocampus, never 'human memory'">
+        <div class="pop-actions">
+          <button class="save" data-save>Save review</button>
+          <button data-discard>Discard</button>
+        </div>
+      </div>
     </article>
 
-    <article class="card flag" data-confidence="0.64" data-modified="2026-07-28">
+    <article class="card flag" data-confidence="0.64" data-modified="2026-07-28"
+             data-facets="hippocampus|sleep|encoding"
+             data-note-id="human-memory-p3-encoding-loop" data-page="3" data-notebook="Human Memory">
       <div class="head"><span class="badge warn">64%</span><span class="type">idea</span>
-        <span class="prov">📓 Human Memory · p.3 · synced 2026-08-12</span></div>
+        <span class="prov">📓 Human Memory · p.3 · synced 2026-08-12</span>
+        <button class="rev-open" popovertarget="rev-p3">Review</button></div>
       <div class="body">
         <p>Encoding <mark class="uncertain">recall?</mark> loop via <mark class="uncertain">HM?</mark>
         → consolidation during sleep. Ties the hippocampus to the sleep-replay story.</p>
@@ -157,58 +252,309 @@
           <text x="210" y="44" font-size="9" fill="#8a8f98" stroke="none" text-anchor="middle">cortex</text>
         </svg>
       </div>
-      <div class="foot"><span class="chip">hippocampus</span><span class="chip">sleep</span>
-        <span class="review-hint">Flagged — run <code>/remarkable-memory review</code></span></div>
+      <div class="foot"><button class="chip" data-facet="hippocampus" aria-pressed="false">hippocampus</button><button class="chip" data-facet="sleep" aria-pressed="false">sleep</button>
+        <span class="review-hint">Flagged — low confidence</span></div>
+    
+      <div popover id="rev-p3" class="pop">
+        <h4>p.3 — review</h4>
+        <p class="prov">📓 Human Memory · p.3 · confidence 64%</p>
+        <div class="verdicts" role="group" aria-label="Verdict">
+          <button data-verdict="ok" aria-pressed="false">Reads correctly</button>
+          <button data-verdict="fix" aria-pressed="false">Fix the text</button>
+          <button data-verdict="meta" aria-pressed="false">Wrong tags / cluster</button>
+        </div>
+        <label for="fix-rev-p3">Corrected transcription</label>
+        <textarea id="fix-rev-p3" data-fix>Encoding ⟨uncertain: recall?⟩ loop via ⟨uncertain: HM?⟩ → consolidation during sleep. Ties the hippocampus to the sleep-replay story.
+- Figure idea: overnight replay compresses the day's traces</textarea>
+        <label for="lesson-rev-p3">Lesson for the extractor (optional)</label>
+        <input id="lesson-rev-p3" data-lesson placeholder="e.g. HM = hippocampus, never 'human memory'">
+        <div class="pop-actions">
+          <button class="save" data-save>Save review</button>
+          <button data-discard>Discard</button>
+        </div>
+      </div>
     </article>
 
-    <article class="card flag" data-confidence="0.58" data-modified="2026-07-24">
+    <article class="card flag" data-confidence="0.58" data-modified="2026-07-24"
+             data-facets="epigraph|recall"
+             data-note-id="human-memory-p1-borges-epigraph" data-page="1" data-notebook="Human Memory">
       <div class="head"><span class="badge warn">58%</span><span class="type">quote</span>
-        <span class="prov">📓 Human Memory · p.1 · synced 2026-08-12</span></div>
+        <span class="prov">📓 Human Memory · p.1 · synced 2026-08-12</span>
+        <button class="rev-open" popovertarget="rev-p1">Review</button></div>
       <div class="body">
         <p>"We are our memory, … this <mark class="uncertain">chimerical?</mark> museum of
         shifting shapes." — attributed to Borges. Verify the exact wording before quoting.</p>
       </div>
-      <div class="foot"><span class="chip">epigraph</span>
-        <span class="review-hint">Flagged — run <code>/remarkable-memory review</code></span></div>
+      <div class="foot"><button class="chip" data-facet="epigraph" aria-pressed="false">epigraph</button>
+        <span class="review-hint">Flagged — low confidence</span></div>
+    
+      <div popover id="rev-p1" class="pop">
+        <h4>p.1 — review</h4>
+        <p class="prov">📓 Human Memory · p.1 · confidence 58%</p>
+        <div class="verdicts" role="group" aria-label="Verdict">
+          <button data-verdict="ok" aria-pressed="false">Reads correctly</button>
+          <button data-verdict="fix" aria-pressed="false">Fix the text</button>
+          <button data-verdict="meta" aria-pressed="false">Wrong tags / cluster</button>
+        </div>
+        <label for="fix-rev-p1">Corrected transcription</label>
+        <textarea id="fix-rev-p1" data-fix>"We are our memory, … this ⟨uncertain: chimerical?⟩ museum of shifting shapes." — attributed to Borges. Verify the exact wording before quoting.</textarea>
+        <label for="lesson-rev-p1">Lesson for the extractor (optional)</label>
+        <input id="lesson-rev-p1" data-lesson placeholder="e.g. HM = hippocampus, never 'human memory'">
+        <div class="pop-actions">
+          <button class="save" data-save>Save review</button>
+          <button data-discard>Discard</button>
+        </div>
+      </div>
     </article>
 
+  </div>
+
+  <div class="handoff" hidden data-handoff>
+    <span><b data-handoff-count>0</b> reviews ready</span>
+    <button class="copy" data-copy>Copy for Claude</button>
+    <button data-clear-reviews>Discard all</button>
+    <span class="hint">Paste into Claude Code to apply and commit them.</span>
   </div>
 
   <footer>
     Sample cluster generated by <b>/remarkable-memory</b>. Every card cites its source
     page — the memory is auditable. Two pages read below the confidence threshold are
-    flagged; fix them with <code>/remarkable-memory review</code> and the reader learns
+    flagged. Click any chip to filter (several at once), or <b>Review</b> on a card to
+    correct it — then <b>Copy for Claude</b> hands the fixes back so the reader learns
     your hand for next time.
   </footer>
 </div>
 
 <script>
-  (function () {
-    var grid = document.getElementById('grid');
-    var cards = Array.prototype.slice.call(grid.querySelectorAll('.card'));
-    function setActive(btn, attr){
-      document.querySelectorAll('.toolbar [data-'+attr+']').forEach(function(b){b.classList.remove('active');});
-      btn.classList.add('active');
+/* Vanilla, no framework, no build step. Two behaviours:
+   (1) facet filtering — chips are toggles that union (OR), ANDed with "Needs review";
+   (2) review popovers — verdicts persist in localStorage and are copied back out as a
+       /remarkable-memory review --apply block for the agent to apply and commit.
+   The page is read-only with respect to the memory store: nothing here writes a note. */
+(function () {
+  'use strict';
+
+  var grid = document.getElementById('grid');
+  if (!grid) return;
+  var cards = Array.prototype.slice.call(grid.querySelectorAll('.card'));
+
+  /* ---------- 1. Facet filtering ---------------------------------------- */
+
+  var active = new Set();          // lowercased facet values that are switched on
+  var flagOnly = false;
+  var countEl = document.querySelector('[data-count]');
+  var clearBtn = document.querySelector('[data-clear]');
+  var emptyEl = null;
+
+  function facetsOf(card) {
+    return (card.dataset.facets || '').toLowerCase().split('|').filter(Boolean);
+  }
+
+  function matches(card) {
+    if (flagOnly && !card.classList.contains('flag')) return false;
+    if (!active.size) return true;
+    // OR across chips: any one match keeps the card. Turning on more chips widens
+    // the result — an AND would empty the page after two clicks.
+    return facetsOf(card).some(function (f) { return active.has(f); });
+  }
+
+  function apply() {
+    var shown = 0;
+    cards.forEach(function (card) {
+      var ok = matches(card);
+      card.hidden = !ok;
+      if (ok) shown++;
+    });
+
+    // Keep every copy of a chip (header + in-card) visually in sync.
+    document.querySelectorAll('.chip[data-facet]').forEach(function (chip) {
+      chip.setAttribute('aria-pressed', active.has(chip.dataset.facet.toLowerCase()));
+    });
+
+    var filtering = active.size > 0 || flagOnly;
+    if (clearBtn) clearBtn.hidden = !filtering;
+    if (countEl) {
+      countEl.textContent = filtering
+        ? 'showing ' + shown + ' of ' + cards.length
+        : cards.length + ' notes';
     }
-    document.querySelectorAll('.toolbar button').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        if (btn.dataset.filter) {
-          setActive(btn,'filter');
-          cards.forEach(function (c) {
-            c.style.display = (btn.dataset.filter === 'flagged' && !c.classList.contains('flag')) ? 'none' : '';
-          });
-        }
-        if (btn.dataset.sort) {
-          setActive(btn,'sort');
-          cards.slice().sort(function (a, b) {
-            return btn.dataset.sort === 'confidence'
-              ? parseFloat(a.dataset.confidence) - parseFloat(b.dataset.confidence)
-              : (b.dataset.modified || '').localeCompare(a.dataset.modified || '');
-          }).forEach(function (c) { grid.appendChild(c); });
-        }
+
+    if (!shown) {
+      if (!emptyEl) {
+        emptyEl = document.createElement('p');
+        emptyEl.className = 'empty';
+        grid.appendChild(emptyEl);
+      }
+      emptyEl.textContent = 'No notes match those filters.';
+      emptyEl.hidden = false;
+    } else if (emptyEl) {
+      emptyEl.hidden = true;
+    }
+  }
+
+  // Delegated so chips inside cards work too, and chips added later still bind.
+  document.addEventListener('click', function (e) {
+    var chip = e.target.closest('.chip[data-facet]');
+    if (!chip) return;
+    var f = chip.dataset.facet.toLowerCase();
+    if (active.has(f)) active.delete(f); else active.add(f);
+    apply();
+  });
+
+  var flagBtn = document.querySelector('[data-flag]');
+  if (flagBtn) {
+    flagBtn.addEventListener('click', function () {
+      flagOnly = !flagOnly;
+      flagBtn.setAttribute('aria-pressed', flagOnly);
+      apply();
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      active.clear();
+      flagOnly = false;
+      if (flagBtn) flagBtn.setAttribute('aria-pressed', 'false');
+      apply();
+    });
+  }
+
+  document.querySelectorAll('.toolbar [data-sort]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.toolbar [data-sort]').forEach(function (b) {
+        b.classList.remove('active');
+      });
+      btn.classList.add('active');
+      cards.slice().sort(function (a, b) {
+        return btn.dataset.sort === 'confidence'
+          ? parseFloat(a.dataset.confidence) - parseFloat(b.dataset.confidence)
+          : (b.dataset.modified || '').localeCompare(a.dataset.modified || '');
+      }).forEach(function (c) { grid.appendChild(c); });
+      if (emptyEl) grid.appendChild(emptyEl);  // keep the empty notice last
+    });
+  });
+
+  apply();
+
+  /* ---------- 2. Review popovers + handoff ------------------------------- */
+
+  // Scoped per page so two cluster pages don't overwrite each other's drafts.
+  var STORE = 'rm-review:' + location.pathname;
+  var reviews = {};
+  try { reviews = JSON.parse(localStorage.getItem(STORE) || '{}'); } catch (e) { reviews = {}; }
+
+  var bar = document.querySelector('[data-handoff]');
+  var barCount = document.querySelector('[data-handoff-count]');
+  var copyBtn = document.querySelector('[data-copy]');
+
+  function persist() {
+    try { localStorage.setItem(STORE, JSON.stringify(reviews)); } catch (e) { /* private mode */ }
+  }
+
+  function refreshBar() {
+    var n = Object.keys(reviews).length;
+    if (bar) bar.hidden = n === 0;
+    if (barCount) barCount.textContent = n;
+    if (copyBtn) copyBtn.textContent = 'Copy for Claude';
+    cards.forEach(function (card) {
+      if (reviews[card.dataset.noteId]) card.dataset.reviewed = '1';
+      else delete card.dataset.reviewed;
+    });
+  }
+
+  cards.forEach(function (card) {
+    var pop = card.querySelector('.pop');
+    if (!pop) return;
+    var id = card.dataset.noteId;
+    var saved = reviews[id];
+    var verdict = saved ? saved.verdict : null;
+
+    var vbtns = pop.querySelectorAll('[data-verdict]');
+    var fix = pop.querySelector('[data-fix]');
+    var lesson = pop.querySelector('[data-lesson]');
+
+    function paintVerdict() {
+      vbtns.forEach(function (b) {
+        b.setAttribute('aria-pressed', b.dataset.verdict === verdict);
+      });
+      // "Reads correctly" needs no edit — hide the textarea to keep the popover small.
+      if (fix) fix.closest('.pop').querySelectorAll('label')[0].hidden = verdict === 'ok';
+      if (fix) fix.hidden = verdict === 'ok';
+    }
+
+    if (saved) {
+      if (fix && saved.text) fix.value = saved.text;
+      if (lesson && saved.lesson) lesson.value = saved.lesson;
+    }
+    paintVerdict();
+
+    vbtns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        verdict = b.dataset.verdict;
+        paintVerdict();
       });
     });
-  })();
+
+    pop.querySelector('[data-save]').addEventListener('click', function () {
+      if (!verdict) { verdict = fix && fix.value ? 'fix' : 'ok'; paintVerdict(); }
+      reviews[id] = {
+        id: id,
+        page: Number(card.dataset.page) || null,
+        notebook: card.dataset.notebook || null,
+        verdict: verdict,
+        text: verdict === 'ok' ? null : (fix ? fix.value.trim() : null),
+        lesson: lesson && lesson.value.trim() ? lesson.value.trim() : null
+      };
+      persist();
+      refreshBar();
+      pop.hidePopover();
+    });
+
+    pop.querySelector('[data-discard]').addEventListener('click', function () {
+      delete reviews[id];
+      persist();
+      refreshBar();
+      pop.hidePopover();
+    });
+  });
+
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function () {
+      var payload = Object.keys(reviews).map(function (k) { return reviews[k]; });
+      var block = '/remarkable-memory review --apply\n```json\n' +
+                  JSON.stringify(payload, null, 2) + '\n```';
+      var done = function () { copyBtn.textContent = 'Copied ✓'; };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(block).then(done, function () { fallback(block, done); });
+      } else {
+        fallback(block, done);
+      }
+    });
+  }
+
+  // file:// pages without clipboard permission still need to hand the block over.
+  function fallback(text, done) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { window.prompt('Copy this:', text); }
+    document.body.removeChild(ta);
+  }
+
+  var clearReviews = document.querySelector('[data-clear-reviews]');
+  if (clearReviews) {
+    clearReviews.addEventListener('click', function () {
+      reviews = {};
+      persist();
+      refreshBar();
+    });
+  }
+
+  refreshBar();
+})();
 </script>
 </body>
 </html>
