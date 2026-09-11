@@ -161,9 +161,9 @@ remote — this store holds pictures of your screen, so it must never be pushabl
   <pre><code>/screenshots-memory setup</code></pre>
 </div>
 <div class="note">
-  <strong>Why the no-remote check is permanent.</strong> The skill re-runs it before every
-  sync. If a remote ever appears, it stops and tells you rather than committing another
-  screenshot. That's the trade that makes storing full-resolution captures reasonable.
+  <strong>Why this is permanent.</strong> The check re-runs before every sync — that's the
+  trade that makes storing full-resolution captures reasonable.
+  <a href="../README.md#three-promises-because-this-skill-touches-your-files">The three promises →</a>
 </div>
 </section>
 
@@ -188,9 +188,9 @@ roughly how much it will process. Reply <code>go</code>, or narrow it further.</
   <pre><code>/screenshots-memory sync</code></pre>
 </div>
 <div class="note">
-  <strong>It only ever touches actual screenshots.</strong> Inbox discovery asks Spotlight for
-  <code>kMDItemIsScreenCapture&nbsp;==&nbsp;1</code>, so a folder, a PDF, or a photo you saved
-  to the Desktop is invisible to it. With <code>originals: move</code>, the inbox original is deleted once the store's copy is committed and hash-verified — the store becomes the only copy.
+  <strong>It only ever touches actual screenshots</strong>, and with <code>originals: move</code>
+  the inbox copy is deleted once the store's copy is committed and hash-verified.
+  <a href="../README.md#three-promises-because-this-skill-touches-your-files">What that means exactly →</a>
 </div>
 </section>
 
@@ -246,9 +246,9 @@ from the claude-skills cluster, and make flashcards from the concept and
 definition fields.</code></pre>
 </div>
 <div class="note">
-  <strong>Two rules for anything reading this store.</strong> Honour <code>sensitive: true</code>
-  — those notes have no text on purpose. And respect <code>confidence</code>/<code>reviewed</code>:
-  an unreviewed 0.6 is fine to surface with a caveat, poor to assert as fact.
+  <strong>Two rules for anything reading this store:</strong> honour <code>sensitive: true</code>,
+  and respect <code>confidence</code>/<code>reviewed</code>.
+  <a href="../README.md#built-to-be-read-by-other-skills">The consumer contract →</a>
 </div>
 </section>
 
@@ -283,11 +283,9 @@ definition fields.</code></pre>
   <pre><code>/screenshots-memory review --apply</code></pre>
 </div>
 <div class="note">
-  <strong>What it learns.</strong> Corrections land in <code>corrections.md</code>; recurring
-  patterns get promoted into <code>extraction-guide.md</code>, which the extractor reads on
-  every sync — that the dark sidebar with <code>#</code> channels is your Slack, that "ABI" is
-  a client and not a typo. Both are plain Markdown. Edit them directly if you'd rather just
-  tell it.
+  <strong>What it learns.</strong> Corrections land in <code>corrections.md</code>; what recurs
+  is promoted into <code>extraction-guide.md</code>, which the extractor reads every sync.
+  <a href="../README.md#how-it-gets-better">How the loop works →</a>
 </div>
 </section>
 
@@ -314,17 +312,14 @@ write one yourself.</p>
 </table>
 <div class="note">
   <strong>Where your data lives.</strong> <code>~/screenshots-memory/</code> — a git repo you own,
-  with no remote. <code>notes/</code> one Markdown file per capture, <code>clusters/</code>
-  rendered views, <code>assets/</code> the screenshots themselves, plus <code>corrections.md</code>,
-  <code>extraction-guide.md</code> and <code>kinds.md</code>. Every sync is a commit, so you can
-  see exactly what changed — and <code>/screenshots-memory undo</code> reverses the last one,
-  putting the screenshots back where they came from. Nothing leaves your machine.
+  with no remote, and <code>undo</code> reverses the last sync, screenshots included.
+  <a href="../README.md#the-store">The full layout →</a>
 </div>
 </section>
 
 <footer>
   Part of <a href="../SKILL.md">/screenshots-memory</a> ·
-  <a href="index.md">sample cluster output</a> ·
+  <a href="sample-cluster.html">a real cluster page</a> ·
   <a href="../reference/kinds.md">kind registry</a> ·
   <a href="../reference/memory-schema.md">memory schema</a>
 </footer>

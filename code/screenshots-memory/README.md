@@ -55,9 +55,9 @@ alone. Prefer `originals: copy` if you'd rather keep both.
 
 **Sensitive captures are asked about, not assumed.** Anything that looks like
 credentials, banking, medical info or a private DM is flagged during extraction, and you
-get asked about all of them in **one round** — once, after everything has been read, however many batches that took. You can extract it normally,
-store the image with no text, or skip it entirely. The default when you don't choose is
-image-only.
+get asked about all of them in **one round** — once, after everything has been read,
+however many batches that took. You can extract it normally, store the image with no text,
+or skip it entirely. The default when you don't choose is image-only.
 
 ## Commands
 
@@ -68,6 +68,9 @@ image-only.
 | `/screenshots-memory clusters` | Re-render and open the HTML browser. |
 | `/screenshots-memory review` | Correct low-confidence reads — this is what teaches it. |
 | `/screenshots-memory review --apply` | Apply a batch of reviews collected in the HTML page. |
+| `/screenshots-memory done <id\|query>` | Mark a Slack/chat ask handled, so it stops coming back. |
+| `/screenshots-memory learned` | What it has learned about your screen, and which capture taught it. |
+| `/screenshots-memory undo` | Reverse the last sync — screenshots included, not just the notes. |
 | `/screenshots-memory config` | Set preferences. |
 | `/screenshots-memory reset` | Clear skill preferences. **Your memory is preserved.** |
 
