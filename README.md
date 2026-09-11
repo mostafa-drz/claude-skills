@@ -90,9 +90,20 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 Each row links to that skill's `SKILL.md`, which is the authoritative description —
 this table is generated from it by `make catalog`, so the two can never disagree.
 
-## Design Guide
+## Contributing to this repo
 
-These skills follow a consistent [design guide](SKILLS_GUIDE.md).
+The frontmatter in each `SKILL.md` is the single source of truth — the catalog above is
+generated from it. After adding or editing a skill:
+
+```bash
+make catalog   # regenerate the README table
+make check     # verify it's current and every frontmatter parses (CI runs this too)
+```
+
+Conventions live in the [design guide](SKILLS_GUIDE.md), which covers what the
+[official docs](https://code.claude.com/docs/en/skills) don't: our house patterns, the
+rules for skills that touch a user's files, and the constraints that fail at runtime
+rather than at review.
 
 ## License
 
