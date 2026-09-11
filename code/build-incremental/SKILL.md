@@ -14,6 +14,9 @@ allowed-tools:
   - Edit
   - Glob
   - Grep
+metadata:
+  trigger: "Building features, implementing milestones, or making multi-step changes."
+  tags: "coding, automation, testing"
 ---
 
 # Build

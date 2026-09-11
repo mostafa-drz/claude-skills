@@ -22,6 +22,8 @@ allowed-tools:
   - mcp__claude_ai_Linear__list_projects
   - mcp__claude_ai_Notion__notion-search
   - mcp__claude_ai_Notion__notion-fetch
+metadata:
+  trigger: "Use when starting work, catching up after being away, or prepping for standup."
 ---
 
 # Daily Brief

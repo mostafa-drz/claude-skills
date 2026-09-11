@@ -5,6 +5,9 @@ description: >-
   Gathers key facts, perspectives, and sources into a clear summary.
   Use when asked to research something, prepare a briefing, or compile
   background on a topic.
+metadata:
+  trigger: "Researching something, preparing a briefing, or compiling background on a topic."
+  tags: "research, writing, analysis"
 ---
 
 # Research Assistant

@@ -17,6 +17,8 @@ allowed-tools:
   - Glob
   - Grep
   - Agent
+metadata:
+  trigger: "Use when you've finished exploring and want to formalize decisions into a shareable deliverable."
 ---
 
 # Exploration to Spec

@@ -19,6 +19,9 @@ allowed-tools:
   - Write
   - Edit
   - Bash
+metadata:
+  trigger: "After a beginner-mind audit, QA exploration, code review, or any session where you accumulated discrete findings worth handing off to a ticket system."
+  tags: "triage, qa, audit, review, report, findings, html-viewer"
 ---
 
 # Triage Board

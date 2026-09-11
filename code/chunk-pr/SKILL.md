@@ -25,6 +25,9 @@ allowed-tools:
   - mcp__claude-in-chrome__tabs_create_mcp
   - mcp__claude-in-chrome__navigate
   - mcp__claude-in-chrome__read_page
+metadata:
+  trigger: "A PR is too big to review, a branch has accumulated unrelated changes, a reviewer asks \"can you split this up?\", or planning how to ship a large feature incrementally."
+  tags: "git, github, pull-requests, code review, linear, workflow"
 ---
 
 # Chunk PR

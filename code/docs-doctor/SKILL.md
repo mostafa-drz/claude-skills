@@ -21,6 +21,9 @@ allowed-tools:
   - Grep
   - Bash
   - WebFetch
+metadata:
+  trigger: "Want a 'docs doctor' pass on a repo before a release, after a refactor, or as a recurring DX health check."
+  tags: "docs, audit, developer-experience, quality"
 ---
 
 # Docs Doctor

@@ -19,6 +19,9 @@ allowed-tools:
   - WebSearch
   - WebFetch
   - AskUserQuestion
+metadata:
+  trigger: "You want to discover underused Claude Code features, improve your development workflow, stay current with the latest Claude Code capabilities, or get a periodic workflow health-check."
+  tags: "claude-code, meta, workflow, productivity"
 ---
 
 ## Preferences

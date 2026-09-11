@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Generate the README skill catalog from each skill's SKILL.md frontmatter.
+"""Generate the README catalog and skills.json from each SKILL.md frontmatter.
+
+`skills.json` is a PUBLISHED API: mostafa.xyz/lab/claude-skills renders from it.
+It is generated, not hand-maintained — before that, 68% of its descriptions had
+drifted from their frontmatter and it advertised a Linear-writing skill as having
+no side effects, both of which the site was showing.
 
 The frontmatter is the only thing Claude actually reads, so it is the only
 source of truth. Every other copy of a skill's description drifted: before this
@@ -7,11 +12,13 @@ script existed, 68% of the entries in the old hand-maintained skills.json no
 longer matched their frontmatter, and one advertised a Linear-writing skill as
 having no side effects.
 
-    python3 scripts/build_catalog.py          # rewrite the README table
-    python3 scripts/build_catalog.py --check  # fail if it would change (CI)
+    python3 scripts/build_catalog.py          # rewrite README table + skills.json
+    python3 scripts/build_catalog.py --check  # fail if either would change (CI)
 """
+import json
 import re
 import sys
+from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -57,6 +64,7 @@ def skills():
             desc = re.sub(r"\s+", " ", fm.get("description", "")).strip()
             # The catalog is an index, not a spec — one sentence is the right size.
             first = re.split(r"(?<=[.!?])\s+", desc)[0] if desc else "_(no description)_"
+            meta = fm_block_metadata(skill_md)
             yield {
                 "name": d.name,
                 "platform": platform,
@@ -66,7 +74,57 @@ def skills():
                 # Derived, never hand-set: the frontmatter already states it.
                 "side_effects": fm.get("disable-model-invocation", "").lower()
                 in ("true", "yes", "on", "1"),
+                "description": desc,
+                "trigger": meta.get("trigger", ""),
+                "tags": [t.strip() for t in meta.get("tags", "").split(",") if t.strip()],
             }
+
+
+def fm_block_metadata(path: Path) -> dict:
+    """Read the nested `metadata:` map. Curated per-skill data that cannot be derived
+    lives here — the two fields the published manifest needs and nothing else knows."""
+    text = path.read_text()
+    if not text.startswith("---\n"):
+        return {}
+    fm = text.split("---\n", 2)[1]
+    m = re.search(r"^metadata:\n((?:[ \t]+.*\n?)*)", fm, re.M)
+    if not m:
+        return {}
+    out = {}
+    for line in m.group(1).split("\n"):
+        kv = re.match(r"^\s+([\w-]+):\s*(.*)$", line)
+        if kv:
+            v = kv.group(2).strip()
+            if v.startswith('"') and v.endswith('"'):
+                v = json.loads(v)
+            out[kv.group(1)] = v
+    return out
+
+
+REPO = "https://github.com/mostafa-drz/claude-skills"
+
+
+def manifest(rows):
+    """The published catalog consumed by mostafa.xyz. Field shape is deliberately
+    unchanged from the hand-maintained version so the site keeps rendering."""
+    out = []
+    for s in rows:
+        e = {
+            "name": s["name"],
+            "platform": s["platform"],
+            "description": s["description"],
+            "trigger": s["trigger"],
+            "tags": s["tags"],
+        }
+        if s["icon"]:
+            e["icon"] = (
+                "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/"
+                f'{s["platform"]}/{s["name"]}/icon.svg'
+            )
+        e["url"] = f'{REPO}/blob/main/{s["path"]}'
+        e["sideEffects"] = s["side_effects"]
+        out.append(e)
+    return {"updated": date.today().isoformat(), "repo": REPO, "skills": out}
 
 
 def table(rows):
@@ -108,6 +166,19 @@ def render():
 
 def main():
     check = "--check" in sys.argv
+    rows = list(skills())
+
+    mf = ROOT / "skills.json"
+    want = json.dumps(manifest(rows), indent=2, ensure_ascii=False) + "\n"
+    if check:
+        have = mf.read_text() if mf.exists() else ""
+        # `updated` is a timestamp; compare everything else.
+        strip = lambda t: re.sub(r'"updated": "[^"]*",\n\s*', "", t)
+        if strip(have) != strip(want):
+            sys.exit("skills.json is out of date — run `make catalog`.")
+    else:
+        mf.write_text(want)
+
     readme = ROOT / "README.md"
     text = readme.read_text()
     if START not in text or END not in text:
@@ -116,10 +187,10 @@ def main():
     if check:
         if new != text:
             sys.exit("README catalog is out of date — run `make catalog`.")
-        print(f"catalog up to date ({len(list(skills()))} skills)")
+        print(f"catalog + manifest up to date ({len(rows)} skills)")
         return
     readme.write_text(new)
-    print(f"catalog written ({len(list(skills()))} skills)")
+    print(f"catalog + manifest written ({len(rows)} skills)")
 
 
 if __name__ == "__main__":

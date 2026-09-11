@@ -13,6 +13,9 @@ allowed-tools:
   - Glob
   - Grep
   - WebFetch
+metadata:
+  trigger: "A deploy or CI workflow fails and you need to understand why."
+  tags: "ci/cd, github, debugging"
 ---
 
 # Investigate CI

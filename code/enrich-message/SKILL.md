@@ -22,6 +22,8 @@ allowed-tools:
   - mcp__claude_ai_Linear__list_projects
   - mcp__claude_ai_Linear__get_project
   - mcp__claude_ai_Linear__list_teams
+metadata:
+  trigger: "Use when responding to PR reviews, Slack threads, or any discussion where you want referenceable, factual responses."
 ---
 
 # Enrich Message

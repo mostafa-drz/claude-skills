@@ -14,6 +14,9 @@ allowed-tools:
   - Grep
   - mcp__claude_ai_Linear__get_issue
   - mcp__claude_ai_Linear__update_issue
+metadata:
+  trigger: "Ready to open a PR or when asking to create a pull request."
+  tags: "git, github, linear"
 ---
 
 # Create PR

@@ -17,6 +17,9 @@ allowed-tools:
   - Bash
   - WebSearch
   - WebFetch
+metadata:
+  trigger: "Keeping skills healthy, consistent, and up-to-date with the latest standards."
+  tags: "meta, quality, maintenance"
 ---
 
 # Audit Skills

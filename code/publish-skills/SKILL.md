@@ -14,6 +14,9 @@ allowed-tools:
   - Edit
   - Glob
   - Grep
+metadata:
+  trigger: "Ready to share skill updates or after creating/updating skills."
+  tags: "meta, git, automation"
 ---
 
 # Publish Skills

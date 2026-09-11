@@ -22,6 +22,9 @@ allowed-tools:
   - mcp__claude-in-chrome__read_page
   - mcp__claude-in-chrome__find
   - mcp__claude-in-chrome__computer
+metadata:
+  trigger: "You need to systematically process and implement all PR review feedback with due-diligence validation, especially for larger reviews where each suggestion deserves independent analysis."
+  tags: "git, github, code review, pull-requests, browser-automation"
 ---
 
 # Address PR Feedback

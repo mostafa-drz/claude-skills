@@ -19,6 +19,8 @@ allowed-tools:
   - WebFetch
   - AskUserQuestion
   - Task
+metadata:
+  trigger: "Use when you need to check a directory or monorepo for compliance violations before an audit or review."
 ---
 
 # Compliance Audit

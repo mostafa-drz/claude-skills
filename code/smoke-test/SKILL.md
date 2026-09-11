@@ -15,6 +15,9 @@ allowed-tools:
   - Grep
   - WebFetch
   - WebSearch
+metadata:
+  trigger: "Validating deployments, pipelines, features, or migrations."
+  tags: "testing, verification, devops"
 ---
 
 # Smoke Test

@@ -22,6 +22,9 @@ allowed-tools:
   - Bash(cat *)
   - Bash(git *)
   - Bash(wc *)
+metadata:
+  trigger: "The conversation contains reusable knowledge you don't want to teach Claude again \u2014 \"capture this\", \"turn this into a skill\", \"save this workflow\"."
+  tags: "meta, skills, memory"
 ---
 
 # extract-skill

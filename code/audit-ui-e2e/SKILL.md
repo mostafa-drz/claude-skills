@@ -22,6 +22,9 @@ allowed-tools:
   - Glob
   - Grep
   - ToolSearch
+metadata:
+  trigger: "Before shipping a feature, before review, before a demo, or any time the UI deserves a careful poke with fresh eyes. Works on localhost, staging, prod, PR previews \u2014 anywhere a browser reaches."
+  tags: "audit, qa, ui, e2e, browser-automation, review, beginner-mind"
 ---
 
 # Audit UI End-to-End

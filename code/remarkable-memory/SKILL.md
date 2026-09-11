@@ -36,6 +36,9 @@ allowed-tools:
 # The reMarkable data source is an MCP server (SamMorrowDrums/remarkable-mcp,
 # remarkdown, or a fork). Its tool names vary by server and can't be pre-listed
 # here — approve them at runtime the first time a sync runs. See Setup.
+metadata:
+  trigger: "Syncing, extracting, organizing, searching, or reasoning over reMarkable notes \u2014 building a second brain from handwritten pages, or turning ink into a structured knowledge base."
+  tags: "remarkable, memory, notes, handwriting, knowledge-base, second-brain, mcp"
 ---
 
 # reMarkable Memory

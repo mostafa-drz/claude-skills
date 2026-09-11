@@ -11,6 +11,9 @@ allowed-tools:
   - AskUserQuestion
   - Bash
   - Read
+metadata:
+  trigger: "Keeping a long-lived branch in sync with its upstream."
+  tags: "git, automation"
 ---
 
 # Sync Branch

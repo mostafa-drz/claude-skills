@@ -20,6 +20,9 @@ allowed-tools:
   - Grep
   - WebSearch
   - WebFetch
+metadata:
+  trigger: "Creating a new skill or scaffolding a skill from scratch."
+  tags: "meta, automation"
 ---
 
 # Skill Creator

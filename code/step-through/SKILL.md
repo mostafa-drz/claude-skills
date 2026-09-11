@@ -22,6 +22,9 @@ allowed-tools:
   - Write
   - WebSearch
   - WebFetch
+metadata:
+  trigger: "After an assistant produces a long enumerated list and you want to triage items one at a time instead of all at once."
+  tags: "walkthrough, triage, decisions, productivity"
 ---
 
 # /step-through

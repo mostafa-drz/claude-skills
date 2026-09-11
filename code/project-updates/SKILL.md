@@ -38,6 +38,9 @@ allowed-tools:
   - mcp__claude_ai_Gmail__search_threads
   - mcp__claude_ai_Gmail__get_thread
   - mcp__claude_ai_Google_Calendar__list_events
+metadata:
+  trigger: "Preparing daily or end-of-day Linear project updates, writing project status, prepping for standup, or when asked what your project updates should say."
+  tags: "linear, project-management, status-updates, git, slack, notion"
 ---
 
 # Project Updates

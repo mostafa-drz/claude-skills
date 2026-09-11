@@ -11,6 +11,9 @@ allowed-tools:
   - Bash
   - Read
   - Glob
+metadata:
+  trigger: "Collecting screenshots for PRs, bug reports, docs, or Linear issues."
+  tags: "files, organization, productivity"
 ---
 
 # Organize Screenshots
