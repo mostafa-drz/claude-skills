@@ -1,6 +1,12 @@
-# Automation — Daily Skill Factory
+# Automation — Daily Skill Factory (retired)
 
-This folder holds the routines that run **on Claude infrastructure** (not my laptop) and keep this repo alive on a daily cadence.
+> **Not running.** The routine was retired: its last PR was #42 on 2026-06-29, it no
+> longer exists on the account, and the 37 PRs it left open were closed unreviewed on
+> 2026-09-11. The spec below is kept as a record of how it worked, not as a description
+> of anything currently happening.
+
+This folder held the routine that ran **on Claude infrastructure** (not my laptop) and
+opened a PR here each morning.
 
 Today there is one routine:
 

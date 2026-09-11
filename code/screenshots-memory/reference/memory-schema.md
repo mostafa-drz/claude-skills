@@ -32,11 +32,11 @@ Current version: **1**.
 
 ## Note file
 
-`notes/2026-09-11-slack-diego-abi-deadline.md`
+`notes/2026-09-11-slack-sam-acme-deadline.md`
 
 ```markdown
 ---
-id: 2026-09-11-slack-diego-abi-deadline
+id: 2026-09-11-slack-sam-acme-deadline
 hash: sha256:9f2c4b1e…                  # identity — survives rename, copy, move
 kind: chat                              # course | chat | product | ui | other | <learned>
 app: Slack                              # read from pixels; "unknown" is valid
@@ -44,26 +44,26 @@ captured: 2026-09-11T16:46:23Z          # kMDItemContentCreationDate — the mom
 extracted_at: 2026-09-11T18:20:00Z      # when THIS text was produced — bumps on re-extraction
 capture_type: selection                 # selection | window | display | imported
 origin_path: ~/Desktop/Screenshot 2026-09-11 at 12.46.18 PM.png
-asset: assets/2026-09-11-slack-diego-abi-deadline.png   # source extension, not always .png
+asset: assets/2026-09-11-slack-sam-acme-deadline.png   # source extension, not always .png
 pixels: [1416, 1096]
 confidence: 0.88                        # how well the pixels were read — nothing else
 sensitive: false
 reviewed: false
 applied_rules: [slack-sidebar]          # guide rules used on this note; [] if none
-cluster: ateam-client-work
-tags: [abi, deadline, canada]
-entities: [Diego, ABI]
-summary: Diego asking for the ABI Canada requirements doc before Friday.
+cluster: client-work
+tags: [acme, deadline, canada]
+entities: [Sam, Acme]
+summary: Sam asking for the Acme Canada requirements doc before Friday.
 fields:                                 # shape depends on `kind` — see kinds.md
-  who: Diego
-  channel: "#abi-canada"
+  who: Sam
+  channel: "#acme-canada"
   ask: Confirm the Canada requirements doc
   due: 2026-09-13
   status: open                          # open | done — only on a chat note with an ask
   done_at: null                         # set when it's marked done
 ---
 
-Diego asked in **#abi-canada** whether the requirements doc is confirmed:
+Sam asked in **#acme-canada** whether the requirements doc is confirmed:
 
 > "can you confirm the Canada requirements doc before Friday? legal wants it signed off"
 
@@ -99,7 +99,7 @@ ambiguity and renders as a dotted underline in HTML.
   "last_sync": "2026-09-11T18:20:00Z",
   "notes": [
     {
-      "id": "2026-09-11-slack-diego-abi-deadline",
+      "id": "2026-09-11-slack-sam-acme-deadline",
       "hash": "sha256:9f2c4b1e…",
       "extracted_at": "2026-09-11T18:20:00Z",
       "kind": "chat",
@@ -108,11 +108,11 @@ ambiguity and renders as a dotted underline in HTML.
       "confidence": 0.88,
       "sensitive": false,
       "reviewed": false,
-      "cluster": "ateam-client-work",
-      "tags": ["abi", "deadline"],
-      "entities": ["Diego", "ABI"],
-      "summary": "Diego asking for the ABI Canada requirements doc before Friday.",
-      "asset": "assets/2026-09-11-slack-diego-abi-deadline.png"
+      "cluster": "client-work",
+      "tags": ["acme", "deadline"],
+      "entities": ["Sam", "Acme"],
+      "summary": "Sam asking for the Acme Canada requirements doc before Friday.",
+      "asset": "assets/2026-09-11-slack-sam-acme-deadline.png"
     }
   ],
   "skipped": [
@@ -120,12 +120,12 @@ ambiguity and renders as a dotted underline in HTML.
   ],
   "clusters": [
     {
-      "slug": "ateam-client-work",
-      "title": "A-team client work",
-      "summary": "Client asks, deadlines and requirements across ABI and Heineken.",
-      "notes": ["2026-09-11-slack-diego-abi-deadline"],
+      "slug": "client-work",
+      "title": "Client work",
+      "summary": "Client asks, deadlines and requirements across Acme and Contoso.",
+      "notes": ["2026-09-11-slack-sam-acme-deadline"],
       "kinds": {"chat": 6, "course": 1},
-      "entities": ["Diego", "ABI", "Heineken"],
+      "entities": ["Sam", "Acme", "Contoso"],
       "date_range": ["2026-08-02", "2026-09-11"],
       "avg_confidence": 0.81
     }
