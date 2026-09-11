@@ -187,10 +187,17 @@ make catalog   # regenerate the README table from frontmatter
 make check     # fail if the table is stale or frontmatter won't parse (CI runs this)
 ```
 
-The README catalog is **generated**. The frontmatter is the only description Claude reads,
-so it is the only one this repo keeps. A second hand-maintained copy always drifts: the
-manifest this replaced had 68% of its descriptions out of sync and advertised a
-Linear-writing skill as having no side effects.
+The README catalog and `skills.json` are both **generated** from frontmatter. A second
+hand-maintained copy always drifts: before this, 68% of the manifest's descriptions were
+out of sync with their skills and it advertised a Linear-writing skill as having no side
+effects — which the site consuming it was faithfully displaying.
+
+`skills.json` is a **published API** — mostafa.xyz renders from it — so its field shape is
+a contract. Don't change the keys without checking the consumer.
+
+The two things a manifest needs that nothing else knows, `trigger` and `tags`, live in each
+skill's own frontmatter `metadata:` map. Add them there when you add a skill; everything
+else is derived.
 
 Locally, `claude plugin validate ~/.claude/skills` reports skills whose frontmatter fails
 to parse, and `/skill-doctor` shows per-skill context cost and flags skills never invoked.

@@ -92,8 +92,10 @@ this table is generated from it by `make catalog`, so the two can never disagree
 
 ## Contributing to this repo
 
-The frontmatter in each `SKILL.md` is the single source of truth — the catalog above is
-generated from it. After adding or editing a skill:
+The frontmatter in each `SKILL.md` is the single source of truth — the catalog above and
+`skills.json` (which mostafa.xyz renders from) are both generated from it. Put a skill's
+`trigger` and `tags` in its frontmatter `metadata:` map; everything else is derived. After
+adding or editing a skill:
 
 ```bash
 make catalog   # regenerate the README table
