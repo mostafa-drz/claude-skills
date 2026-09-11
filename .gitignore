@@ -2,6 +2,11 @@ preferences.md
 last-audit.md
 feedback-journal.md
 .DS_Store
+
+# Python import cache. The scripts are run directly, so this is pure binary churn —
+# `git add -A` will otherwise commit a .pyc every time the generator is imported.
+__pycache__/
+*.pyc
 # Local session state stays out, but settings.json ships: it carries the project hooks
 # that keep the generated catalog in sync for anyone working in this repo.
 .claude/*
