@@ -60,7 +60,7 @@ If it's missing, treat this as first-run (see **First-time detection**)._
 Defaults when no preferences exist:
 - `memory-root`: `~/screenshots-memory/` (confirmed on first run; git-init'd so every change is diffable and revertible)
 - `inbox`: `~/Desktop` (where loose screenshots pile up; synced when no path is given)
-- `originals`: `move` (`move` = the capture lives in the store once committed, and the inbox copy is retired · `copy` = inbox copy left alone)
+- `originals`: `move` (`move` = once the store's copy is committed and hash-verified, the inbox original is **deleted** — the store becomes the only copy · `copy` = inbox original left alone)
 - `confidence-threshold`: `0.75` (extractions below this are flagged for `review`, never silently trusted)
 - `cluster-style`: `topic` (subject-based; `kind` is a filter chip on the page, not a folder)
 - `sensitive-policy`: `ask-batched` (flag during extraction, ask about all of them in one round at the end)
@@ -245,7 +245,9 @@ Sync plan:
   ├── Window:      {since Nd or "all"}
   ├── Found:       {N} screenshots  ({D} already in memory, skipped)
   ├── To read:     {M} images · ~{X} MB
-  ├── Originals:   {retired once committed | left in place}
+  ├── Originals:   DELETED from {source} once the store's copy is committed and
+  │                hash-verified — the store becomes the only copy. This is the only
+  │                irreversible thing I do. (Set `originals: copy` to leave them.)
   └── Store:       {memory-root}  (local git, no remote)
 
 Reply 'go' to extract, or tweak the scope.  (add --yes next time to skip this)
@@ -334,31 +336,29 @@ mix, date range).
 --porcelain` and stop if it isn't — a sync that leaves the store dirty makes the next
 sync's preflight check 3 fire falsely, which trains the user to wave it through.
 
-### Step 8 — Retire the originals (last, never first)
+### Step 8 — Delete the inbox originals (last, never first)
 
 The capture now lives in the store, committed, at `assets/{id}.png`. Only if
-`originals: move`, the inbox copy is redundant and gets retired.
+`originals: move`, the inbox original is redundant and is **deleted**. Say "deleted", not
+"moved" or "retired" — the user is entitled to know the store is now the only copy.
 
 **Verify before removing anything.** For each original, all three must hold:
-`shasum -a 256 {memory-root}/assets/{id}.png` equals the note's recorded hash (which
-carries a `sha256:` prefix — strip it before comparing, or nothing ever matches) ·
-`git -C {memory-root} log --oneline -1 -- assets/{id}.png` returns a commit ·
-the note file exists. Then `rm` the inbox original. If any check fails, leave that
-original alone, say which and why, and carry on with the rest.
+`shasum -a 256 {memory-root}/assets/{id}.png` equals the note's recorded hash (strip its
+`sha256:` prefix first, or nothing ever matches) · `git -C {memory-root} log --oneline -1
+-- assets/{id}.png` returns a commit · the note file exists. Only then `rm` the inbox
+original; if any check fails, leave it, say why, and carry on.
 
-- Retire **only** files this sync wrote a note for — never a folder, never a skipped
-  file, never anything the discovery rule didn't select.
-- A capture that couldn't be read still gets a flagged note and is still retired, so
+- Delete **only** files this sync wrote a note for — never a folder, never a skipped file,
+  never anything the discovery rule didn't select.
+- A capture that couldn't be read still gets a flagged note and is still deleted, so
   nothing is silently abandoned *or* silently lost.
 - A capture the user chose to **skip entirely** stays exactly where it is.
-- If Step 7's commit failed, **retire nothing**. Say so and stop.
+- If Step 7's commit failed, **delete nothing**. Say so and stop.
 
-This creates no new files, so the tree stays clean. It is the only irreversible thing the
-skill does — hence last, and hence verifying the committed copy rather than trusting the
-earlier steps. The sweep is **resumable and idempotent**: a failed file is reported and
-left alone without aborting the batch, and an interruption between Step 7 and here is
-harmless — the note and asset are already committed, so re-running dedupes by hash and
-simply retires whatever is left.
+This creates no new files, so the tree stays clean. The sweep is **resumable and
+idempotent**: a failed file is reported and left alone without aborting the batch, and an
+interruption between Step 7 and here is harmless — the note and asset are already
+committed, so re-running dedupes by hash and deletes whatever is left.
 
 Then report:
 
@@ -367,7 +367,7 @@ Synced {N} screenshots → {new} new notes, {dupes} already known.
   Kinds:      course {a} · chat {b} · product {c} · ui {d}
   Clusters:   {list}
   Sensitive:  {s} stored image-only, {d} declined
-  Inbox:      {M} originals retired · {left} left in place
+  Inbox:      {M} originals deleted (store is now the only copy) · {left} left in place
   ⚠ Flagged for review ({f}, confidence < {threshold}):  {short list}
 
 Next:  /screenshots-memory review   ·   /screenshots-memory clusters
@@ -407,10 +407,10 @@ page layout, the note-card anatomy, the filter-chip contract (chips OR together;
 ⚠ Needs review switch ANDs), and the review-popover rules that keep a half-finished
 correction from ever reaching the store.
 
-**Rendering writes into the store, so it commits.** Every path that re-renders — a sync,
-a `review --apply`, or a bare `clusters`/`browse` — ends with `git -C {memory-root} add -A
-&& git commit -m "render: {scope}"` when anything changed, and says "already current"
-when nothing did. Uncommitted render output would make the next preflight fire falsely.
+**Rendering writes into the store, so it commits.** Every re-render path — sync,
+`review --apply`, or a bare `clusters`/`browse` — commits `clusters/` and `html/` when
+anything changed and says "already current" when nothing did. Uncommitted render output
+would make the next preflight fire falsely.
 
 **`flag` means low-confidence AND unreviewed — never low-confidence alone**, and every
 card carries `data-reviewed`. Since a verdict of `ok` deliberately leaves `confidence`
@@ -443,7 +443,8 @@ human-readable and revertible.
    - **Wrong kind / tags / cluster** → re-assign.
    - **Skip** / **Stop**.
 4. **On any correction**, record it and learn from it — append to
-   `{memory-root}/corrections.md`, promote it into
+   `{memory-root}/corrections.md`, promote it (a lesson the user typed into the lesson
+   field promotes immediately; one you inferred waits for a second occurrence) into
    `{memory-root}/extraction-guide.md` (the file the extractor reads every sync), tell
    the user "Learned: {pattern}. I'll apply it going forward.", and `git commit` so the
    learning history is versioned too. Formats and the promotion rule:

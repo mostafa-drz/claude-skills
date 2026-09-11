@@ -29,13 +29,14 @@ Per-cluster page:
    extracted `fields` as a compact definition list, a **confidence badge** (green ≥
    threshold, amber below), the provenance line (📸 app · captured date · original
    filename), and tag chips. Cards below threshold get an amber left-border and a
-   "flagged — low confidence" label. `⟨uncertain: word?⟩` renders as a dotted A card is flagged only when
-   `confidence < threshold` **AND** `reviewed` is false; every card also carries
-   `data-reviewed="true|false"`. Confidence alone would be wrong — a verdict of `ok`
-   leaves confidence untouched by design, so a confirmed note would never leave the
-   ⚠ Needs review view.
-   underline. A `sensitive` note shows its thumbnail and a plain "contents not
-   recorded by choice" line instead of text.
+   "flagged — low confidence" label. `⟨uncertain: word?⟩` renders as a dotted underline.
+   A `sensitive` note shows its thumbnail and a plain "contents not recorded by choice"
+   line instead of text.
+
+   **A card is flagged only when `confidence < threshold` AND `reviewed` is false**, and
+   every card carries `data-reviewed="true|false"`. Confidence alone would be wrong: a
+   verdict of `ok` leaves confidence untouched by design, so a confirmed note would never
+   leave the ⚠ Needs review view.
 3. **Entities** — a chip row of the people, products and projects in this cluster.
    A card with `reviewed: true` renders a ✓ beside its confidence badge, so the user can
    see what they already confirmed even with the ⚠ Needs review switch off.

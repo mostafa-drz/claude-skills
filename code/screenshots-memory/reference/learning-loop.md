@@ -27,19 +27,33 @@ to `{memory-root}/corrections.md`:
 
 ## 2. Promote what recurs
 
-**One rule, both paths.** `corrections.md` records everything; `extraction-guide.md` —
-the file the extractor reads on every sync — gets only what will still be true next time:
+**One rule, both paths.** `corrections.md` records everything. `extraction-guide.md` —
+the file the extractor reads on every sync — gets only what will still be true next time,
+decided by **where the lesson came from**, not by judgement:
 
-- a lesson that has now appeared **more than once** (an app that keeps being
-  misidentified, a shorthand, a client name read as a typo), **or**
-- a lesson the user stated as a general rule rather than a one-off fix ("ABI is always
-  the client, never a typo").
+| Source of the lesson | When it promotes |
+|---|---|
+| The human typed it into the **lesson field** (the page's "Lesson for the extractor", or the same question in the terminal) | **Immediately.** They were asked for a general rule and gave one. |
+| **You inferred** it from a text fix | **On its second occurrence.** One idiosyncratic fix is not a standing instruction. |
 
-A single idiosyncratic fix stays in `corrections.md` and does not become a standing
-instruction — that is what stops the guide filling with noise that degrades extraction.
+This is deliberately mechanical: "the user stated it as a rule" is otherwise a guess, and a
+guide that fills with one-off noise makes extraction worse rather than better.
 
-When you promote one, say so: "Learned: {pattern}. I'll apply it going forward." Then
-`git commit`, so the learning history is versioned too.
+**Say which route fired**, so the user learns how to make a correction stick:
+
+- "Added to the guide — you stated it as a rule: {pattern}"
+- "Added to the guide — third time I've made this mistake: {pattern}"
+
+**Record where each rule came from.** Every entry in `extraction-guide.md` carries the
+note ids that produced it:
+
+```markdown
+- Slack is the dark sidebar with `#` channels — not Discord.
+  _from 2026-09-11-slack-diego-abi-deadline, 2026-09-04-slack-standup (stated as a rule)_
+```
+
+That makes the guide auditable: the user can see why the extractor believes something, and
+revert a rule by deleting a line. Then `git commit`, so the learning history is versioned.
 
 ## 3. Apply a batch from the page
 
@@ -111,8 +125,9 @@ the two review queues identical: the page's ⚠ Needs review switch and the term
 `reviewed: false` **and** `confidence < threshold` must select the same notes.
 
 Then run stages 1 and 2 exactly as the terminal path does: append every change to
-`corrections.md`, and promote a `lesson` into `extraction-guide.md` **only** when it
-recurs or is stated as a general rule. Re-render the touched clusters — this is what
+`corrections.md`, and promote by stage 2's table — a `lesson` the human typed into the
+popover's lesson field promotes immediately, anything you inferred waits for a second
+occurrence. Re-render the touched clusters — this is what
 clears confirmed cards out of the page's ⚠ Needs review view, so it is load-bearing, not
 cosmetic — then `git commit`.
 

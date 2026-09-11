@@ -35,7 +35,9 @@ Fire ONE `AskUserQuestion` (multi-question) to collect:
 
 1. **Memory root** — where the memory store lives (default `~/screenshots-memory/`)
 2. **Inbox** — the folder that gets swept when no path is given (default `~/Desktop`)
-3. **Originals** — `move` into the store (sweeps the inbox clean) or `copy` (leaves them)
+3. **Originals** — `move` (once the store's copy is committed and hash-verified, the
+   inbox original is **deleted**; the store becomes the only copy) or `copy` (leaves the
+   inbox untouched). Say "deleted" when asking — this is the skill's only irreversible act.
 4. **Confidence threshold** — how sure the reader must be before a note is trusted (default `0.75`)
 5. **Tone** — `friendly-cli` / `detailed` / `minimal`
 
