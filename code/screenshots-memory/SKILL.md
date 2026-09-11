@@ -5,17 +5,16 @@ description: >-
   captures from ~/Desktop or any folder or file you point at, reads each image
   with Claude vision — no OCR key, no upload — and extracts it into a
   confidence-scored Markdown note with full provenance: when it was captured,
-  which app it came from, where it originally lived. Classifies every capture by
-  kind — course and study material, chat and reminders, products, UI
-  inspiration, or kinds you define yourself — and pulls kind-specific fields out
-  of each one. Clusters notes by topic, renders a single-file HTML page per
-  cluster, and answers plain-language questions over them ("what did Slack ask
-  me to do last week", "products I saved in August", "everything from the Claude
-  skills course"). Asks before writing down anything sensitive, flags
-  low-confidence reads for review, and learns the user's apps and shorthand from
-  every correction. Use when the user wants to sync, extract, organize, search,
-  declutter, or reason over their screenshots, turn a messy Desktop into a
-  searchable memory, or build a second brain out of the things they screenshot.
+  which app it came from, where it lived. Classifies every capture by kind —
+  course material, chat and reminders, products, UI inspiration, or kinds the
+  user defines — and pulls kind-specific fields from each. Clusters by topic,
+  renders a single-file HTML page per cluster, and answers plain-language
+  questions ("what did Slack ask me to do last week", "products I saved in
+  August"). Asks before writing down anything sensitive, flags low-confidence
+  reads for review, and learns the user's apps from every correction. Use when
+  the user wants to sync, extract, organize, search, declutter, or reason over
+  their screenshots, turn a messy Desktop into a searchable memory, or build a
+  second brain from the things they screenshot.
 argument-hint: "[sync|review|clusters|browse|feedback|config|setup|reset|help] [path|glob] [--since <Nd>] [--kind <name>] [--min-confidence <0-1>] [--yes] [text query...]"
 disable-model-invocation: true
 allowed-tools:

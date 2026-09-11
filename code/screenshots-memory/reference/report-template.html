@@ -5,11 +5,12 @@
   cluster: no external scripts, no fonts, no build step. Opens anywhere, works offline.
 
   Placeholders the renderer fills:
-    {{CLUSTER_TITLE}} {{CLUSTER_SUMMARY}} {{DATE_RANGE}} {{NOTE_COUNT}} {{AVG_CONF}}
+    {{CLUSTER_TITLE}} {{CLUSTER_SUMMARY}} {{DATE_RANGE}} {{NOTE_COUNT}} {{AVG_CONFIDENCE}}
     {{ICON_SVG}}             inline icon.svg, ~32px, accent-coloured
     {{ENTITY_CHIPS}}         <button class="chip" data-facet="ABI" aria-pressed="false">ABI</button>
     {{KIND_CHIPS}}           same, one per kind present in this cluster
-    {{CARDS}}                one <article class="card"> per note (sample below)
+    {{NOTE_CARDS}}           one <article class="card"> per note (sample below)
+    {{GENERATED_AT}}         render timestamp, shown in the footer
 
   Two behaviours this file owns, and why they are shaped the way they are:
 
@@ -249,8 +250,11 @@
     </span>
   </div>
 
-  <!-- Entity chips are filter buttons. {{ENTITY_CHIPS}} renders each as:
-       <button class="chip" data-facet="Amsterdam" aria-pressed="false">Amsterdam</button> -->
+  <!-- Kind and entity chips are filter buttons, rendered the same way:
+       <button class="chip" data-facet="product" aria-pressed="false">product</button>
+       They share one facet space with the tag chips on each card, so a kind chip here
+       and a kind badge on a card stay in sync through aria-pressed. -->
+  <div class="chips" aria-label="Filter by kind">{{KIND_CHIPS}}</div>
   <div class="chips" aria-label="Filter by entity">{{ENTITY_CHIPS}}</div>
 
   <div class="toolbar" role="group" aria-label="Filter and sort notes">
