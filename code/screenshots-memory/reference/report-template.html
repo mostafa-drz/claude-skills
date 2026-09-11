@@ -1,0 +1,814 @@
+<!--
+  Screenshots Memory — cluster page template (reference)
+
+  Loaded on demand by /screenshots-memory when rendering. One self-contained file per
+  cluster: no external scripts, no fonts, no build step. Opens anywhere, works offline.
+
+  Placeholders the renderer fills:
+    {{CLUSTER_TITLE}} {{CLUSTER_SUMMARY}} {{DATE_RANGE}} {{NOTE_COUNT}} {{AVG_CONF}}
+    {{ICON_SVG}}             inline icon.svg, ~32px, accent-coloured
+    {{ENTITY_CHIPS}}         <button class="chip" data-facet="ABI" aria-pressed="false">ABI</button>
+    {{KIND_CHIPS}}           same, one per kind present in this cluster
+    {{CARDS}}                one <article class="card"> per note (sample below)
+
+  Two behaviours this file owns, and why they are shaped the way they are:
+
+  (1) FILTERING. Every chip — entity chips in the header, and the kind badge and tag
+      chips on each card — is a real toggle. Several can be on at once and they UNION
+      (OR): `product` + `ui` shows either, because the point of a facet is to widen.
+      An AND would empty the page after two clicks. Each card carries
+      data-facets="kind|tag|tag|Entity" (pipe-separated, matched case-insensitively),
+      so filtering needs no lookup table. The "⚠ Needs review" switch is a QUALITY
+      facet, not a subject one, so it ANDs with the chips: "flagged captures about ABI".
+
+  (2) REVIEW. Each card opens a native [popover] with a verdict — reads correctly /
+      fix the text / wrong kind, tags or cluster. Each verdict reveals only the field
+      it needs: "fix" a textarea prefilled with the current extraction (so a fix is an
+      edit, not a retype), "meta" a one-line instruction exported as `reassign`, NOT as
+      `text` — the extraction is not the correction there, and an agent handed the
+      extraction would have nothing to act on. Verdicts persist in localStorage keyed
+      by page path, and a sticky bar copies the batch back out for
+      `/screenshots-memory review --apply` (see reference/review-protocol.md).
+
+      The payload drives destructive edits to real notes, so the page refuses to emit a
+      judgement the human did not make. Save stays disabled until a verdict is picked
+      AND the field that verdict needs holds content the human actually supplied — for
+      "fix" that means an ACTUAL edit, since a textarea still holding the prefill is not
+      a correction. Abandoning a popover (Esc, click-away, Discard) restores it rather
+      than leaving a half-edit that reads like a decision. Missing or duplicate note
+      ids, and storage that won't persist, are surfaced instead of failing quietly.
+      The page never writes to the memory store itself; the agent applies and commits.
+
+      Each entry also carries the note's `hash`. That is what lets the agent notice a
+      capture re-extracted after the review was saved, instead of overwriting newer
+      text with a stale correction.
+
+  A note with sensitive: true renders its thumbnail and a plain "contents not recorded
+  by choice" line. It has no body text by design — never render one for it.
+
+  Colors match the site vocabulary: ground #121212, primary #ff5722,
+  secondary #03a9f4, hairline borders, faint surfaces. Light mode inverts.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{CLUSTER_TITLE}} — Screenshots Memory</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: rgba(0,0,0,0.02);
+    --surface-2: rgba(0,0,0,0.04);
+    --border: rgba(0,0,0,0.10);
+    --text: #16181d;
+    --text-2: #5b616e;
+    --primary: #ff5722;
+    --secondary: #0389c7;
+    --good: #1a8f4b;
+    --warn: #b26a00;
+    --radius: 14px;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121212;
+      --surface: rgba(255,255,255,0.02);
+      --surface-2: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.10);
+      --text: #ececec;
+      --text-2: #9aa0ab;
+      --primary: #ff5722;
+      --secondary: #03a9f4;
+      --good: #37d67a;
+      --warn: #f0b429;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--font); line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 40px 20px 80px; }
+  header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 6px; }
+  header .icon { width: 32px; height: 32px; color: var(--primary); flex: 0 0 auto; margin-top: 4px; }
+  header .icon svg { width: 100%; height: 100%; display: block; }
+  h1 { font-size: 1.7rem; line-height: 1.2; margin: 0; letter-spacing: -0.01em; }
+  .summary { color: var(--text-2); margin: 8px 0 0; max-width: 62ch; }
+  .meta { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center;
+          margin: 20px 0 8px; color: var(--text-2); font-size: 0.86rem; }
+  .meta b { color: var(--text); font-weight: 600; }
+  .meter { display: inline-flex; align-items: center; gap: 8px; }
+  .meter .track { width: 120px; height: 7px; border-radius: 99px; background: var(--surface-2);
+                  overflow: hidden; border: 1px solid var(--border); }
+  .meter .fill { height: 100%; background: linear-gradient(90deg, var(--warn), var(--good)); }
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 14px 0 4px; }
+  /* Chips are buttons: click to filter, several at a time. aria-pressed is the
+     single source of truth for "on" — style hangs off it, no extra class. */
+  .chip { font: inherit; font-size: 0.76rem; padding: 3px 10px; border-radius: 99px;
+          border: 1px solid var(--border); background: var(--surface);
+          color: var(--text-2); cursor: pointer; }
+  .chip:hover { border-color: var(--secondary); color: var(--text); }
+  .chip[aria-pressed="true"] { color: var(--bg); background: var(--secondary);
+          border-color: var(--secondary); font-weight: 600; }
+  .chip:focus-visible, .toolbar button:focus-visible, .rev-open:focus-visible {
+          outline: 2px solid var(--secondary); outline-offset: 2px; }
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+          margin: 26px 0 14px; }
+  .toolbar button { font: inherit; font-size: 0.82rem; cursor: pointer;
+          padding: 6px 13px; border-radius: 99px; border: 1px solid var(--border);
+          background: var(--surface); color: var(--text-2); }
+  .toolbar button.active, .toolbar button[aria-pressed="true"] {
+          color: var(--bg); background: var(--primary); border-color: var(--primary); }
+  .toolbar .count { font-size: 0.8rem; color: var(--text-2); margin-left: auto; }
+  .toolbar .clear { border-style: dashed; }
+  .empty { padding: 30px 0; color: var(--text-2); font-size: 0.9rem; }
+  .grid { display: grid; gap: 16px; }
+  .card { border: 1px solid var(--border); border-radius: var(--radius);
+          background: var(--surface); padding: 18px 18px 16px; }
+  .card.flag { border-left: 3px solid var(--warn); }
+  .card .head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+          margin-bottom: 10px; }
+  .badge { font-size: 0.72rem; font-weight: 600; padding: 2px 9px; border-radius: 99px;
+          border: 1px solid transparent; }
+  /* rgba fallbacks first for engines without color-mix(); color-mix wins where supported */
+  .badge.good { color: var(--good); border-color: rgba(55,214,122,0.4); background: rgba(55,214,122,0.12);
+          border-color: color-mix(in srgb, var(--good) 40%, transparent);
+          background: color-mix(in srgb, var(--good) 12%, transparent); }
+  .badge.warn { color: var(--warn); border-color: rgba(240,180,41,0.4); background: rgba(240,180,41,0.12);
+          border-color: color-mix(in srgb, var(--warn) 40%, transparent);
+          background: color-mix(in srgb, var(--warn) 12%, transparent); }
+  .type { font-size: 0.72rem; color: var(--text-2); text-transform: uppercase;
+          letter-spacing: 0.06em; }
+  .prov { font-size: 0.78rem; color: var(--text-2); margin-left: auto; }
+  .card .body { font-size: 0.95rem; }
+  .card .body :first-child { margin-top: 0; }
+  .card .body ul { padding-left: 1.2em; }
+  mark.uncertain { background: none; color: var(--warn);
+          border-bottom: 1px dotted var(--warn); }
+  .card .foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+          margin-top: 12px; }
+  .chip.kind { text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.68rem; }
+  .fields { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px;
+            margin: 12px 0 0; font-size: 0.82rem; }
+  .fields dt { color: var(--text-2); }
+  .fields dd { margin: 0; }
+  .withheld { color: var(--text-2); font-style: italic; }
+  .thumb { margin-top: 12px; border: 1px solid var(--border); border-radius: 10px;
+          overflow: hidden; max-width: 260px; }
+  .thumb img { display: block; width: 100%; height: auto; }
+  .review-hint { font-size: 0.76rem; color: var(--warn); }
+
+  /* --- Review popover ------------------------------------------------------ */
+  .rev-open { font: inherit; font-size: 0.74rem; cursor: pointer; margin-left: auto;
+          padding: 3px 11px; border-radius: 99px; border: 1px solid var(--border);
+          background: var(--surface-2); color: var(--text-2); }
+  .rev-open:hover { border-color: var(--primary); color: var(--primary); }
+  /* a review saved in THIS browser but not yet applied by the agent */
+  .card[data-review-draft] .rev-open { border-color: var(--good); color: var(--good); }
+  .pop { border: 1px solid var(--border); border-radius: var(--radius);
+          background: var(--bg); color: var(--text); padding: 18px;
+          width: min(440px, calc(100vw - 32px)); box-shadow: 0 18px 50px rgba(0,0,0,.35);
+          margin: auto; }
+  .pop::backdrop { background: rgba(0,0,0,.45); }
+  .pop h4 { margin: 0 0 2px; font-size: 0.95rem; }
+  .pop .prov { margin: 0 0 12px; }
+  .pop .verdicts { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .pop .verdicts button { font: inherit; font-size: 0.78rem; cursor: pointer;
+          padding: 5px 11px; border-radius: 99px; border: 1px solid var(--border);
+          background: var(--surface); color: var(--text-2); }
+  .pop .verdicts button[aria-pressed="true"] { color: var(--bg);
+          background: var(--primary); border-color: var(--primary); font-weight: 600; }
+  .pop label { display: block; font-size: 0.76rem; color: var(--text-2); margin: 10px 0 4px; }
+  .pop textarea, .pop input { font: inherit; font-size: 0.85rem; width: 100%;
+          box-sizing: border-box; padding: 8px 10px; border-radius: 9px;
+          border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+  .pop textarea { min-height: 120px; resize: vertical; line-height: 1.5; }
+  .pop .pop-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .pop .pop-actions button { font: inherit; font-size: 0.8rem; cursor: pointer;
+          padding: 6px 14px; border-radius: 99px; border: 1px solid var(--border);
+          background: var(--surface); color: var(--text-2); }
+  .pop .pop-actions .save { background: var(--primary); border-color: var(--primary);
+          color: var(--bg); font-weight: 600; }
+  .pop .pop-actions .save[disabled] { background: var(--surface-2); border-color: var(--border);
+          color: var(--text-2); font-weight: 400; cursor: not-allowed; }
+  .pop-req { margin: 12px 0 0; font-size: 0.76rem; color: var(--warn); }
+  /* a div's default display would otherwise survive the [hidden] attribute here */
+  .pop [hidden] { display: none; }
+
+  /* --- Handoff bar (appears once a review is saved) ------------------------- */
+  .handoff { position: sticky; bottom: 14px; z-index: 5; display: flex;
+          align-items: center; gap: 12px; flex-wrap: wrap; margin: 26px 0 0;
+          padding: 12px 16px; border-radius: var(--radius);
+          border: 1px solid var(--primary); background: var(--bg);
+          box-shadow: 0 10px 30px rgba(0,0,0,.28); font-size: 0.84rem; }
+  .handoff button { font: inherit; font-size: 0.8rem; cursor: pointer;
+          padding: 6px 14px; border-radius: 99px; border: 1px solid var(--border);
+          background: var(--surface); color: var(--text-2); }
+  .handoff .copy { background: var(--primary); border-color: var(--primary);
+          color: var(--bg); font-weight: 600; }
+  .handoff .hint { color: var(--text-2); }
+  .handoff .hint.warn { color: var(--warn); }
+  .handoff .manual { flex-basis: 100%; }
+  .handoff .manual label { display: block; font-size: 0.76rem; color: var(--warn);
+          margin-bottom: 5px; }
+  .handoff .manual textarea { font: inherit; font-size: 0.76rem; width: 100%;
+          box-sizing: border-box; padding: 8px 10px; border-radius: 9px;
+          border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+  .handoff .manual[hidden] { display: none; }
+  /* class selector would otherwise beat the UA [hidden] rule */
+  .handoff[hidden] { display: none; }
+  @media (prefers-reduced-motion: no-preference) {
+    .chip, .toolbar button, .rev-open { transition: background .12s, color .12s, border-color .12s; }
+  }
+  footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--border);
+          color: var(--text-2); font-size: 0.8rem; }
+  a { color: var(--secondary); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  @media (max-width: 560px) { .wrap { padding: 28px 14px 60px; } h1 { font-size: 1.4rem; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="icon">{{ICON_SVG}}</span>
+    <div>
+      <h1>{{CLUSTER_TITLE}}</h1>
+      <p class="summary">{{CLUSTER_SUMMARY}}</p>
+    </div>
+  </header>
+
+  <div class="meta">
+    <span><b>{{NOTE_COUNT}}</b> notes</span>
+    <span>{{DATE_RANGE}}</span>
+    <span class="meter" title="average extraction confidence">
+      avg confidence
+      <span class="track"><span class="fill" style="width:{{AVG_CONFIDENCE}}%"></span></span>
+      <b>{{AVG_CONFIDENCE}}%</b>
+    </span>
+  </div>
+
+  <!-- Entity chips are filter buttons. {{ENTITY_CHIPS}} renders each as:
+       <button class="chip" data-facet="Amsterdam" aria-pressed="false">Amsterdam</button> -->
+  <div class="chips" aria-label="Filter by entity">{{ENTITY_CHIPS}}</div>
+
+  <div class="toolbar" role="group" aria-label="Filter and sort notes">
+    <button data-flag aria-pressed="false">⚠ Needs review</button>
+    <button data-sort="confidence">Sort: confidence</button>
+    <button data-sort="recent">Sort: recent</button>
+    <button class="clear" data-clear hidden>Clear filters</button>
+    <span class="count" data-count aria-live="polite"></span>
+  </div>
+
+  <div class="grid" id="grid">
+    {{NOTE_CARDS}}
+    <!--
+    Sample card (repeat per note; data-confidence + data-captured drive filter/sort).
+    The thumbnail src is relative to THIS cluster page — the asset is copied into
+    clusters/<slug>/assets/ at render time, so the page resolves standalone.
+
+    data-facets is the card's kind + tags + entities, pipe-separated (matched
+    case-insensitively). data-note-id and data-hash identify the note in the review
+    handoff block; data-app and data-kind travel with it for context.
+
+    <article class="card flag" data-confidence="0.62" data-captured="2026-09-11"
+             data-facets="chat|abi|deadline|Diego|ABI"
+             data-note-id="2026-09-11-slack-diego-abi-deadline"
+             data-hash="sha256:9f2c4b1e" data-app="Slack" data-kind="chat">
+      <div class="head">
+        <span class="badge warn">62%</span>
+        <button class="chip kind" data-facet="chat" aria-pressed="false">chat</button>
+        <span class="prov">📸 Slack · captured 2026-09-11</span>
+        <button class="rev-open" popovertarget="rev-abi">Review</button>
+      </div>
+      <div class="thumb"><img src="assets/2026-09-11-slack-diego-abi-deadline.png"
+                              alt="Slack message from Diego about the ABI Canada requirements doc"></div>
+      <div class="body">
+        <p>Diego asked in <strong>#abi-canada</strong> whether the requirements doc is confirmed.</p>
+        <p>Thread also mentions <mark class="uncertain">Priya?</mark> is handling legal review.</p>
+      </div>
+
+      Kind-specific fields, straight from the note's `fields`. Keys depend on the kind
+      (see reference/kinds.md); a key that was not visible in the capture is omitted
+      rather than invented.
+
+      <dl class="fields">
+        <dt>who</dt><dd>Diego</dd>
+        <dt>channel</dt><dd>#abi-canada</dd>
+        <dt>ask</dt><dd>Confirm the Canada requirements doc</dd>
+        <dt>due</dt><dd>2026-09-13</dd>
+      </dl>
+      <div class="foot">
+        <button class="chip" data-facet="abi" aria-pressed="false">abi</button>
+        <button class="chip" data-facet="deadline" aria-pressed="false">deadline</button>
+        <span class="review-hint">Flagged — low confidence</span>
+      </div>
+
+      A sensitive note renders like this instead — thumbnail, no text, ever:
+        <div class="body"><p class="withheld">Contents not recorded by choice.</p></div>
+
+      Review popover — one per card, id matches the button's popovertarget.
+      The textarea is pre-filled with the plain-text extraction so a fix is an
+      edit, not a retype.
+
+      <div popover id="rev-abi" class="pop">
+        <h4>Slack · 2026-09-11 — review</h4>
+        <p class="prov">📸 Slack · captured 2026-09-11 · chat · confidence 62%</p>
+        <div class="verdicts" role="group" aria-label="Verdict">
+          <button data-verdict="ok" aria-pressed="false">Reads correctly</button>
+          <button data-verdict="fix" aria-pressed="false">Fix the text</button>
+          <button data-verdict="meta" aria-pressed="false">Wrong kind / tags / cluster</button>
+        </div>
+        <div data-field="fix" hidden>
+          <label for="fix-rev-p3">Corrected transcription</label>
+          <textarea id="fix-rev-p3" data-fix>Encoding ⟨uncertain: recall?⟩ loop via hippocampus → consolidation during sleep.</textarea>
+        </div>
+        <div data-field="meta" hidden>
+          <label for="meta-rev-p3">Which tags or cluster should it have?</label>
+          <input id="meta-rev-p3" data-meta placeholder="e.g. cluster: home-design; drop tag &quot;travel&quot;">
+        </div>
+        <label for="lesson-rev-p3">Lesson for the extractor (optional)</label>
+        <input id="lesson-rev-p3" data-lesson placeholder="e.g. HM = hippocampus, never 'human memory'">
+        <p class="pop-req" data-req>Pick a verdict first.</p>
+        <div class="pop-actions">
+          <button class="save" data-save disabled>Save review</button>
+          <button data-discard>Discard</button>
+        </div>
+      </div>
+    </article>
+    -->
+  </div>
+
+  <!-- Shown only once at least one review is saved. -->
+  <div class="handoff" hidden data-handoff>
+    <span data-handoff-lead><b data-handoff-count>0</b> reviews ready</span>
+    <button class="copy" data-copy>Copy for Claude</button>
+    <button data-clear-reviews>Discard all</button>
+    <span class="hint" data-handoff-note>Paste into Claude Code to apply and commit them.</span>
+    <div class="manual" hidden data-manual>
+      <label for="manual-block">Couldn't reach the clipboard — select all and copy this:</label>
+      <textarea id="manual-block" rows="4" readonly></textarea>
+    </div>
+  </div>
+
+  <footer>
+    Generated {{GENERATED_AT}} by <b>/screenshots-memory</b>. Every card cites its
+    capture — the memory is auditable. Click any chip to filter (several at
+    once), or <b>Review</b> on a card to correct it — then <b>Copy for Claude</b> and
+    paste the batch back to apply it.
+  </footer>
+</div>
+
+<script>
+/* Vanilla, no framework, no build step. Two behaviours:
+   (1) facet filtering — chips are toggles that union (OR), ANDed with "Needs review";
+   (2) review popovers — verdicts persist in localStorage and are copied back out as a
+       /screenshots-memory review --apply block for the agent to apply and commit.
+
+   The payload drives DESTRUCTIVE edits to the user's real notes (overwriting bodies,
+   changing confidence, committing to git). So the governing rule is: never emit a
+   judgement the human did not make. Concretely — Save is disabled until a verdict is
+   picked AND the field that verdict needs holds something the human actually supplied
+   (a `fix` whose text still equals the prefill is not a correction); abandoning a
+   popover restores it rather than leaving a half-edit that looks like a decision; and
+   anything the page cannot round-trip safely (missing or duplicate note id, storage
+   that will not persist) is surfaced loudly instead of failing quietly. */
+(function () {
+  'use strict';
+
+  var grid = document.getElementById('grid');
+  if (!grid) return;
+  var cards = Array.prototype.slice.call(grid.querySelectorAll('.card'));
+
+  /* ---------- 1. Facet filtering ---------------------------------------- */
+
+  var active = new Set();          // lowercased facet values that are switched on
+  var flagOnly = false;
+  var countEl = document.querySelector('[data-count]');
+  var clearBtn = document.querySelector('[data-clear]');
+  var emptyEl = null;
+
+  function facetsOf(card) {
+    return (card.dataset.facets || '').toLowerCase().split('|')
+      .map(function (s) { return s.trim(); })   // "a | b" must still match chip "b"
+      .filter(Boolean);
+  }
+
+  function matches(card) {
+    if (flagOnly && !card.classList.contains('flag')) return false;
+    if (!active.size) return true;
+    // OR across chips: any one match keeps the card. Turning on more chips widens
+    // the result — an AND would empty the page after two clicks.
+    return facetsOf(card).some(function (f) { return active.has(f); });
+  }
+
+  function apply() {
+    var shown = 0;
+    cards.forEach(function (card) {
+      var ok = matches(card);
+      card.hidden = !ok;
+      if (ok) shown++;
+    });
+
+    // Keep every copy of a chip (header + in-card) visually in sync.
+    document.querySelectorAll('.chip[data-facet]').forEach(function (chip) {
+      chip.setAttribute('aria-pressed', active.has(chip.dataset.facet.trim().toLowerCase()));
+    });
+
+    var filtering = active.size > 0 || flagOnly;
+    if (clearBtn) clearBtn.hidden = !filtering;
+    if (countEl) {
+      countEl.textContent = filtering
+        ? 'showing ' + shown + ' of ' + cards.length
+        : cards.length + ' notes';
+    }
+
+    if (!shown) {
+      if (!emptyEl) {
+        emptyEl = document.createElement('p');
+        emptyEl.className = 'empty';
+        grid.appendChild(emptyEl);
+      }
+      // An empty cluster is not the same as an over-narrow filter.
+      emptyEl.textContent = cards.length === 0
+        ? 'This cluster has no notes yet.'
+        : 'No notes match those filters.';
+      emptyEl.hidden = false;
+    } else if (emptyEl) {
+      emptyEl.hidden = true;
+    }
+  }
+
+  // Delegated so chips inside cards work too, and chips added later still bind.
+  document.addEventListener('click', function (e) {
+    var chip = e.target.closest('.chip[data-facet]');
+    if (!chip) return;
+    var f = chip.dataset.facet.trim().toLowerCase();
+    if (active.has(f)) active.delete(f); else active.add(f);
+    apply();
+  });
+
+  var flagBtn = document.querySelector('[data-flag]');
+  if (flagBtn) {
+    flagBtn.addEventListener('click', function () {
+      flagOnly = !flagOnly;
+      flagBtn.setAttribute('aria-pressed', flagOnly);
+      apply();
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      active.clear();
+      flagOnly = false;
+      if (flagBtn) flagBtn.setAttribute('aria-pressed', 'false');
+      apply();
+    });
+  }
+
+  document.querySelectorAll('.toolbar [data-sort]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.toolbar [data-sort]').forEach(function (b) {
+        b.classList.remove('active');
+      });
+      btn.classList.add('active');
+      cards.slice().sort(function (a, b) {
+        // A missing data-confidence would otherwise make the comparator return NaN,
+        // which is inconsistent and scrambles the order rather than leaving it alone.
+        return btn.dataset.sort === 'confidence'
+          ? (parseFloat(a.dataset.confidence) || 0) - (parseFloat(b.dataset.confidence) || 0)
+          : (b.dataset.captured || '').localeCompare(a.dataset.captured || '');
+      }).forEach(function (c) { grid.appendChild(c); });
+      if (emptyEl) grid.appendChild(emptyEl);  // keep the empty notice last
+    });
+  });
+
+  apply();
+
+  /* ---------- 2. Review popovers + handoff ------------------------------- */
+
+  var VERDICTS = ['ok', 'fix', 'meta'];
+  // Bump whenever the shape of a stored review changes. A draft written by an older
+  // page must never be handed to the agent as if it were current: the fields it is
+  // missing are exactly the ones apply would reject, and the human's intent is not
+  // recoverable from what an older shape happened to save.
+  var SCHEMA = 1;
+  // Scoped per page so two cluster pages don't overwrite each other's drafts.
+  var STORE = 'sm-review:' + location.pathname;
+  var storageBroken = false;
+  var dropped = 0;   // drafts discarded on load, reported in the handoff bar
+
+  // An entry is only usable if it carries what its verdict requires — the same
+  // guarantee the apply contract is documented to rely on.
+  function valid(v) {
+    if (!v || typeof v !== 'object') return false;
+    if (VERDICTS.indexOf(v.verdict) === -1) return false;
+    if (v.verdict === 'fix') return typeof v.text === 'string' && !!v.text.trim();
+    if (v.verdict === 'meta') return typeof v.reassign === 'string' && !!v.reassign.trim();
+    return true;
+  }
+
+  function load() {
+    var raw = null;
+    try { raw = JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (e) { raw = null; }
+    var clean = Object.create(null);   // no prototype keys to trip over
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return clean;
+
+    // Anything without a matching schema is discarded wholesale rather than
+    // half-read: the fields a newer contract needs are exactly the ones an older
+    // shape never saved, and the human's intent can't be recovered from what it did.
+    var entries = (raw.schema && raw.entries) ? raw.entries : null;
+    if (!entries || raw.schema !== SCHEMA) {
+      var stale = entries || raw;
+      dropped = (stale && typeof stale === 'object') ? Object.keys(stale).length : 0;
+      return clean;
+    }
+    Object.keys(entries).forEach(function (k) {
+      // Belt and braces for a hand-edited store even at the right version.
+      if (valid(entries[k])) clean[k] = entries[k]; else dropped++;
+    });
+    return clean;
+  }
+
+  var reviews = load();
+
+  var bar = document.querySelector('[data-handoff]');
+  var barCount = document.querySelector('[data-handoff-count]');
+  var barNote = document.querySelector('[data-handoff-note]');
+  var copyBtn = document.querySelector('[data-copy]');
+
+  var removed = Object.create(null);   // ids discarded in this session
+
+  // Merge into whatever is on disk rather than overwriting it, so a second tab of the
+  // same page can't silently drop reviews saved in the first.
+  function persist() {
+    try {
+      var onDisk = load();
+      Object.keys(removed).forEach(function (k) { delete onDisk[k]; });
+      Object.keys(reviews).forEach(function (k) { onDisk[k] = reviews[k]; });
+      localStorage.setItem(STORE, JSON.stringify({ schema: SCHEMA, entries: onDisk }));
+      // Adopt anything another tab added that this one hasn't seen.
+      Object.keys(onDisk).forEach(function (k) { if (!reviews[k]) reviews[k] = onDisk[k]; });
+      storageBroken = false;
+      return true;
+    } catch (e) {
+      storageBroken = true;   // private mode, blocked cookies, partitioned file://
+      return false;
+    }
+  }
+
+  window.addEventListener('storage', function (e) {
+    if (e.key !== STORE) return;
+    reviews = load();
+    refreshBar();
+  });
+
+  function close(pop) {
+    // hidePopover() throws if the popover isn't showing, and :popover-open throws
+    // SyntaxError outright on engines without the Popover API.
+    try { if (pop.hidePopover) pop.hidePopover(); } catch (e) { /* already closed */ }
+  }
+
+  function refreshBar() {
+    var ids = Object.keys(reviews);
+    var copied = ids.filter(function (k) { return reviews[k].copiedAt; }).length;
+    if (bar) bar.hidden = ids.length === 0 && dropped === 0;
+    if (barCount) barCount.textContent = ids.length;
+    var lead = document.querySelector('[data-handoff-lead]');
+    if (lead) lead.hidden = ids.length === 0;
+    if (copyBtn) copyBtn.hidden = ids.length === 0;
+    var discardAll = document.querySelector('[data-clear-reviews]');
+    if (discardAll) discardAll.hidden = ids.length === 0;
+    if (copyBtn) copyBtn.textContent = copied && copied === ids.length ? 'Copy again' : 'Copy for Claude';
+    if (barNote) {
+      var stale = dropped
+        ? dropped + (dropped === 1 ? ' older draft was' : ' older drafts were') +
+          ' saved in a format this page no longer reads, and ' +
+          (dropped === 1 ? 'was' : 'were') + ' discarded — redo those cards.'
+        : '';
+      var main = !ids.length ? ''
+        : storageBroken
+          ? 'This browser is not saving them — copy the batch before you close the tab.'
+          : copied && copied === ids.length
+            ? 'Copied. Paste into Claude Code to apply, then Discard all.'
+            : 'Paste into Claude Code to apply and commit them.';
+      barNote.textContent = [main, stale].filter(Boolean).join(' ');
+      barNote.classList.toggle('warn', storageBroken || dropped > 0);
+    }
+    cards.forEach(function (card) {
+      if (card.dataset.noteId && reviews[card.dataset.noteId]) card.dataset.reviewDraft = '1';
+      else delete card.dataset.reviewDraft;
+    });
+  }
+
+  var seenIds = Object.create(null);
+
+  cards.forEach(function (card) {
+    var pop = card.querySelector('.pop');
+    if (!pop) return;
+    var opener = card.querySelector('.rev-open');
+
+    function disableCard(why) {
+      if (opener) { opener.disabled = true; opener.title = why; }
+    }
+
+    var id = card.dataset.noteId;
+    // Without a stable, unique id the agent cannot match a review back to a note, and
+    // two such cards would share one localStorage entry. Fail loudly, not silently.
+    if (!id) return disableCard('No note id on this card — a review could not be matched back to a note.');
+    if (seenIds[id]) return disableCard('Duplicate note id "' + id + '" — a review here would overwrite another card\'s.');
+    seenIds[id] = true;
+
+    var vbtns = pop.querySelectorAll('[data-verdict]');
+    var fixField = pop.querySelector('[data-field="fix"]');
+    var metaField = pop.querySelector('[data-field="meta"]');
+    var fix = pop.querySelector('[data-fix]');
+    var meta = pop.querySelector('[data-meta]');
+    var lesson = pop.querySelector('[data-lesson]');
+    var saveBtn = pop.querySelector('[data-save]');
+    var discardBtn = pop.querySelector('[data-discard]');
+    var req = pop.querySelector('[data-req]');
+
+    // One malformed popover must not abort the loop and leave every later card — and
+    // the Copy button — unbound.
+    if (!saveBtn || !discardBtn) return disableCard('This card\'s review popover is missing its Save/Discard controls.');
+
+    var PRISTINE = fix ? fix.value : '';   // the transcription as rendered
+    var verdict = null;
+    var justSaved = false;
+
+    function edited() {
+      return !!(fix && fix.value.trim() && fix.value.trim() !== PRISTINE.trim());
+    }
+
+    // A verdict is saveable only once the human has supplied what it needs. For `fix`
+    // that means an ACTUAL edit — the textarea ships pre-filled, so "non-empty" would
+    // be true from the first click and would export the prefill as a correction.
+    function ready() {
+      if (verdict === 'ok') return true;
+      if (verdict === 'fix') return edited();
+      if (verdict === 'meta') return !!(meta && meta.value.trim());
+      return false;
+    }
+
+    function paint() {
+      vbtns.forEach(function (b) {
+        b.setAttribute('aria-pressed', b.dataset.verdict === verdict);
+      });
+      if (fixField) fixField.hidden = verdict !== 'fix';
+      if (metaField) metaField.hidden = verdict !== 'meta';
+      saveBtn.disabled = !ready();
+      if (!req) return;
+      var msgs = [];
+      if (!verdict) msgs.push('Pick a verdict first.');
+      else if (verdict === 'fix' && !edited()) msgs.push('Edit the transcription — it is still exactly as read.');
+      else if (verdict === 'meta' && !(meta && meta.value.trim())) msgs.push('Say which tags or cluster it should have.');
+      // Warn before a verdict switch throws away work the human typed. This is
+      // additive: a missing-field prompt must not hide a pending data loss.
+      if (verdict && verdict !== 'fix' && edited()) msgs.push('Your text edit will not be sent with this verdict.');
+      if (verdict && verdict !== 'meta' && meta && meta.value.trim()) msgs.push('Your tags note will not be sent with this verdict.');
+      req.textContent = msgs.join(' ');
+      req.hidden = msgs.length === 0;
+    }
+
+    // Restore the popover to the last SAVED state (or pristine). Used on load, on
+    // discard, and when a popover is abandoned via Esc / clicking outside — otherwise
+    // a half-finished edit sits there looking like a decision the human made.
+    function restore() {
+      var saved = reviews[id];
+      verdict = saved ? saved.verdict : null;
+      if (fix) fix.value = (saved && saved.text) || PRISTINE;
+      if (meta) meta.value = (saved && saved.reassign) || '';
+      if (lesson) lesson.value = (saved && saved.lesson) || '';
+      paint();
+    }
+
+    restore();
+
+    vbtns.forEach(function (b) {
+      b.addEventListener('click', function () { verdict = b.dataset.verdict; paint(); });
+    });
+    if (fix) fix.addEventListener('input', paint);
+    if (meta) meta.addEventListener('input', paint);
+
+    pop.addEventListener('toggle', function (e) {
+      if (e.newState === 'closed' && !justSaved) restore();
+      justSaved = false;
+    });
+
+    saveBtn.addEventListener('click', function () {
+      // No inference: paint() keeps this disabled until ready(), so the verdict here
+      // is always one a human clicked, backed by content a human supplied.
+      if (!ready()) return;
+      reviews[id] = {
+        id: id,
+        app: card.dataset.app || null,
+        kind: card.dataset.kind || null,
+        // Lets the agent spot a capture re-extracted after this review was saved,
+        // rather than overwriting newer text with a stale correction.
+        hash: card.dataset.hash || null,
+        captured: card.dataset.captured || null,
+        savedAt: new Date().toISOString(),
+        verdict: verdict,
+        text: verdict === 'fix' ? fix.value.trim() : null,
+        reassign: verdict === 'meta' ? meta.value.trim() : null,
+        lesson: lesson && lesson.value.trim() ? lesson.value.trim() : null
+      };
+      delete removed[id];
+      persist();
+      refreshBar();
+      justSaved = true;
+      close(pop);
+    });
+
+    discardBtn.addEventListener('click', function () {
+      delete reviews[id];
+      removed[id] = true;
+      persist();
+      refreshBar();
+      justSaved = true;   // don't let restore() run before the delete is reflected
+      close(pop);
+      restore();          // back to pristine, so a stray click can't resurrect it
+    });
+  });
+
+  /* ---------- 3. Handing the batch to Claude ----------------------------- */
+
+  function blockText() {
+    var payload = Object.keys(reviews).map(function (k) {
+      var r = reviews[k], out = {};
+      // copiedAt is bookkeeping for this page, not part of the agent's contract.
+      Object.keys(r).forEach(function (f) { if (f !== 'copiedAt') out[f] = r[f]; });
+      return out;
+    });
+    return '/screenshots-memory review --apply\n```json\n' +
+           JSON.stringify(payload, null, 2) + '\n```';
+  }
+
+  function markCopied() {
+    var now = new Date().toISOString();
+    Object.keys(reviews).forEach(function (k) { reviews[k].copiedAt = now; });
+    persist();
+    refreshBar();
+  }
+
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function () {
+      var text = blockText();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(markCopied, function () { manual(text); });
+      } else {
+        legacyCopy(text);
+      }
+    });
+  }
+
+  // Only ever claim success when the copy actually happened — a false "Copied ✓"
+  // loses the whole batch at paste time.
+  function legacyCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    if (ok) markCopied(); else manual(text);
+  }
+
+  // Last resort. window.prompt() is the wrong carrier for a multi-KB, multi-line JSON
+  // block, so show a real selectable textarea instead.
+  function manual(text) {
+    var box = document.querySelector('[data-manual]');
+    if (!box) { window.prompt('Copy this, then paste it into Claude Code:', text); return; }
+    var ta = box.querySelector('textarea');
+    ta.value = text;
+    box.hidden = false;
+    ta.focus();
+    ta.select();
+  }
+
+  var clearReviews = document.querySelector('[data-clear-reviews]');
+  if (clearReviews) {
+    clearReviews.addEventListener('click', function () {
+      var n = Object.keys(reviews).length;
+      if (!n) return;
+      if (!window.confirm('Discard ' + n + ' saved review' + (n === 1 ? '' : 's') +
+                          '? This cannot be undone.')) return;
+      Object.keys(reviews).forEach(function (k) { removed[k] = true; });
+      reviews = Object.create(null);
+      persist();
+      refreshBar();
+      var box = document.querySelector('[data-manual]');
+      if (box) box.hidden = true;
+    });
+  }
+
+  refreshBar();
+})();
+</script>
+</body>
+</html>
