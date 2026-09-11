@@ -1,7 +1,36 @@
-# The `review --apply` payload contract
+# The learning loop
 
-Loaded on demand when `/screenshots-memory review --apply` runs. This is the exact
-contract between the HTML page's review popovers and the agent that applies them.
+Loaded on demand during `review`, `review --apply`, and whenever a sync meets a capture
+that fits no known kind. Everything the memory uses to get better at reading THIS user's
+screen lives here: how a correction is recorded, how a recurring lesson is promoted, how
+a new kind gets proposed, and the exact payload contract between the HTML page's review
+popovers and the agent that applies them.
+
+## Recording a correction
+
+On any correction — terminal or page — append to `{memory-root}/corrections.md`:
+
+```markdown
+## {note id} — {date}
+- Capture: {app} · {captured date} · {kind}
+- I read:   "{original extraction snippet}"
+- Correct:  "{user's fix}"
+- Lesson:   {one-line generalization — e.g. "the dark sidebar with # channels is Slack, not Discord"}
+```
+
+**Promote stable patterns.** When the same lesson recurs (an app that keeps being
+misidentified, a shorthand, a client name read as a typo), add it to
+`{memory-root}/extraction-guide.md` — the file the extractor reads on every sync — and
+tell the user: "Learned: {pattern}. I'll apply it going forward." Then `git commit`, so
+the learning history is itself versioned.
+
+## Learning new kinds
+
+The kind registry is owned by [`kinds.md`](./kinds.md), which carries the proposal
+mechanic, the approval steps, and how a rejected proposal is recorded so the same
+suggestion isn't made every sync. A new kind is a learning event like any correction:
+when one is added, note it in `corrections.md` with the captures that prompted it.
+
 
 ## The payload
 

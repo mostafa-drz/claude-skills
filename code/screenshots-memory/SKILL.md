@@ -67,14 +67,11 @@ Defaults when no preferences exist:
 - `open-html`: `true` (auto-open the cluster HTML when a sync finishes)
 - `tone`: `friendly-cli` (terse, warm, direct)
 
-_The learned extraction guide, the kind registry and the corrections log live in the
-**memory store** (`{memory-root}/extraction-guide.md`, `{memory-root}/kinds.md`,
-`{memory-root}/corrections.md`), not the skill dir — so they're versioned with the
-user's data and survive `reset`. On startup, if `{memory-root}/extraction-guide.md`
-exists, load it and treat it as ground truth about **this user's** screen: which apps
-they use, how their Slack is themed, that "ABI" is a client and not a typo. Feed it to
-the extractor on every sync — it's what makes the memory read the user better over
-time._
+_The extraction guide, kind registry and corrections log live in the **memory store**,
+not the skill dir — so they're versioned with the user's data and survive `reset`. On
+startup, load `{memory-root}/extraction-guide.md` if it exists and treat it as ground
+truth about **this user's** screen: which apps they use, that "ABI" is a client and not
+a typo. Feeding it to the extractor every sync is what makes the memory improve._
 
 ## Context
 
@@ -91,16 +88,13 @@ Check `$ARGUMENTS`:
 - `reset` → delete **skill preferences only** (see **Reset**); the memory store is preserved. Confirm first, stop
 - `setup` → create and verify the memory store (see **Setup**), stop
 - `sync` → ingest new screenshots into memory (see **Sync**)
-- `review --apply` → **test this before plain `review`** — the argument is `--apply`
-  followed by a fenced ```json block copied from a cluster page's review popovers.
-  Apply that batch in one pass (see **Applying reviews from the page**)
-- `review` (without `--apply`) → walk low-confidence extractions one at a time and
-  capture corrections (see **Review & learning**)
+- `review --apply` → **test this before plain `review`** — `--apply` is followed by a
+  fenced ```json block from a cluster page's popovers; apply that batch in one pass
+- `review` (no `--apply`) → walk low-confidence extractions one at a time (see **Review & learning**)
 - `clusters` / `browse` → (re)render and open the HTML cluster views (see **Render**)
-- `feedback` → rate the last answer/extraction quality (see **Review & learning**)
-- anything else (free text or a path, optionally with flags) → if it resolves to an
-  existing path or glob, treat as a **scoped sync**; otherwise treat as a **query**
-  against the memory (see **Query**)
+- `feedback` → rate the last answer/extraction (see **Review & learning**)
+- anything else → if it resolves to an existing path or glob, treat as a **scoped sync**;
+  otherwise treat as a **query** (see **Query**)
 
 **Every command that writes starts with the Step 0 safety preflight.**
 
@@ -127,21 +121,11 @@ Usage:
 Examples:
   /screenshots-memory sync                         Sweep the inbox (~/Desktop)
   /screenshots-memory sync ~/Downloads --since 7d
-  /screenshots-memory sync ~/course-captures --yes
   /screenshots-memory what did Slack ask me to do last week
   /screenshots-memory products I saved in August
-  /screenshots-memory review --min-confidence 0.8
 
-Memory store (git-versioned, local-only, human-editable):
-  {memory-root}/
-    ├── memory.json              ← index: every capture, kind, cluster, confidence, provenance
-    ├── notes/                   ← one Markdown file per screenshot
-    ├── clusters/<slug>/         ← cluster.md + index.html + assets/ (thumbnails)
-    ├── assets/                  ← the screenshots themselves
-    ├── corrections.md           ← every human correction (the learning signal)
-    ├── extraction-guide.md      ← learned guide to your apps + shorthand (fed to the extractor)
-    ├── kinds.md                 ← the kind registry (editable; new kinds get proposed here)
-    └── html/index.html          ← top-level memory browser (all clusters)
+Memory store: {memory-root}/ — a local git repo with no remote. Plain Markdown +
+JSON you can open, edit and revert. Layout: reference/memory-schema.md
 
 Current preferences:
   (loaded from preferences.md)
@@ -178,15 +162,14 @@ If no preferences file exists, show a warm, non-blocking intro:
 ```
 First time running /screenshots-memory — here's the shape of it:
 
-  You screenshot things because they matter in that moment. Then they scatter across
-  your Desktop and stop being findable. I turn them into a memory you can query.
+  You screenshot things because they matter in that moment. Then they scatter and
+  stop being findable. I turn them into a memory you can query.
 
-  On each sync I look at new screenshots, read each one with Claude vision (no OCR
-  key, nothing uploaded anywhere), work out what KIND of thing it is — course notes,
-  a Slack ask, a product you liked, a UI you want to steal — and pull the fields that
-  matter for that kind. Each becomes a small Markdown file with a confidence score and
-  exact provenance. I group them into topic clusters and render a clean HTML page per
-  cluster.
+  On each sync I read every new screenshot with Claude vision (no OCR key, nothing
+  uploaded), work out what KIND of thing it is — course notes, a Slack ask, a product
+  you liked, a UI you want to steal — and pull the fields that matter for that kind.
+  Each becomes a small Markdown file with a confidence score and exact provenance,
+  grouped into topic clusters and rendered as HTML you can browse.
 
   Then you just ask:
     /screenshots-memory what did Slack ask me to do last week
@@ -197,9 +180,8 @@ First time running /screenshots-memory — here's the shape of it:
     · Originals move into the store only AFTER the note is written and committed.
     · Anything that looks sensitive gets flagged and I ask before writing it down.
 
-  Nothing I'm unsure about gets silently guessed — it gets flagged. When you run
-  `/screenshots-memory review` and fix an extraction, I save that correction and read
-  your screen better next time.
+  Nothing I'm unsure about gets silently guessed — it gets flagged. Fix one with
+  `/screenshots-memory review` and I read your screen better next time.
 
   Ready? `/screenshots-memory setup` creates the store, or just run
   `/screenshots-memory sync` and I'll set it up as we go.
@@ -236,8 +218,7 @@ Four checks, in order. Any failure stops the sync — do not work around them.
 3. **The store's working tree is clean.** Uncommitted changes mean a previous sync was
    interrupted or the user edited notes by hand. Show them and ask before proceeding —
    never discard.
-4. **Enough disk headroom** for the planned batch (screenshots average ~1 MB; the git
-   commit roughly doubles that). Warn if the batch is large relative to free space.
+4. **Enough disk headroom** — ~1 MB per screenshot, roughly doubled by the commit.
 
 ### Step 1 — Scope the sync
 
@@ -258,9 +239,9 @@ Parse `$ARGUMENTS`:
   photographed whiteboard or a saved product image, that's a deliberate choice and it
   is honoured.
 
-On Linux, or if `mdfind` returns nothing on a folder that clearly holds screenshots,
-fall back to filename patterns (`Screenshot*`, `Screen Shot*`, `CleanShot*`) and say
-you did — never silently sync a folder by a different rule than the one you announced.
+On Linux, or if `mdfind` returns nothing on a folder that clearly holds screenshots, fall
+back to filename patterns (`Screenshot*`, `Screen Shot*`, `CleanShot*`) **and say you
+did** — never sync a folder by a different rule than the one you announced.
 
 ### Step 2 — Identify and deduplicate
 
@@ -310,32 +291,25 @@ against a long-neglected folder can be hundreds of images.
 **Load `{memory-root}/extraction-guide.md` and `{memory-root}/kinds.md` first** and
 treat them as ground truth about this user's screen. For each screenshot produce:
 
-1. **`kind`** — classify first; it decides everything downstream. The registry ships
-   with `course`, `chat`, `product`, `ui`, and `other`. If a capture fits none of them
-   well, say so and propose a new kind rather than forcing a bad fit (see
-   **Learning new kinds**).
-2. **`app`** — which application/site this came from, read from the visible chrome
-   (Slack's sidebar, a browser URL bar, a terminal prompt). `unknown` is an honest and
-   acceptable answer; a guess is not.
-3. **`summary`** — one line. What this capture *is*, in the user's terms.
-4. **`fields`** — the kind-specific structured payload. Full schemas live in
-   `reference/kinds.md`; the shape per shipped kind:
-   - `course` → `topic`, `concept`, `definition`, `source` _(the flashcard feedstock)_
-   - `chat` → `who`, `channel`, `ask`, `due` _(these are often actions, not just notes)_
-   - `product` → `product`, `price`, `vendor`, `url`, `why`
-   - `ui` → `pattern`, `notable`, `reusable_idea`
-5. **`text`** — **structured extraction plus key quotes**, not a full transcription.
-   Capture the lines that carry the meaning verbatim; summarise the rest. A screenshot
-   of a long article becomes its claim and two quotable lines, not four paragraphs of
-   OCR. When a specific word is genuinely ambiguous, keep it and mark it
-   `⟨uncertain: word?⟩` inline rather than guessing.
+1. **`kind`** — classify first; it decides everything downstream. Ships with `course`,
+   `chat`, `product`, `ui`, `other`. If a capture fits none well, say so and propose a
+   new kind rather than forcing a bad fit — see [`reference/kinds.md`](./reference/kinds.md).
+2. **`app`** — the application or site, read from the visible chrome (Slack's sidebar, a
+   browser URL bar, a terminal prompt). `unknown` is an honest answer; a guess is not.
+3. **`summary`** — one line: what this capture *is*, in the user's terms.
+4. **`fields`** — the kind-specific payload, per that kind's schema in
+   [`reference/kinds.md`](./reference/kinds.md). A field not visible in the capture is
+   omitted, never invented.
+5. **`text`** — **structured extraction plus key quotes**, not a transcription. Keep the
+   lines that carry the meaning verbatim and summarise the rest: a long article becomes
+   its claim and two quotable lines, not four paragraphs of OCR. Mark a genuinely
+   ambiguous word `⟨uncertain: word?⟩` inline rather than guessing it.
 6. **`tags`, `entities`** — topics and named things (people, products, projects, clients).
-7. **`confidence`** — 0-1, honest. Crisp UI text → high. Low-contrast, tiny, cropped
-   mid-word, or a mostly-visual capture → lower. Confidence is about *how well you read
-   the pixels*, nothing else.
-8. **`sensitive`** — true if the capture shows credentials, tokens, banking or card
-   details, medical information, private DMs, or anything else that should not become
-   plain text in a repo. **Flag, keep going — do not ask yet.**
+7. **`confidence`** — 0-1, honest. Crisp UI text → high; low-contrast, tiny, cropped
+   mid-word or mostly-visual → lower. It measures *how well you read the pixels*, nothing else.
+8. **`sensitive`** — true for credentials, tokens, banking or card details, medical
+   information, private DMs, or anything else that shouldn't become plain text in a repo.
+   **Flag, keep going — do not ask yet.**
 
 ### Step 5 — Sensitive review (one batched round)
 
@@ -395,15 +369,13 @@ Then report:
 
 ```
 Synced {N} screenshots → {new} new notes, {dupes} already known.
-  Kinds:             course {a} · chat {b} · product {c} · ui {d}
-  Clusters touched:  {list}
-  Sensitive:         {s} stored image-only, {k} skipped
+  Kinds:      course {a} · chat {b} · product {c} · ui {d}
+  Clusters:   {list}
+  Sensitive:  {s} stored image-only, {k} skipped
+  Inbox:      {M} originals moved into the store · {left} left in place
   ⚠ Flagged for review ({k}, confidence < {threshold}):  {short list}
-  Inbox:             {M} originals moved into the store · {left} left in place
 
-Next:
-  Review the flagged ones →  /screenshots-memory review
-  Browse the clusters      →  /screenshots-memory clusters
+Next:  /screenshots-memory review   ·   /screenshots-memory clusters
 ```
 
 If `open-html: true`, open `{memory-root}/html/index.html`.
@@ -412,22 +384,17 @@ If `open-html: true`, open `{memory-root}/html/index.html`.
 
 For free-text input that isn't a path, answer from the memory, not from thin air.
 
-1. **Retrieve** — `Grep`/`Glob` across `{memory-root}/notes/` and read `memory.json`
-   for kinds, tags, entities, clusters and dates. Honour filters in the ask
-   ("last week" → date window on `captured`; "products" → `kind: product`; "from
-   Slack" → `app: Slack`). Prefer recall over precision — gather candidates, then read
-   the note files.
+1. **Retrieve** — `Grep`/`Glob` across `{memory-root}/notes/` and read `memory.json` for
+   kinds, tags, entities, clusters and dates. Honour filters in the ask ("last week" →
+   date window on `captured`; "products" → `kind: product`; "from Slack" → `app: Slack`).
+   Prefer recall over precision, then read the note files.
 2. **Empty-memory bridge** — if nothing matches (common on a fresh install), don't
    dead-end: "I don't have anything on {topic} yet. Want me to sync a folder? Which
    one?" Then hand off to Sync with that scope.
-3. **Ground every claim** — cite the note id and the capture date for anything you
-   assert. Never invent a capture.
-4. **Match the shape of the ask**:
-   - "what did Slack ask me to do last week" → `kind: chat` in the window, surfaced as
-     actions with `who` / `ask` / `due`, ordered by due date.
-   - "products I saved in August" → `kind: product`, grouped by vendor, with prices.
-   - "everything from the Claude skills course" → the cluster, in capture order, so it
-     reads as a study sequence.
+3. **Ground every claim** — cite the note id and capture date. Never invent a capture.
+4. **Match the shape of the ask** — a `chat` question wants actions with `who`/`ask`/`due`
+   ordered by due date, not prose; `product` wants a table grouped by vendor with prices;
+   a course cluster wants capture order, so it reads as a study sequence.
 5. **Confidence-aware** — when an answer leans on a low-confidence note, say so:
    "(from a capture I only read at 0.6 — worth a `review`)".
 6. **Respect `sensitive`** — never quote the text of a note stored image-only. Say it
@@ -445,11 +412,9 @@ page layout, the note-card anatomy, the filter-chip contract (chips OR together;
 ⚠ Needs review switch ANDs), and the review-popover rules that keep a half-finished
 correction from ever reaching the store.
 
-Two things that are easy to get wrong and break the page:
-- **Assets must resolve.** Cluster pages live at `clusters/<slug>/index.html`, so copy
-  each referenced image into that cluster's own `assets/` and reference it relatively.
-- **A `sensitive` note renders its thumbnail and "contents not recorded by choice"** —
-  never its text, which by design was never stored.
+The one thing that silently breaks a page: cluster pages live at
+`clusters/<slug>/index.html`, so every referenced image must be copied into that
+cluster's own `assets/` and referenced relatively, or it 404s.
 
 ## Review & learning
 
@@ -474,13 +439,9 @@ human-readable and revertible.
    - **Skip** / **Stop**.
 4. On any correction, append to `{memory-root}/corrections.md`:
 
-```markdown
-## {note id} — {date}
-- Capture: {app} · {captured date} · {kind}
-- I read:   "{original extraction snippet}"
-- Correct:  "{user's fix}"
-- Lesson:   {one-line generalization — e.g. "the dark sidebar with # channels is Slack, not Discord"}
-```
+The format for `corrections.md`, how a recurring lesson gets promoted into
+`extraction-guide.md`, and how a new kind is proposed are all in
+[`reference/learning-loop.md`](./reference/learning-loop.md) — load it when reviewing.
 
 5. **Promote stable patterns.** When the same lesson recurs (an app you keep
    misidentifying, a shorthand, a client name read as a typo), add it to
@@ -488,33 +449,16 @@ human-readable and revertible.
    Tell the user: "Learned: {pattern}. I'll apply it going forward."
 6. `git commit` the corrections so the learning history is itself versioned.
 
-### Learning new kinds
-
-The four shipped kinds won't cover everything this user screenshots. When a capture
-fits none of them, or when the same "other" shape shows up **three or more times in one
-sync**, propose a new kind rather than quietly filing it under `other`:
-
-```
-5 captures don't fit the current kinds — they all look like recipes
-(title, ingredients, steps).
-
-Add a `recipe` kind?  fields: dish · ingredients · steps · source
-```
-
-On yes, append it to `{memory-root}/kinds.md` with its field schema, re-extract those
-captures against it, and say so. The registry is a plain Markdown file the user can
-edit directly — respect whatever they write there.
-
 ### Applying reviews from the page
 
 `review --apply` receives the block a cluster page's **Copy for Claude** button produces:
 the command line, then a fenced ```json block. Parse the array inside the fence and ignore
 the repeated command line.
 
-**Load [`reference/review-protocol.md`](./reference/review-protocol.md) before applying a
+**Load [`reference/learning-loop.md`](./reference/learning-loop.md) before applying a
 batch.** It carries the entry schema, the per-verdict write rules, the staleness check
-(entry `hash` vs the note's stored hash), and the replay guard that stops a re-pasted batch
-from clobbering a note that has changed since.
+(entry `hash` vs the note's stored hash), and the replay guard that stops a re-pasted
+batch from clobbering a note that changed since.
 
 Three rules that are non-negotiable and belong here rather than buried in reference:
 - **`reviewed: true` clears the flag — never a confidence bump.** `confidence` records how
@@ -534,24 +478,22 @@ there directly.
 
 ## Principles
 
-1. **The store is local and stays local.** A git repo with no remote, holding pictures
-   of the user's screen. The preflight enforces it; nothing in this skill ever pushes.
-2. **Provenance or it didn't happen.** Every note records its hash, capture time, app,
-   and original path. Every answer cites the captures it stands on.
-3. **Move last, never first.** A file leaves its folder only after its note is written
-   and committed. A failed commit means nothing moves.
-4. **Confidence is honest, low confidence is visible.** A capture you half-read is
-   flagged, never silently trusted. Uncertain words are marked inline, not guessed.
-5. **Sensitive by default means asked, not assumed.** Flag during extraction, ask once
-   in a batch, and when in doubt store the image without the text.
-6. **Kind first.** Classification decides which fields matter. A wrong kind is a worse
-   error than a slightly wrong transcription, and it's the first thing `review` fixes.
-7. **Structured over verbatim.** Capture what the screenshot *means* plus the lines
-   worth quoting — not an OCR dump nobody will read.
-8. **The hash is the identity.** Renames, copies and duplicates collapse to one note.
-9. **Corrections are the product.** The system gets better by learning this user's apps
-   and shorthand from real fixes, in a human-editable guide, not a hidden model.
-10. **The memory is plain files.** Markdown + JSON in a folder the user owns, edits and
-    reverts. No black box, no lock-in, no service.
-11. **Warm, terse CLI tone.** One friendly line to open and close; the work speaks for
-    itself.
+1. **The store is local and stays local.** A git repo with no remote, holding pictures of
+   the user's screen. The preflight enforces it; nothing here ever pushes.
+2. **Move last, never first.** A file leaves its folder only after its note is written and
+   committed. A failed commit means nothing moves, and only files this sync wrote a note
+   for are ever touched.
+3. **Provenance or it didn't happen.** Every note records its hash, capture time, app and
+   original path. Every answer cites the captures it stands on.
+4. **Confidence is honest, low confidence is visible.** A capture you half-read is flagged,
+   never silently trusted. Uncertain words are marked inline, not guessed.
+5. **Sensitive means asked, not assumed.** Flag during extraction, ask once in a batch, and
+   when in doubt store the image without the text.
+6. **Kind first, structure over verbatim.** Classification decides which fields matter — a
+   wrong kind is a worse error than a slightly wrong transcription. Capture what a
+   screenshot *means* plus the lines worth quoting, not an OCR dump nobody reads.
+7. **The hash is the identity.** Renames, copies and duplicates collapse to one note.
+8. **Corrections are the product.** The system improves by learning this user's apps and
+   shorthand from real fixes, in human-editable files — not a hidden model. The memory is
+   plain Markdown and JSON the user owns, edits and reverts.
+9. **Warm, terse CLI tone.** One friendly line to open and close; the work speaks for itself.
