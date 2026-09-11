@@ -1,236 +1,196 @@
-# Personal Claude Skills — Design Guide
+<!-- Generated copy of ../SKILLS_GUIDE.md — edit that one, then run `make catalog`. -->
 
-Standards and conventions for all personal skills in `~/.claude/skills/`.
+# Skills design guide
 
----
+House conventions for the skills in this repo.
 
-## Frontmatter conventions
-
-```yaml
----
-name: skill-name                          # lowercase, hyphens, max 64 chars
-description: >-                           # MUST be third person, include trigger keywords
-  Creates X from Y. Analyzes Z and suggests actions.
-  Use when [trigger scenario]. Max 1024 chars.
-argument-hint: <arg> [optional-arg]       # shown in autocomplete
-disable-model-invocation: true            # REQUIRED for skills with side effects
-user-invocable: false                     # optional: false = hidden from menu, Claude-only
-context: fork                             # optional: fork = self-contained subagent execution
-agent: Explore                            # optional: agent type when context: fork (Explore, Plan, general-purpose, or custom)
-model: claude-opus-4-6                    # optional: override model for reasoning-heavy skills
-allowed-tools:                            # only tools the skill actually needs
-  - AskUserQuestion
-  - Bash(git *)                           # supports glob patterns for fine-grained scoping
-  - Bash(gh *)
----
-```
-
-### Invocation control matrix
-
-| Frontmatter | User can invoke | Claude can invoke | Description in context |
-|---|---|---|---|
-| (default) | Yes | Yes | Always in context |
-| `disable-model-invocation: true` | Yes | No | NOT in context |
-| `user-invocable: false` | No | Yes (hidden) | Always in context |
-| Both above | No | No | NOT in context |
-
-### Rules
-
-1. **Descriptions are third person and "pushy"** — they're injected into the system prompt as metadata. "Creates..." not "Create...". Make them broad with trigger keywords — Claude under-triggers skills. Max 1024 chars.
-2. **`disable-model-invocation: true`** — required for any skill that creates, modifies, pushes, or posts anything (PRs, tickets, comments, branches, files outside the repo).
-3. **`allowed-tools`** — list only what's needed. Supports glob patterns: `Bash(gh *)`, `Bash(git *)`. Don't grant `Write`/`Edit` to read-only skills.
-4. **`context: fork`** — use for self-contained skills that don't need conversation history. Pair with `agent:` to specify subagent type.
-5. **MCP tools** — use `mcp__claude_ai_Linear__*` as the canonical Linear prefix (cloud-hosted, always available). Do NOT use `mcp__linear-server__*`.
+**This guide deliberately does not restate the official spec.** The frontmatter
+reference, permission syntax and packaging rules live at
+[code.claude.com/docs/en/skills](https://code.claude.com/docs/en/skills) and
+[agentskills.io/specification](https://agentskills.io/specification) — append `.md` to any
+docs URL for raw markdown. A local copy of a spec rots silently while the original updates;
+this guide previously carried one and drifted. What follows is only what those docs don't
+cover: the decisions that are ours, and the rules these skills learned the hard way.
 
 ---
 
-## Subcommand pattern
+## 1. The conventions that are actually ours
 
-Every skill supports these subcommands via `$ARGUMENTS`:
+**Subcommands.** Every skill answers `help`, `config` and `reset` in addition to its main
+job. `reset` clears skill preferences and never touches user data — say so explicitly when
+confirming, because "reset" reads as destructive.
 
-```
-/skill help       Show usage, examples, current preferences
-/skill config     Interactive setup via AskUserQuestion
-/skill reset      Clear saved preferences
-/skill [args]     Run the skill (default)
-```
-
-### Help format
-
-```
-Skill Name — one-line description
-
-Usage:
-  /skill [args]              Default behavior
-  /skill config              Set preferences
-  /skill reset               Clear preferences
-  /skill help                This help
-
-Options:
-  --flag                     What it does
-
-Examples:
-  /skill something           Concrete example
-
-Current preferences:
-  key: value (or "default")
-```
-
-### Config
-
-- Use `AskUserQuestion` with clear options
-- Display summary after collecting answers
-- Save to preferences file (see Memory section)
-
-### Reset
-
-- Delete the preferences file
-- Confirm: "Preferences cleared. Using defaults."
-
----
-
-## Memory and preferences
-
-Each skill persists preferences at:
-
-```
-~/.claude/skills/<skill-name>/preferences.md
-```
-
-### Format
+**Preferences** live at `~/.claude/skills/<name>/preferences.md`, never in the skill
+directory in git (it is gitignored for exactly this reason — publishing a skill must not
+publish your paths).
 
 ```markdown
 # /<skill-name> preferences
-Updated: 2026-02-17
+Updated: YYYY-MM-DD
 
 ## Defaults
 - key: value
-- key: value
 
 ## Learned
-- Pattern observed from user behavior
+<!-- patterns observed from the user's choices; editable by hand -->
 ```
 
-### How it works
+Read it at startup. Write it **after the first successful run**, not only when the user
+runs `config` — a first-run intro that keys off the file existing will otherwise greet
+them forever.
 
-1. **Read on startup** — use the Read tool to load `~/.claude/skills/<name>/preferences.md` (do NOT use `!` backtick interpolation for `~/.claude/` paths as they are outside the Bash sandbox)
-2. **Write after config** — save explicitly chosen preferences
-3. **Learn silently** — when the user corrects a default (changes base branch, removes a section, picks a different format), save that preference and mention it: "Noted: you prefer X. Saved for next time."
-4. **Human-readable** — the user can edit the file directly
+**First run** is a warm, non-blocking orientation, never a wizard that must be completed
+before anything works.
 
-### What to save
+**Tone**: one friendly line to open and close. The work speaks for itself.
 
-- Explicit config choices (base branch, template style, default source folder)
-- Corrections to defaults (user changed something the skill inferred)
-- Recurring patterns (user always skips a section, always picks the same team)
-
-### What NOT to save
-
-- Session-specific state (current task, in-progress work)
-- Sensitive data (API keys, tokens, credentials)
-- One-off choices that don't indicate a pattern
+**Output templates** — help text, first-run intros, prompt formats, report formats — go in
+`references/`, not in SKILL.md. They are consumed verbatim on a small fraction of
+invocations, and SKILL.md is a recurring token cost on every one. The test: could an agent
+that never loads the reference still route correctly? If yes, the move is right.
 
 ---
 
-## First-time experience
+## 2. Frontmatter decisions
 
-On first invocation, detect if `preferences.md` exists. If not:
+The full field list is in the official docs. These are the choices to make.
 
-1. Show a one-liner suggestion (not a blocker):
-   ```
-   First time using /skill? Run `/skill config` to set defaults, or just continue with sensible defaults.
-   ```
-2. Proceed with the skill normally — don't force setup
-3. After completion, if the user made choices worth saving, save them silently
+**`description` — write to 1,024 characters.** Two different caps exist and conflating
+them wastes effort:
+
+| cap | applies to | mechanism |
+|---|---|---|
+| **1,024** | `description` alone | **hard validation** — the portable spec, the Skills API and claude.ai uploads *reject* a longer one |
+| 1,536 | `description` + `when_to_use` combined | soft truncation in Claude Code's listing only, configurable |
+
+Writing to 1,024 satisfies both and keeps the skill portable. Third person always —
+"Creates…", never "Create…" or "I can help you…" — because it is injected into the system
+prompt and mixed point-of-view breaks matching. Front-load the trigger keywords: a
+**separate** budget caps the whole listing at ~1% of the context window, and on overflow
+Claude Code drops the descriptions of least-used skills entirely while keeping their names.
+A rarely-used skill can silently lose the words that make it findable.
+
+**`disable-model-invocation: true` is required for any skill that writes** — files, PRs,
+tickets, messages, anything outside the conversation. `make check` enforces this.
+
+**`when_to_use`** is not in the portable six-field spec, so using it makes a skill
+unpackageable. It shares the same budget as `description`, so it buys organisation, not
+room. Prefer putting everything in `description`.
+
+**Portability is a hard error, not a soft ignore.** Only six fields survive packaging for
+claude.ai, the Skills API, or Cowork/cloud sessions: `name`, `description`, `license`,
+`compatibility`, `metadata`, `allowed-tools`. Anything else — including `argument-hint` —
+fails the upload outright. This catches an unobvious path: enabling a personal skill for
+cloud sessions uploads it to claude.ai, so the same six-field rule applies there.
+
+**`version` is not a frontmatter field** in either authority. It belongs under `metadata`.
 
 ---
 
-## Dynamic context injection
+## 3. `allowed-tools`, and what it does not do
 
-**`!` backtick interpolation** — Officially supported for project-scoped skills. Example: `` !`git branch --show-current` ``. However, for personal skills at `~/.claude/` (outside the project sandbox), backtick interpolation is blocked for paths outside the working directory and commands using `||`/`&&`.
+**It grants, it does not restrict.** The listed tools are pre-approved for the invoking
+turn only; the grant clears on your next message. Every other tool remains callable under
+your normal permission settings. It is a convenience, not a sandbox.
 
-**Recommended approach for personal skills** — use runtime Bash/Read instructions instead:
+**Every entry must correspond to a command the skill actually instructs — and every
+instructed command must have an entry.** Check both directions. An instructed-but-
+unpermitted command produces a surprise prompt mid-run; a permitted-but-uninstructed one
+is silent over-reach. `Bash(python3 *)` in a skill that runs no Python pre-approves
+arbitrary code execution.
 
-```markdown
-## Context
+**Bash rules are not a security boundary.** The docs state this outright: a rule matches
+the command text Claude usually writes, not the program. `Bash(git push *)` does not stop
+`git -C . push`, `git -c push.default=current push`, or `git 'push'`. Nor does a
+mid-pattern wildcard help — `Bash(git -C * commit *)` is *worse*, because the `*` covers
+the subcommand slot and pre-approves `git -c core.pager=<command>`.
 
-_On startup, use Bash to detect: current git branch, git status, and project stack files. Skip any that fail._
+So: **when a skill has a safety-critical invariant, enforce it in the skill's own logic and
+say so.** Never imply the permission layer is enforcing it. If it must hold against a
+determined caller, that is a `PreToolUse` hook or sandboxing, not a glob.
+
+Two syntax facts worth remembering: the `*` matches everything before it *literally*, so
+put it after the subcommand; and `Tool(param:value)` works in deny/ask rules only.
+
+---
+
+## 4. Structure
+
+Under 500 lines in SKILL.md — a recommendation, not a hard limit, but a real one: the body
+stays in context across turns, so every line recurs. Bundled files cost nothing until read.
+
+Use the spec's directories: `references/`, `scripts/`, `assets/`.
+
+**Keep references one level deep from SKILL.md.** Claude may preview a nested file with
+`head -100` rather than reading it, so a reference that points at another reference can be
+read incompletely without any error. Give any reference over 100 lines a table of contents
+for the same reason.
+
+**SKILL.md is not re-read on later turns.** It enters the conversation once and stays.
+Write standing instructions that hold for the whole task, not one-time steps. After
+compaction only the first 5,000 tokens of each skill are re-attached, sharing a 25,000
+token budget — so put what must survive near the top.
+
+---
+
+## 5. Skills that touch the user's files
+
+Learned from `/remarkable-memory` and `/screenshots-memory`, both of which shipped bugs in
+every one of these categories before review caught them.
+
+**Name the action precisely at the consent point.** Not a euphemism ("retired"), not an
+exaggeration ("deleted" when it moves to the Trash). Both are failures; the accurate word
+is usually also the more reassuring one.
+
+**Never escalate past what was approved.** If the plan said "moved to Trash" and no Trash
+exists, stop — do not substitute `rm`. A fallback must never be more destructive than the
+action the user agreed to.
+
+**Verify the committed artifact, not the working-tree one.** Hashing a file on disk proves
+nothing about what was committed: with git-lfs or any clean filter the commit may hold a
+pointer while the working file looks correct. Read the bytes you are relying on
+(`git rev-parse HEAD:<path>` then `cat-file blob`), and note that `git log -- <path>`
+answers truthily for a path `HEAD` no longer contains.
+
+**Order is verify → commit → destroy**, and only ever in that order. A failed verification
+leaves that item alone and reports it, without aborting the rest of the batch.
+
+**Long runs must checkpoint.** Work in batches that each complete and commit. An
+all-or-nothing pass over hundreds of items loses everything to one interruption — and that
+is exactly the first-run case.
+
+**Every command that writes into a store commits before it returns.** Leaving a dirty tree
+makes the next run's safety check fire falsely, which trains the user to wave through the
+one check protecting them.
+
+---
+
+## 6. Constraints that fail at runtime, not review
+
+- **`AskUserQuestion` takes 1–4 questions**, 2–4 options each, `header` max 12 characters.
+  A five-question config flow fails live, not in review. Split into rounds.
+- **It is unavailable in subagents**, so a `context: fork` skill cannot ask anything. Design
+  forked skills to be autonomous.
+- **A failed `` !`cmd` `` aborts the entire skill invocation** — Claude never sees the
+  content. Any non-zero exit counts (except exit 1 from search tools), so append `|| true`.
+  A command whose permission check would *ask* also aborts; pre-approve it.
+- **Malformed frontmatter fails soft.** The body loads with empty metadata, so `/name` keeps
+  working while automatic invocation silently stops. Nothing surfaces this — which is why
+  `make check` exists.
+
+---
+
+## 7. Checks
+
+```bash
+make catalog   # regenerate the README table from frontmatter
+make check     # fail if the table is stale or frontmatter won't parse (CI runs this)
 ```
 
-**Variable substitution reference:**
+The README catalog is **generated**. The frontmatter is the only description Claude reads,
+so it is the only one this repo keeps. A second hand-maintained copy always drifts: the
+manifest this replaced had 68% of its descriptions out of sync and advertised a
+Linear-writing skill as having no side effects.
 
-| Variable | Description |
-|---|---|
-| `$ARGUMENTS` | All arguments as a string |
-| `$0`, `$1`, `$2` | Positional args (shorthand for `$ARGUMENTS[N]`) |
-| `${CLAUDE_SESSION_ID}` | Current session ID |
-
-**Context loading budget** — Skill descriptions use ~2% of context window (16K char fallback). Override with `SLASH_COMMAND_TOOL_CHAR_BUDGET` env var if needed.
-
----
-
-## Content guidelines
-
-1. **Under 500 lines** — move reference material to bundled files (`examples/`, `reference/`)
-2. **Don't repeat what Claude knows** — skip generic instructions about JSON format, git basics, etc.
-3. **Numbered checklists** for workflows — easier to follow than prose
-4. **Validation loops** — after any action, verify it worked before moving on
-5. **Graceful degradation** — if a tool/command isn't available, skip and continue
-
----
-
-## File structure
-
-```
-~/.claude/skills/
-├── SKILLS_GUIDE.md              ← this file
-├── skill-name/
-│   ├── SKILL.md                 ← main instructions (under 500 lines)
-│   ├── preferences.md           ← persisted user preferences (auto-managed)
-│   ├── examples/                ← reference examples (loaded on demand)
-│   │   └── sample.md
-│   └── reference/               ← detailed docs (loaded on demand)
-│       └── patterns.md
-```
-
----
-
-## Skill inventory
-
-| Skill | Purpose | Side effects | MCP |
-|---|---|---|---|
-| `/aws-mfa` | AWS MFA authentication | Yes (writes AWS config) | No |
-| `/slack-to-ticket` | Slack thread → Linear issue | Yes (creates issue) | Linear |
-| `/thread-to-action` | Thread → suggested actions | Yes (executes actions) | Linear |
-| `/smoke-test` | E2E trace and verification | No (read-only) | No |
-| `/whats-next` | Suggest top 3 next actions | Yes (executes actions) | Linear |
-| `/address-pr-comments` | PR comment review + fixes | Yes (edits code, posts replies) | Linear |
-| `/build-incremental` | Incremental verified coding | Yes (commits code) | No |
-| `/create-pr` | Create structured PRs | Yes (creates PR) | Linear |
-| `/organize-screenshots` | Organize screenshots | Yes (copies files) | No |
-| `/post-ticket-summary` | Post impl summary to Linear | Yes (posts comment) | Linear |
-| `/sync-branch` | Merge branches | Yes (pushes) | No |
-| `/investigate-ci` | Diagnose GitHub Actions failures | No (read-only) | No |
-| `/audit-skills` | Audit skills against manifest + upstream docs | No (read-only, fix mode optional) | No |
-| `/publish-skills` | Publish skills to GitHub repo | Yes (commits, pushes) | No |
-| `/skill-creator` | Create new skills interactively | Yes (creates files) | No |
-| `/test-on-pilot` | Merge feature branch + all-demos for pilot deploy | Yes (creates branches, pushes) | No |
-| `/daily-brief` | Morning catchup digest from GitHub, Linear, Slack, Notion | No (read-only) | Linear, Notion |
-| `/git-cleanup` | Smart cleanup of stale branches, remotes, worktrees | Yes (deletes branches) | Linear |
-| `/enrich-message` | Enrich draft messages with code refs, tickets, and facts | No (read-only) | Linear |
-| `/respond-to-message` | Craft replies in your voice, matched to the platform | No (clipboard only) | No |
-| `/repo-timeline` | Engineer-friendly timeline of repo changes, grouped and narrated | No (read-only) | Linear |
-| `/exploration-to-spec` | Convert exploration conversations into technical specs (roadmap, design doc, ADR, RFC) | Yes (creates files) | No |
-| `/workday-summary` | Summarizes today's work as bullet points for timesheets and standups | No (read-only) | Linear (optional) |
-| `/timesheet-review` | Fills timesheet gaps day by day using author-verified git history + Linear tickets | Yes (writes to CSV) | Linear |
-| `/workflow-advisor` | Reviews recent Claude conversations + local state, researches latest Claude Code features, suggests one workflow improvement at a time | Yes (saves to memory) | No |
-| `/capture-screens` | Auto-navigates a web app via Playwright MCP, seeds localStorage demo data, captures context-aware named screenshots per feature state. Outputs manifest.json + report. Composable primitive for user-guide and demo-docs skills | Yes (writes screenshots, manifest) | Playwright MCP |
-| `/publish-note` | Publishes a blog post to mostafa.xyz from a flat draft folder. Uploads images to Cloudinary, fills missing frontmatter, runs SEO + content review, creates PR. Use when ready to publish a new note. | Yes (uploads images, writes files, creates PR) | Cloudinary MCP (optional) |
-| `/shop-research` | Researches products across Amazon, Google Shopping, and specialty sites via Chrome extension. Produces a 2026-aesthetic HTML report with pros/cons, review highlights, and picks. Learns from feedback to personalize future searches. | Yes (writes folders, screenshots, HTML report) | claude-in-chrome |
-| `/should-i-buy` | Takes product URLs the user is considering, asks two sharp clarifying questions, opens each link in real Chrome, extracts price/specs/reviews/returns/deals, cross-checks independent reviews, and ships a 2026-aesthetic HTML report with a clear verdict (buy / wait / pick X / skip). Learns from thumbs-up/down and past regrets to personalize future calls. | Yes (writes folders, screenshots, HTML report) | claude-in-chrome |
-| `/svg-art` | Generates artistic SVGs directly as code — minimal icons, geometric marks, generative patterns, hand-drawn compositions — plus a 2026 HTML gallery preview. Learns aesthetic preferences from per-session feedback. | Yes (writes SVGs + gallery) | No |
-| `/chunk-pr` | Analyzes a big PR / branch / commit range and proposes an ordered sequence of smaller, dependency-aware, merge-safe PRs. User approves the plan; on approval creates chunk branches, cherry-picks commits, pushes, and opens draft PRs. Parent branch stays untouched. | Yes (creates branches, pushes, opens draft PRs, links Linear) | GitHub (gh), Linear, Chrome (optional) |
-| `/project-updates` | Drafts Linear project status updates (Done / In Progress / Next / Blockers) per project I lead, from Linear + git + GitHub PRs + Slack + Notion + Gmail + Calendar. Never auto-posts. Learns phrasing and per-project rules from my edits over time. | No (shows drafts only; writes to own skill dir) | Linear, Notion, Slack, Gmail, Calendar |
-| `/clean-copy` | Cleans terminal-formatted text (uniform indent, trailing whitespace, soft-wrapped paragraphs) and copies it to the macOS clipboard formatted for the target platform — Gmail, Slack, LinkedIn, plain, or markdown. Defaults to the latest assistant draft in the conversation; can also take pasted text or a file. | Yes (writes clipboard + /tmp file) | No |
-| `/extract-skill` | Scans current conversation for patterns worth capturing (feedback, workflows, corrections, best practices), classifies each as skill (multi-step workflow) or memory (single rule), cross-checks against existing skills + MEMORY.md to avoid duplicates, then hands off to `/skill-creator` or writes the memory entry directly. From experience → reusable artifact. | Yes (creates skills via handoff, writes memory files) | No |
-| `/ui-test` | Runs UI tests described in plain English by driving real Chrome via the Claude-in-Chrome extension. Covers e2e flows, visual checks (screenshot + optional baseline diff), accessibility (axe-core), performance (Web Vitals + light Lighthouse), plus an interactive `--debug` mode that tails console + network. Accepts inline descriptions or `./tests/ui/*.md` files. Per-run folder with artifacts + single-file 2026 HTML report (verdict-forward). Learns from per-run feedback to bias future runs (false-positive a11y rules, flaky baselines, screenshot strategy). | Yes (writes run folders, screenshots, HTML report) | claude-in-chrome |
+Locally, `claude plugin validate ~/.claude/skills` reports skills whose frontmatter fails
+to parse, and `/skill-doctor` shows per-skill context cost and flags skills never invoked.

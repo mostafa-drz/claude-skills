@@ -165,9 +165,14 @@ Apply any new checks discovered in Step 1. Common ones:
 
 ### Inventory check (only on full audit)
 
-- Compare discovered skills against `SKILLS_GUIDE.md` inventory table
-- Report any skills not in the inventory (WARN)
-- Report any inventory entries with no matching skill (WARN)
+There is no hand-maintained inventory to compare against — the README catalog is
+generated from each skill's frontmatter, which is the only copy that exists. Instead:
+
+- Run `make check` in the skills repo: it fails if the catalog is stale or any
+  frontmatter won't parse (frontmatter errors fail *soft* in Claude Code, so this is
+  the only place they surface)
+- Run `claude plugin validate ~/.claude/skills` for the same check on what's installed
+- Report any skill directory with no `SKILL.md`, or a `SKILL.md` with no `description`
 
 ## Step 4: Present results
 
@@ -206,9 +211,8 @@ Upstream updates:
   (or "All skills are up-to-date with latest docs")
 
 Inventory:
-  {N} skills in SKILLS_GUIDE.md
   {N} skill directories found
-  {discrepancies if any}
+  make check: {pass|fail — reason}
 ```
 
 ## Step 5: Offer fixes (if `--fix` flag)
@@ -222,7 +226,7 @@ If `--fix` was passed:
    - "Apply all fixes"
    - "Skip all"
 4. Apply approved fixes using Edit tool
-5. Update `SKILLS_GUIDE.md` inventory if new skills were found
+5. Run `make catalog` if any frontmatter description changed
 6. Report what was changed
 
 Without `--fix`: just report findings.
