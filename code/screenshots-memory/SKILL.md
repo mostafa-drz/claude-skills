@@ -30,7 +30,7 @@ allowed-tools:
   - Bash(git *)
   - Bash(mkdir *)
   - Bash(cp *)
-  - Bash(ls *)
+  - Bash(mv *)
   - Bash(date *)
   - Bash(open *)
   - Bash(xdg-open *)
@@ -92,6 +92,7 @@ Check `$ARGUMENTS`:
 - `review` (no `--apply`) → walk low-confidence extractions one at a time (see **Review & learning**)
 - `clusters` / `browse` → (re)render and open the HTML cluster views (see **Render**)
 - `feedback` → rate the last answer/extraction (see **Review & learning**)
+- `learned` → print the guide: each rule, when it was taught, by which note, how often it has fired
 - anything else → if it resolves to an existing path or glob, treat as a **scoped sync**;
   otherwise treat as a **query** (see **Query**)
 
@@ -105,14 +106,9 @@ cluster count, how many are flagged for review).
 
 ## Config
 
-Fire ONE `AskUserQuestion` (multi-question) collecting memory root, inbox, originals
-policy, confidence threshold and tone — the defaults are listed under **Preferences**
-above. Save the answers to `~/.claude/skills/screenshots-memory/preferences.md` in the
-file format given in [`reference/interface.md`](./reference/interface.md). The kind
-registry lives in `{memory-root}/kinds.md`, not here.
-
-Confirm warmly: "Saved. I'll use this as the baseline and keep sharpening as you correct
-extractions."
+Load [`reference/interface.md`](./reference/interface.md): it carries both the
+`AskUserQuestion` items and the `preferences.md` file format to save them to. The kind
+registry lives in `{memory-root}/kinds.md`, not in preferences.
 
 ## Reset
 
@@ -123,36 +119,14 @@ guide are the user's data and stay put, still git-versioned. Confirm exactly tha
 
 ## First-time detection
 
-If no preferences file exists, show a warm, non-blocking intro:
+If no `preferences.md` exists, load [`reference/interface.md`](./reference/interface.md)
+and print the first-run intro it carries — warm, non-blocking — then proceed with whatever
+was asked.
 
-```
-First time running /screenshots-memory — here's the shape of it:
-
-  You screenshot things because they matter in that moment. Then they scatter across
-  your Desktop and stop being findable. I turn them into a memory you can query.
-
-  On each sync I read every new screenshot with Claude vision (no OCR key, nothing
-  uploaded), work out what KIND it is — course notes, a Slack ask, a product, a UI
-  worth stealing — and pull the fields that matter for that kind. Each becomes a
-  small Markdown file with a confidence score and exact provenance. I group them into
-  topic clusters and render a clean HTML page per cluster you can browse.
-
-  Then you ask:  /screenshots-memory what did Slack ask me to do last week
-
-  Three promises, because this skill touches your files:
-    · Your memory store is a LOCAL git repo with no remote. It is never pushed.
-    · An original leaves your Desktop only after its note is committed and verified.
-    · Anything sensitive gets flagged and I ask before writing it down.
-
-  Nothing I'm unsure about gets silently guessed — it gets flagged. When you run
-  `/screenshots-memory review` and fix an extraction, I save that correction and read
-  your screen better next time.
-
-  Ready? `/screenshots-memory setup`, or just `sync` and I'll set it up as we go.
-```
-
-Then proceed. After the first successful sync, offer to save a couple of quick prefs
-(memory root, originals policy) inline — don't force the full config flow.
+**After the first successful sync, always write `preferences.md`**, at minimum the memory
+root, whether or not the user wants to set anything else. The intro keys off that file
+existing, so skipping the write greets them with it forever. Offer the other prefs inline;
+never force the full config flow.
 
 ## Setup — create and verify the store
 
@@ -224,7 +198,7 @@ copied and duplicated; a content hash makes the same capture one note however ma
 exist. If the hash is already in `memory.json`, skip the file, and say it's a duplicate of
 an existing note so the user can delete it with confidence.
 
-Read the provenance macOS already stores (verify per file; don't assume):
+Read the provenance macOS stores (verify per file; don't assume):
 
 ```bash
 mdls -name kMDItemContentCreationDate -name kMDItemScreenCaptureType \
@@ -278,6 +252,8 @@ treat them as ground truth about this user's screen. For each screenshot produce
    its claim and two quotable lines, not four paragraphs of OCR. Mark a genuinely
    ambiguous word `⟨uncertain: word?⟩` inline rather than guessing it.
 6. **`tags`, `entities`** — topics and named things (people, products, projects, clients).
+   Also record `applied_rules` — which guide rules you actually used on this capture.
+   The sync report counts them; without the field, that count would be fiction.
 7. **`confidence`** — 0-1, honest. Crisp UI text → high; low-contrast, tiny, cropped
    mid-word or mostly-visual → lower. It measures *how well you read the pixels*, nothing else.
 8. **`sensitive`** — true for credentials, tokens, banking or card details, medical
@@ -303,9 +279,8 @@ provenance, no text) · **Skip entirely** (not ingested; original left where it 
 Default to **Store image only** if the user declines to choose.
 
 **Record a skip.** Append `{hash, declined: {date}}` to `skipped[]` in `memory.json` — no
-text, no image, no note. Step 2 honours that list alongside the notes, so a capture the
-user declined is never re-read, never re-prompted, and never costs another vision read.
-Without this it sits in the inbox and the next sync asks again, forever. An image-only note is a
+text, no image, no note. Step 2 honours it, so a declined capture is never re-read,
+re-prompted, or charged another vision read. Without it the next sync asks again, forever. An image-only note is a
 real note with `sensitive: true` and no `text`/`fields` — findable by date and kind
 without leaking its contents.
 
@@ -320,6 +295,11 @@ mix, date range).
 
 ### Step 7 — Write, render, commit
 
+0. **Guarantee the id is unique before writing.** If `notes/{id}.md` or
+   `assets/{id}.png` already exists for a *different* hash, suffix the id (`-2`, `-3`)
+   and say so. Two same-day captures from one app can collide on a generated slug;
+   without this the second overwrites the first's note and image, and Step 8 then
+   verifies the survivor and deletes **both** originals.
 1. Write one note file per screenshot to `{memory-root}/notes/` (schema in
    [`reference/memory-schema.md`](./reference/memory-schema.md)), setting
    `extracted_at` to now. **Set it again on every re-extraction** — adding a kind and
@@ -338,27 +318,37 @@ sync's preflight check 3 fire falsely, which trains the user to wave it through.
 
 ### Step 8 — Delete the inbox originals (last, never first)
 
-The capture now lives in the store, committed, at `assets/{id}.png`. Only if
-`originals: move`, the inbox original is redundant and is **deleted**. Say "deleted", not
-"moved" or "retired" — the user is entitled to know the store is now the only copy.
+Only if `originals: move`. Say "deleted", not "moved" or "retired" — the user is entitled
+to know the store becomes the only copy.
 
-**Verify before removing anything.** For each original, all three must hold:
-`shasum -a 256 {memory-root}/assets/{id}.png` equals the note's recorded hash (strip its
-`sha256:` prefix first, or nothing ever matches) · `git -C {memory-root} log --oneline -1
--- assets/{id}.png` returns a commit · the note file exists. Only then `rm` the inbox
-original; if any check fails, leave it, say why, and carry on.
+**Verify the committed bytes, not the working-tree file.** Per original:
+
+```bash
+blob=$(git -C {memory-root} rev-parse HEAD:assets/{id}.png)   # proves HEAD holds the path
+git -C {memory-root} cat-file blob "$blob" | shasum -a 256    # proves the committed bytes
+```
+
+That must equal the note's recorded hash (strip its `sha256:` prefix), and `notes/{id}.md`
+must exist. Hashing the working-tree file instead passes while the commit holds only a
+git-lfs or clean-filter pointer — the one failure that destroys the image silently, and a
+global filter causes it with nothing in this repo to hint at it. `git log -- <path>`
+answers truthily for a path HEAD no longer contains, so it is no substitute.
+
+Then **move the original to the system trash** (`~/.Trash` on macOS), not `rm`: failures
+here are silent at deletion and found days later, so a recovery window is worth one
+command. No trash directory → `rm`, and say so.
 
 - Delete **only** files this sync wrote a note for — never a folder, never a skipped file,
-  never anything the discovery rule didn't select.
-- A capture that couldn't be read still gets a flagged note and is still deleted, so
-  nothing is silently abandoned *or* silently lost.
-- A capture the user chose to **skip entirely** stays exactly where it is.
+  never anything discovery didn't select.
+- An unreadable capture still gets a flagged note and is still deleted: nothing is silently
+  abandoned *or* silently lost. A capture the user **skipped entirely** stays put.
 - If Step 7's commit failed, **delete nothing**. Say so and stop.
+- A failed check leaves that original alone, is reported, and does not abort the batch.
 
-This creates no new files, so the tree stays clean. The sweep is **resumable and
-idempotent**: a failed file is reported and left alone without aborting the batch, and an
-interruption between Step 7 and here is harmless — the note and asset are already
-committed, so re-running dedupes by hash and deletes whatever is left.
+The sweep is **resumable and idempotent** — an interruption between Step 7 and here is
+harmless, since the note and asset are committed and a re-run dedupes by hash. Once an
+original is gone, **git history is the only copy**; a later `reset --hard` or `gc` can take
+it.
 
 Then report:
 
@@ -366,6 +356,7 @@ Then report:
 Synced {N} screenshots → {new} new notes, {dupes} already known.
   Kinds:      course {a} · chat {b} · product {c} · ui {d}
   Clusters:   {list}
+  Guide:      {R} rules · used on {G} of {N} captures ({top rules})
   Sensitive:  {s} stored image-only, {d} declined
   Inbox:      {M} originals deleted (store is now the only copy) · {left} left in place
   ⚠ Flagged for review ({f}, confidence < {threshold}):  {short list}
@@ -428,8 +419,17 @@ human-readable and revertible.
 
 ### `/screenshots-memory review`
 
-1. Find notes with `reviewed: false` and `confidence < confidence-threshold` (or
-   `--min-confidence`). Sort lowest-confidence first.
+1. Build the queue from **two** groups, and say so:
+   - notes with `reviewed: false` and `confidence < confidence-threshold` (or
+     `--min-confidence`), lowest first — these were hard to *read*;
+   - plus a handful of **unreviewed high-confidence** notes, biased toward apps with no
+     guide entry yet: "8 flagged as hard to read, plus 5 I read confidently that you've
+     never checked."
+
+   Confidence measures legibility only, so a Slack window confidently labelled Discord
+   scores ~0.93 and never surfaces — yet Principle 6 calls a wrong kind the worse error.
+   A queue selecting purely on transcription quality cannot catch the very mistake this
+   skill's own example lesson fixes. `review --all` walks everything unreviewed.
 2. **Offer the page first.** If more than ~5 are flagged, render/refresh the affected
    cluster HTML and send the user there: the **⚠ Needs review** switch shows only
    flagged captures, and each card's Review popover captures a verdict against the

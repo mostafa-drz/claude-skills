@@ -55,6 +55,34 @@ note ids that produced it:
 That makes the guide auditable: the user can see why the extractor believes something, and
 revert a rule by deleting a line. Then `git commit`, so the learning history is versioned.
 
+## 2b. Pay the correction back — immediately, retroactively
+
+A promise ("I'll apply it going forward") is not a receipt. The moment a rule is promoted,
+**back-check it against notes already in the store.** Most lessons are testable against
+stored fields — `app`, `entities`, `kind`, `text` — so this costs **no new vision reads**:
+
+```
+  New rule → extraction-guide.md
+    "the dark sidebar with # channels is Slack, not Discord"
+
+  Back-checked against your memory: 11 notes say app: Discord.
+    9 match this rule — same sidebar, same channel list.
+    Fix them now? (metadata only — re-reads no images, costs nothing)
+```
+
+A user who spent forty seconds on one card just fixed nine. That is the whole argument for
+the loop, delivered in the same interaction as the work.
+
+**Scope it honestly.** Only rules expressible as a check over stored fields qualify. A rule
+about *how to read a layout* cannot be back-checked without re-extraction — say so, and
+offer re-extraction as a separate, plan-gated action with its cost stated. Never imply a
+back-check happened when it couldn't.
+
+Record `applied_rules: [<rule-id>]` on every note the extractor used a rule for — both on
+back-check and on every future sync. Guide entries therefore need stable ids. Without this
+field, any "rules matched N captures" figure is invented, and an invented learning metric
+is worse than none in a skill whose whole pitch is honest confidence.
+
 ## 3. Apply a batch from the page
 
 `review --apply` receives the block a cluster page's **Copy for Claude** button

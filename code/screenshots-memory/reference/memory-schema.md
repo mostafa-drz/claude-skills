@@ -49,6 +49,7 @@ pixels: [1416, 1096]
 confidence: 0.88                        # how well the pixels were read — nothing else
 sensitive: false
 reviewed: false
+applied_rules: [slack-sidebar]          # guide rules used on this note; [] if none
 cluster: ateam-client-work
 tags: [abi, deadline, canada]
 entities: [Diego, ABI]
