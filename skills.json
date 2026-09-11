@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-12",
+  "updated": "2026-09-11",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -313,6 +313,24 @@
       "sideEffects": true,
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/remarkable-memory/SKILL.md",
       "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/code/remarkable-memory/icon.svg"
+    },
+    {
+      "name": "screenshots-memory",
+      "platform": "code",
+      "description": "Turns scattered screenshots into a queryable, git-versioned memory. Syncs captures from ~/Desktop or any folder you point at, reads each one with Claude vision (no OCR key, nothing uploaded), classifies it by kind — course, chat, product, UI, or kinds you define — and extracts kind-specific fields into confidence-scored Markdown with full provenance. Clusters by topic, renders single-file HTML per cluster, answers plain-language questions, and learns your apps from every correction. The store is local git with no remote; originals move only after the commit lands; sensitive captures are asked about before anything is written down.",
+      "trigger": "Syncing, extracting, organizing, searching, or reasoning over screenshots — turning a messy Desktop into a searchable memory, or building a second brain out of the things you screenshot.",
+      "tags": [
+        "screenshots",
+        "memory",
+        "knowledge-base",
+        "second-brain",
+        "vision",
+        "declutter",
+        "macos"
+      ],
+      "sideEffects": true,
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/screenshots-memory/SKILL.md",
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/code/screenshots-memory/icon.svg"
     },
     {
       "name": "shop-research",
