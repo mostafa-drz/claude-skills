@@ -14,7 +14,7 @@ description: >-
   shorthand from every correction. Use when the user wants to sync, extract,
   organize, search, or reason over their reMarkable notes, or build a second
   brain from handwritten pages.
-argument-hint: "[sync|review|clusters|browse|feedback|config|setup|reset|help] [--notebook <name>] [--project <name>] [--since <Nd>] [--min-confidence <0-1>] [--yes] [text query...]"
+argument-hint: "[sync|review|review --apply|clusters|browse|feedback|config|setup|reset|help] [--notebook <name>] [--project <name>] [--since <Nd>] [--min-confidence <0-1>] [--yes] [text query...]"
 disable-model-invocation: true
 allowed-tools:
   - AskUserQuestion
