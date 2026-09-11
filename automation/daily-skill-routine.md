@@ -43,7 +43,7 @@ Two phases. Phase A runs first because it depends on yesterday's outcome.
    - `DESIGN.md` — only if the skill has a renderer or report output. Skip otherwise.
 5. **Update indexes**:
    - Add a row to the "Desktop Skills" table in root [`README.md`](../README.md).
-   - Add the skill description to `skills.json`.
+   - Run `make catalog` to regenerate the README table from the new skill's frontmatter.
    - Append a row to [`runs.md`](./runs.md) with today's date, skill slug, the (about-to-be-created) PR placeholder.
 6. **Open the PR** — Branch: `skill/desktop-<skill-slug>`. Title: `desktop: add <skill-slug>`. Body must include:
    - One-paragraph rationale ("why this skill, why today")
@@ -254,7 +254,7 @@ Every failure path **writes to `runs.md`** so the trail is visible.
 > 2. Researches: "what's a workflow that breaks for people running multiple recurring meetings without a dedicated EA?" Lands on a **meeting-prep** skill that pulls Calendar + relevant Drive docs + Gmail thread + Linear context for the next meeting, into a 30-second brief.
 > 3. Checks `desktop/` and `code/` — no overlap. `inbox-catchup` is broader; this is focused per-meeting.
 > 4. Writes `desktop/meeting-prep/SKILL.md`, `desktop/meeting-prep/icon.svg` (calendar grid with a single accent dot on "now").
-> 5. Updates root README and `skills.json`.
+> 5. Regenerates the root README catalog with `make catalog`.
 > 6. Appends `runs.md` row.
 > 7. Opens PR. Title: `desktop: add meeting-prep`.
 >

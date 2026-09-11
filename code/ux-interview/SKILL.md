@@ -42,6 +42,9 @@ allowed-tools:
   - mcp__claude-in-chrome__javascript_tool
   - mcp__claude-in-chrome__read_console_messages
   - mcp__claude-in-chrome__gif_creator
+metadata:
+  trigger: "You want a real-user-perspective audit of a web product to catch UX/UI/product issues that automated tests can't catch."
+  tags: "ux, usability, browser-automation, research"
 ---
 
 # UX Interview

@@ -11,7 +11,7 @@ description: >-
   where the user accumulated discrete findings worth handing off. Triggers:
   "generate test report", "create triage doc", "extract findings", "export this
   audit", "make a viewer", "save findings for review".
-argument-hint: [--topic <slug>] [--findings <path>]
+argument-hint: "[--topic <slug>] [--findings <path>]"
 disable-model-invocation: true
 allowed-tools:
   - AskUserQuestion
@@ -19,6 +19,9 @@ allowed-tools:
   - Write
   - Edit
   - Bash
+metadata:
+  trigger: "After a beginner-mind audit, QA exploration, code review, or any session where you accumulated discrete findings worth handing off to a ticket system."
+  tags: "triage, qa, audit, review, report, findings, html-viewer"
 ---
 
 # Triage Board

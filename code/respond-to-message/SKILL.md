@@ -15,6 +15,8 @@ allowed-tools:
   - Read
   - Write
   - Glob
+metadata:
+  trigger: "Use when you receive a message and need to reply quickly in your own voice."
 ---
 
 # Respond to Message

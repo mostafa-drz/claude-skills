@@ -1,0 +1,31 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Edit(**/SKILL.md)",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && make catalog >/dev/null 2>&1 || true"
+          },
+          {
+            "type": "command",
+            "if": "Write(**/SKILL.md)",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && make catalog >/dev/null 2>&1 || true"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && make check 2>&1 | grep -v 'up to date\\|in sync\\|OK across' || true"
+          }
+        ]
+      }
+    ]
+  }
+}

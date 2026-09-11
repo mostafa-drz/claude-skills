@@ -9,7 +9,7 @@ description: >-
   Use when preparing daily or end-of-day Linear project updates, writing project
   status, prepping for standup, or when the user asks "what should my project
   updates say today".
-argument-hint: [--since "24h"] [--projects "slug1,slug2"] [--sources linear,git,github,slack,notion] [--project <slug>] [--dry-run]
+argument-hint: "[--since \"24h\"] [--projects \"slug1,slug2\"] [--sources linear,git,github,slack,notion] [--project <slug>] [--dry-run]"
 disable-model-invocation: true
 context: fork
 agent: Explore
@@ -38,6 +38,9 @@ allowed-tools:
   - mcp__claude_ai_Gmail__search_threads
   - mcp__claude_ai_Gmail__get_thread
   - mcp__claude_ai_Google_Calendar__list_events
+metadata:
+  trigger: "Preparing daily or end-of-day Linear project updates, writing project status, prepping for standup, or when asked what your project updates should say."
+  tags: "linear, project-management, status-updates, git, slack, notion"
 ---
 
 # Project Updates

@@ -25,6 +25,9 @@ allowed-tools:
   - mcp__playwright__browser_type
   - mcp__playwright__browser_resize
   - mcp__playwright__browser_console_messages
+metadata:
+  trigger: "Documenting product features, generating demo screenshots, building user guides, or creating visual test assets for any web application."
+  tags: "playwright, screenshots, documentation, browser-automation"
 ---
 
 ## Preferences

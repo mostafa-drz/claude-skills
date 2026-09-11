@@ -5,6 +5,10 @@ description: >-
   available integrations — then produces a prioritized catchup briefing.
   Helps triage messages and draft replies. Use when starting the day, returning
   from a break, or needing to quickly catch up on communications.
+metadata:
+  side_effects: true
+  trigger: "Starting the day, returning from a break, or catching up on communications."
+  tags: "communication, email, productivity, triage"
 ---
 
 # Inbox Catchup

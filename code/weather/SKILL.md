@@ -15,6 +15,8 @@ allowed-tools:
   - Read
   - Write
   - Edit
+metadata:
+  trigger: "Use when the user wants a quick weather check or forecast."
 ---
 
 # Weather

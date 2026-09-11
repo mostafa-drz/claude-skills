@@ -12,6 +12,9 @@ allowed-tools:
   - AskUserQuestion
   - Bash
   - Read
+metadata:
+  trigger: "Opening or updating a release PR (typically main \u2192 prod) that bundles multiple squash-merged PRs."
+  tags: "release, github, pull-requests, documentation, issue-tracker"
 ---
 
 # Release Notes

@@ -36,6 +36,9 @@ allowed-tools:
   - Bash(xdg-open *)
   - Bash(df *)
   - Bash(rm *)
+metadata:
+  trigger: "Syncing, extracting, organizing, searching, or reasoning over screenshots \u2014 turning a messy Desktop into a searchable memory, or building a second brain out of the things you screenshot."
+  tags: "screenshots, memory, knowledge-base, second-brain, vision, declutter, macos"
 ---
 
 # Screenshots Memory

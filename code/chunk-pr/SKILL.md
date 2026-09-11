@@ -8,7 +8,7 @@ description: >-
   links them to the parent Linear issue. Use when a PR is too big to review, when a branch
   has accumulated unrelated changes, when reviewers ask "can you split this up?", or when
   planning how to ship a large feature incrementally.
-argument-hint: [pr-or-branch-or-range] [--base branch] [--max-lines N] [--strategy kind] [--dry-run] [--no-push] [--draft]
+argument-hint: "[pr-or-branch-or-range] [--base branch] [--max-lines N] [--strategy kind] [--dry-run] [--no-push] [--draft]"
 disable-model-invocation: true
 allowed-tools:
   - AskUserQuestion
@@ -25,6 +25,9 @@ allowed-tools:
   - mcp__claude-in-chrome__tabs_create_mcp
   - mcp__claude-in-chrome__navigate
   - mcp__claude-in-chrome__read_page
+metadata:
+  trigger: "A PR is too big to review, a branch has accumulated unrelated changes, a reviewer asks \"can you split this up?\", or planning how to ship a large feature incrementally."
+  tags: "git, github, pull-requests, code review, linear, workflow"
 ---
 
 # Chunk PR

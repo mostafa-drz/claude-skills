@@ -19,6 +19,9 @@ allowed-tools:
   - mcp__claude_ai_Linear__list_issues
   - mcp__claude_ai_Linear__update_issue
   - mcp__claude_ai_Linear__create_comment
+metadata:
+  trigger: "Addressing PR review feedback or when someone requests changes on your PR."
+  tags: "git, code review, github"
 ---
 
 # Address PR Comments

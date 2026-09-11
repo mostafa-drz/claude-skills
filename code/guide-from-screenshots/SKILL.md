@@ -16,6 +16,8 @@ allowed-tools:
   - Edit
   - Bash
   - AskUserQuestion
+metadata:
+  trigger: "Use when you have screenshots and want to create a product guide, demo walkthrough, or tool guide."
 ---
 
 # Guide from Screenshots

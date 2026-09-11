@@ -5,7 +5,7 @@ description: >-
   conversation history, git commits, Linear tickets, and GitHub PRs. Use when
   ending a session, filling a timesheet, preparing for standup, writing a daily
   log, wrapping up for the day, or when asked what was worked on.
-argument-hint: [--today | --yesterday | --week | --since "date"] [--format bullets|table|full-markdown|plain]
+argument-hint: "[--today | --yesterday | --week | --since \"date\"] [--format bullets|table|full-markdown|plain]"
 disable-model-invocation: true
 allowed-tools:
   - AskUserQuestion
@@ -24,6 +24,8 @@ allowed-tools:
   - mcp__claude_ai_Linear__get_issue
   - mcp__claude_ai_Linear__list_teams
   - mcp__claude_ai_Linear__get_user
+metadata:
+  trigger: "Use when ending a session, filling a timesheet, preparing for standup, writing a daily log, wrapping up for the day, or when asked what was worked on."
 ---
 
 # Workday Summary

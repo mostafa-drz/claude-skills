@@ -49,6 +49,9 @@ allowed-tools:
   - mcp__claude-in-chrome__read_network_requests
   - mcp__claude-in-chrome__browser_batch
   - mcp__claude-in-chrome__gif_creator
+metadata:
+  trigger: "Verifying a UI flow, screenshotting regressions, auditing accessibility, profiling a page, or debugging something visibly broken in a real browser session."
+  tags: "testing, browser-automation, accessibility, performance, claude-in-chrome"
 ---
 
 ## Preferences

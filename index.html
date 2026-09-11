@@ -1,607 +1,276 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Claude Skills — Code &amp; Desktop</title>
-  <meta name="description" content="Collection of Claude Code and Claude Desktop skills for developer workflows, automation, and productivity.">
-  <style>
-    :root {
-      --bg: #0d1117;
-      --surface: #161b22;
-      --surface-hover: #1c2129;
-      --border: #30363d;
-      --text: #e6edf3;
-      --text-muted: #8b949e;
-      --accent: #58a6ff;
-      --accent-subtle: #1f6feb22;
-      --green: #3fb950;
-      --orange: #d29922;
-      --purple: #bc8cff;
-      --code-tag: #7ee787;
-      --desktop-tag: #79c0ff;
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Skills — mostafa-drz</title>
+<meta name="description" content="A personal collection of Claude Code and Claude Desktop skills. Rendered live from skills.json.">
+<!--
+  This page holds NO skill data. It fetches ./skills.json at runtime, which is
+  generated from each SKILL.md frontmatter by `make catalog`.
+
+  The previous version of this file hard-coded 20 of 52 skills and had tab counts
+  frozen at "All (19)". That is what a hand-maintained copy does. Adding a skill
+  now requires changing nothing here.
+-->
+<style>
+  :root{
+    --bg:#fbfaf8; --surface:#fff; --surface-2:#f4f2ee; --border:#e6e2db;
+    --text:#1c1b19; --text-2:#6b675f; --primary:#ff5722; --secondary:#03a9f4;
+    --good:#1f9d57; --warn:#b06a00; --shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#121212; --surface:#1a1a1a; --surface-2:#202020; --border:#2c2c2c;
+      --text:#ededed; --text-2:#9a958c; --good:#37d67a; --warn:#f0b429;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
     }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      min-height: 100vh;
-    }
-
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* Header */
-    header {
-      border-bottom: 1px solid var(--border);
-      padding: 48px 0 40px;
-    }
-
-    header h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    header p {
-      color: var(--text-muted);
-      font-size: 1.1rem;
-      max-width: 640px;
-    }
-
-    .header-links {
-      margin-top: 16px;
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .header-links a {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      transition: border-color 0.15s, color 0.15s;
-    }
-
-    .header-links a:hover {
-      border-color: var(--accent);
-      color: var(--text);
-      text-decoration: none;
-    }
-
-    /* Sections */
-    section {
-      padding: 40px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    section:last-of-type { border-bottom: none; }
-
-    section h2 {
-      font-size: 1.4rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    section > p {
-      color: var(--text-muted);
-      margin-bottom: 24px;
-      max-width: 640px;
-    }
-
-    /* Platform tabs */
-    .platform-tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 24px;
-    }
-
-    .platform-tab {
-      padding: 8px 18px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background: transparent;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 0.9rem;
-      font-family: inherit;
-      transition: all 0.15s;
-    }
-
-    .platform-tab:hover {
-      border-color: var(--text-muted);
-      color: var(--text);
-    }
-
-    .platform-tab.active {
-      background: var(--accent-subtle);
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    /* Skill cards */
-    .skills-grid {
-      display: grid;
-      gap: 12px;
-    }
-
-    .skill-card {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 20px 24px;
-      background: var(--surface);
-      transition: border-color 0.15s, background 0.15s;
-    }
-
-    .skill-card:hover {
-      border-color: var(--text-muted);
-      background: var(--surface-hover);
-    }
-
-    .skill-card-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-
-    .skill-icon {
-      width: 28px;
-      height: 28px;
-      flex-shrink: 0;
-      display: inline-block;
-      background-color: currentColor;
-      color: var(--text);
-      -webkit-mask: var(--icon) center/contain no-repeat;
-      mask: var(--icon) center/contain no-repeat;
-      transition: transform 0.18s ease, color 0.18s ease;
-    }
-
-    .skill-card:hover .skill-icon {
-      color: var(--accent);
-      transform: scale(1.08);
-    }
-
-    .skill-name {
-      font-weight: 600;
-      font-size: 1rem;
-      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
-    }
-
-    .skill-name a { color: var(--text); }
-    .skill-name a:hover { color: var(--accent); text-decoration: none; }
-
-    .tag {
-      font-size: 0.7rem;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .tag-code {
-      background: #3fb95018;
-      color: var(--code-tag);
-      border: 1px solid #3fb95030;
-    }
-
-    .tag-desktop {
-      background: #79c0ff18;
-      color: var(--desktop-tag);
-      border: 1px solid #79c0ff30;
-    }
-
-    .tag-side-effects {
-      background: #d2992218;
-      color: var(--orange);
-      border: 1px solid #d2992230;
-    }
-
-    .skill-desc {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
-
-    .skill-trigger {
-      margin-top: 8px;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      opacity: 0.7;
-    }
-
-    .skill-trigger strong { color: var(--text-muted); font-weight: 500; }
-
-    /* Install section */
-    .install-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    @media (max-width: 640px) {
-      .install-grid { grid-template-columns: 1fr; }
-    }
-
-    .install-card {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 24px;
-      background: var(--surface);
-    }
-
-    .install-card h3 {
-      font-size: 1rem;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .install-card ol {
-      padding-left: 20px;
-      color: var(--text-muted);
-      font-size: 0.9rem;
-    }
-
-    .install-card ol li { margin-bottom: 6px; }
-
-    .install-card code {
-      background: var(--bg);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.85em;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-    }
-
-    pre {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 16px;
-      overflow-x: auto;
-      font-size: 0.85rem;
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      color: var(--text-muted);
-      margin-top: 12px;
-    }
-
-    /* Footer */
-    footer {
-      padding: 32px 0;
-      border-top: 1px solid var(--border);
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      text-align: center;
-    }
-
-    /* Hidden */
-    .hidden { display: none; }
-
-    /* Stats bar */
-    .stats {
-      display: flex;
-      gap: 24px;
-      margin-top: 16px;
-      flex-wrap: wrap;
-    }
-
-    .stat {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .stat strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-  </style>
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font:15px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1200px;margin:0 auto;padding:48px 20px 80px}
+  header h1{font-size:2rem;letter-spacing:-.02em;margin:0 0 8px;display:flex;align-items:center;gap:12px}
+  header h1 svg{width:32px;height:32px;color:var(--primary);flex:none}
+  .sub{color:var(--text-2);margin:0 0 28px;max-width:60ch}
+  .sub a{color:var(--primary)}
+  .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+  input[type=search]{
+    flex:1 1 240px;min-width:0;padding:10px 14px;border-radius:10px;font:inherit;
+    background:var(--surface);border:1px solid var(--border);color:var(--text);
+  }
+  input[type=search]:focus-visible,.chip:focus-visible,.copy:focus-visible{
+    outline:2px solid var(--secondary);outline-offset:2px;
+  }
+  .chip{
+    font:inherit;font-size:.8rem;padding:7px 13px;border-radius:99px;cursor:pointer;
+    background:var(--surface);border:1px solid var(--border);color:var(--text-2);
+    transition:background .12s,color .12s,border-color .12s;
+  }
+  .chip:hover{border-color:var(--primary);color:var(--text)}
+  .chip[aria-pressed=true]{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:600}
+  .count{margin-left:auto;color:var(--text-2);font-size:.82rem}
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(460px,1fr));align-items:start;margin-top:18px}
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    padding:16px 17px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:9px;
+  }
+  .card h2{font-size:.98rem;margin:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .card h2 a{color:var(--text);text-decoration:none}
+  .card h2 a:hover{color:var(--primary)}
+  .card h2 img{width:20px;height:20px;flex:none}
+  .badge{font-size:.68rem;font-weight:650;padding:2px 8px;border-radius:99px;border:1px solid var(--border);color:var(--text-2);text-transform:uppercase;letter-spacing:.04em}
+  .badge.writes{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
+  .badge.reads{color:var(--good);border-color:color-mix(in srgb,var(--good) 40%,transparent)}
+  .desc{margin:0;color:var(--text-2);font-size:.88rem}
+  .trigger{margin:0;font-size:.82rem;color:var(--text-2)}
+  .trigger b{color:var(--text);font-weight:600}
+  .tags{display:flex;flex-wrap:wrap;gap:5px;padding-top:2px}
+  .tag{font-size:.7rem;padding:2px 8px;border-radius:99px;background:var(--surface-2);color:var(--text-2);border:1px solid var(--border)}
+  .install{
+    margin-top:10px;display:flex;gap:8px;align-items:flex-start;
+    background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:8px 8px 8px 11px;
+  }
+  .install code{
+    flex:1;min-width:0;font-size:.74rem;line-height:1.55;
+    white-space:pre-wrap;overflow-wrap:anywhere;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--text);
+  }
+  .copy{
+    flex:none;font:inherit;font-size:.72rem;padding:5px 11px;border-radius:7px;cursor:pointer;
+    background:var(--bg);border:1px solid var(--border);color:var(--text-2);white-space:nowrap;
+  }
+  .copy:hover{border-color:var(--primary);color:var(--primary)}
+  .copy.done{background:var(--good);border-color:var(--good);color:#fff}
+  .note{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--primary);border-radius:10px;padding:14px 16px;margin:26px 0;font-size:.88rem}
+  .note code{background:var(--surface-2);padding:1px 6px;border-radius:5px;font-size:.84em}
+  .msg{color:var(--text-2);padding:32px 0;text-align:center}
+  footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--border);color:var(--text-2);font-size:.82rem}
+  footer a{color:var(--primary)}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  @media (max-width:520px){
+    .wrap{padding:32px 16px 60px}
+    header h1{font-size:1.55rem}
+    .count{margin-left:0;width:100%}
+    .install{flex-direction:column;align-items:stretch;gap:7px}
+    .copy{align-self:flex-end}
+  }
+</style>
 </head>
 <body>
-  <div class="container">
+<div class="wrap">
 
-    <header>
-      <h1>Claude Skills</h1>
-      <p>Collection of Agent Skills for Claude Code and Claude Desktop — developer workflows, automation, and productivity.</p>
-      <div class="stats">
-        <span class="stat"><strong>17</strong> Code skills</span>
-        <span class="stat"><strong>2</strong> Desktop skills</span>
-        <span class="stat">MIT License</span>
-      </div>
-      <div class="header-links">
-        <a href="https://github.com/mostafa-drz/claude-skills">GitHub Repo</a>
-        <a href="https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview">Agent Skills Spec</a>
-        <a href="https://support.claude.com/en/articles/12512198-how-to-create-custom-skills">Create Your Own</a>
-      </div>
-    </header>
+<header>
+  <h1>
+    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M7 12.5V9a2 2 0 0 1 2-2h3.5M21.5 7H25a2 2 0 0 1 2 2v3.5M7 19.5V23a2 2 0 0 0 2 2h3.5M27 19.5V23a2 2 0 0 1-2 2h-3.5" opacity=".55"/>
+      <path d="M28 30 36 27.5M28 30 32 37.5M36 27.5 40 36M32 37.5 40 36" stroke-width="1" opacity=".5"/>
+      <circle cx="28" cy="30" r="2" fill="currentColor" stroke="none"/><circle cx="36" cy="27.5" r="2" fill="currentColor" stroke="none"/>
+      <circle cx="32" cy="37.5" r="2" fill="currentColor" stroke="none"/><circle cx="40" cy="36" r="2.5" fill="currentColor" stroke="none"/>
+      <circle cx="40" cy="36" r="6" stroke-width="1"/>
+    </svg>
+    Claude Skills
+  </h1>
+  <p class="sub">
+    Personal skills for Claude Code and Claude Desktop. This page renders live from
+    <a href="skills.json">skills.json</a>, which is generated from each skill's own
+    frontmatter — so it can never disagree with the skills themselves.
+  </p>
+</header>
 
-    <!-- Install -->
-    <section>
-      <h2>Install</h2>
-      <div class="install-grid">
-        <div class="install-card">
-          <h3><span class="tag tag-code">Code</span> Claude Code (CLI)</h3>
-          <ol>
-            <li>Clone the repo</li>
-            <li>Copy skills to <code>~/.claude/skills/</code></li>
-            <li>Use with <code>/skill-name</code> in Claude Code</li>
-          </ol>
-          <pre>git clone https://github.com/mostafa-drz/claude-skills.git
-cp -r claude-skills/code/* ~/.claude/skills/</pre>
-        </div>
-        <div class="install-card">
-          <h3><span class="tag tag-desktop">Desktop</span> Desktop / claude.ai</h3>
-          <ol>
-            <li>Download the skill folder</li>
-            <li>ZIP it: <code>zip -r skill.zip skill/</code></li>
-            <li>Upload via Settings &gt; Capabilities &gt; Skills</li>
-          </ol>
-          <pre>cd claude-skills/desktop
-zip -r inbox-catchup.zip inbox-catchup/
-# Upload via Settings > Capabilities > Skills</pre>
-        </div>
-      </div>
-    </section>
+<div class="bar" role="group" aria-label="Filter skills">
+  <input type="search" id="q" placeholder="Search name, description, or tag…" aria-label="Search skills">
+  <button class="chip" data-f="all" aria-pressed="true">All</button>
+  <button class="chip" data-f="code" aria-pressed="false">Claude Code</button>
+  <button class="chip" data-f="desktop" aria-pressed="false">Desktop</button>
+  <button class="chip" data-f="writes" aria-pressed="false">Writes something</button>
+  <span class="count" id="count"></span>
+</div>
 
-    <!-- Skills catalog -->
-    <section>
-      <h2>Skills Catalog</h2>
-      <p>Filter by platform to see what's available for your setup.</p>
+<div class="note">
+  <strong>Adding one.</strong> Copy the folder into <code>~/.claude/skills/</code> and it is
+  available as <code>/skill-name</code> the next time Claude Code starts. Each card below has
+  the exact command. Skills marked <em>writes</em> can change files, push commits, or post to
+  connected services — read the SKILL.md before running those.
+</div>
 
-      <div class="platform-tabs">
-        <button class="platform-tab active" data-filter="all">All (19)</button>
-        <button class="platform-tab" data-filter="code">Code (17)</button>
-        <button class="platform-tab" data-filter="desktop">Desktop (2)</button>
-      </div>
+<div class="grid" id="grid"></div>
+<p class="msg" id="msg">Loading…</p>
 
-      <div class="skills-grid" id="skills-grid">
+<footer id="foot"></footer>
+</div>
 
-        <!-- DESKTOP SKILLS -->
-        <div class="skill-card" data-platform="desktop">
-          <div class="skill-card-header">
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/desktop/inbox-catchup/SKILL.md">inbox-catchup</a></span>
-            <span class="tag tag-desktop">Desktop</span>
-          </div>
-          <p class="skill-desc">Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. Helps triage messages and draft replies.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> Starting the day, returning from a break, or needing to catch up on communications.</p>
-        </div>
+<script>
+(function () {
+  var grid = document.getElementById('grid');
+  var msg = document.getElementById('msg');
+  var count = document.getElementById('count');
+  var q = document.getElementById('q');
+  var chips = [].slice.call(document.querySelectorAll('.chip'));
+  var skills = [];
+  var filter = 'all';
 
-        <div class="skill-card" data-platform="desktop">
-          <div class="skill-card-header">
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/desktop/research-assistant/SKILL.md">research-assistant</a></span>
-            <span class="tag tag-desktop">Desktop</span>
-          </div>
-          <p class="skill-desc">Researches a topic systematically and produces a structured briefing. Gathers key facts, perspectives, and sources into a clear summary.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> Researching something, preparing a briefing, or compiling background on a topic.</p>
-        </div>
-
-        <!-- CODE SKILLS -->
-        <div class="skill-card" data-platform="code">
-          <div class="skill-card-header">
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/address-pr-comments/SKILL.md">/address-pr-comments</a></span>
-            <span class="tag tag-code">Code</span>
-            <span class="tag tag-side-effects">Side Effects</span>
-          </div>
-          <p class="skill-desc">Fetches unresolved PR comments, categorizes them (must-fix, suggestion, question, nit), proposes fixes or replies for each, and executes approved actions.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> Addressing PR review feedback or when someone requests changes on your PR.</p>
-        </div>
-
-        <div class="skill-card" data-platform="code">
-          <div class="skill-card-header">
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/audit-skills/SKILL.md">/audit-skills</a></span>
-            <span class="tag tag-code">Code</span>
-            <span class="tag tag-side-effects">Side Effects</span>
-          </div>
-          <p class="skill-desc">Audits all personal Claude skills against the SKILLS_GUIDE.md manifest, latest official Claude skills documentation, and best practices. Reports issues, missing patterns, and improvement suggestions per skill.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> Keeping skills healthy, consistent, and up-to-date with the latest standards.</p>
-        </div>
-
-        <div class="skill-card" data-platform="code">
-          <div class="skill-card-header">
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/build-incremental/SKILL.md">/build-incremental</a></span>
-            <span class="tag tag-code">Code</span>
-            <span class="tag tag-side-effects">Side Effects</span>
-          </div>
-          <p class="skill-desc">Implements code in progressive, verified increments — auto-detects the project's toolchain, builds each unit, runs checks (typecheck, lint, test), fixes errors, and commits with semantic messages.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> Building features, implementing milestones, or making multi-step changes.</p>
-        </div>
-
-        <div class="skill-card" data-platform="code">
-          <div class="skill-card-header">
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/create-pr/SKILL.md">/create-pr</a></span>
-            <span class="tag tag-code">Code</span>
-            <span class="tag tag-side-effects">Side Effects</span>
-          </div>
-          <p class="skill-desc">Creates a well-structured pull request with product-focused summary, change highlights, and test steps. Auto-detects base branch, links Linear issues from branch name, and pushes if needed.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> Ready to open a PR or when asking to create a pull request.</p>
-        </div>
-
-        <div class="skill-card" data-platform="code">
-          <div class="skill-card-header">
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/git-cleanup/SKILL.md">/git-cleanup</a></span>
-            <span class="tag tag-code">Code</span>
-            <span class="tag tag-side-effects">Side Effects</span>
-          </div>
-          <p class="skill-desc">Identifies and removes stale git branches, orphaned remote branches, and unused worktrees. Cross-references with Linear to check issue status before deleting.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> Repos have accumulated stale branches and you want to tidy up.</p>
-        </div>
-
-        <div class="skill-card" data-platform="code">
-          <div class="skill-card-header">
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/investigate-ci/SKILL.md">/investigate-ci</a></span>
-            <span class="tag tag-code">Code</span>
-          </div>
-          <p class="skill-desc">Investigates GitHub Actions workflow failures for any repo. Fetches recent runs, identifies failures, extracts error logs, diagnoses root causes, and suggests fixes.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> A deploy or CI workflow fails and you need to understand why.</p>
-        </div>
-
-        <div class="skill-card" data-platform="code">
-          <div class="skill-card-header">
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/organize-screenshots/SKILL.md">/organize-screenshots</a></span>
-            <span class="tag tag-code">Code</span>
-            <span class="tag tag-side-effects">Side Effects</span>
-          </div>
-          <p class="skill-desc">Scans a folder for recent screenshots, visually classifies which ones are relevant to current work, and organizes them into a target directory with descriptive filenames.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> Collecting screenshots for PRs, bug reports, docs, or Linear issues.</p>
-        </div>
-
-        <div class="skill-card" data-platform="code">
-          <div class="skill-card-header">
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/post-pr-for-review/SKILL.md">/post-pr-for-review</a></span>
-            <span class="tag tag-code">Code</span>
-            <span class="tag tag-side-effects">Side Effects</span>
-          </div>
-          <p class="skill-desc">Generates a contextual Slack message for posting a PR to the team's review channel. Pulls context from PR diff, Linear ticket, session conversation, and related PRs.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> Posting a PR for team review in Slack.</p>
-        </div>
-
-        <div class="skill-card" data-platform="code">
-          <div class="skill-card-header">
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/post-ticket-summary/SKILL.md">/post-ticket-summary</a></span>
-            <span class="tag tag-code">Code</span>
-            <span class="tag tag-side-effects">Side Effects</span>
-          </div>
-          <p class="skill-desc">Posts a structured implementation summary comment to a Linear issue — what was built, key decisions, reuse patterns, and how to test.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> After completing work on a ticket to document the implementation for the team.</p>
-        </div>
-
-        <div class="skill-card" data-platform="code">
-          <div class="skill-card-header">
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/publish-skills/SKILL.md">/publish-skills</a></span>
-            <span class="tag tag-code">Code</span>
-            <span class="tag tag-side-effects">Side Effects</span>
-          </div>
-          <p class="skill-desc">Publishes personal Claude skills to a GitHub repository for sharing. Copies skill files, generates a README catalog, commits, and pushes.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> Ready to share skill updates or after creating/updating skills.</p>
-        </div>
-
-        <div class="skill-card" data-platform="code">
-          <div class="skill-card-header">
-            <span class="skill-icon" style="--icon: url('code/shop-research/icon.svg');" role="img" aria-label="/shop-research icon"></span>
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/shop-research/SKILL.md">/shop-research</a></span>
-            <span class="tag tag-code">Code</span>
-            <span class="tag tag-side-effects">Side Effects</span>
-          </div>
-          <p class="skill-desc">Researches products across Amazon, Google Shopping, and specialty sites via the Claude-in-Chrome extension; produces a 2026 single-file HTML report with pros/cons, review highlights, and picks. Learns from feedback to personalize future searches.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> Shopping for something, comparing products, finding a gift, or researching purchases before buying.</p>
-        </div>
-
-        <div class="skill-card" data-platform="code">
-          <div class="skill-card-header">
-            <span class="skill-icon" style="--icon: url('code/should-i-buy/icon.svg');" role="img" aria-label="/should-i-buy icon"></span>
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/should-i-buy/SKILL.md">/should-i-buy</a></span>
-            <span class="tag tag-code">Code</span>
-            <span class="tag tag-side-effects">Side Effects</span>
-          </div>
-          <p class="skill-desc">Takes product URLs you're considering, asks two sharp clarifying questions, opens each in real Chrome to extract price/specs/reviews/returns, cross-checks independent reviews, and ships a 2026 HTML report with a clear verdict — buy, wait, pick X, or skip. Learns from thumbs-up/down and past regrets.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> Pasting one or more product links and asking whether to buy, which one to pick, or whether to wait.</p>
-        </div>
-
-        <div class="skill-card" data-platform="code">
-          <div class="skill-card-header">
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/skill-creator/SKILL.md">/skill-creator</a></span>
-            <span class="tag tag-code">Code</span>
-            <span class="tag tag-side-effects">Side Effects</span>
-          </div>
-          <p class="skill-desc">Creates new Claude Code skills interactively by asking contextual questions about purpose, side effects, tools, and workflow. Generates a complete SKILL.md following all conventions.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> Creating a new skill or scaffolding a skill from scratch.</p>
-        </div>
-
-        <div class="skill-card" data-platform="code">
-          <div class="skill-card-header">
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/slack-to-ticket/SKILL.md">/slack-to-ticket</a></span>
-            <span class="tag tag-code">Code</span>
-            <span class="tag tag-side-effects">Side Effects</span>
-          </div>
-          <p class="skill-desc">Creates a Linear issue from a pasted Slack thread. Parses the conversation, infers title, priority, category, and description, checks for duplicates, and creates a clean ticket.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> Pasting a Slack thread to turn it into a trackable issue.</p>
-        </div>
-
-        <div class="skill-card" data-platform="code">
-          <div class="skill-card-header">
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/smoke-test/SKILL.md">/smoke-test</a></span>
-            <span class="tag tag-code">Code</span>
-            <span class="tag tag-side-effects">Side Effects</span>
-          </div>
-          <p class="skill-desc">Traces and verifies that something works end-to-end in any environment. Builds a check plan from natural language input, confirms it, then runs each check reporting pass/fail.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> Validating deployments, pipelines, features, or migrations.</p>
-        </div>
-
-        <div class="skill-card" data-platform="code">
-          <div class="skill-card-header">
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/sync-branch/SKILL.md">/sync-branch</a></span>
-            <span class="tag tag-code">Code</span>
-            <span class="tag tag-side-effects">Side Effects</span>
-          </div>
-          <p class="skill-desc">Merges one branch into another with conflict handling. Stashes work, updates both branches, merges, resolves conflicts preserving both sides, pushes, and restores state.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> Keeping a long-lived branch in sync with its upstream.</p>
-        </div>
-
-        <div class="skill-card" data-platform="code">
-          <div class="skill-card-header">
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/thread-to-action/SKILL.md">/thread-to-action</a></span>
-            <span class="tag tag-code">Code</span>
-            <span class="tag tag-side-effects">Side Effects</span>
-          </div>
-          <p class="skill-desc">Parses a pasted thread (Slack, email, GitHub, Teams), analyzes it against current git, Linear, and session context, and suggests actionable next steps — then executes them with confirmation.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> Pasting a conversation that implies developer actions.</p>
-        </div>
-
-        <div class="skill-card" data-platform="code">
-          <div class="skill-card-header">
-            <span class="skill-name"><a href="https://github.com/mostafa-drz/claude-skills/blob/main/code/whats-next/SKILL.md">/whats-next</a></span>
-            <span class="tag tag-code">Code</span>
-          </div>
-          <p class="skill-desc">Suggests the 3 most impactful next actions based on full developer context — git, Linear, PRs, and current conversation. Prioritizes blockers, unblocked items, and momentum.</p>
-          <p class="skill-trigger"><strong>Use when:</strong> Deciding what to work on next or after finishing a task.</p>
-        </div>
-
-      </div>
-    </section>
-
-    <footer>
-      <p>Built by <a href="https://github.com/mostafa-drz">mostafa-drz</a> &middot; <a href="https://github.com/mostafa-drz/claude-skills">Source on GitHub</a> &middot; MIT License</p>
-    </footer>
-
-  </div>
-
-  <script>
-    // Platform filter tabs
-    const tabs = document.querySelectorAll('.platform-tab');
-    const cards = document.querySelectorAll('.skill-card');
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const filter = tab.dataset.filter;
-
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-
-        cards.forEach(card => {
-          if (filter === 'all' || card.dataset.platform === filter) {
-            card.classList.remove('hidden');
-          } else {
-            card.classList.add('hidden');
-          }
-        });
-      });
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
-  </script>
+  }
+
+  function installCmd(s) {
+    return s.platform === 'code'
+      ? 'cp -r claude-skills/code/' + s.name + ' ~/.claude/skills/'
+      : 'zip -r ' + s.name + '.zip desktop/' + s.name + '   # upload in Settings > Capabilities';
+  }
+
+  function card(s) {
+    // skills.json carries an absolute icon URL for external consumers (mostafa.xyz).
+    // This page is served from the same repo, so use the relative path: no cross-origin
+    // round-trip, works on a branch preview, and doesn't depend on main being current.
+    var icon = s.icon
+      ? '<img src="' + esc(s.platform + '/' + s.name + '/icon.svg') + '" alt="" loading="lazy" width="20" height="20">'
+      : '';
+    var tags = (s.tags || []).map(function (t) {
+      return '<span class="tag">' + esc(t) + '</span>';
+    }).join('');
+    // The guide requires a "Use when…" clause inside `description`, so rendering the
+    // manifest's `trigger` beside it repeats the same sentence twice. Split the
+    // description instead, and fall back to `trigger` only when it has no clause.
+    var body = s.description || '';
+    var when = s.trigger || '';
+    var cut = body.search(/\bUse (?:when|it when|this when)\b/i);
+    if (cut > -1) {
+      when = body.slice(cut).replace(/^Use (?:it |this )?when\s*/i, '');
+      body = body.slice(0, cut).trim();
+    }
+    var trig = when
+      ? '<p class="trigger"><b>Use when:</b> ' + esc(when.charAt(0).toLowerCase() + when.slice(1)) + '</p>'
+      : '';
+    return '<article class="card">'
+      + '<h2>' + icon + '<a href="' + esc(s.url) + '">/' + esc(s.name) + '</a>'
+      + '<span class="badge">' + (s.platform === 'code' ? 'Code' : 'Desktop') + '</span>'
+      + '<span class="badge ' + (s.sideEffects ? 'writes">writes' : 'reads">read-only') + '</span>'
+      + '</h2>'
+      + '<p class="desc">' + esc(body) + '</p>'
+      + trig
+      + (tags ? '<div class="tags">' + tags + '</div>' : '')
+      + '<div class="install"><code>' + esc(installCmd(s)) + '</code>'
+      + '<button class="copy" type="button">Copy</button></div>'
+      + '</article>';
+  }
+
+  function matches(s) {
+    if (filter === 'code' && s.platform !== 'code') return false;
+    if (filter === 'desktop' && s.platform !== 'desktop') return false;
+    if (filter === 'writes' && !s.sideEffects) return false;
+    var term = q.value.trim().toLowerCase();
+    if (!term) return true;
+    return (s.name + ' ' + s.description + ' ' + (s.trigger || '') + ' ' + (s.tags || []).join(' '))
+      .toLowerCase().indexOf(term) !== -1;
+  }
+
+  function render() {
+    var shown = skills.filter(matches);
+    grid.innerHTML = shown.map(card).join('');
+    count.textContent = 'showing ' + shown.length + ' of ' + skills.length;
+    msg.hidden = shown.length > 0;
+    if (!shown.length) msg.textContent = 'No skills match those filters.';
+  }
+
+  grid.addEventListener('click', function (e) {
+    var btn = e.target.closest('.copy');
+    if (!btn) return;
+    var text = btn.parentNode.querySelector('code').textContent;
+    var done = function () {
+      btn.textContent = 'Copied';
+      btn.classList.add('done');
+      setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 1400);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else { fallback(); }
+    function fallback() {
+      var t = document.createElement('textarea');
+      t.value = text; t.setAttribute('readonly', ''); t.style.position = 'absolute';
+      t.style.left = '-9999px'; document.body.appendChild(t); t.select();
+      try { document.execCommand('copy'); done(); } catch (err) {}
+      document.body.removeChild(t);
+    }
+  });
+
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () {
+      filter = c.dataset.f;
+      chips.forEach(function (o) { o.setAttribute('aria-pressed', String(o === c)); });
+      render();
+    });
+  });
+  q.addEventListener('input', render);
+
+  fetch('skills.json', { cache: 'no-cache' })
+    .then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function (data) {
+      skills = (data.skills || []).slice().sort(function (a, b) {
+        return a.platform === b.platform
+          ? a.name.localeCompare(b.name)
+          : (a.platform === 'code' ? -1 : 1);
+      });
+      document.getElementById('foot').innerHTML =
+        skills.length + ' skills · manifest updated ' + esc(data.updated || 'unknown')
+        + ' · <a href="' + esc(data.repo || '#') + '">source on GitHub</a>'
+        + ' · this page reads <a href="skills.json">skills.json</a>, which is generated from each SKILL.md';
+      render();
+    })
+    .catch(function (err) {
+      msg.hidden = false;
+      msg.textContent = 'Could not load skills.json (' + err.message + ').';
+    });
+})();
+</script>
 </body>
 </html>

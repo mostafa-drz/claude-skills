@@ -9,7 +9,7 @@ description: >-
   Profile / Learned), a feedback subcommand, a session log, and a feedback
   journal — unless the skill is genuinely stateless. Use when creating a new
   skill or scaffolding one.
-argument-hint: [skill-name] [--from-description "..."]
+argument-hint: "[skill-name] [--from-description \"...\"]"
 disable-model-invocation: true
 allowed-tools:
   - AskUserQuestion
@@ -20,6 +20,9 @@ allowed-tools:
   - Grep
   - WebSearch
   - WebFetch
+metadata:
+  trigger: "Creating a new skill or scaffolding a skill from scratch."
+  tags: "meta, automation"
 ---
 
 # Skill Creator

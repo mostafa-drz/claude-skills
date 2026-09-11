@@ -4,7 +4,7 @@ description: >-
   Creates a well-structured pull request with product-focused summary, change highlights,
   and test steps. Auto-detects base branch, links Linear issues from branch name, and
   pushes if needed. Use when ready to open a PR or when asking to create a pull request.
-argument-hint: [issue-id] [--base branch] [--draft]
+argument-hint: "[issue-id] [--base branch] [--draft]"
 disable-model-invocation: true
 allowed-tools:
   - AskUserQuestion
@@ -14,6 +14,9 @@ allowed-tools:
   - Grep
   - mcp__claude_ai_Linear__get_issue
   - mcp__claude_ai_Linear__update_issue
+metadata:
+  trigger: "Ready to open a PR or when asking to create a pull request."
+  tags: "git, github, linear"
 ---
 
 # Create PR

@@ -10,7 +10,7 @@ description: >-
   "step me through", "walk me through", "let's triage", "next item", or
   otherwise wants interactive per-item review of a previous response. Works
   on any enumerated content — not just PR reviews.
-argument-hint: [--filter <severity>] [--from <hint>] [--start <n>]
+argument-hint: "[--filter <severity>] [--from <hint>] [--start <n>]"
 disable-model-invocation: true
 allowed-tools:
   - AskUserQuestion
@@ -22,6 +22,9 @@ allowed-tools:
   - Write
   - WebSearch
   - WebFetch
+metadata:
+  trigger: "After an assistant produces a long enumerated list and you want to triage items one at a time instead of all at once."
+  tags: "walkthrough, triage, decisions, productivity"
 ---
 
 # /step-through
