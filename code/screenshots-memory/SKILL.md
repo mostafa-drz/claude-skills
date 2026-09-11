@@ -27,15 +27,12 @@ allowed-tools:
   - Bash(mdfind *)
   - Bash(mdls *)
   - Bash(shasum *)
-  - Bash(sips *)
   - Bash(git *)
   - Bash(mkdir *)
   - Bash(cp *)
-  - Bash(mv *)
   - Bash(ls *)
   - Bash(date *)
   - Bash(open *)
-  - Bash(python3 *)
 ---
 
 # Screenshots Memory
@@ -179,13 +176,16 @@ Then proceed. After the first successful sync, offer to save a couple of quick p
 
 ## Setup — create and verify the store
 
-1. Create `{memory-root}` and `git init` it.
-2. Write the starter `kinds.md` (copy from `reference/kinds.md`), an empty
-   `corrections.md`, an empty `extraction-guide.md`, and a `memory.json` skeleton
-   (`{"version": 1, "notes": [], "clusters": [], "last_sync": null}`).
-3. Write `.gitignore` containing `.DS_Store`.
+1. Create `{memory-root}` and `git init` it. `git init` on an existing repo is a no-op,
+   so the directory may already be one — possibly one with a remote.
+2. **Check for a remote before writing anything.** If `git -C {memory-root} remote` is
+   non-empty, stop: this store would be pushable. Never commit first and check after.
+3. Write the starter `kinds.md` (copy from `reference/kinds.md`), an empty
+   `corrections.md`, an empty `extraction-guide.md`, a `memory.json` skeleton
+   (`{"version": 1, "notes": [], "clusters": [], "last_sync": null}`), and a
+   `.gitignore` containing `.DS_Store`.
 4. Commit: `chore: initialize screenshots memory`.
-5. Run the **Step 0 preflight** below and report the result.
+5. Re-run the full **Step 0 preflight** and report the result.
 
 Tell the user plainly what now exists and where, and that it has no remote.
 
@@ -360,7 +360,10 @@ original alone, say which and why, and carry on with the rest.
 
 This creates no new files, so the tree stays clean. It is the only irreversible thing the
 skill does — hence last, and hence verifying the committed copy rather than trusting the
-earlier steps.
+earlier steps. The sweep is **resumable and idempotent**: a failed file is reported and
+left alone without aborting the batch, and an interruption between Step 7 and here is
+harmless — the note and asset are already committed, so re-running dedupes by hash and
+simply retires whatever is left.
 
 Then report:
 
@@ -445,7 +448,7 @@ human-readable and revertible.
    - **Wrong kind / tags / cluster** → re-assign.
    - **Skip** / **Stop**.
 4. **On any correction**, record it and learn from it — append to
-   `{memory-root}/corrections.md`, promote a recurring lesson into
+   `{memory-root}/corrections.md`, promote it into
    `{memory-root}/extraction-guide.md` (the file the extractor reads every sync), tell
    the user "Learned: {pattern}. I'll apply it going forward.", and `git commit` so the
    learning history is versioned too. Formats and the promotion rule:
@@ -473,8 +476,9 @@ Three rules too important to leave in reference:
 ### `/screenshots-memory feedback`
 
 Rate the most recent answer or extraction (nailed it / close / missed) plus a free-text
-note. Append to `corrections.md`, promote clear signal to `extraction-guide.md`. Both are
-human-editable — respect whatever the user writes there directly.
+note. Append to `corrections.md`; promote to `extraction-guide.md` under the same rule as
+stage 2 of the loop — only what recurs or is stated as a general rule. Both files are
+human-editable; respect whatever the user writes there.
 
 ## Principles
 

@@ -37,6 +37,8 @@ Per-cluster page:
    underline. A `sensitive` note shows its thumbnail and a plain "contents not
    recorded by choice" line instead of text.
 3. **Entities** — a chip row of the people, products and projects in this cluster.
+   A card with `reviewed: true` renders a ✓ beside its confidence badge, so the user can
+   see what they already confirmed even with the ⚠ Needs review switch off.
 4. **Provenance is always visible** — every card says exactly which capture it came
    from and when.
 
@@ -101,3 +103,10 @@ Top-level `html/index.html`: a card grid of all clusters (title, note count, kin
 date range, avg confidence, top entities), sorted by most-recently-touched. Inline
 vanilla JS only — no framework, no build step.
 
+## The page is a snapshot
+
+A cluster page reflects the memory at render time and cannot update itself. Re-rendering
+after `review --apply` is therefore **load-bearing, not cosmetic**: it is what moves
+newly-confirmed cards out of the ⚠ Needs review view and refreshes `data-extracted-at` on
+anything re-extracted. Skip it and the user re-reviews notes that were already applied,
+and the replay guard silently discards the result.

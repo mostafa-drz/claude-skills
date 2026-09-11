@@ -156,6 +156,7 @@
           border-bottom: 1px dotted var(--warn); }
   .card .foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
           margin-top: 12px; }
+  .ok-mark { color: var(--good); font-size: 0.85rem; }
   .chip.kind { text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.68rem; }
   .fields { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px;
             margin: 12px 0 0; font-size: 0.82rem; }
@@ -289,6 +290,8 @@
              data-reviewed="false" data-extracted-at="2026-09-11T18:20:00Z">
       <div class="head">
         <span class="badge warn">62%</span>
+        A reviewed card also renders <span class="ok-mark" title="Confirmed">✓</span> here,
+        so the user can see what they already confirmed with the switch off.
         <button class="chip kind" data-facet="chat" aria-pressed="false">chat</button>
         <span class="prov">📸 Slack · captured 2026-09-11</span>
         <button class="rev-open" popovertarget="rev-abi">Review</button>
@@ -634,6 +637,10 @@
     if (!id) return disableCard('No note id on this card — a review could not be matched back to a note.');
     if (seenIds[id]) return disableCard('Duplicate note id "' + id + '" — a review here would overwrite another card\'s.');
     seenIds[id] = true;
+    // extracted_at is the staleness key the agent compares before overwriting a note.
+    // Without it a review cannot be shown to target the version on screen, so collecting
+    // one would produce an entry the agent must refuse anyway. Refuse it here instead.
+    if (!card.dataset.extractedAt) return disableCard('This card is missing its extraction timestamp — a review could not be checked for staleness.');
 
     var vbtns = pop.querySelectorAll('[data-verdict]');
     var fixField = pop.querySelector('[data-field="fix"]');

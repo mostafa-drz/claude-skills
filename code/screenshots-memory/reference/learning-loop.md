@@ -1,14 +1,18 @@
 # The learning loop
 
 Loaded on demand during `review`, `review --apply`, and whenever a sync meets a capture
-that fits no known kind. Everything the memory uses to get better at reading THIS user's
-screen lives here: how a correction is recorded, how a recurring lesson is promoted, how
-a new kind gets proposed, and the exact payload contract between the HTML page's review
-popovers and the agent that applies them.
+that fits no known kind. This is everything the memory uses to get better at reading THIS
+user's screen, in the order it happens: record a correction, promote what recurs, apply a
+batch from the page.
 
-## Recording a correction
+A new kind is a learning event too — the proposal mechanic lives in
+[`kinds.md`](./kinds.md); when one is added, record it here in `corrections.md` along
+with the captures that prompted it.
 
-On any correction — terminal or page — append to `{memory-root}/corrections.md`:
+## 1. Record the correction
+
+Every correction is recorded, whether it came from the terminal or from the page. Append
+to `{memory-root}/corrections.md`:
 
 ```markdown
 ## {note id} — {date}
@@ -18,21 +22,23 @@ On any correction — terminal or page — append to `{memory-root}/corrections.
 - Lesson:   {one-line generalization — e.g. "the dark sidebar with # channels is Slack, not Discord"}
 ```
 
-**Promote stable patterns.** When the same lesson recurs (an app that keeps being
-misidentified, a shorthand, a client name read as a typo), add it to
-`{memory-root}/extraction-guide.md` — the file the extractor reads on every sync — and
-tell the user: "Learned: {pattern}. I'll apply it going forward." Then `git commit`, so
-the learning history is itself versioned.
+## 2. Promote what recurs
 
-## Learning new kinds
+**One rule, both paths.** `corrections.md` records everything; `extraction-guide.md` —
+the file the extractor reads on every sync — gets only what will still be true next time:
 
-The kind registry is owned by [`kinds.md`](./kinds.md), which carries the proposal
-mechanic, the approval steps, and how a rejected proposal is recorded so the same
-suggestion isn't made every sync. A new kind is a learning event like any correction:
-when one is added, note it in `corrections.md` with the captures that prompted it.
+- a lesson that has now appeared **more than once** (an app that keeps being
+  misidentified, a shorthand, a client name read as a typo), **or**
+- a lesson the user stated as a general rule rather than a one-off fix ("ABI is always
+  the client, never a typo").
 
+A single idiosyncratic fix stays in `corrections.md` and does not become a standing
+instruction — that is what stops the guide filling with noise that degrades extraction.
 
-## The payload
+When you promote one, say so: "Learned: {pattern}. I'll apply it going forward." Then
+`git commit`, so the learning history is versioned too.
+
+## 3. Apply a batch from the page
 
 `review --apply` receives the block a cluster page's **Copy for Claude** button
 produces: the command line, then a fenced ```json block. Parse the array inside the
@@ -80,10 +86,16 @@ writing, check whether the entry already landed: if the note is already `reviewe
 a re-paste. Skip it silently, count it separately, and say "N already applied". Never
 re-apply a `fix` over a note that has changed since.
 
-The page guarantees four things about this payload — trust them, and fail loudly if they
+**A null `extracted_at` or `hash` means unverifiable — skip and report, never apply.** The
+staleness check is only a guard if it can run; an entry missing either field cannot be
+confirmed to target the version the user saw, and treating null as "nothing to compare"
+would bypass the guard on precisely the entries that are most broken.
+
+The page guarantees five things about this payload — trust them, and fail loudly if they
 don't hold: every `verdict` was explicitly clicked by a human; the field its verdict
 requires holds content the human supplied (for `fix`, text **actually edited** away from
-the rendered extraction); every entry has an `id`; no two entries share one. An entry
+the rendered extraction); every entry has an `id`; no two entries share one; and every entry carries a non-null `extracted_at` and `hash`,
+since Review is disabled on any card missing them. An entry
 violating any of these is malformed — skip it and say so.
 
 **Never invent the missing half.** If a `meta` entry's `reassign` is empty, or a `fix`
@@ -95,8 +107,11 @@ better, so `ok` leaves it alone. Only `fix` moves it, and only to `1.0`. This al
 the two review queues identical: the page's ⚠ Needs review switch and the terminal's
 `reviewed: false` **and** `confidence < threshold` must select the same notes.
 
-Then: append every change to `corrections.md`, promote any `lesson` into
-`extraction-guide.md`, re-render touched clusters, and `git commit`.
+Then run stages 1 and 2 exactly as the terminal path does: append every change to
+`corrections.md`, and promote a `lesson` into `extraction-guide.md` **only** when it
+recurs or is stated as a general rule. Re-render the touched clusters — this is what
+clears confirmed cards out of the page's ⚠ Needs review view, so it is load-bearing, not
+cosmetic — then `git commit`.
 
 Finally, **tell the user to click "Discard all"** on the page — the browser copy is the
 only thing still holding the applied batch. Report what changed and what you learned:
