@@ -63,7 +63,7 @@ Defaults when no preferences exist:
 - `originals`: `move` (`move` = once the store's copy is committed and hash-verified, the inbox original is **deleted** — the store becomes the only copy · `copy` = inbox original left alone)
 - `confidence-threshold`: `0.75` (extractions below this are flagged for `review`, never silently trusted)
 - `cluster-style`: `topic` (subject-based; `kind` is a filter chip on the page, not a folder)
-- `sensitive-policy`: `ask-batched` (flag during extraction, ask about all of them in one round at the end)
+- `sensitive-policy`: `ask-batched` (flag during extraction; ask about all of them in one round once every batch has been read)
 - `open-html`: `true` (auto-open the cluster HTML when a sync finishes)
 - `tone`: `friendly-cli` (terse, warm, direct)
 
@@ -155,18 +155,15 @@ Four checks, in order. Any failure stops the sync — do not work around them.
 
 1. **Store exists and is a git repo.** If not, offer `setup`.
 2. **The store has NO git remote.** `git -C {memory-root} remote` must be empty. This
-   check is the *only* thing enforcing it: `allowed-tools` cannot express "git but never
-   push" for a `git -C <path>` invocation, so the guarantee lives in this step's logic,
-   not in the permission layer. Treat it as load-bearing and never skip it.
-   If a remote exists, **STOP** and say so:
-   "{memory-root} has a remote ({name} → {url}). This store holds full-resolution
-   screenshots of your screen and must never be pushed. Remove the remote
-   (`git -C {memory-root} remote remove {name}`) and re-run, or point me at a
-   different store." Never push, never add a remote, never commit past this check.
-3. **The store's working tree is clean.** Uncommitted changes mean a previous run was
-   interrupted or the user edited notes by hand. Show them and ask before proceeding —
-   never discard. Every command that writes into the store commits before it returns, so
-   a dirty tree is genuinely unexpected and should never be routine.
+   check is the *only* thing enforcing it — `allowed-tools` cannot express "git but never
+   push" for a `git -C <path>` invocation — so the guarantee lives in this step's logic,
+   not the permission layer. If a remote exists, **STOP**: "{memory-root} has a remote
+   ({name} → {url}). This store holds full-resolution screenshots of your screen and must
+   never be pushed. Remove it (`git -C {memory-root} remote remove {name}`) and re-run, or
+   point me at a different store." Never push, never add a remote, never commit past this.
+3. **The store's working tree is clean.** Uncommitted changes mean an interrupted run or
+   hand edits. Show them and ask — never discard. Every command that writes commits before
+   it returns, so a dirty tree is genuinely unexpected and should never be routine.
 4. **Enough disk headroom** — ~1 MB per screenshot, roughly doubled by the commit.
 
 ### Step 1 — Scope the sync
@@ -219,7 +216,7 @@ Sync plan:
   ├── Source:      {resolved path or "inbox (~/Desktop)"}
   ├── Window:      {since Nd or "all"}
   ├── Found:       {N} screenshots  ({D} already in memory, skipped)
-  ├── To read:     {M} images · ~{X} MB
+  ├── To read:     {M} images · ~{X} MB · {B} batches of ~20
   ├── Originals:   DELETED from {source} once the store's copy is committed and
   │                hash-verified — the store becomes the only copy. This is the only
   │                irreversible thing I do. (Set `originals: copy` to leave them.)
@@ -231,13 +228,19 @@ Reply 'go' to extract, or tweak the scope.  (add --yes next time to skip this)
 **Be honest when it's big.** Every screenshot is a vision read; a neglected folder can be
 hundreds. Above ~40 say so and offer `--since`. Batches mean interruption is never total.
 
-### Steps 4-8 run in checkpointed batches
+### How Steps 4-8 are sequenced
 
-Work in batches of ~20 captures, each running Steps 4→8 to completion — extract, ask,
-cluster, **commit**, delete. Do not read 200 images and write nothing until the end: an
-interruption there loses every read, and on a long-neglected folder that is the whole
-sync. With batches, a failure costs at most the current batch, and re-running resumes
-automatically because Step 2 dedupes by hash. Report progress per batch.
+Work in batches of ~20. Each batch runs **Step 4, then 6→8** — extract, cluster, commit,
+delete — so an interruption costs at most one batch and re-running resumes automatically
+(Step 2 dedupes by hash). Never read 200 images and write nothing until the end: on a
+long-neglected folder that loses the entire sync. Report progress per batch.
+
+**Step 5 is the exception: it runs once, after every batch has been read.** Captures
+flagged `sensitive` are held back — not written, not committed — until all batches are
+done, then asked about in one round and written in a final pass. Asking per batch would
+mean eleven prompts on a 209-capture sync, and flag-then-ask stops working the moment the
+user clicks through it. Held captures live only in memory, so an interruption re-reads
+them — the deliberate cost of asking once.
 
 ### Step 4 — Extract (Claude vision + learned guide)
 
@@ -268,17 +271,17 @@ truth about this user's screen. For each screenshot produce:
    information, private DMs, or anything else that shouldn't be plain text in a repo.
    **Flag, keep going — do not ask yet.**
 
-### Step 5 — Sensitive review (one batched round)
+### Step 5 — Sensitive review (one round, after all batches)
 
-If anything was flagged, ask about **all of it in one round** before writing those notes —
-never one interruption per screenshot. Prompt format:
+Ask about **everything flagged in a single round**, once every batch has been read and
+before any of those notes is written — never one interruption per screenshot, and never
+one per batch. Prompt format:
 [`reference/interface.md`](./reference/interface.md).
 
 Offer per item: **Extract normally** · **Store image only** (keeps kind, date and
 provenance, no text) · **Skip entirely** (not ingested; original left where it is).
-Default to **Store image only** if the user declines to choose. An image-only note is a
-real note with `sensitive: true` and no `text`/`fields` — findable by date and kind
-without leaking its contents.
+Default to **Store image only** if the user declines. An image-only note is a real note
+with `sensitive: true` and no `text`/`fields` — findable by date and kind, contents unread.
 
 **Record a skip.** Append `{hash, declined: {date}}` to `skipped[]` in `memory.json` — no
 text, no image, no note. Step 2 honours it, so a declined capture is never re-read,

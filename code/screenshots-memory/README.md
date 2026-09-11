@@ -52,7 +52,7 @@ alone. Prefer `originals: copy` if you'd rather keep both.
 
 **Sensitive captures are asked about, not assumed.** Anything that looks like
 credentials, banking, medical info or a private DM is flagged during extraction, and you
-get asked about all of them in **one round** at the end. You can extract it normally,
+get asked about all of them in **one round** — once, after everything has been read, however many batches that took. You can extract it normally,
 store the image with no text, or skip it entirely. The default when you don't choose is
 image-only.
 
