@@ -42,7 +42,7 @@ Current preferences:
 Round 1 — the four that change what the skill does:
 1. **Memory root** — where the memory store lives (default `~/screenshots-memory/`)
 2. **Inbox** — the folder swept when no path is given (default `~/Desktop`)
-3. **Originals** — `move` (once the store's copy is committed and hash-verified, the inbox
+3. **Originals** — `move` (once the store's copy is committed and byte-verified, the inbox
    original goes to your Trash; the store becomes the only copy outside it) or `copy`
    (leaves the inbox untouched). Say "Trash", not "retired" — this is the only
    irreversible act.
@@ -128,7 +128,7 @@ Synced {N} screenshots → {new} new notes, {dupes} already known.
   Clusters:   {list}
   Guide:      {R} rules · used on {G} of {N} captures ({top rules})
   Sensitive:  {s} stored image-only, {d} declined
-  Inbox:      {M} originals → Trash (store is now the only copy) · {left} left in place
+  Inbox:      {M} originals → Trash (store is the only copy outside it) · {left} left in place
   ⚠ Flagged for review ({f}, confidence < {threshold}):  {short list}
 
 Next:  /screenshots-memory review   ·   /screenshots-memory clusters

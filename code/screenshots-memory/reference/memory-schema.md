@@ -149,7 +149,8 @@ The supported read path, in order of preference:
 
 1. **`memory.json`** for filtering — kind, date, cluster, tags, entities, confidence.
 2. **`notes/<id>.md`** for the content of a specific note.
-3. **`assets/<id>.png`** for the image itself — the only copy, and the one git tracks.
+3. **`assets/<id>.png`** for the image itself — the copy git tracks, and the only one once
+   the user's Trash is emptied.
 
 Two rules for consumers:
 

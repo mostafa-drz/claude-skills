@@ -90,7 +90,7 @@ Check `$ARGUMENTS`:
 - `sync` → ingest new screenshots into memory (see **Sync**)
 - `review --apply` → **test before plain `review`** — `--apply` is followed by a fenced
   ```json block from a cluster page's popovers; apply that batch in one pass
-- `review` (no `--apply`) → walk low-confidence extractions one at a time (see **Review & learning**)
+- `review` (no `--apply`) → walk low-confidence extractions one at a time
 - `clusters` / `browse` → (re)render and open the HTML cluster views (see **Render**)
 - `feedback` → rate the last answer/extraction (see **Review & learning**)
 - `learned` → print the guide: each rule, when it was taught, by which note, how often it has fired
@@ -279,14 +279,15 @@ truth about this user's screen. For each screenshot produce:
 ### Step 5 — Sensitive review (one round, after all batches)
 
 Ask about **everything flagged in a single round**, once every batch has been read and
-before any of those notes is written — never one interruption per screenshot, and never
-one per batch. Prompt format:
-[`reference/interface.md`](./reference/interface.md).
+before any of those notes is written — never one interruption per screenshot, and never one
+per batch. Prompt format: [`reference/interface.md`](./reference/interface.md).
 
 Offer per item: **Extract normally** · **Store image only** (keeps kind, date and
 provenance, no text) · **Skip entirely** (not ingested; original left where it is).
 Default to **Store image only** if the user declines. An image-only note is a real note
-with `sensitive: true` and no `text`/`fields` — findable by date and kind, contents unread.
+with `sensitive: true` and no `text`/`fields` — findable by date and kind, contents unread. A
+sensitive original goes to the Trash like any other and sits there in plaintext until
+emptied — say so rather than implying it was scrubbed.
 
 **Record a skip.** Append `{hash, declined: {date}}` to `skipped[]` in `memory.json` — no
 text, no image, no note. Step 2 honours it, so a declined capture is never re-read,
@@ -329,7 +330,7 @@ Only if `originals: move`. Say **"moved to your Trash"** — not "retired", whic
 and not "deleted", which overstates it. The user is entitled to know the store is now the
 only copy outside the Trash, and that the Trash is a real recovery.
 
-**Verify the committed bytes, not the working-tree file.** Per original:
+**Verify the committed bytes, not the working-tree file** — per original:
 
 ```bash
 blob=$(git -C {memory-root} rev-parse HEAD:assets/{id}.png)   # proves HEAD holds the path
@@ -337,9 +338,9 @@ git -C {memory-root} cat-file blob "$blob" | shasum -a 256    # proves the commi
 ```
 
 That must equal the note's recorded hash (strip its `sha256:` prefix), and `notes/{id}.md`
-must exist. **Never hash the working-tree file instead** — and never substitute
-`git log -- <path>`; [`reference/memory-schema.md`](./reference/memory-schema.md) explains
-what each of those misses and why it destroys data silently.
+must exist. **Never hash the working-tree file, and never substitute `git log -- <path>`**
+— [`reference/memory-schema.md`](./reference/memory-schema.md) explains what each misses
+and why it destroys data silently.
 
 Then **move it to the system trash** (`~/.Trash` on macOS), not `rm`: failures here are
 silent and found days later. No trash directory → `rm`, and say so.
@@ -472,8 +473,7 @@ Three rules too important to leave in reference:
 ### `/screenshots-memory feedback`
 
 Rate the most recent answer or extraction (nailed it / close / missed) plus a free-text
-note. Append to `corrections.md`; promote to `extraction-guide.md` under the same rule as
-stage 2 of the loop — only what recurs or is stated as a general rule. Both files are
+note. Append to `corrections.md`; promote under stage 2's rule. Both files are
 human-editable; respect whatever the user writes there.
 
 ## Principles
