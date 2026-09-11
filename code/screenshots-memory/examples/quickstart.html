@@ -255,10 +255,15 @@ definition fields.</code></pre>
 <section class="card" data-cat="handoff">
 <h2><span class="num">08</span>Turn a week of chat captures into actions</h2>
 <p class="lede"><code>chat</code> captures carry <code>who</code>, <code>ask</code> and
-<code>due</code> — they're usually work, not notes.</p>
+<code>due</code> — they're usually work, not notes. Open asks only; tick one off with
+<code>done</code> and it stops coming back.</p>
 <div class="snippet">
   <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
   <pre><code>/screenshots-memory everything with a due date I haven't dealt with</code></pre>
+</div>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre><code>/screenshots-memory done the ABI requirements doc</code></pre>
 </div>
 </section>
 
@@ -311,8 +316,9 @@ write one yourself.</p>
   <strong>Where your data lives.</strong> <code>~/screenshots-memory/</code> — a git repo you own,
   with no remote. <code>notes/</code> one Markdown file per capture, <code>clusters/</code>
   rendered views, <code>assets/</code> the screenshots themselves, plus <code>corrections.md</code>,
-  <code>extraction-guide.md</code> and <code>kinds.md</code>. Every sync is a commit, so anything
-  can be diffed or reverted. Nothing leaves your machine.
+  <code>extraction-guide.md</code> and <code>kinds.md</code>. Every sync is a commit, so you can
+  see exactly what changed — and <code>/screenshots-memory undo</code> reverses the last one,
+  putting the screenshots back where they came from. Nothing leaves your machine.
 </div>
 </section>
 

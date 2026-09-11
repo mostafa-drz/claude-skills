@@ -16,6 +16,8 @@ screenshots-memory — Screenshots → a queryable, private memory
   review --apply <json block>       Apply reviews collected in the HTML page
   clusters | browse                 Re-render + open the HTML browser
   learned                           What I've learned about your screen, and from where
+  done <id|query>                   Mark a Slack/chat ask handled
+  undo                              Reverse the last sync, screenshots included
   feedback · config · setup · reset · help
 
 Examples:
@@ -96,3 +98,28 @@ First time running /screenshots-memory — here's the shape of it:
   Ready? `/screenshots-memory setup`, or just `sync` and I'll set it up as we go.
 ```
 
+## Sensitive round prompt
+
+Asked once per batch, never per capture.
+
+```
+2 of 27 captures look sensitive. The image is stored unless you skip it entirely;
+otherwise this is only about whether I write the text into the repo.
+
+  1. Banking dashboard — RBC, balance visible      (Screenshot … 1.22.32 PM)
+  2. Terminal showing what looks like an API token (Screenshot … 10.16.52 AM)
+```
+
+## Sync report
+
+```
+Synced {N} screenshots → {new} new notes, {dupes} already known.
+  Kinds:      course {a} · chat {b} · product {c} · ui {d}
+  Clusters:   {list}
+  Guide:      {R} rules · used on {G} of {N} captures ({top rules})
+  Sensitive:  {s} stored image-only, {d} declined
+  Inbox:      {M} originals deleted (store is now the only copy) · {left} left in place
+  ⚠ Flagged for review ({f}, confidence < {threshold}):  {short list}
+
+Next:  /screenshots-memory review   ·   /screenshots-memory clusters
+```

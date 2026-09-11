@@ -59,6 +59,8 @@ fields:                                 # shape depends on `kind` — see kinds.
   channel: "#abi-canada"
   ask: Confirm the Canada requirements doc
   due: 2026-09-13
+  status: open                          # open | done — only on a chat note with an ask
+  done_at: null                         # set when it's marked done
 ---
 
 Diego asked in **#abi-canada** whether the requirements doc is confirmed:
@@ -79,6 +81,7 @@ Thread also mentions ⟨uncertain: Priya?⟩ is handling the legal review.
 | `sensitive` | `true` → `text` and `fields` are absent by design. Never quote such a note. |
 | `captured` | from macOS metadata, not file mtime (mtime changes on copy) |
 | `extracted_at` | set every time the note body is (re)generated. **Not** the same as `hash`: `hash` identifies the image and never changes, so it cannot detect a re-extraction. This is what the review staleness check compares. |
+| `status` | `open` or `done`, present **only** on a `chat` note whose `ask` is non-null, defaulting to `open`. Screenshots of Slack asks are obligations; without a way to tick one off, the memory can list what was asked but never what's outstanding. Set by `/screenshots-memory done`. |
 | `fields` | keys defined by `kind` in `kinds.md`; absent keys mean "not visible in the capture", never "unknown value invented" |
 
 Body text is **structured extraction plus key quotes** — the lines that carry meaning
@@ -157,3 +160,32 @@ Two rules for consumers:
 
 A consumer should never write into this store. Corrections flow through
 `/screenshots-memory review`, which keeps `corrections.md` and the git history coherent.
+
+## Why deletion verifies the committed bytes
+
+Step 8 deletes the user's original once the store provably holds it. Two checks that look
+sufficient are not, and both fail silently:
+
+**Hashing `assets/<id>.png` in the working tree proves nothing about the commit.** With
+git-lfs or any clean filter — including one installed globally, needing nothing in this
+repo — the committed blob is a pointer, not the image. The working-tree hash matches, the
+commit exists, the note exists, the original is deleted, and the picture is gone.
+
+**`git log -- <path>` answers truthily for a path HEAD no longer contains.** A file
+committed and later removed still returns its deletion commit.
+
+Both collapse into one check that reads the bytes actually stored:
+
+```bash
+blob=$(git -C {memory-root} rev-parse HEAD:assets/{id}.png)   # proves HEAD holds the path
+git -C {memory-root} cat-file blob "$blob" | shasum -a 256    # proves the committed bytes
+```
+
+This is also the only check that touches the blob, so it is the only one that would notice
+on-disk corruption. `rev-parse` and `git log` read commit and tree objects and never look
+at a rotted blob.
+
+Deletion then goes to the system trash rather than `rm`, because every failure mode here is
+silent at the moment of deletion and discovered days later, when the user goes looking for a
+screenshot that isn't there. Once the trash is emptied, git history is the only copy — and a
+later `reset --hard` or `gc` can take that.

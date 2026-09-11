@@ -123,7 +123,10 @@ and paste the batch back with `/screenshots-memory review --apply`.
 └── html/index.html              ← the browser
 ```
 
-Every note is a file you can open, edit, or revert. Nothing is a black box.
+Every note is a file you can open, edit, or revert, and every sync is a commit, so you can
+see exactly what changed. `/screenshots-memory undo` reverses the last sync — including
+putting the screenshots back where they came from, which a bare `git revert` would not do.
+Nothing is a black box.
 
 ## Built to be read by other skills
 

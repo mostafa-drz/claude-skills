@@ -93,6 +93,8 @@ Check `$ARGUMENTS`:
 - `clusters` / `browse` → (re)render and open the HTML cluster views (see **Render**)
 - `feedback` → rate the last answer/extraction (see **Review & learning**)
 - `learned` → print the guide: each rule, when it was taught, by which note, how often it has fired
+- `done <id|query>` → mark a `chat` ask handled: set `status: done`, record `done_at`, commit
+- `undo` → reverse the **last sync only** (see **Undo**)
 - anything else → if it resolves to an existing path or glob, treat as a **scoped sync**;
   otherwise treat as a **query** (see **Query**)
 
@@ -268,26 +270,19 @@ truth about this user's screen. For each screenshot produce:
 
 ### Step 5 — Sensitive review (one batched round)
 
-If anything was flagged, ask about **all of it in a single round** before writing those
-notes — never one interruption per screenshot:
-
-```
-2 of 27 captures look sensitive. The image is stored unless you skip it entirely;
-otherwise this is only about whether I write the text into the repo.
-
-  1. Banking dashboard — RBC, balance visible      (Screenshot … 1.22.32 PM)
-  2. Terminal showing what looks like an API token (Screenshot … 10.16.52 AM)
-```
+If anything was flagged, ask about **all of it in one round** before writing those notes —
+never one interruption per screenshot. Prompt format:
+[`reference/interface.md`](./reference/interface.md).
 
 Offer per item: **Extract normally** · **Store image only** (keeps kind, date and
 provenance, no text) · **Skip entirely** (not ingested; original left where it is).
-Default to **Store image only** if the user declines to choose.
+Default to **Store image only** if the user declines to choose. An image-only note is a
+real note with `sensitive: true` and no `text`/`fields` — findable by date and kind
+without leaking its contents.
 
 **Record a skip.** Append `{hash, declined: {date}}` to `skipped[]` in `memory.json` — no
 text, no image, no note. Step 2 honours it, so a declined capture is never re-read,
-re-prompted, or charged another vision read. Without it the next sync asks again, forever. An image-only note is a
-real note with `sensitive: true` and no `text`/`fields` — findable by date and kind
-without leaking its contents.
+re-prompted, or charged another vision read. Without it the next sync asks again, forever.
 
 ### Step 6 — Cluster
 
@@ -333,42 +328,40 @@ git -C {memory-root} cat-file blob "$blob" | shasum -a 256    # proves the commi
 ```
 
 That must equal the note's recorded hash (strip its `sha256:` prefix), and `notes/{id}.md`
-must exist. Hashing the working-tree file instead passes while the commit holds only a
-git-lfs or clean-filter pointer — the one failure that destroys the image silently, and a
-global filter causes it with nothing in this repo to hint at it. `git log -- <path>`
-answers truthily for a path HEAD no longer contains, so it is no substitute.
+must exist. **Never hash the working-tree file instead** — and never substitute
+`git log -- <path>`; [`reference/memory-schema.md`](./reference/memory-schema.md) explains
+what each of those misses and why it destroys data silently.
 
 Then **move the original to the system trash** (`~/.Trash` on macOS), not `rm`: failures
-here are silent at deletion and found days later, so a recovery window is worth one
-command. No trash directory → `rm`, and say so.
+here are silent at deletion and found days later. No trash directory → `rm`, and say so.
 
 - Delete **only** files this sync wrote a note for — never a folder, never a skipped file,
-  never anything discovery didn't select.
+  never anything discovery didn't select. A capture **skipped entirely** stays put.
 - An unreadable capture still gets a flagged note and is still deleted: nothing is silently
-  abandoned *or* silently lost. A capture the user **skipped entirely** stays put.
-- If Step 7's commit failed, **delete nothing**. Say so and stop.
-- A failed check leaves that original alone, is reported, and does not abort the batch.
+  abandoned *or* silently lost.
+- If Step 7's commit failed, **delete nothing**. A failed check leaves that original alone,
+  is reported, and does not abort the batch.
 
-The sweep is **resumable and idempotent** — an interruption between Step 7 and here is
-harmless, since the note and asset are committed and a re-run dedupes by hash. Once an
-original is gone, **git history is the only copy**; a later `reset --hard` or `gc` can take
-it.
+The sweep is **resumable and idempotent** — interruption between Step 7 and here is
+harmless: the note and asset are committed and a re-run dedupes by hash.
 
-Then report:
-
-```
-Synced {N} screenshots → {new} new notes, {dupes} already known.
-  Kinds:      course {a} · chat {b} · product {c} · ui {d}
-  Clusters:   {list}
-  Guide:      {R} rules · used on {G} of {N} captures ({top rules})
-  Sensitive:  {s} stored image-only, {d} declined
-  Inbox:      {M} originals deleted (store is now the only copy) · {left} left in place
-  ⚠ Flagged for review ({f}, confidence < {threshold}):  {short list}
-
-Next:  /screenshots-memory review   ·   /screenshots-memory clusters
-```
+Then print the sync report from [`reference/interface.md`](./reference/interface.md).
 
 If `open-html: true`, open `{memory-root}/html/index.html`.
+
+## Undo — reverse the last sync
+
+`git revert` alone is **not** undo here: it deletes the notes and the stored images and
+restores nothing to where the user's screenshots were, leaving them with neither. Every
+note records `origin_path`, so a real reversal is available and is what `undo` must do.
+
+1. Name the last sync commit and what it contained; confirm before touching anything.
+2. Copy that commit's captures from `assets/` back to their recorded `origin_path`,
+   skipping any path now occupied and saying which.
+3. `git revert` the sync commit, then report what came back and what didn't.
+
+Last sync only — a reversal, not a time machine. If the originals are still in the Trash,
+say so; they are the better recovery.
 
 ## Query — ask the memory
 
@@ -382,10 +375,13 @@ For free-text input that isn't a path, answer from the memory, not from thin air
    "I don't have anything on {topic} yet. Want me to sync a folder? Which one?" Then hand
    off to Sync with that scope.
 3. **Ground every claim** — cite note id and capture date; never invent one.
-4. **Match the shape of the ask** — a `chat` question wants actions with `who`/`ask`/`due`
+4. **Open by default.** A `chat` question ("what did Slack ask me to do") returns
+   `status: open` only, and says so: "(3 done, hidden — add `--all`)". Listing handled
+   work back at the user every time is what turns a todo list into a worry list.
+5. **Match the shape of the ask** — a `chat` question wants actions with `who`/`ask`/`due`
    ordered by due date, not prose; `product` wants a table grouped by vendor with prices;
    a course cluster wants capture order, so it reads as a study sequence.
-5. **Confidence-aware** — flag any answer leaning on a low-confidence note. **Respect
+6. **Confidence-aware** — flag any answer leaning on a low-confidence note. **Respect
    `sensitive`**: never quote an image-only note; say it exists, when, and that its
    contents were deliberately not recorded. Offer to render a substantial result as a
    cluster page.

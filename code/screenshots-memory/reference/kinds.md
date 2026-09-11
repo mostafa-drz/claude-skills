@@ -56,6 +56,7 @@ Slack, Teams, iMessage, WhatsApp, email threads, comment threads. These are freq
 | `channel` | channel, thread, or conversation name |
 | `ask` | the actual request, in one imperative line. Null if nothing is being asked. |
 | `due` | any date or deadline mentioned, resolved to `YYYY-MM-DD` against the capture date |
+| `status` | `open` on extraction whenever `ask` is non-null; `/screenshots-memory done` flips it |
 
 Extraction notes: "by Friday" on a capture from Wednesday 2026-09-09 resolves to
 2026-09-11 — resolve it, and say you did. If the thread has several messages, the `ask`
