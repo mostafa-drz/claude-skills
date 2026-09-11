@@ -32,7 +32,7 @@
     font:15px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     -webkit-font-smoothing:antialiased;
   }
-  .wrap{max-width:1080px;margin:0 auto;padding:48px 20px 80px}
+  .wrap{max-width:1200px;margin:0 auto;padding:48px 20px 80px}
   header h1{font-size:2rem;letter-spacing:-.02em;margin:0 0 8px;display:flex;align-items:center;gap:12px}
   header h1 svg{width:32px;height:32px;color:var(--primary);flex:none}
   .sub{color:var(--text-2);margin:0 0 28px;max-width:60ch}
@@ -53,7 +53,7 @@
   .chip:hover{border-color:var(--primary);color:var(--text)}
   .chip[aria-pressed=true]{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:600}
   .count{margin-left:auto;color:var(--text-2);font-size:.82rem}
-  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));margin-top:18px}
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(460px,1fr));align-items:start;margin-top:18px}
   .card{
     background:var(--surface);border:1px solid var(--border);border-radius:14px;
     padding:16px 17px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:9px;
@@ -68,15 +68,21 @@
   .desc{margin:0;color:var(--text-2);font-size:.88rem}
   .trigger{margin:0;font-size:.82rem;color:var(--text-2)}
   .trigger b{color:var(--text);font-weight:600}
-  .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto;padding-top:4px}
+  .tags{display:flex;flex-wrap:wrap;gap:5px;padding-top:2px}
   .tag{font-size:.7rem;padding:2px 8px;border-radius:99px;background:var(--surface-2);color:var(--text-2);border:1px solid var(--border)}
-  .install{margin-top:8px;display:flex;gap:8px;align-items:center}
-  .install code{
-    flex:1;min-width:0;overflow-x:auto;white-space:nowrap;font-size:.74rem;
-    background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:7px 10px;
-    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  .install{
+    margin-top:10px;display:flex;gap:8px;align-items:flex-start;
+    background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:8px 8px 8px 11px;
   }
-  .copy{font:inherit;font-size:.74rem;padding:7px 11px;border-radius:8px;cursor:pointer;background:var(--bg);border:1px solid var(--border);color:var(--text-2);white-space:nowrap}
+  .install code{
+    flex:1;min-width:0;font-size:.74rem;line-height:1.55;
+    white-space:pre-wrap;overflow-wrap:anywhere;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--text);
+  }
+  .copy{
+    flex:none;font:inherit;font-size:.72rem;padding:5px 11px;border-radius:7px;cursor:pointer;
+    background:var(--bg);border:1px solid var(--border);color:var(--text-2);white-space:nowrap;
+  }
   .copy:hover{border-color:var(--primary);color:var(--primary)}
   .copy.done{background:var(--good);border-color:var(--good);color:#fff}
   .note{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--primary);border-radius:10px;padding:14px 16px;margin:26px 0;font-size:.88rem}
@@ -84,7 +90,14 @@
   .msg{color:var(--text-2);padding:32px 0;text-align:center}
   footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--border);color:var(--text-2);font-size:.82rem}
   footer a{color:var(--primary)}
-  @media (max-width:520px){.wrap{padding:32px 16px 60px}header h1{font-size:1.55rem}.count{margin-left:0;width:100%}}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  @media (max-width:520px){
+    .wrap{padding:32px 16px 60px}
+    header h1{font-size:1.55rem}
+    .count{margin-left:0;width:100%}
+    .install{flex-direction:column;align-items:stretch;gap:7px}
+    .copy{align-self:flex-end}
+  }
 </style>
 </head>
 <body>
