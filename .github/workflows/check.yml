@@ -1,0 +1,20 @@
+name: check
+
+# The catalog is generated from each SKILL.md frontmatter, and frontmatter errors
+# fail soft in Claude Code — a broken skill keeps answering /name while automatic
+# invocation silently stops. This job is where either problem surfaces.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Catalog is current and frontmatter parses
+        run: make check

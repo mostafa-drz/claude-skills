@@ -1,7 +1,8 @@
 ---
 name: next-steps
-description: Generate a stakeholder-aligned next-steps checklist for a multi-stakeholder project from the current conversation and connected context. Use when the user has just had a working session and now needs to align teammates (PM, design, engineering, leadership) on what happens next, who owns it, and what's blocked. Output is grouped by owner, prioritised, and pasteable into Slack/Notion/Linear.
+description: Generates a stakeholder-aligned next-steps checklist for a multi-stakeholder project from the current conversation and connected context. Use when the user has just had a working session and now needs to align teammates (PM, design, engineering, leadership) on what happens next, who owns it, and what's blocked. Output is grouped by owner, prioritised, and pasteable into Slack/Notion/Linear.
 user-invocable: true
+disable-model-invocation: true
 arguments: [scope-hint]
 allowed-tools:
   - Read
