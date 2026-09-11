@@ -60,10 +60,10 @@ If it's missing, treat this as first-run (see **First-time detection**)._
 Defaults when no preferences exist:
 - `memory-root`: `~/screenshots-memory/` (confirmed on first run; git-init'd so every change is diffable and revertible)
 - `inbox`: `~/Desktop` (where loose screenshots pile up; synced when no path is given)
-- `originals`: `move` (`move` = once the store's copy is committed and hash-verified, the inbox original is **deleted** — the store becomes the only copy · `copy` = inbox original left alone)
+- `originals`: `move` (`move` = once the store's copy is committed and byte-verified, the inbox original goes to the **Trash**; the store becomes the only copy outside it · `copy` = inbox original left alone)
 - `confidence-threshold`: `0.75` (extractions below this are flagged for `review`, never silently trusted)
 - `cluster-style`: `topic` (subject-based; `kind` is a filter chip on the page, not a folder)
-- `sensitive-policy`: `ask-batched` (flag during extraction; ask about all of them in one round once every batch has been read)
+- `sensitive-policy`: `ask-once` (flag during extraction; ask about all of them in a single round once every capture has been read)
 - `open-html`: `true` (auto-open the cluster HTML when a sync finishes)
 - `tone`: `friendly-cli` (terse, warm, direct)
 
@@ -109,8 +109,9 @@ cluster count, how many are flagged for review).
 
 ## Config
 
-Load [`reference/interface.md`](./reference/interface.md): it carries both the
-`AskUserQuestion` items and the `preferences.md` file format to save them to. The kind
+Load [`reference/interface.md`](./reference/interface.md): it carries the
+`AskUserQuestion` items — **two rounds, since the tool caps at four questions per call** —
+and the `preferences.md` file format to save them to. The kind
 registry lives in `{memory-root}/kinds.md`, not in preferences.
 
 ## Reset
@@ -218,9 +219,9 @@ Sync plan:
   ├── Window:      {since Nd or "all"}
   ├── Found:       {N} screenshots  ({D} already in memory, skipped)
   ├── To read:     {M} images · ~{X} MB · {B} batches of ~20
-  ├── Originals:   DELETED from {source} once the store's copy is committed and
-  │                hash-verified — the store becomes the only copy. This is the only
-  │                irreversible thing I do. (Set `originals: copy` to leave them.)
+  ├── Originals:   moved to your TRASH from {source} once the store's copy is committed
+  │                and byte-verified — the store becomes the only copy outside it.
+  │                The only irreversible step I take. (`originals: copy` leaves them.)
   └── Store:       {memory-root}  (local git, no remote)
 
 Reply 'go' to extract, or tweak the scope.  (add --yes next time to skip this)
@@ -324,8 +325,9 @@ sync's preflight check 3 fire falsely, which trains the user to wave it through.
 
 ### Step 8 — Delete the inbox originals (last, never first)
 
-Only if `originals: move`. Say "deleted", not "moved" or "retired" — the user is entitled
-to know the store becomes the only copy.
+Only if `originals: move`. Say **"moved to your Trash"** — not "retired", which hides it,
+and not "deleted", which overstates it. The user is entitled to know the store is now the
+only copy outside the Trash, and that the Trash is a real recovery.
 
 **Verify the committed bytes, not the working-tree file.** Per original:
 
@@ -339,17 +341,16 @@ must exist. **Never hash the working-tree file instead** — and never substitut
 `git log -- <path>`; [`reference/memory-schema.md`](./reference/memory-schema.md) explains
 what each of those misses and why it destroys data silently.
 
-Then **move the original to the system trash** (`~/.Trash` on macOS), not `rm`: failures
-here are silent at deletion and found days later. No trash directory → `rm`, and say so.
+Then **move it to the system trash** (`~/.Trash` on macOS), not `rm`: failures here are
+silent and found days later. No trash directory → `rm`, and say so.
 
-- Delete **only** files this sync wrote a note for — never a folder, never a skipped file,
-  never anything discovery didn't select. A capture **skipped entirely** stays put. An
-  unreadable one still gets a flagged note and is still deleted: nothing silently lost.
-- If Step 7's commit failed, **delete nothing**. A failed check leaves that original alone,
+- Move **only** files this sync wrote a note for — never a folder, never a skipped file,
+  never anything discovery didn't select. A **skipped** capture stays put; an unreadable
+  one still gets a flagged note and still moves, so nothing is silently lost.
+- If Step 7's commit failed, **move nothing**. A failed check leaves that original alone,
   is reported, and does not abort the batch.
 
-The sweep is **resumable and idempotent**: the note and asset are already committed, so an
-interruption is harmless and a re-run dedupes by hash.
+The sweep is **resumable and idempotent** — the note and asset are already committed, so an interruption is harmless and a re-run dedupes by hash.
 
 Then print the sync report from [`reference/interface.md`](./reference/interface.md), and
 if `open-html: true`, open `{memory-root}/html/index.html`.
@@ -379,9 +380,8 @@ For free-text input that isn't a path, answer from the memory, not from thin air
 2. **Empty-memory bridge** — if nothing matches, don't dead-end: "I don't have anything on
    {topic} yet. Want me to sync a folder? Which one?" Then hand off to Sync with that scope.
 3. **Ground every claim** — cite note id and capture date; never invent one.
-4. **Open by default.** A `chat` question ("what did Slack ask me to do") returns
-   `status: open` only, and says so: "(3 done, hidden — add `--all`)". Listing handled
-   work back at the user every time is what turns a todo list into a worry list.
+4. **Open by default.** A `chat` question returns `status: open` only, saying "(3 done,
+   hidden — add `--all`)" — listing handled work back every time makes it a worry list.
 5. **Match the shape of the ask** — a `chat` question wants actions with `who`/`ask`/`due`
    ordered by due date, not prose; `product` wants a table grouped by vendor with prices;
    a course cluster wants capture order, so it reads as a study sequence.

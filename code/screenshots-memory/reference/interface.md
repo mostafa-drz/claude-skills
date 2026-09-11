@@ -11,6 +11,7 @@ Print this, filling in the user's actual preferences:
 screenshots-memory — Screenshots → a queryable, private memory
 
   sync [path|glob] [--since Nd] [--kind k] [--yes]   Pull new captures, extract, cluster
+                                    (with originals: move, originals go to the Trash)
   <question>                        Ask the memory in plain language
   review [--min-confidence 0-1]     Correct low-confidence reads (teaches the extractor)
   review --apply <json block>       Apply reviews collected in the HTML page
@@ -36,15 +37,20 @@ Current preferences:
 
 ## Config
 
-Fire ONE `AskUserQuestion` (multi-question) to collect:
+`AskUserQuestion` accepts at most **four** questions per call, so ask in two rounds.
 
+Round 1 — the four that change what the skill does:
 1. **Memory root** — where the memory store lives (default `~/screenshots-memory/`)
-2. **Inbox** — the folder that gets swept when no path is given (default `~/Desktop`)
-3. **Open HTML after a sync?** — `open-html`, default yes
-4. **Originals** — `move` (once the store's copy is committed and hash-verified, the
-   inbox original is **deleted**; the store becomes the only copy) or `copy` (leaves the
-   inbox untouched). Say "deleted" when asking — this is the skill's only irreversible act.
-5. **Confidence threshold** — how sure the reader must be before a note is trusted (default `0.75`)
+2. **Inbox** — the folder swept when no path is given (default `~/Desktop`)
+3. **Originals** — `move` (once the store's copy is committed and hash-verified, the inbox
+   original goes to your Trash; the store becomes the only copy outside it) or `copy`
+   (leaves the inbox untouched). Say "Trash", not "retired" — this is the only
+   irreversible act.
+4. **Confidence threshold** — how sure the reader must be before a note is trusted
+   (default `0.75`)
+
+Round 2 — presentation, and skippable:
+5. **Open the HTML after a sync?** — `open-html`, default yes
 6. **Tone** — `friendly-cli` / `detailed` / `minimal`
 
 Save to `~/.claude/skills/screenshots-memory/preferences.md`:
@@ -59,7 +65,7 @@ Updated: {date}
 - originals: {move|copy}
 - confidence-threshold: {0-1}
 - cluster-style: topic
-- sensitive-policy: ask-batched
+- sensitive-policy: ask-once
 - open-html: {true|false}
 - tone: {friendly-cli|detailed|minimal}
 
@@ -91,7 +97,7 @@ First time running /screenshots-memory — here's the shape of it:
 
   Three promises, because this skill touches your files:
     · Your memory store is a LOCAL git repo with no remote. It is never pushed.
-    · An original leaves your Desktop only after its note is committed and verified.
+    · An original goes to your Trash only after its note is committed and byte-verified.
     · Anything sensitive gets flagged and I ask before writing it down.
 
   Nothing I'm unsure about gets silently guessed — it gets flagged. When you run
@@ -103,11 +109,12 @@ First time running /screenshots-memory — here's the shape of it:
 
 ## Sensitive round prompt
 
-Asked once per batch, never per capture.
+Asked once, after every capture has been read — never per batch, never per capture.
 
 ```
-2 of 27 captures look sensitive. The image is stored unless you skip it entirely;
-otherwise this is only about whether I write the text into the repo.
+All 27 read. 2 look sensitive — this is the only time I'll ask.
+The image is stored unless you skip it entirely; otherwise this is only about
+whether I write the text into the repo.
 
   1. Banking dashboard — RBC, balance visible      (Screenshot … 1.22.32 PM)
   2. Terminal showing what looks like an API token (Screenshot … 10.16.52 AM)
@@ -121,7 +128,7 @@ Synced {N} screenshots → {new} new notes, {dupes} already known.
   Clusters:   {list}
   Guide:      {R} rules · used on {G} of {N} captures ({top rules})
   Sensitive:  {s} stored image-only, {d} declined
-  Inbox:      {M} originals deleted (store is now the only copy) · {left} left in place
+  Inbox:      {M} originals → Trash (store is now the only copy) · {left} left in place
   ⚠ Flagged for review ({f}, confidence < {threshold}):  {short list}
 
 Next:  /screenshots-memory review   ·   /screenshots-memory clusters
