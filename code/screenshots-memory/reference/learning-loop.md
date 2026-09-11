@@ -49,7 +49,7 @@ note ids that produced it:
 
 ```markdown
 - Slack is the dark sidebar with `#` channels — not Discord.
-  _from 2026-09-11-slack-diego-abi-deadline, 2026-09-04-slack-standup (stated as a rule)_
+  _from 2026-09-11-slack-sam-acme-deadline, 2026-09-04-slack-standup (stated as a rule)_
 ```
 
 That makes the guide auditable: the user can see why the extractor believes something, and
@@ -91,14 +91,14 @@ fence and ignore the repeated command line.
 
 ```json
 [
-  { "id": "2026-09-11-slack-diego-abi-deadline",
+  { "id": "2026-09-11-slack-sam-acme-deadline",
     "hash": "sha256:9f2c…", "app": "Slack", "kind": "chat",
     "captured": "2026-09-11T16:46:23Z", "extracted_at": "2026-09-11T18:20:00Z",
     "savedAt": "2026-09-11T18:41:02.512Z",
     "verdict": "fix",
-    "text": "Diego needs the ABI Canada requirements doc confirmed by Friday.",
+    "text": "Sam needs the Acme Canada requirements doc confirmed by Friday.",
     "reassign": null,
-    "lesson": "ABI is a client, not a typo" }
+    "lesson": "Acme is a client, not a typo" }
 ]
 ```
 

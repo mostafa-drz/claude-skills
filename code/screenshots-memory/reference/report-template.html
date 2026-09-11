@@ -7,7 +7,7 @@
   Placeholders the renderer fills:
     {{CLUSTER_TITLE}} {{CLUSTER_SUMMARY}} {{DATE_RANGE}} {{NOTE_COUNT}} {{AVG_CONFIDENCE}}
     {{ICON_SVG}}             inline icon.svg, ~32px, accent-coloured
-    {{ENTITY_CHIPS}}         <button class="chip" data-facet="ABI" aria-pressed="false">ABI</button>
+    {{ENTITY_CHIPS}}         <button class="chip" data-facet="Acme" aria-pressed="false">Acme</button>
     {{KIND_CHIPS}}           same, one per kind present in this cluster
     {{NOTE_CARDS}}           one <article class="card"> per note (sample below)
     {{GENERATED_AT}}         render timestamp, shown in the footer
@@ -20,7 +20,7 @@
       An AND would empty the page after two clicks. Each card carries
       data-facets="kind|tag|tag|Entity" (pipe-separated, matched case-insensitively),
       so filtering needs no lookup table. The "⚠ Needs review" switch is a QUALITY
-      facet, not a subject one, so it ANDs with the chips: "flagged captures about ABI".
+      facet, not a subject one, so it ANDs with the chips: "flagged captures about Acme".
 
   (2) REVIEW. Each card opens a native [popover] with a verdict — reads correctly /
       fix the text / wrong kind, tags or cluster. Each verdict reveals only the field
@@ -284,8 +284,8 @@
     handoff block; data-app and data-kind travel with it for context.
 
     <article class="card flag" data-confidence="0.62" data-captured="2026-09-11"
-             data-facets="chat|abi|deadline|Diego|ABI"
-             data-note-id="2026-09-11-slack-diego-abi-deadline"
+             data-facets="chat|acme|deadline|Sam|Acme"
+             data-note-id="2026-09-11-slack-sam-acme-deadline"
              data-hash="sha256:9f2c4b1e" data-app="Slack" data-kind="chat"
              data-reviewed="false" data-extracted-at="2026-09-11T18:20:00Z">
       <div class="head">
@@ -294,12 +294,12 @@
         so the user can see what they already confirmed with the switch off.
         <button class="chip kind" data-facet="chat" aria-pressed="false">chat</button>
         <span class="prov">📸 Slack · captured 2026-09-11</span>
-        <button class="rev-open" popovertarget="rev-abi">Review</button>
+        <button class="rev-open" popovertarget="rev-acme">Review</button>
       </div>
-      <div class="thumb"><img src="assets/2026-09-11-slack-diego-abi-deadline.png"
-                              alt="Slack message from Diego about the ABI Canada requirements doc"></div>
+      <div class="thumb"><img src="assets/2026-09-11-slack-sam-acme-deadline.png"
+                              alt="Slack message from Sam about the Acme Canada requirements doc"></div>
       <div class="body">
-        <p>Diego asked in <strong>#abi-canada</strong> whether the requirements doc is confirmed.</p>
+        <p>Sam asked in <strong>#acme-canada</strong> whether the requirements doc is confirmed.</p>
         <p>Thread also mentions <mark class="uncertain">Priya?</mark> is handling legal review.</p>
       </div>
 
@@ -308,13 +308,13 @@
       rather than invented.
 
       <dl class="fields">
-        <dt>who</dt><dd>Diego</dd>
-        <dt>channel</dt><dd>#abi-canada</dd>
+        <dt>who</dt><dd>Sam</dd>
+        <dt>channel</dt><dd>#acme-canada</dd>
         <dt>ask</dt><dd>Confirm the Canada requirements doc</dd>
         <dt>due</dt><dd>2026-09-13</dd>
       </dl>
       <div class="foot">
-        <button class="chip" data-facet="abi" aria-pressed="false">abi</button>
+        <button class="chip" data-facet="acme" aria-pressed="false">acme</button>
         <button class="chip" data-facet="deadline" aria-pressed="false">deadline</button>
         <span class="review-hint">Flagged — low confidence</span>
       </div>
@@ -326,7 +326,7 @@
       The textarea is pre-filled with the plain-text extraction so a fix is an
       edit, not a retype.
 
-      <div popover id="rev-abi" class="pop">
+      <div popover id="rev-acme" class="pop">
         <h4>Slack · 2026-09-11 — review</h4>
         <p class="prov">📸 Slack · captured 2026-09-11 · chat · confidence 62%</p>
         <div class="verdicts" role="group" aria-label="Verdict">
