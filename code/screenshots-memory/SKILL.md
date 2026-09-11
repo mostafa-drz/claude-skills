@@ -178,10 +178,9 @@ Parse `$ARGUMENTS`:
 
 **Discovery rules differ by scope, deliberately:**
 - **Inbox sweep** — only what macOS itself calls a screenshot:
-  `mdfind -onlyin {inbox} 'kMDItemIsScreenCapture == 1'`. This is what makes a sweep
-  safe: it can never pick up a folder, a document, or a photo the user merely saved there.
-- **Explicit path** — any image (`png jpg jpeg heic webp`). Pointing at a photographed
-  whiteboard or a saved product image is a deliberate choice, and it's honoured.
+  `mdfind -onlyin {inbox} 'kMDItemIsScreenCapture == 1'`. That is what makes a sweep safe:
+  it can never pick up a folder, a document, or a photo merely saved there.
+- **Explicit path** — any image (`png jpg jpeg heic webp`); deliberate, so honoured.
 
 On Linux, or if `mdfind` returns nothing on a folder that clearly holds screenshots, fall
 back to filename patterns (`Screenshot*`, `Screen Shot*`, `CleanShot*`) **and say you
@@ -227,16 +226,23 @@ Sync plan:
 Reply 'go' to extract, or tweak the scope.  (add --yes next time to skip this)
 ```
 
-**Be honest when the batch is big.** Every screenshot is a vision read. Above ~40, say so
-and offer to narrow with `--since` or run in batches — a first sync against a neglected
-folder can be hundreds of images.
+**Be honest when it's big.** Every screenshot is a vision read; a neglected folder can be
+hundreds. Above ~40 say so and offer `--since`. Batches mean interruption is never total.
+
+### Steps 4-8 run in checkpointed batches
+
+Work in batches of ~20 captures, each running Steps 4→8 to completion — extract, ask,
+cluster, **commit**, delete. Do not read 200 images and write nothing until the end: an
+interruption there loses every read, and on a long-neglected folder that is the whole
+sync. With batches, a failure costs at most the current batch, and re-running resumes
+automatically because Step 2 dedupes by hash. Report progress per batch.
 
 ### Step 4 — Extract (Claude vision + learned guide)
 
 **Read each image directly.** No OCR service, no API key, nothing leaves the machine.
 
-**Load `{memory-root}/extraction-guide.md` and `{memory-root}/kinds.md` first** and
-treat them as ground truth about this user's screen. For each screenshot produce:
+**Load `{memory-root}/extraction-guide.md` and `{memory-root}/kinds.md` first**, as ground
+truth about this user's screen. For each screenshot produce:
 
 1. **`kind`** — classify first; it decides everything downstream. Ships with `course`,
    `chat`, `product`, `ui`, `other`. If a capture fits none well, say so and propose a
@@ -248,16 +254,16 @@ treat them as ground truth about this user's screen. For each screenshot produce
    [`reference/kinds.md`](./reference/kinds.md). A field not visible in the capture is
    omitted, never invented.
 5. **`text`** — **structured extraction plus key quotes**, not a transcription. Keep the
-   lines that carry the meaning verbatim and summarise the rest: a long article becomes
-   its claim and two quotable lines, not four paragraphs of OCR. Mark a genuinely
-   ambiguous word `⟨uncertain: word?⟩` inline rather than guessing it.
+   meaningful lines verbatim, summarise the rest: a long article becomes its claim and two
+   quotable lines, not four paragraphs of OCR. Mark an ambiguous word
+   `⟨uncertain: word?⟩` rather than guessing.
 6. **`tags`, `entities`** — topics and named things (people, products, projects, clients).
    Also record `applied_rules` — which guide rules you actually used on this capture.
    The sync report counts them; without the field, that count would be fiction.
 7. **`confidence`** — 0-1, honest. Crisp UI text → high; low-contrast, tiny, cropped
    mid-word or mostly-visual → lower. It measures *how well you read the pixels*, nothing else.
 8. **`sensitive`** — true for credentials, tokens, banking or card details, medical
-   information, private DMs, or anything else that shouldn't become plain text in a repo.
+   information, private DMs, or anything else that shouldn't be plain text in a repo.
    **Flag, keep going — do not ask yet.**
 
 ### Step 5 — Sensitive review (one batched round)
@@ -266,12 +272,11 @@ If anything was flagged, ask about **all of it in a single round** before writin
 notes — never one interruption per screenshot:
 
 ```
-3 of 27 captures look sensitive. The image is stored unless you skip it entirely;
+2 of 27 captures look sensitive. The image is stored unless you skip it entirely;
 otherwise this is only about whether I write the text into the repo.
 
   1. Banking dashboard — RBC, balance visible      (Screenshot … 1.22.32 PM)
-  2. DM with Diego — appears personal              (Screenshot … 9.28.31 AM)
-  3. Terminal showing what looks like an API token (Screenshot … 10.16.52 AM)
+  2. Terminal showing what looks like an API token (Screenshot … 10.16.52 AM)
 ```
 
 Offer per item: **Extract normally** · **Store image only** (keeps kind, date and
@@ -288,10 +293,9 @@ without leaking its contents.
 
 Assign each note to a **topic** cluster — the subject, not the kind. Since `kind` is a
 filter chip, a product shot of a lamp and a UI shot of a room planner can share a
-`home-design` cluster. Reuse an existing cluster when the subject matches (check
-`memory.json → clusters`); create one only when nothing fits. Write/update
-`{memory-root}/clusters/{slug}/cluster.md` (title, summary, member ids, entities, kind
-mix, date range).
+`home-design` cluster. Reuse an existing cluster when the subject matches (check `memory.json → clusters`);
+create one only when nothing fits. Write/update `{memory-root}/clusters/{slug}/cluster.md`
+(title, summary, member ids, entities, kind mix, date range).
 
 ### Step 7 — Write, render, commit
 
@@ -308,9 +312,9 @@ mix, date range).
 2. Copy the image to `{memory-root}/assets/{id}.png`.
 3. Update `memory.json`: append notes, refresh clusters, set `last_sync`.
 4. Render HTML (see **Render**) for touched clusters + the top-level index.
-5. Commit **the paths this sync touched** — `notes/`, `assets/`, `memory.json`,
-   `clusters/`, `html/` — not `add -A`. Check 3 can be waived by the user, and `-A` would
-   then sweep their unrelated hand edits into the sync commit.
+5. Commit **only the paths this sync touched** — `notes/`, `assets/`, `memory.json`,
+   `clusters/`, `html/` — never `add -A`, which on check 3's waived branch would sweep
+   the user's unrelated hand edits into the sync commit.
 
 **The tree must be clean when this step ends.** Verify with `git -C {memory-root} status
 --porcelain` and stop if it isn't — a sync that leaves the store dirty makes the next
@@ -377,15 +381,14 @@ For free-text input that isn't a path, answer from the memory, not from thin air
 2. **Empty-memory bridge** — if nothing matches (common on a fresh install), don't dead-end:
    "I don't have anything on {topic} yet. Want me to sync a folder? Which one?" Then hand
    off to Sync with that scope.
-3. **Ground every claim** — cite the note id and capture date. Never invent a capture.
+3. **Ground every claim** — cite note id and capture date; never invent one.
 4. **Match the shape of the ask** — a `chat` question wants actions with `who`/`ask`/`due`
    ordered by due date, not prose; `product` wants a table grouped by vendor with prices;
    a course cluster wants capture order, so it reads as a study sequence.
-5. **Confidence-aware** — when an answer leans on a low-confidence note, say so:
-   "(from a capture I only read at 0.6 — worth a `review`)".
-6. **Respect `sensitive`** — never quote an image-only note. Say it exists, when it was
-   captured, and that its contents were deliberately not recorded.
-7. Offer to render the result as a cluster page if it's substantial.
+5. **Confidence-aware** — flag any answer leaning on a low-confidence note. **Respect
+   `sensitive`**: never quote an image-only note; say it exists, when, and that its
+   contents were deliberately not recorded. Offer to render a substantial result as a
+   cluster page.
 
 ## Render — HTML per cluster
 
@@ -393,20 +396,19 @@ Generate a **single self-contained** `index.html` per cluster plus a top-level
 `{memory-root}/html/index.html` browser, using `reference/report-template.html` for the
 canonical CSS and JS so pages can never drift from each other.
 
-**Load [`reference/render.md`](./reference/render.md) before rendering.** It carries the
-page layout, the note-card anatomy, the filter-chip contract (chips OR together; the
-⚠ Needs review switch ANDs), and the review-popover rules that keep a half-finished
-correction from ever reaching the store.
+**Load [`reference/render.md`](./reference/render.md) before rendering** — page layout,
+note-card anatomy, the filter-chip contract (chips OR; ⚠ Needs review ANDs), and the
+popover rules that keep a half-finished correction from reaching the store.
 
 **Rendering writes into the store, so it commits.** Every re-render path — sync,
 `review --apply`, or a bare `clusters`/`browse` — commits `clusters/` and `html/` when
 anything changed and says "already current" when nothing did. Uncommitted render output
 would make the next preflight fire falsely.
 
-**`flag` means low-confidence AND unreviewed — never low-confidence alone**, and every
-card carries `data-reviewed`. Since a verdict of `ok` deliberately leaves `confidence`
-untouched, flagging on confidence alone would strand every confirmed note in the review
-view forever and drift the two review queues apart.
+**`flag` means low-confidence AND unreviewed — never low-confidence alone**, and every card
+carries `data-reviewed`. Since `ok` deliberately leaves `confidence` untouched, flagging on
+confidence alone would strand confirmed notes in the review view and drift the two queues
+apart.
 
 The one thing that silently breaks a page: cluster pages live at
 `clusters/<slug>/index.html`, so every referenced image must be copied into that
@@ -422,19 +424,17 @@ human-readable and revertible.
 1. Build the queue from **two** groups, and say so:
    - notes with `reviewed: false` and `confidence < confidence-threshold` (or
      `--min-confidence`), lowest first — these were hard to *read*;
-   - plus a handful of **unreviewed high-confidence** notes, biased toward apps with no
-     guide entry yet: "8 flagged as hard to read, plus 5 I read confidently that you've
-     never checked."
+   - plus a few **unreviewed high-confidence** notes, biased toward apps with no guide
+     entry: "8 flagged as hard to read, plus 5 I read confidently you've never checked."
 
    Confidence measures legibility only, so a Slack window confidently labelled Discord
    scores ~0.93 and never surfaces — yet Principle 6 calls a wrong kind the worse error.
    A queue selecting purely on transcription quality cannot catch the very mistake this
    skill's own example lesson fixes. `review --all` walks everything unreviewed.
-2. **Offer the page first.** If more than ~5 are flagged, render/refresh the affected
-   cluster HTML and send the user there: the **⚠ Needs review** switch shows only
-   flagged captures, and each card's Review popover captures a verdict against the
-   actual image — far faster than walking them in the terminal. Tell them to hit **Copy
-   for Claude** when done and paste it back. Then stop and wait.
+2. **Offer the page first.** Above ~5 flagged, render/refresh the affected cluster HTML
+   and send the user there: the **⚠ Needs review** switch shows only those, and each
+   card's popover takes a verdict against the actual image — far faster than the
+   terminal. Tell them to hit **Copy for Claude** and paste it back, then stop and wait.
    If they'd rather stay in the terminal, continue with step 3.
 3. For each remaining (one at a time), show the screenshot and the current extraction,
    then ask via `AskUserQuestion`:
