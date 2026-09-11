@@ -1,4 +1,10 @@
-.PHONY: catalog check serve
+.PHONY: catalog check serve deps
+
+# Both scripts parse frontmatter with PyYAML. Using the same parser for generation and
+# validation is deliberate: a regex reader can publish a value the validator read
+# differently, so the manifest could disagree with the YAML it was checked against.
+deps:
+	@python3 -c "import yaml" 2>/dev/null || pip install pyyaml
 
 # Regenerate the README skill catalog from each SKILL.md frontmatter.
 catalog:

@@ -21,39 +21,34 @@ import sys
 from datetime import date
 from pathlib import Path
 
+try:
+    import yaml
+except ImportError:  # pragma: no cover
+    sys.exit(
+        "PyYAML is required: the catalog must be built by the same parser that validates\n"
+        "the frontmatter, or the published manifest can disagree with its own source.\n"
+        "Install it with: pip install pyyaml"
+    )
+
 ROOT = Path(__file__).resolve().parent.parent
 START = "<!-- BEGIN GENERATED CATALOG -->"
 END = "<!-- END GENERATED CATALOG -->"
 
 
 def frontmatter(path: Path) -> dict:
-    """Parse just enough YAML for our fields. Avoids a PyYAML dependency so the
-    check runs anywhere, and tolerates the block scalars (`>-`) used throughout."""
+    """Parse the YAML frontmatter. Uses the same parser as check_frontmatter, so a file
+    that validates cannot produce a different manifest than the one it was checked as."""
     text = path.read_text()
     if not text.startswith("---\n"):
         return {}
-    body = text.split("---\n", 2)[1]
-    out, key, buf = {}, None, []
-
-    def flush():
-        if key:
-            out[key] = " ".join(w.strip() for w in buf).strip()
-
-    for line in body.split("\n"):
-        m = re.match(r"^([a-zA-Z][\w-]*):\s*(.*)$", line)
-        if m:
-            flush()
-            key, rest = m.group(1), m.group(2).strip()
-            buf = [] if rest in (">-", "|", ">", "|-", "") else [rest]
-        elif key and (line.startswith("  ") or line.startswith("\t")):
-            buf.append(line)
-        elif line.strip() == "":
-            continue
-        else:
-            flush()
-            key, buf = None, []
-    flush()
-    return {k: v.strip().strip('"').strip("'") for k, v in out.items()}
+    try:
+        parsed = yaml.safe_load(text.split("---\n", 2)[1])
+    except yaml.YAMLError:
+        # `make check` reports this properly; the catalog just skips the metadata.
+        return {}
+    if not isinstance(parsed, dict):
+        return {}
+    return {k: ("" if v is None else v) for k, v in parsed.items()}
 
 
 def skills():
@@ -61,10 +56,10 @@ def skills():
         for skill_md in sorted((ROOT / platform).glob("*/SKILL.md")):
             d = skill_md.parent
             fm = frontmatter(skill_md)
-            desc = re.sub(r"\s+", " ", fm.get("description", "")).strip()
+            desc = re.sub(r"\s+", " ", str(fm.get("description", ""))).strip()
             # The catalog is an index, not a spec — one sentence is the right size.
             first = re.split(r"(?<=[.!?])\s+", desc)[0] if desc else "_(no description)_"
-            meta = fm_block_metadata(skill_md)
+            meta = fm_block_metadata(fm)
             yield {
                 "name": d.name,
                 "platform": platform,
@@ -74,8 +69,8 @@ def skills():
                 # Derived, never hand-set: the frontmatter already states it.
                 "side_effects": side_effects(platform, fm, meta),
                 "description": desc,
-                "trigger": meta.get("trigger", ""),
-                "tags": [t.strip() for t in meta.get("tags", "").split(",") if t.strip()],
+                "trigger": str(meta.get("trigger", "")),
+                "tags": [t.strip() for t in str(meta.get("tags", "")).split(",") if t.strip()],
             }
 
 
@@ -91,25 +86,10 @@ def side_effects(platform: str, fm: dict, meta: dict) -> bool:
     return str(fm.get("disable-model-invocation", "")).lower() in TRUE
 
 
-def fm_block_metadata(path: Path) -> dict:
-    """Read the nested `metadata:` map. Curated per-skill data that cannot be derived
-    lives here — the two fields the published manifest needs and nothing else knows."""
-    text = path.read_text()
-    if not text.startswith("---\n"):
-        return {}
-    fm = text.split("---\n", 2)[1]
-    m = re.search(r"^metadata:\n((?:[ \t]+.*\n?)*)", fm, re.M)
-    if not m:
-        return {}
-    out = {}
-    for line in m.group(1).split("\n"):
-        kv = re.match(r"^\s+([\w-]+):\s*(.*)$", line)
-        if kv:
-            v = kv.group(2).strip()
-            if v.startswith('"') and v.endswith('"'):
-                v = json.loads(v)
-            out[kv.group(1)] = v
-    return out
+def fm_block_metadata(fm: dict) -> dict:
+    """Curated per-skill data that nothing else knows, from the frontmatter `metadata` map."""
+    meta = fm.get("metadata")
+    return meta if isinstance(meta, dict) else {}
 
 
 REPO = "https://github.com/mostafa-drz/claude-skills"

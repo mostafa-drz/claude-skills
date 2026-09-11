@@ -2,7 +2,10 @@ preferences.md
 last-audit.md
 feedback-journal.md
 .DS_Store
-.claude/
+# Local session state stays out, but settings.json ships: it carries the project hooks
+# that keep the generated catalog in sync for anyone working in this repo.
+.claude/*
+!.claude/settings.json
 
 # Skill runtime artefacts — user-specific, never publish
 anonymise.deny
