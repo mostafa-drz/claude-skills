@@ -5,7 +5,7 @@ description: >-
   official Claude skills documentation, and best practices. Reports issues, missing
   patterns, and improvement suggestions per skill. Use to keep skills healthy, consistent,
   and up-to-date with the latest standards.
-argument-hint: [skill-name] [--fix] [--verbose]
+argument-hint: "[skill-name] [--fix] [--verbose]"
 disable-model-invocation: true
 allowed-tools:
   - AskUserQuestion

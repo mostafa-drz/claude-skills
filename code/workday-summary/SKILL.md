@@ -5,7 +5,7 @@ description: >-
   conversation history, git commits, Linear tickets, and GitHub PRs. Use when
   ending a session, filling a timesheet, preparing for standup, writing a daily
   log, wrapping up for the day, or when asked what was worked on.
-argument-hint: [--today | --yesterday | --week | --since "date"] [--format bullets|table|full-markdown|plain]
+argument-hint: "[--today | --yesterday | --week | --since \"date\"] [--format bullets|table|full-markdown|plain]"
 disable-model-invocation: true
 allowed-tools:
   - AskUserQuestion

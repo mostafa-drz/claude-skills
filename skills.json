@@ -645,7 +645,7 @@
       "trigger": "Use when asked what they did today or on a given date, for a daily recap, standup prep, or a what-happened-in-my-day view.",
       "tags": [],
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/day-timeline/SKILL.md",
-      "sideEffects": false
+      "sideEffects": true
     },
     {
       "name": "inbox-catchup",
@@ -659,7 +659,7 @@
         "triage"
       ],
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/inbox-catchup/SKILL.md",
-      "sideEffects": false
+      "sideEffects": true
     },
     {
       "name": "remarkable-memory",
@@ -677,7 +677,7 @@
       ],
       "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/remarkable-memory/icon.svg",
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/remarkable-memory/SKILL.md",
-      "sideEffects": false
+      "sideEffects": true
     },
     {
       "name": "research-assistant",

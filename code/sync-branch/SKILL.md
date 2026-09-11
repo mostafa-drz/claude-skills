@@ -4,7 +4,7 @@ description: >-
   Merges one branch into another with conflict handling. Stashes work, updates both
   branches, merges, resolves conflicts preserving both sides, pushes, and restores state.
   Use when keeping a long-lived branch in sync with its upstream.
-argument-hint: [source] [target] [--no-push] [--dry-run]
+argument-hint: "[source] [target] [--no-push] [--dry-run]"
 disable-model-invocation: true
 context: fork
 allowed-tools:

@@ -4,7 +4,7 @@ description: >-
   Publishes personal Claude skills to a GitHub repository for sharing. Copies skill files,
   generates a README catalog, commits, and pushes. Use when ready to share skill updates
   or after creating/updating skills.
-argument-hint: [--preview] [--diff] [--skip-audit]
+argument-hint: "[--preview] [--diff] [--skip-audit]"
 disable-model-invocation: true
 allowed-tools:
   - AskUserQuestion

@@ -72,12 +72,23 @@ def skills():
                 "summary": first,
                 "icon": (d / "icon.svg").exists(),
                 # Derived, never hand-set: the frontmatter already states it.
-                "side_effects": fm.get("disable-model-invocation", "").lower()
-                in ("true", "yes", "on", "1"),
+                "side_effects": side_effects(platform, fm, meta),
                 "description": desc,
                 "trigger": meta.get("trigger", ""),
                 "tags": [t.strip() for t in meta.get("tags", "").split(",") if t.strip()],
             }
+
+
+TRUE = ("true", "yes", "on", "1")
+
+
+def side_effects(platform: str, fm: dict, meta: dict) -> bool:
+    """`disable-model-invocation` is a Claude Code field; Desktop skills don't have it,
+    and declare no allowed-tools either, so nothing about them is derivable. Publishing
+    a Desktop skill that writes files as read-only is the failure this guards."""
+    if platform == "desktop":
+        return str(meta.get("side_effects", "")).lower() in TRUE
+    return str(fm.get("disable-model-invocation", "")).lower() in TRUE
 
 
 def fm_block_metadata(path: Path) -> dict:
@@ -169,12 +180,19 @@ def main():
     rows = list(skills())
 
     mf = ROOT / "skills.json"
-    want = json.dumps(manifest(rows), indent=2, ensure_ascii=False) + "\n"
+    built = manifest(rows)
+    have_raw = mf.read_text() if mf.exists() else ""
+    # Regenerating on a later day must not produce a date-only diff, or every run
+    # creates churn that means nothing and `--check` has to ignore the field to cope.
+    try:
+        prev = json.loads(have_raw)
+        if prev.get("skills") == built["skills"] and prev.get("repo") == built["repo"]:
+            built["updated"] = prev.get("updated", built["updated"])
+    except (ValueError, AttributeError):
+        pass
+    want = json.dumps(built, indent=2, ensure_ascii=False) + "\n"
     if check:
-        have = mf.read_text() if mf.exists() else ""
-        # `updated` is a timestamp; compare everything else.
-        strip = lambda t: re.sub(r'"updated": "[^"]*",\n\s*', "", t)
-        if strip(have) != strip(want):
+        if have_raw != want:
             sys.exit("skills.json is out of date — run `make catalog`.")
     else:
         mf.write_text(want)

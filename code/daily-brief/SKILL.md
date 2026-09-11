@@ -5,7 +5,7 @@ description: >-
   configured sources — PR reviews, new assignments, ticket changes, mentions, and
   CI failures. Use when starting work, catching up after being away, or prepping
   for standup.
-argument-hint: [--since "yesterday"] [--sources github,linear]
+argument-hint: "[--since \"yesterday\"] [--sources github,linear]"
 context: fork
 allowed-tools:
   - AskUserQuestion

@@ -10,7 +10,7 @@ description: >-
   "step me through", "walk me through", "let's triage", "next item", or
   otherwise wants interactive per-item review of a previous response. Works
   on any enumerated content — not just PR reviews.
-argument-hint: [--filter <severity>] [--from <hint>] [--start <n>]
+argument-hint: "[--filter <severity>] [--from <hint>] [--start <n>]"
 disable-model-invocation: true
 allowed-tools:
   - AskUserQuestion

@@ -5,7 +5,7 @@ description: >-
   factual data from the codebase and all available integrations. Outputs polished
   markdown with proper links, ready to copy-paste. Use when responding to PR reviews,
   Slack threads, or any discussion where you want referenceable, factual responses.
-argument-hint: [url] [--brief] [--no-linear]
+argument-hint: "[url] [--brief] [--no-linear]"
 disable-model-invocation: true
 allowed-tools:
   - AskUserQuestion

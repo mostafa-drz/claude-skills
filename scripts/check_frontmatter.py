@@ -16,8 +16,14 @@ import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build_catalog import frontmatter  # noqa: E402
+try:
+    import yaml
+except ImportError:  # pragma: no cover
+    sys.exit(
+        "PyYAML is required: a regex parser cannot tell valid YAML from invalid,\n"
+        "and invalid frontmatter is exactly what this check exists to catch.\n"
+        "Install it with: pip install pyyaml"
+    )
 
 ROOT = Path(__file__).resolve().parent.parent
 NAME_RE = re.compile(r"^(?!-)(?!.*--)[a-z0-9-]{1,64}(?<!-)$")
@@ -33,21 +39,38 @@ def main() -> int:
             if not raw.startswith("---\n"):
                 problems.append(f"{rel}: frontmatter must start on line 1")
                 continue
-            fm = frontmatter(md)
-            desc = fm.get("description", "").strip()
+            try:
+                parsed = yaml.safe_load(raw.split("---\n", 2)[1])
+            except yaml.YAMLError as exc:
+                # Claude Code fails soft here: the body loads with empty metadata, so
+                # the skill answers /name while never auto-matching again.
+                first = str(exc).split("\n")[0]
+                problems.append(f"{rel}: frontmatter is not valid YAML — {first}")
+                continue
+            if not isinstance(parsed, dict):
+                problems.append(f"{rel}: frontmatter is not a YAML mapping")
+                continue
+            fm = {k: ("" if v is None else v) for k, v in parsed.items()}
+            desc = str(fm.get("description", "")).strip()
             if not desc:
                 problems.append(f"{rel}: no description — Claude cannot match this skill")
             elif len(desc) > 1024:
                 problems.append(f"{rel}: description {len(desc)} chars, hard cap is 1024")
-            name = fm.get("name", "").strip()
+            name = str(fm.get("name", "")).strip()
             if name and name != d:
                 problems.append(f"{rel}: name '{name}' != directory '{d}'")
             if name and not NAME_RE.match(name):
                 problems.append(f"{rel}: name '{name}' breaks the spec charset")
-            tools = fm.get("allowed-tools", "")
+            tools = str(fm.get("allowed-tools", ""))
             body_writes = any(t in tools for t in WRITES) or WRITE_BASH.search(tools)
-            if body_writes and fm.get("disable-model-invocation", "").lower() not in ("true", "yes", "on", "1"):
+            if body_writes and str(fm.get("disable-model-invocation", "")).lower() not in ("true", "yes", "on", "1"):
                 problems.append(f"{rel}: can write but no disable-model-invocation: true")
+            meta = fm.get("metadata") or {}
+            if platform == "desktop" and "side_effects" not in meta:
+                problems.append(
+                    f"{rel}: desktop skills must declare metadata.side_effects — "
+                    "disable-model-invocation is Code-only, so it cannot be derived"
+                )
     if problems:
         print(f"{len(problems)} frontmatter problem(s):")
         for p in problems:

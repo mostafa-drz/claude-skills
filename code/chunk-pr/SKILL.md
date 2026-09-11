@@ -8,7 +8,7 @@ description: >-
   links them to the parent Linear issue. Use when a PR is too big to review, when a branch
   has accumulated unrelated changes, when reviewers ask "can you split this up?", or when
   planning how to ship a large feature incrementally.
-argument-hint: [pr-or-branch-or-range] [--base branch] [--max-lines N] [--strategy kind] [--dry-run] [--no-push] [--draft]
+argument-hint: "[pr-or-branch-or-range] [--base branch] [--max-lines N] [--strategy kind] [--dry-run] [--no-push] [--draft]"
 disable-model-invocation: true
 allowed-tools:
   - AskUserQuestion

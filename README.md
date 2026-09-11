@@ -80,9 +80,9 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 
 | Skill | What it does | Side effects |
 |---|---|---|
-| [`/day-timeline`](desktop/day-timeline/SKILL.md) | Builds an evidence-based, reference-linked timeline of a single workday by merging every connected source — calendar, email, Slack and other chat, issue trackers, docs, and Claude Code sessions — into one chronological view, rendered as both Markdown and an elegant minimal HTML page. | No |
-| [`/inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. | No |
-| <img src="desktop/remarkable-memory/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/remarkable-memory`](desktop/remarkable-memory/SKILL.md) | Turns handwritten reMarkable notes into a queryable semantic memory, on Claude Desktop. | No |
+| [`/day-timeline`](desktop/day-timeline/SKILL.md) | Builds an evidence-based, reference-linked timeline of a single workday by merging every connected source — calendar, email, Slack and other chat, issue trackers, docs, and Claude Code sessions — into one chronological view, rendered as both Markdown and an elegant minimal HTML page. | Yes |
+| [`/inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. | Yes |
+| <img src="desktop/remarkable-memory/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/remarkable-memory`](desktop/remarkable-memory/SKILL.md) | Turns handwritten reMarkable notes into a queryable semantic memory, on Claude Desktop. | Yes |
 | [`/research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. | No |
 
 <!-- END GENERATED CATALOG -->

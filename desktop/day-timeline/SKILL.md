@@ -11,6 +11,7 @@ description: >-
   what-happened-in-my-day view.
 argument-hint: '[today | yesterday | YYYY-MM-DD]'
 metadata:
+  side_effects: true
   trigger: "Use when asked what they did today or on a given date, for a daily recap, standup prep, or a what-happened-in-my-day view."
 ---
 
