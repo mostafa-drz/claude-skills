@@ -42,7 +42,8 @@ fence and ignore the repeated command line.
 [
   { "id": "2026-09-11-slack-diego-abi-deadline",
     "hash": "sha256:9f2c…", "app": "Slack", "kind": "chat",
-    "captured": "2026-09-11T16:46:23Z", "savedAt": "2026-09-11T18:41:02.512Z",
+    "captured": "2026-09-11T16:46:23Z", "extracted_at": "2026-09-11T18:20:00Z",
+    "savedAt": "2026-09-11T18:41:02.512Z",
     "verdict": "fix",
     "text": "Diego needs the ABI Canada requirements doc confirmed by Friday.",
     "reassign": null,
@@ -54,11 +55,17 @@ Every entry carries the same keys. `text` and `reassign` are **mutually exclusiv
 exactly one is non-null, decided by `verdict` — and `lesson` is optional on all three.
 
 **Resolve the note before writing anything.** Match on `id`, falling back to `hash`.
-Then compare the entry's `hash` against the note's stored hash: if they differ, the note
-was re-extracted after this review was captured, so the user was reading an older
-render — **skip the entry as stale**, name it, and ask them to re-review that card.
-Never write a note body from an entry you could not confirm points at the version the
-user actually saw.
+
+Then compare the entry's `extracted_at` against the note's stored `extracted_at`. If they
+differ, the note was re-extracted after this review was saved — the user was reading an
+older render — so **skip the entry as stale**, name it, and ask them to re-review that
+card. Never write a note body from an entry you could not confirm points at the version
+the user actually saw.
+
+**It must be `extracted_at`, not `hash`.** `hash` is the sha256 of the *image*, and the
+image does not change when a note is re-extracted — adding a new kind re-extracts captures
+against it, which is exactly the case this guard exists to catch. Comparing hashes would
+match every time and catch nothing.
 
 | `verdict` | Payload | What to do |
 |---|---|---|

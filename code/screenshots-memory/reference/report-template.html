@@ -40,9 +40,15 @@
       ids, and storage that won't persist, are surfaced instead of failing quietly.
       The page never writes to the memory store itself; the agent applies and commits.
 
-      Each entry also carries the note's `hash`. That is what lets the agent notice a
-      capture re-extracted after the review was saved, instead of overwriting newer
-      text with a stale correction.
+      Each entry carries the note's `extracted_at`. That is what lets the agent notice a
+      note re-extracted after the review was saved, instead of overwriting newer text
+      with a stale correction. `hash` cannot do that job: it digests the image, which a
+      re-extraction leaves untouched, so it would match every time and catch nothing.
+
+  A card takes the `flag` class only when confidence is below threshold AND
+  data-reviewed is "false". Confidence alone would be wrong — a verdict of "reads
+  correctly" leaves confidence untouched on purpose, so a confirmed note would sit in
+  the ⚠ Needs review view forever and the two review queues would drift apart.
 
   A note with sensitive: true renders its thumbnail and a plain "contents not recorded
   by choice" line. It has no body text by design — never render one for it.
@@ -279,7 +285,8 @@
     <article class="card flag" data-confidence="0.62" data-captured="2026-09-11"
              data-facets="chat|abi|deadline|Diego|ABI"
              data-note-id="2026-09-11-slack-diego-abi-deadline"
-             data-hash="sha256:9f2c4b1e" data-app="Slack" data-kind="chat">
+             data-hash="sha256:9f2c4b1e" data-app="Slack" data-kind="chat"
+             data-reviewed="false" data-extracted-at="2026-09-11T18:20:00Z">
       <div class="head">
         <span class="badge warn">62%</span>
         <button class="chip kind" data-facet="chat" aria-pressed="false">chat</button>
@@ -400,7 +407,11 @@
   }
 
   function matches(card) {
-    if (flagOnly && !card.classList.contains('flag')) return false;
+    // Belt and braces: the renderer is supposed to withhold .flag from a reviewed note,
+    // but a stale page rendered by an older version would otherwise keep showing notes
+    // the terminal queue has already dropped. data-reviewed settles it either way.
+    if (flagOnly && (!card.classList.contains('flag') ||
+                     card.dataset.reviewed === 'true')) return false;
     if (!active.size) return true;
     // OR across chips: any one match keeps the card. Turning on more chips widens
     // the result — an AND would empty the page after two clicks.
@@ -709,10 +720,13 @@
         id: id,
         app: card.dataset.app || null,
         kind: card.dataset.kind || null,
-        // Lets the agent spot a capture re-extracted after this review was saved,
-        // rather than overwriting newer text with a stale correction.
         hash: card.dataset.hash || null,
         captured: card.dataset.captured || null,
+        // THE staleness key. Lets the agent spot a note re-extracted after this review
+        // was saved, rather than overwriting newer text with a stale correction. It must
+        // be this and not `hash`: `hash` digests the IMAGE, which does not change when a
+        // note is re-extracted, so it would match every time and catch nothing.
+        extracted_at: card.dataset.extractedAt || null,
         savedAt: new Date().toISOString(),
         verdict: verdict,
         text: verdict === 'fix' ? fix.value.trim() : null,

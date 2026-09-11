@@ -215,9 +215,10 @@ Four checks, in order. Any failure stops the sync — do not work around them.
    screenshots of your screen and must never be pushed. Remove the remote
    (`git -C {memory-root} remote remove {name}`) and re-run, or point me at a
    different store." Never push, never add a remote, never commit past this check.
-3. **The store's working tree is clean.** Uncommitted changes mean a previous sync was
+3. **The store's working tree is clean.** Uncommitted changes mean a previous run was
    interrupted or the user edited notes by hand. Show them and ask before proceeding —
-   never discard.
+   never discard. Every command that writes into the store commits before it returns, so
+   a dirty tree is genuinely unexpected and should never be routine.
 4. **Enough disk headroom** — ~1 MB per screenshot, roughly doubled by the commit.
 
 ### Step 1 — Scope the sync
@@ -346,24 +347,42 @@ ids, key entities, kind mix, date range).
 ### Step 7 — Write, render, commit
 
 1. Write one note file per screenshot to `{memory-root}/notes/` (schema in
-   `reference/memory-schema.md`).
+   [`reference/memory-schema.md`](./reference/memory-schema.md)), setting
+   `extracted_at` to now. **Set it again on every re-extraction** — adding a kind and
+   re-running captures against it counts — because that field is what lets a later
+   `review --apply` tell a stale correction from a current one.
 2. Copy the image to `{memory-root}/assets/{id}.png`.
 3. Update `memory.json`: append notes, refresh clusters, set `last_sync`.
 4. Render HTML (see **Render**) for touched clusters + the top-level index.
 5. `git -C {memory-root} add -A && git commit -m "sync: {scope} — +{N} notes, {M} clusters"`.
 
-### Step 8 — Move the originals (last, never first)
+**The tree must be clean when this step ends.** Verify with `git -C {memory-root} status
+--porcelain` and stop if it isn't — a sync that leaves the store dirty makes the next
+sync's preflight check 3 fire falsely, which trains the user to wave it through.
 
-**Only now**, and only if `originals: move`:
+### Step 8 — Retire the originals (last, never first)
 
-- Move each successfully-ingested original into `{memory-root}/assets/originals/`.
-- Move **only** files this sync actually wrote a note for. Never a folder, never a
-  file that was skipped, never anything the discovery rule didn't select.
-- A capture that couldn't be read still gets a flagged note and still gets moved — so
+The capture now lives in the store, committed, at `assets/{id}.png`. Only if
+`originals: move`, the copy sitting in the inbox is now redundant and gets retired.
+
+**Verify before removing anything — for each original, all three must hold:**
+1. `shasum -a 256 {memory-root}/assets/{id}.png` equals the hash recorded for that note;
+2. `git -C {memory-root} log --oneline -1 -- assets/{id}.png` returns a commit;
+3. the note file for that id exists.
+
+Then `rm` the inbox original. If any check fails for a file, **leave that original where
+it is**, say which and why, and carry on with the rest.
+
+- Retire **only** files this sync wrote a note for. Never a folder, never a file that was
+  skipped, never anything the discovery rule didn't select.
+- A capture that couldn't be read still gets a flagged note and is still retired — so
   nothing is silently abandoned *or* silently lost.
 - A capture the user chose to **skip entirely** is left exactly where it is.
+- If Step 7's commit failed, **retire nothing**. Say so and stop.
 
-If the commit in Step 7 failed, **do not move anything**. Say so and stop.
+This step creates no new files, so the tree is still clean afterwards. It is also the
+only irreversible thing this skill does, which is why it is last and why it verifies the
+committed copy first rather than trusting the earlier steps.
 
 Then report:
 
@@ -412,6 +431,18 @@ page layout, the note-card anatomy, the filter-chip contract (chips OR together;
 ⚠ Needs review switch ANDs), and the review-popover rules that keep a half-finished
 correction from ever reaching the store.
 
+**Rendering writes into the store, so it commits.** Every path that re-renders — a sync,
+a `review --apply`, or a bare `clusters`/`browse` — ends with `git -C {memory-root} add -A
+&& git commit -m "render: {scope}"` when anything changed, and says "already current"
+when nothing did. Uncommitted render output would make the next preflight fire falsely.
+
+**`flag` means unreviewed AND low-confidence — never low-confidence alone.** A card takes
+the `flag` class only when `confidence < threshold` **and** `reviewed` is false, and every
+card carries `data-reviewed`. This is what keeps the page's ⚠ Needs review switch and the
+terminal queue selecting the same notes: since a verdict of `ok` deliberately leaves
+`confidence` untouched, confidence alone would strand every confirmed note in the review
+view forever, and the user would re-review notes the replay guard then silently discards.
+
 The one thing that silently breaks a page: cluster pages live at
 `clusters/<slug>/index.html`, so every referenced image must be copied into that
 cluster's own `assets/` and referenced relatively, or it 404s.
@@ -457,8 +488,9 @@ the repeated command line.
 
 **Load [`reference/learning-loop.md`](./reference/learning-loop.md) before applying a
 batch.** It carries the entry schema, the per-verdict write rules, the staleness check
-(entry `hash` vs the note's stored hash), and the replay guard that stops a re-pasted
-batch from clobbering a note that changed since.
+(entry `extracted_at` vs the note's — **not** `hash`, which is the image digest and never
+changes on re-extraction), and the replay guard that stops a re-pasted batch from
+clobbering a note that changed since.
 
 Three rules that are non-negotiable and belong here rather than buried in reference:
 - **`reviewed: true` clears the flag — never a confidence bump.** `confidence` records how

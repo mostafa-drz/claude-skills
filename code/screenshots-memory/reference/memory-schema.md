@@ -43,6 +43,7 @@ hash: sha256:9f2c4b1e…                  # identity — survives rename, copy, 
 kind: chat                              # course | chat | product | ui | other | <learned>
 app: Slack                              # read from pixels; "unknown" is valid
 captured: 2026-09-11T16:46:23Z          # kMDItemContentCreationDate — the moment
+extracted_at: 2026-09-11T18:20:00Z      # when THIS text was produced — bumps on re-extraction
 capture_type: selection                 # selection | window | display | imported
 origin_path: ~/Desktop/Screenshot 2026-09-11 at 12.46.18 PM.png
 asset: assets/2026-09-11-slack-diego-abi-deadline.png
@@ -78,6 +79,7 @@ Thread also mentions ⟨uncertain: Priya?⟩ is handling the legal review.
 | `reviewed` | `false` until a human has looked. **This** is what clears the review flag. |
 | `sensitive` | `true` → `text` and `fields` are absent by design. Never quote such a note. |
 | `captured` | from macOS metadata, not file mtime (mtime changes on copy) |
+| `extracted_at` | set every time the note body is (re)generated. **Not** the same as `hash`: `hash` identifies the image and never changes, so it cannot detect a re-extraction. This is what the review staleness check compares. |
 | `fields` | keys defined by `kind` in `kinds.md`; absent keys mean "not visible in the capture", never "unknown value invented" |
 
 Body text is **structured extraction plus key quotes** — the lines that carry meaning
@@ -97,6 +99,7 @@ ambiguity and renders as a dotted underline in HTML.
     {
       "id": "2026-09-11-slack-diego-abi-deadline",
       "hash": "sha256:9f2c4b1e…",
+      "extracted_at": "2026-09-11T18:20:00Z",
       "kind": "chat",
       "app": "Slack",
       "captured": "2026-09-11T16:46:23Z",
