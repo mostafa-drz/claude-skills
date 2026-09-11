@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Skills — mostafa-drz</title>
+<meta name="description" content="A personal collection of Claude Code and Claude Desktop skills. Rendered live from skills.json.">
+<!--
+  This page holds NO skill data. It fetches ./skills.json at runtime, which is
+  generated from each SKILL.md frontmatter by `make catalog`.
+
+  The previous version of this file hard-coded 20 of 52 skills and had tab counts
+  frozen at "All (19)". That is what a hand-maintained copy does. Adding a skill
+  now requires changing nothing here.
+-->
+<style>
+  :root{
+    --bg:#fbfaf8; --surface:#fff; --surface-2:#f4f2ee; --border:#e6e2db;
+    --text:#1c1b19; --text-2:#6b675f; --primary:#ff5722; --secondary:#03a9f4;
+    --good:#1f9d57; --warn:#b06a00; --shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#121212; --surface:#1a1a1a; --surface-2:#202020; --border:#2c2c2c;
+      --text:#ededed; --text-2:#9a958c; --good:#37d67a; --warn:#f0b429;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+    }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font:15px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:48px 20px 80px}
+  header h1{font-size:2rem;letter-spacing:-.02em;margin:0 0 8px;display:flex;align-items:center;gap:12px}
+  header h1 svg{width:32px;height:32px;color:var(--primary);flex:none}
+  .sub{color:var(--text-2);margin:0 0 28px;max-width:60ch}
+  .sub a{color:var(--primary)}
+  .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+  input[type=search]{
+    flex:1 1 240px;min-width:0;padding:10px 14px;border-radius:10px;font:inherit;
+    background:var(--surface);border:1px solid var(--border);color:var(--text);
+  }
+  input[type=search]:focus-visible,.chip:focus-visible,.copy:focus-visible{
+    outline:2px solid var(--secondary);outline-offset:2px;
+  }
+  .chip{
+    font:inherit;font-size:.8rem;padding:7px 13px;border-radius:99px;cursor:pointer;
+    background:var(--surface);border:1px solid var(--border);color:var(--text-2);
+    transition:background .12s,color .12s,border-color .12s;
+  }
+  .chip:hover{border-color:var(--primary);color:var(--text)}
+  .chip[aria-pressed=true]{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:600}
+  .count{margin-left:auto;color:var(--text-2);font-size:.82rem}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));margin-top:18px}
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    padding:16px 17px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:9px;
+  }
+  .card h2{font-size:.98rem;margin:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .card h2 a{color:var(--text);text-decoration:none}
+  .card h2 a:hover{color:var(--primary)}
+  .card h2 img{width:20px;height:20px;flex:none}
+  .badge{font-size:.68rem;font-weight:650;padding:2px 8px;border-radius:99px;border:1px solid var(--border);color:var(--text-2);text-transform:uppercase;letter-spacing:.04em}
+  .badge.writes{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 40%,transparent)}
+  .badge.reads{color:var(--good);border-color:color-mix(in srgb,var(--good) 40%,transparent)}
+  .desc{margin:0;color:var(--text-2);font-size:.88rem}
+  .trigger{margin:0;font-size:.82rem;color:var(--text-2)}
+  .trigger b{color:var(--text);font-weight:600}
+  .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto;padding-top:4px}
+  .tag{font-size:.7rem;padding:2px 8px;border-radius:99px;background:var(--surface-2);color:var(--text-2);border:1px solid var(--border)}
+  .install{margin-top:8px;display:flex;gap:8px;align-items:center}
+  .install code{
+    flex:1;min-width:0;overflow-x:auto;white-space:nowrap;font-size:.74rem;
+    background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:7px 10px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  .copy{font:inherit;font-size:.74rem;padding:7px 11px;border-radius:8px;cursor:pointer;background:var(--bg);border:1px solid var(--border);color:var(--text-2);white-space:nowrap}
+  .copy:hover{border-color:var(--primary);color:var(--primary)}
+  .copy.done{background:var(--good);border-color:var(--good);color:#fff}
+  .note{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--primary);border-radius:10px;padding:14px 16px;margin:26px 0;font-size:.88rem}
+  .note code{background:var(--surface-2);padding:1px 6px;border-radius:5px;font-size:.84em}
+  .msg{color:var(--text-2);padding:32px 0;text-align:center}
+  footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--border);color:var(--text-2);font-size:.82rem}
+  footer a{color:var(--primary)}
+  @media (max-width:520px){.wrap{padding:32px 16px 60px}header h1{font-size:1.55rem}.count{margin-left:0;width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>
+    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M7 12.5V9a2 2 0 0 1 2-2h3.5M21.5 7H25a2 2 0 0 1 2 2v3.5M7 19.5V23a2 2 0 0 0 2 2h3.5M27 19.5V23a2 2 0 0 1-2 2h-3.5" opacity=".55"/>
+      <path d="M28 30 36 27.5M28 30 32 37.5M36 27.5 40 36M32 37.5 40 36" stroke-width="1" opacity=".5"/>
+      <circle cx="28" cy="30" r="2" fill="currentColor" stroke="none"/><circle cx="36" cy="27.5" r="2" fill="currentColor" stroke="none"/>
+      <circle cx="32" cy="37.5" r="2" fill="currentColor" stroke="none"/><circle cx="40" cy="36" r="2.5" fill="currentColor" stroke="none"/>
+      <circle cx="40" cy="36" r="6" stroke-width="1"/>
+    </svg>
+    Claude Skills
+  </h1>
+  <p class="sub">
+    Personal skills for Claude Code and Claude Desktop. This page renders live from
+    <a href="skills.json">skills.json</a>, which is generated from each skill's own
+    frontmatter — so it can never disagree with the skills themselves.
+  </p>
+</header>
+
+<div class="bar" role="group" aria-label="Filter skills">
+  <input type="search" id="q" placeholder="Search name, description, or tag…" aria-label="Search skills">
+  <button class="chip" data-f="all" aria-pressed="true">All</button>
+  <button class="chip" data-f="code" aria-pressed="false">Claude Code</button>
+  <button class="chip" data-f="desktop" aria-pressed="false">Desktop</button>
+  <button class="chip" data-f="writes" aria-pressed="false">Writes something</button>
+  <span class="count" id="count"></span>
+</div>
+
+<div class="note">
+  <strong>Adding one.</strong> Copy the folder into <code>~/.claude/skills/</code> and it is
+  available as <code>/skill-name</code> the next time Claude Code starts. Each card below has
+  the exact command. Skills marked <em>writes</em> can change files, push commits, or post to
+  connected services — read the SKILL.md before running those.
+</div>
+
+<div class="grid" id="grid"></div>
+<p class="msg" id="msg">Loading…</p>
+
+<footer id="foot"></footer>
+</div>
+
+<script>
+(function () {
+  var grid = document.getElementById('grid');
+  var msg = document.getElementById('msg');
+  var count = document.getElementById('count');
+  var q = document.getElementById('q');
+  var chips = [].slice.call(document.querySelectorAll('.chip'));
+  var skills = [];
+  var filter = 'all';
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function installCmd(s) {
+    return s.platform === 'code'
+      ? 'cp -r claude-skills/code/' + s.name + ' ~/.claude/skills/'
+      : 'zip -r ' + s.name + '.zip desktop/' + s.name + '   # upload in Settings > Capabilities';
+  }
+
+  function card(s) {
+    // skills.json carries an absolute icon URL for external consumers (mostafa.xyz).
+    // This page is served from the same repo, so use the relative path: no cross-origin
+    // round-trip, works on a branch preview, and doesn't depend on main being current.
+    var icon = s.icon
+      ? '<img src="' + esc(s.platform + '/' + s.name + '/icon.svg') + '" alt="" loading="lazy" width="20" height="20">'
+      : '';
+    var tags = (s.tags || []).map(function (t) {
+      return '<span class="tag">' + esc(t) + '</span>';
+    }).join('');
+    // The guide requires a "Use when…" clause inside `description`, so rendering the
+    // manifest's `trigger` beside it repeats the same sentence twice. Split the
+    // description instead, and fall back to `trigger` only when it has no clause.
+    var body = s.description || '';
+    var when = s.trigger || '';
+    var cut = body.search(/\bUse (?:when|it when|this when)\b/i);
+    if (cut > -1) {
+      when = body.slice(cut).replace(/^Use (?:it |this )?when\s*/i, '');
+      body = body.slice(0, cut).trim();
+    }
+    var trig = when
+      ? '<p class="trigger"><b>Use when:</b> ' + esc(when.charAt(0).toLowerCase() + when.slice(1)) + '</p>'
+      : '';
+    return '<article class="card">'
+      + '<h2>' + icon + '<a href="' + esc(s.url) + '">/' + esc(s.name) + '</a>'
+      + '<span class="badge">' + (s.platform === 'code' ? 'Code' : 'Desktop') + '</span>'
+      + '<span class="badge ' + (s.sideEffects ? 'writes">writes' : 'reads">read-only') + '</span>'
+      + '</h2>'
+      + '<p class="desc">' + esc(body) + '</p>'
+      + trig
+      + (tags ? '<div class="tags">' + tags + '</div>' : '')
+      + '<div class="install"><code>' + esc(installCmd(s)) + '</code>'
+      + '<button class="copy" type="button">Copy</button></div>'
+      + '</article>';
+  }
+
+  function matches(s) {
+    if (filter === 'code' && s.platform !== 'code') return false;
+    if (filter === 'desktop' && s.platform !== 'desktop') return false;
+    if (filter === 'writes' && !s.sideEffects) return false;
+    var term = q.value.trim().toLowerCase();
+    if (!term) return true;
+    return (s.name + ' ' + s.description + ' ' + (s.trigger || '') + ' ' + (s.tags || []).join(' '))
+      .toLowerCase().indexOf(term) !== -1;
+  }
+
+  function render() {
+    var shown = skills.filter(matches);
+    grid.innerHTML = shown.map(card).join('');
+    count.textContent = 'showing ' + shown.length + ' of ' + skills.length;
+    msg.hidden = shown.length > 0;
+    if (!shown.length) msg.textContent = 'No skills match those filters.';
+  }
+
+  grid.addEventListener('click', function (e) {
+    var btn = e.target.closest('.copy');
+    if (!btn) return;
+    var text = btn.parentNode.querySelector('code').textContent;
+    var done = function () {
+      btn.textContent = 'Copied';
+      btn.classList.add('done');
+      setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 1400);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else { fallback(); }
+    function fallback() {
+      var t = document.createElement('textarea');
+      t.value = text; t.setAttribute('readonly', ''); t.style.position = 'absolute';
+      t.style.left = '-9999px'; document.body.appendChild(t); t.select();
+      try { document.execCommand('copy'); done(); } catch (err) {}
+      document.body.removeChild(t);
+    }
+  });
+
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () {
+      filter = c.dataset.f;
+      chips.forEach(function (o) { o.setAttribute('aria-pressed', String(o === c)); });
+      render();
+    });
+  });
+  q.addEventListener('input', render);
+
+  fetch('skills.json', { cache: 'no-cache' })
+    .then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function (data) {
+      skills = (data.skills || []).slice().sort(function (a, b) {
+        return a.platform === b.platform
+          ? a.name.localeCompare(b.name)
+          : (a.platform === 'code' ? -1 : 1);
+      });
+      document.getElementById('foot').innerHTML =
+        skills.length + ' skills · manifest updated ' + esc(data.updated || 'unknown')
+        + ' · <a href="' + esc(data.repo || '#') + '">source on GitHub</a>'
+        + ' · this page reads <a href="skills.json">skills.json</a>, which is generated from each SKILL.md';
+      render();
+    })
+    .catch(function (err) {
+      msg.hidden = false;
+      msg.textContent = 'Could not load skills.json (' + err.message + ').';
+    });
+})();
+</script>
+</body>
+</html>

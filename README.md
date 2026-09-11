@@ -98,9 +98,19 @@ The frontmatter in each `SKILL.md` is the single source of truth — the catalog
 adding or editing a skill:
 
 ```bash
-make catalog   # regenerate the README table
-make check     # verify it's current and every frontmatter parses (CI runs this too)
+make catalog   # regenerate the README table and skills.json
+make check     # verify both are current and every frontmatter parses
 ```
+
+You rarely need to run either by hand. Three layers keep it in sync, deterministically:
+
+| layer | when | what it does |
+|---|---|---|
+| `PostToolUse` hook | Claude edits any `SKILL.md` | runs `make catalog` immediately |
+| `Stop` hook | end of every Claude turn | runs `make check`, silent unless something is off |
+| GitHub Actions | every push and PR | the backstop — fails the build |
+
+The hooks live in `.claude/settings.json` and apply to anyone working in this repo.
 
 Conventions live in the [design guide](SKILLS_GUIDE.md), which covers what the
 [official docs](https://code.claude.com/docs/en/skills) don't: our house patterns, the

@@ -183,9 +183,18 @@ one check protecting them.
 ## 7. Checks
 
 ```bash
-make catalog   # regenerate the README table from frontmatter
-make check     # fail if the table is stale or frontmatter won't parse (CI runs this)
+make catalog   # regenerate the README table and skills.json from frontmatter
+make check     # fail if either is stale, or any frontmatter won't parse
 ```
+
+**Enforcement is layered so nothing depends on remembering.** A `PostToolUse` hook runs
+`make catalog` whenever Claude edits a `SKILL.md`; a `Stop` hook runs `make check` at the
+end of every turn and stays quiet unless something is wrong; CI runs it again on every push.
+Both hooks are in `.claude/settings.json`.
+
+Prefer this ordering when adding a guard: make the correct thing automatic first, and only
+then add a check that fails. A check alone teaches people to run a command; a hook means
+they never have to.
 
 The README catalog and `skills.json` are both **generated** from frontmatter. A second
 hand-maintained copy always drifts: before this, 68% of the manifest's descriptions were
