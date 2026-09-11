@@ -1,5 +1,8 @@
 # The learning loop
 
+_Everything here writes to the store and commits, so the Step 0 safety preflight in
+SKILL.md applies — most importantly the no-remote check. Do not commit past it._
+
 Loaded on demand during `review`, `review --apply`, and whenever a sync meets a capture
 that fits no known kind. This is everything the memory uses to get better at reading THIS
 user's screen, in the order it happens: record a correction, promote what recurs, apply a

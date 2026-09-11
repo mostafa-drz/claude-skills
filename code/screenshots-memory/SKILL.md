@@ -33,6 +33,9 @@ allowed-tools:
   - Bash(ls *)
   - Bash(date *)
   - Bash(open *)
+  - Bash(xdg-open *)
+  - Bash(df *)
+  - Bash(rm *)
 ---
 
 # Screenshots Memory
@@ -96,43 +99,19 @@ Check `$ARGUMENTS`:
 
 ## Help
 
-Print this, filling in the user's actual preferences:
-
-```
-screenshots-memory — Screenshots → a queryable, private memory
-
-  sync [path|glob] [--since Nd] [--kind k] [--yes]   Pull new captures, extract, cluster
-  <question>                        Ask the memory in plain language
-  review [--min-confidence 0-1]     Correct low-confidence reads (teaches the extractor)
-  review --apply <json block>       Apply reviews collected in the HTML page
-  clusters | browse                 Re-render + open the HTML browser
-  feedback · config · setup · reset · help
-
-Examples:
-  /screenshots-memory sync                       Sweep the inbox (~/Desktop)
-  /screenshots-memory sync ~/Downloads --since 7d
-  /screenshots-memory what did Slack ask me to do last week
-
-Store: {memory-root} — a local git repo, no remote. {N} captures, {C} clusters,
-{F} flagged for review. Full guide: README.md · layout: reference/memory-schema.md
-
-Current preferences:
-  (list them)
-```
+Load [`reference/interface.md`](./reference/interface.md) and print the usage block it
+carries, filling in the user's actual preferences and current store stats (capture count,
+cluster count, how many are flagged for review).
 
 ## Config
 
-Fire ONE `AskUserQuestion` (multi-question) to collect:
+Fire ONE `AskUserQuestion` (multi-question) collecting memory root, inbox, originals
+policy, confidence threshold and tone — the defaults are listed under **Preferences**
+above. Save the answers to `~/.claude/skills/screenshots-memory/preferences.md` in the
+file format given in [`reference/interface.md`](./reference/interface.md). The kind
+registry lives in `{memory-root}/kinds.md`, not here.
 
-1. **Memory root** — where the memory store lives (default `~/screenshots-memory/`)
-2. **Inbox** — the folder that gets swept when no path is given (default `~/Desktop`)
-3. **Originals** — `move` into the store (sweeps the inbox clean) or `copy` (leaves them)
-4. **Confidence threshold** — how sure the reader must be before a note is trusted (default `0.75`)
-5. **Tone** — `friendly-cli` / `detailed` / `minimal`
-
-Save to `~/.claude/skills/screenshots-memory/preferences.md` in the format shown under
-**Preferences**; the kind registry lives in `{memory-root}/kinds.md`, not here. Confirm
-warmly: "Saved. I'll use this as the baseline and keep sharpening as you correct
+Confirm warmly: "Saved. I'll use this as the baseline and keep sharpening as you correct
 extractions."
 
 ## Reset
@@ -149,14 +128,14 @@ If no preferences file exists, show a warm, non-blocking intro:
 ```
 First time running /screenshots-memory — here's the shape of it:
 
-  You screenshot things because they matter in that moment. Then they scatter and
-  stop being findable. I turn them into a memory you can query.
+  You screenshot things because they matter in that moment. Then they scatter across
+  your Desktop and stop being findable. I turn them into a memory you can query.
 
   On each sync I read every new screenshot with Claude vision (no OCR key, nothing
   uploaded), work out what KIND it is — course notes, a Slack ask, a product, a UI
   worth stealing — and pull the fields that matter for that kind. Each becomes a
-  small Markdown file with a confidence score and exact provenance, grouped into
-  topic clusters and rendered as HTML you can browse.
+  small Markdown file with a confidence score and exact provenance. I group them into
+  topic clusters and render a clean HTML page per cluster you can browse.
 
   Then you ask:  /screenshots-memory what did Slack ask me to do last week
 
@@ -165,8 +144,9 @@ First time running /screenshots-memory — here's the shape of it:
     · An original leaves your Desktop only after its note is committed and verified.
     · Anything sensitive gets flagged and I ask before writing it down.
 
-  Nothing I'm unsure about gets silently guessed — it gets flagged. Fix one with
-  `/screenshots-memory review` and I read your screen better next time.
+  Nothing I'm unsure about gets silently guessed — it gets flagged. When you run
+  `/screenshots-memory review` and fix an extraction, I save that correction and read
+  your screen better next time.
 
   Ready? `/screenshots-memory setup`, or just `sync` and I'll set it up as we go.
 ```
@@ -180,6 +160,8 @@ Then proceed. After the first successful sync, offer to save a couple of quick p
    so the directory may already be one — possibly one with a remote.
 2. **Check for a remote before writing anything.** If `git -C {memory-root} remote` is
    non-empty, stop: this store would be pushable. Never commit first and check after.
+   If the directory is already a repo **with commits**, this is not a fresh setup — say
+   so and ask, rather than writing a starter `kinds.md` over the user's own.
 3. Write the starter `kinds.md` (copy from `reference/kinds.md`), an empty
    `corrections.md`, an empty `extraction-guide.md`, a `memory.json` skeleton
    (`{"version": 1, "notes": [], "clusters": [], "last_sync": null}`), and a
@@ -196,7 +178,10 @@ Tell the user plainly what now exists and where, and that it has no remote.
 Four checks, in order. Any failure stops the sync — do not work around them.
 
 1. **Store exists and is a git repo.** If not, offer `setup`.
-2. **The store has NO git remote.** `git -C {memory-root} remote` must be empty.
+2. **The store has NO git remote.** `git -C {memory-root} remote` must be empty. This
+   check is the *only* thing enforcing it: `allowed-tools` cannot express "git but never
+   push" for a `git -C <path>` invocation, so the guarantee lives in this step's logic,
+   not in the permission layer. Treat it as load-bearing and never skip it.
    If a remote exists, **STOP** and say so:
    "{memory-root} has a remote ({name} → {url}). This store holds full-resolution
    screenshots of your screen and must never be pushed. Remove the remote
@@ -231,6 +216,8 @@ did** — never sync a folder by a different rule than the one you announced.
 ### Step 2 — Identify and deduplicate
 
 For each candidate, compute `shasum -a 256 <file>`.
+
+Skip anything whose hash is in `memory.json`'s `notes` **or** its `skipped[]` list.
 
 **The hash is the identity** — not the path, not the filename. Screenshots get renamed,
 copied and duplicated; a content hash makes the same capture one note however many copies
@@ -301,8 +288,8 @@ If anything was flagged, ask about **all of it in a single round** before writin
 notes — never one interruption per screenshot:
 
 ```
-3 of 27 captures look sensitive. The image is stored either way; this is only about
-whether I write the text into the repo.
+3 of 27 captures look sensitive. The image is stored unless you skip it entirely;
+otherwise this is only about whether I write the text into the repo.
 
   1. Banking dashboard — RBC, balance visible      (Screenshot … 1.22.32 PM)
   2. DM with Diego — appears personal              (Screenshot … 9.28.31 AM)
@@ -311,7 +298,12 @@ whether I write the text into the repo.
 
 Offer per item: **Extract normally** · **Store image only** (keeps kind, date and
 provenance, no text) · **Skip entirely** (not ingested; original left where it is).
-Default to **Store image only** if the user declines to choose. An image-only note is a
+Default to **Store image only** if the user declines to choose.
+
+**Record a skip.** Append `{hash, declined: {date}}` to `skipped[]` in `memory.json` — no
+text, no image, no note. Step 2 honours that list alongside the notes, so a capture the
+user declined is never re-read, never re-prompted, and never costs another vision read.
+Without this it sits in the inbox and the next sync asks again, forever. An image-only note is a
 real note with `sensitive: true` and no `text`/`fields` — findable by date and kind
 without leaking its contents.
 
@@ -334,7 +326,9 @@ mix, date range).
 2. Copy the image to `{memory-root}/assets/{id}.png`.
 3. Update `memory.json`: append notes, refresh clusters, set `last_sync`.
 4. Render HTML (see **Render**) for touched clusters + the top-level index.
-5. `git -C {memory-root} add -A && git commit -m "sync: {scope} — +{N} notes, {M} clusters"`.
+5. Commit **the paths this sync touched** — `notes/`, `assets/`, `memory.json`,
+   `clusters/`, `html/` — not `add -A`. Check 3 can be waived by the user, and `-A` would
+   then sweep their unrelated hand edits into the sync commit.
 
 **The tree must be clean when this step ends.** Verify with `git -C {memory-root} status
 --porcelain` and stop if it isn't — a sync that leaves the store dirty makes the next
@@ -346,7 +340,8 @@ The capture now lives in the store, committed, at `assets/{id}.png`. Only if
 `originals: move`, the inbox copy is redundant and gets retired.
 
 **Verify before removing anything.** For each original, all three must hold:
-`shasum -a 256 {memory-root}/assets/{id}.png` equals the note's recorded hash ·
+`shasum -a 256 {memory-root}/assets/{id}.png` equals the note's recorded hash (which
+carries a `sha256:` prefix — strip it before comparing, or nothing ever matches) ·
 `git -C {memory-root} log --oneline -1 -- assets/{id}.png` returns a commit ·
 the note file exists. Then `rm` the inbox original. If any check fails, leave that
 original alone, say which and why, and carry on with the rest.
@@ -371,9 +366,9 @@ Then report:
 Synced {N} screenshots → {new} new notes, {dupes} already known.
   Kinds:      course {a} · chat {b} · product {c} · ui {d}
   Clusters:   {list}
-  Sensitive:  {s} stored image-only, {k} skipped
-  Inbox:      {M} originals moved into the store · {left} left in place
-  ⚠ Flagged for review ({k}, confidence < {threshold}):  {short list}
+  Sensitive:  {s} stored image-only, {d} declined
+  Inbox:      {M} originals retired · {left} left in place
+  ⚠ Flagged for review ({f}, confidence < {threshold}):  {short list}
 
 Next:  /screenshots-memory review   ·   /screenshots-memory clusters
 ```

@@ -156,7 +156,10 @@
 <h2><span class="num">01</span>Create the store</h2>
 <p class="lede">Run once. Creates a local git repo for your memory and verifies it has no
 remote — this store holds pictures of your screen, so it must never be pushable.</p>
-<pre><code>/screenshots-memory setup</code><button class="copy">Copy</button></pre>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre><code>/screenshots-memory setup</code></pre>
+</div>
 <div class="note">
   <strong>Why the no-remote check is permanent.</strong> The skill re-runs it before every
   sync. If a remote ever appears, it stops and tells you rather than committing another
@@ -168,7 +171,10 @@ remote — this store holds pictures of your screen, so it must never be pushabl
 <h2><span class="num">02</span>First sync — start narrow</h2>
 <p class="lede">Every screenshot is a vision read, so don't point it at five years of Desktop
 on day one. Take a week first and see how it reads your apps.</p>
-<pre><code>/screenshots-memory sync --since 7d</code><button class="copy">Copy</button></pre>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre><code>/screenshots-memory sync --since 7d</code></pre>
+</div>
 <p>You'll get a plan before anything is read — how many it found, how many it already knows,
 roughly how much it will process. Reply <code>go</code>, or narrow it further.</p>
 </section>
@@ -177,7 +183,10 @@ roughly how much it will process. Reply <code>go</code>, or narrow it further.</
 <section class="card" data-cat="daily">
 <h2><span class="num">03</span>Sweep the Desktop</h2>
 <p class="lede">The everyday move. No path means the inbox — <code>~/Desktop</code> by default.</p>
-<pre><code>/screenshots-memory sync</code><button class="copy">Copy</button></pre>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre><code>/screenshots-memory sync</code></pre>
+</div>
 <div class="note">
   <strong>It only ever touches actual screenshots.</strong> Inbox discovery asks Spotlight for
   <code>kMDItemIsScreenCapture&nbsp;==&nbsp;1</code>, so a folder, a PDF, or a photo you saved
@@ -189,16 +198,28 @@ roughly how much it will process. Reply <code>go</code>, or narrow it further.</
 <h2><span class="num">04</span>Ingest a folder you filed by hand</h2>
 <p class="lede">Point it anywhere. An explicit path accepts any image — a photographed
 whiteboard, a saved product shot — because pointing at it is a deliberate choice.</p>
-<pre><code>/screenshots-memory sync ~/Desktop/course-captures --yes</code><button class="copy">Copy</button></pre>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre><code>/screenshots-memory sync ~/Desktop/course-captures --yes</code></pre>
+</div>
 </section>
 
 <!-- ─────────── ASK ─────────── -->
 <section class="card" data-cat="ask">
 <h2><span class="num">05</span>Ask the memory</h2>
 <p class="lede">Plain language. Filters in the question are honoured — dates, kinds, apps, people.</p>
-<pre><code>/screenshots-memory what did Slack ask me to do last week</code><button class="copy">Copy</button></pre>
-<pre><code>/screenshots-memory products I saved in August</code><button class="copy">Copy</button></pre>
-<pre><code>/screenshots-memory everything from the Claude skills course</code><button class="copy">Copy</button></pre>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre><code>/screenshots-memory what did Slack ask me to do last week</code></pre>
+</div>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre><code>/screenshots-memory products I saved in August</code></pre>
+</div>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre><code>/screenshots-memory everything from the Claude skills course</code></pre>
+</div>
 <p>Answers cite the captures they stand on, and say so when they lean on something read at
 low confidence.</p>
 </section>
@@ -207,7 +228,10 @@ low confidence.</p>
 <h2><span class="num">06</span>Browse visually</h2>
 <p class="lede">Re-renders every cluster and opens the browser. Chips filter and union, so
 clicking <code>product</code> and <code>ui</code> shows both.</p>
-<pre><code>/screenshots-memory clusters</code><button class="copy">Copy</button></pre>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre><code>/screenshots-memory clusters</code></pre>
+</div>
 </section>
 
 <!-- ─────────── HAND OFF ─────────── -->
@@ -215,9 +239,12 @@ clicking <code>product</code> and <code>ui</code> shows both.</p>
 <h2><span class="num">07</span>Use the memory as input to something else</h2>
 <p class="lede">The store is a documented contract, so another skill or agent can build on it —
 flashcards from <code>course</code> captures, a board from <code>chat</code> ones.</p>
-<pre><code>Read ~/screenshots-memory/memory.json, take every note with kind: course
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre><code>Read ~/screenshots-memory/memory.json, take every note with kind: course
 from the claude-skills cluster, and make flashcards from the concept and
-definition fields.</code><button class="copy">Copy</button></pre>
+definition fields.</code></pre>
+</div>
 <div class="note">
   <strong>Two rules for anything reading this store.</strong> Honour <code>sensitive: true</code>
   — those notes have no text on purpose. And respect <code>confidence</code>/<code>reviewed</code>:
@@ -229,18 +256,27 @@ definition fields.</code><button class="copy">Copy</button></pre>
 <h2><span class="num">08</span>Turn a week of chat captures into actions</h2>
 <p class="lede"><code>chat</code> captures carry <code>who</code>, <code>ask</code> and
 <code>due</code> — they're usually work, not notes.</p>
-<pre><code>/screenshots-memory everything with a due date I haven't dealt with</code><button class="copy">Copy</button></pre>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre><code>/screenshots-memory everything with a due date I haven't dealt with</code></pre>
+</div>
 </section>
 
 <!-- ─────────── TEACH IT ─────────── -->
 <section class="card" data-cat="learn">
 <h2><span class="num">09</span>Teach it your screen</h2>
 <p class="lede">This is the part that compounds. Fix a bad read once and it stops being wrong.</p>
-<pre><code>/screenshots-memory review</code><button class="copy">Copy</button></pre>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre><code>/screenshots-memory review</code></pre>
+</div>
 <p>With more than a handful flagged it sends you to the browser instead: flip
 <strong>⚠ Needs review</strong>, correct cards against the actual image, then
 <strong>Copy for Claude</strong> and paste the batch back:</p>
-<pre><code>/screenshots-memory review --apply</code><button class="copy">Copy</button></pre>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre><code>/screenshots-memory review --apply</code></pre>
+</div>
 <div class="note">
   <strong>What it learns.</strong> Corrections land in <code>corrections.md</code>; recurring
   patterns get promoted into <code>extraction-guide.md</code>, which the extractor reads on
@@ -255,7 +291,10 @@ definition fields.</code><button class="copy">Copy</button></pre>
 <p class="lede">The four shipped kinds won't cover everything you screenshot. When something
 doesn't fit, it proposes a kind rather than dumping it in <code>other</code> — and you can
 write one yourself.</p>
-<pre><code>open ~/screenshots-memory/kinds.md</code><button class="copy">Copy</button></pre>
+<div class="snippet">
+  <div class="snippet-head"><span class="tag">Claude Code</span><button class="copy">Copy</button></div>
+  <pre><code>open ~/screenshots-memory/kinds.md</code></pre>
+</div>
 <p>A heading, a one-line description, a field table. Picked up on the next sync, no config step.</p>
 </section>
 
@@ -291,7 +330,7 @@ write one yourself.</p>
   // copy buttons
   document.querySelectorAll('.copy').forEach(function(btn){
     btn.addEventListener('click', function(){
-      var code = btn.closest('.snippet').querySelector('pre').innerText;
+      var code = btn.closest('.snippet').querySelector('code').innerText;
       var done = function(){
         var old = btn.textContent;
         btn.textContent = 'Copied'; btn.classList.add('done');

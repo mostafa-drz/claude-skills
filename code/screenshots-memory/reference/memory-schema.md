@@ -111,6 +111,9 @@ ambiguity and renders as a dotted underline in HTML.
       "asset": "assets/2026-09-11-slack-diego-abi-deadline.png"
     }
   ],
+  "skipped": [
+    { "hash": "sha256:4a1b…", "declined": "2026-09-11" }
+  ],
   "clusters": [
     {
       "slug": "ateam-client-work",
@@ -125,6 +128,11 @@ ambiguity and renders as a dotted underline in HTML.
   ]
 }
 ```
+
+`skipped[]` records captures the user declined during the sensitive round: hash and date
+only, no text and no image. Sync consults it alongside `notes[]` so a declined capture is
+never re-read or re-prompted. It is the one place the memory records something it
+deliberately did **not** keep.
 
 `notes[]` is a denormalised index for fast filtering — the note file is the source of
 truth. If they disagree, the file wins and the index should be rebuilt.
