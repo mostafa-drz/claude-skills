@@ -82,6 +82,7 @@ for screenshots yet — that happens inside `sync`, after the safety preflight._
 ## Command routing
 
 Check `$ARGUMENTS`:
+- nothing at all → one line of store state plus the two best next commands; **never sync**
 - `help` → show Help, stop
 - `config` → run Config, stop
 - `reset` → delete **skill preferences only** (see **Reset**); the memory store is preserved. Confirm first, stop
@@ -404,10 +405,10 @@ popover rules that keep a half-finished correction from reaching the store.
 anything changed and says "already current" when nothing did. Uncommitted render output
 would make the next preflight fire falsely.
 
-**`flag` means low-confidence AND unreviewed — never low-confidence alone**, and every card
-carries `data-reviewed`. Since `ok` deliberately leaves `confidence` untouched, flagging on
-confidence alone would strand confirmed notes in the review view and drift the two queues
-apart.
+**`flag` means low-confidence AND unreviewed AND having text to correct** — never
+low-confidence alone; every card carries `data-reviewed`. An image-only `sensitive` note
+is never flagged: no recorded reading to fix. And since `ok` leaves `confidence` untouched
+by design, flagging on confidence alone would strand confirmed notes in the review view.
 
 The one thing that silently breaks a page: cluster pages live at
 `clusters/<slug>/index.html`, so every referenced image must be copied into that

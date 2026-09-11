@@ -4,7 +4,10 @@ Turns the screenshots scattered across your machine into a git-versioned memory 
 query in plain language — and that reads your particular apps better every time you
 correct it.
 
-**→ [Quickstart: copy-paste recipes](examples/quickstart.html)** — open in any browser.
+**→ [See a real cluster page](examples/sample-cluster.html)** — six notes, live filters, a
+flagged card, a sensitive card, a working Review popover. Open it in any browser before you
+sync anything.
+**→ [Quickstart: copy-paste recipes](examples/quickstart.html)**
 
 ---
 

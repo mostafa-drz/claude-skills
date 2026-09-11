@@ -33,8 +33,12 @@ Per-cluster page:
    A `sensitive` note shows its thumbnail and a plain "contents not recorded by choice"
    line instead of text.
 
-   **A card is flagged only when `confidence < threshold` AND `reviewed` is false**, and
-   every card carries `data-reviewed="true|false"`. Confidence alone would be wrong: a
+   **A card is flagged only when `confidence < threshold`, `reviewed` is false, AND the
+   note actually has text to correct.** An image-only `sensitive` note is never flagged:
+   its contents were deliberately not recorded, so there is no reading to fix, and
+   flagging it would invite the user to correct text that does not exist. Its Review
+   button still works for a wrong kind or tags.
+   Every card carries `data-reviewed="true|false"`. Confidence alone would be wrong: a
    verdict of `ok` leaves confidence untouched by design, so a confirmed note would never
    leave the ⚠ Needs review view.
 3. **Entities** — a chip row of the people, products and projects in this cluster.

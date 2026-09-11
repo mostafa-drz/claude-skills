@@ -2,6 +2,14 @@
 
 What the skill produces, so you can see its output before running a sync.
 
+- **[sample-cluster.html](sample-cluster.html)** — a real, working cluster page. Six
+  fabricated notes across four kinds; every chip filters (several at once, they union);
+  the ⚠ Needs review switch ANDs with them; one card is flagged, one shows a confirmed ✓,
+  one is a sensitive capture whose contents were deliberately not recorded, and one has an
+  `⟨uncertain⟩` marker. Open a **Review** popover and it behaves exactly as the live skill
+  does — Save stays disabled until you actually edit, and **Copy for Claude** produces the
+  real `review --apply` payload.
+
 - [Quickstart](quickstart.html) — copy-paste recipes for everyday use: creating the
   store, the Desktop sweep, asking the memory, handing it to another skill, and
   teaching it your apps. Filterable, with a copy button on every command.

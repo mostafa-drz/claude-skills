@@ -23,6 +23,8 @@ screenshots-memory — Screenshots → a queryable, private memory
 Examples:
   /screenshots-memory sync                       Sweep the inbox (~/Desktop)
   /screenshots-memory sync ~/Downloads --since 7d
+  /screenshots-memory sync --kind course          Only ingest course/study captures
+  /screenshots-memory review --min-confidence 0.8 Widen the review net
   /screenshots-memory what did Slack ask me to do last week
 
 Store: {memory-root} — a local git repo, no remote. {N} captures, {C} clusters,
@@ -38,11 +40,12 @@ Fire ONE `AskUserQuestion` (multi-question) to collect:
 
 1. **Memory root** — where the memory store lives (default `~/screenshots-memory/`)
 2. **Inbox** — the folder that gets swept when no path is given (default `~/Desktop`)
-3. **Originals** — `move` (once the store's copy is committed and hash-verified, the
+3. **Open HTML after a sync?** — `open-html`, default yes
+4. **Originals** — `move` (once the store's copy is committed and hash-verified, the
    inbox original is **deleted**; the store becomes the only copy) or `copy` (leaves the
    inbox untouched). Say "deleted" when asking — this is the skill's only irreversible act.
-4. **Confidence threshold** — how sure the reader must be before a note is trusted (default `0.75`)
-5. **Tone** — `friendly-cli` / `detailed` / `minimal`
+5. **Confidence threshold** — how sure the reader must be before a note is trusted (default `0.75`)
+6. **Tone** — `friendly-cli` / `detailed` / `minimal`
 
 Save to `~/.claude/skills/screenshots-memory/preferences.md`:
 
