@@ -238,10 +238,13 @@ long-neglected folder that loses the entire sync. Report progress per batch.
 
 **Step 5 is the exception: it runs once, after every batch has been read.** Captures
 flagged `sensitive` are held back — not written, not committed — until all batches are
-done, then asked about in one round and written in a final pass. Asking per batch would
-mean eleven prompts on a 209-capture sync, and flag-then-ask stops working the moment the
-user clicks through it. Held captures live only in memory, so an interruption re-reads
-them — the deliberate cost of asking once.
+done, then written in a **final pass that runs Steps 6→8 like any other batch** — cluster,
+commit, delete their originals under the same byte-verification. Skip that and image-only
+notes end up unclustered (invisible to `clusters`, breaking Step 5's promise they stay
+findable), the tree dirty at the sync's end, and their originals stranded for every future
+sync to rediscover. Asking per batch instead would mean eleven prompts on a 209-capture
+sync, and flag-then-ask stops working the moment the user clicks through it. Held captures
+live only in memory, so an interruption re-reads them — the cost of asking once.
 
 ### Step 4 — Extract (Claude vision + learned guide)
 
@@ -340,44 +343,41 @@ Then **move the original to the system trash** (`~/.Trash` on macOS), not `rm`: 
 here are silent at deletion and found days later. No trash directory → `rm`, and say so.
 
 - Delete **only** files this sync wrote a note for — never a folder, never a skipped file,
-  never anything discovery didn't select. A capture **skipped entirely** stays put.
-- An unreadable capture still gets a flagged note and is still deleted: nothing is silently
-  abandoned *or* silently lost.
+  never anything discovery didn't select. A capture **skipped entirely** stays put. An
+  unreadable one still gets a flagged note and is still deleted: nothing silently lost.
 - If Step 7's commit failed, **delete nothing**. A failed check leaves that original alone,
   is reported, and does not abort the batch.
 
-The sweep is **resumable and idempotent** — interruption between Step 7 and here is
-harmless: the note and asset are committed and a re-run dedupes by hash.
+The sweep is **resumable and idempotent**: the note and asset are already committed, so an
+interruption is harmless and a re-run dedupes by hash.
 
-Then print the sync report from [`reference/interface.md`](./reference/interface.md).
-
-If `open-html: true`, open `{memory-root}/html/index.html`.
+Then print the sync report from [`reference/interface.md`](./reference/interface.md), and
+if `open-html: true`, open `{memory-root}/html/index.html`.
 
 ## Undo — reverse the last sync
 
-`git revert` alone is **not** undo here: it deletes the notes and the stored images and
-restores nothing to where the user's screenshots were, leaving them with neither. Every
-note records `origin_path`, so a real reversal is available and is what `undo` must do.
+`git revert` alone is **not** undo here: it deletes the notes and the stored images while
+restoring nothing to where the screenshots were, leaving the user with neither. Every note
+records `origin_path`, so a real reversal is available and is what `undo` must do.
 
 1. Name the last sync commit and what it contained; confirm before touching anything.
 2. Copy that commit's captures from `assets/` back to their recorded `origin_path`,
-   skipping any path now occupied and saying which.
+   skipping occupied paths and saying which.
 3. `git revert` the sync commit, then report what came back and what didn't.
 
 Last sync only — a reversal, not a time machine. If the originals are still in the Trash,
-say so; they are the better recovery.
+say so: that is the better recovery.
 
 ## Query — ask the memory
 
 For free-text input that isn't a path, answer from the memory, not from thin air.
 
-1. **Retrieve** — `Grep`/`Glob` across `{memory-root}/notes/` and read `memory.json` for
-   kinds, tags, entities, clusters and dates. Honour filters in the ask ("last week" →
-   date window on `captured`; "products" → `kind: product`; "from Slack" → `app: Slack`).
-   Prefer recall over precision, then read the note files.
-2. **Empty-memory bridge** — if nothing matches (common on a fresh install), don't dead-end:
-   "I don't have anything on {topic} yet. Want me to sync a folder? Which one?" Then hand
-   off to Sync with that scope.
+1. **Retrieve** — `Grep`/`Glob` across `notes/` and read `memory.json` for kinds, tags,
+   entities, clusters and dates. Honour filters in the ask ("last week" → window on
+   `captured`; "products" → `kind: product`; "from Slack" → `app: Slack`), preferring
+   recall, then read the note files.
+2. **Empty-memory bridge** — if nothing matches, don't dead-end: "I don't have anything on
+   {topic} yet. Want me to sync a folder? Which one?" Then hand off to Sync with that scope.
 3. **Ground every claim** — cite note id and capture date; never invent one.
 4. **Open by default.** A `chat` question ("what did Slack ask me to do") returns
    `status: open` only, and says so: "(3 done, hidden — add `--all`)". Listing handled
@@ -488,8 +488,8 @@ human-editable; respect whatever the user writes there.
 4. **Confidence is honest, low confidence is visible.** A capture you half-read is flagged,
    never silently trusted; uncertain words are marked inline, not guessed. `reviewed` is
    what clears a flag — a human agreeing doesn't improve how well the pixels were read.
-5. **Sensitive means asked, not assumed.** Flag during extraction, ask once in a batch, and
-   when in doubt store the image without the text.
+5. **Sensitive means asked, not assumed.** Flag during extraction, ask once after every
+   capture is read, and when in doubt store the image without the text.
 6. **Kind first, structure over verbatim.** Classification decides which fields matter — a
    wrong kind is worse than a slightly wrong transcription. Capture what a screenshot
    *means* plus the lines worth quoting, not an OCR dump nobody reads.
