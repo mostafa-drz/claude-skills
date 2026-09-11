@@ -237,15 +237,14 @@ delete — so an interruption costs at most one batch and re-running resumes aut
 (Step 2 dedupes by hash). Never read 200 images and write nothing until the end: on a
 long-neglected folder that loses the entire sync. Report progress per batch.
 
-**Step 5 is the exception: it runs once, after every batch has been read.** Captures
-flagged `sensitive` are held back — not written, not committed — until all batches are
-done, then written in a **final pass that runs Steps 6→8 like any other batch** — cluster,
-commit, delete their originals under the same byte-verification. Skip that and image-only
-notes end up unclustered (invisible to `clusters`, breaking Step 5's promise they stay
-findable), the tree dirty at the sync's end, and their originals stranded for every future
-sync to rediscover. Asking per batch instead would mean eleven prompts on a 209-capture
-sync, and flag-then-ask stops working the moment the user clicks through it. Held captures
-live only in memory, so an interruption re-reads them — the cost of asking once.
+**Step 5 is the exception: it runs once, after every batch has been read.** Captures flagged
+`sensitive` are held back — not written, not committed — until all batches are done, then
+written in a **final pass that runs Steps 6→8 like any other batch**. Skip that and
+image-only notes end up unclustered (invisible to `clusters`, breaking Step 5's promise
+they stay findable), the tree dirty at the sync's end, and their originals stranded for
+every future sync. Asking per batch would mean eleven prompts on a 209-capture sync, and
+flag-then-ask stops working the moment the user clicks through it. Held captures live only
+in memory, so an interruption re-reads them.
 
 ### Step 4 — Extract (Claude vision + learned guide)
 
@@ -303,17 +302,18 @@ create one only when nothing fits. Write/update `{memory-root}/clusters/{slug}/c
 
 ### Step 7 — Write, render, commit
 
-0. **Guarantee the id is unique before writing.** If `notes/{id}.md` or
-   `assets/{id}.png` already exists for a *different* hash, suffix the id (`-2`, `-3`)
-   and say so. Two same-day captures from one app can collide on a generated slug;
-   without this the second overwrites the first's note and image, and Step 8 then
-   verifies the survivor and deletes **both** originals.
+0. **Guarantee the id is unique before writing.** If `notes/{id}.md` or `assets/{id}.*`
+   exists for a *different* hash, suffix the id (`-2`, `-3`) and say so. Two same-day
+   captures from one app can collide on a generated slug; without this the second
+   overwrites the first, and Step 8 then verifies the survivor and retires **both**.
 1. Write one note file per screenshot to `{memory-root}/notes/` (schema in
-   [`reference/memory-schema.md`](./reference/memory-schema.md)), setting
-   `extracted_at` to now. **Set it again on every re-extraction** — adding a kind and
-   re-running captures against it counts — because that field is what lets a later
+   [`reference/memory-schema.md`](./reference/memory-schema.md)), setting `extracted_at`
+   to now — **and again on every re-extraction**, since that field is what lets a later
    `review --apply` tell a stale correction from a current one.
-2. Copy the image to `{memory-root}/assets/{id}.png`.
+2. Copy the image to `{memory-root}/assets/{id}.{ext}`, **keeping the source extension** —
+   an explicit path may hand you JPEG, HEIC or WebP, and renaming those to `.png` leaves
+   the bytes under a lying name that browsers and consumers cannot open. Record the real
+   path in the note's `asset` field; never assume `.png` anywhere downstream.
 3. Update `memory.json`: append notes, refresh clusters, set `last_sync`.
 4. Render HTML (see **Render**) for touched clusters + the top-level index.
 5. Commit **only the paths this sync touched** — `notes/`, `assets/`, `memory.json`,
@@ -321,8 +321,7 @@ create one only when nothing fits. Write/update `{memory-root}/clusters/{slug}/c
    the user's unrelated hand edits into the sync commit.
 
 **The tree must be clean when this step ends.** Verify with `git -C {memory-root} status
---porcelain` and stop if it isn't — a sync that leaves the store dirty makes the next
-sync's preflight check 3 fire falsely, which trains the user to wave it through.
+--porcelain` and stop if it isn't: a dirty store makes the next preflight fire falsely.
 
 ### Step 8 — Move the inbox originals to the Trash (last, never first)
 
@@ -333,17 +332,17 @@ only copy outside the Trash, and that the Trash is a real recovery.
 **Verify the committed bytes, not the working-tree file** — per original:
 
 ```bash
-blob=$(git -C {memory-root} rev-parse HEAD:assets/{id}.png)   # proves HEAD holds the path
+blob=$(git -C {memory-root} rev-parse HEAD:{asset})   # {asset} from the note; proves HEAD holds it
 git -C {memory-root} cat-file blob "$blob" | shasum -a 256    # proves the committed bytes
 ```
 
 That must equal the note's recorded hash (strip its `sha256:` prefix), and `notes/{id}.md`
-must exist. **Never hash the working-tree file, and never substitute `git log -- <path>`**
-— [`reference/memory-schema.md`](./reference/memory-schema.md) explains what each misses
-and why it destroys data silently.
+must exist. **Never hash the working-tree file, and never substitute `git log -- <path>`** —
+[`reference/memory-schema.md`](./reference/memory-schema.md) explains what each misses.
 
-Then **move it to the system trash** (`~/.Trash` on macOS), not `rm`: failures here are
-silent and found days later. No trash directory → `rm`, and say so.
+Then **move it to the system trash** (`~/.Trash` on macOS), never `rm`. **With no trash
+directory, leave the original where it is** and say so: the plan gate approved a
+recoverable move, and substituting a permanent delete takes an authority never given.
 
 - Move **only** files this sync wrote a note for — never a folder, never a skipped file,
   never anything discovery didn't select. A **skipped** capture stays put; an unreadable
@@ -363,12 +362,14 @@ restoring nothing to where the screenshots were, leaving the user with neither. 
 records `origin_path`, so a real reversal is available and is what `undo` must do.
 
 1. Name the last sync commit and what it contained; confirm before touching anything.
-2. Copy that commit's captures from `assets/` back to their recorded `origin_path`,
-   skipping occupied paths and saying which.
-3. `git revert` the sync commit, then report what came back and what didn't.
+2. Copy that commit's captures back to their recorded `origin_path`. If a path is occupied,
+   **never skip it** — write alongside as `name (restored).ext`, since step 3 is about to
+   remove the store's copy and a skipped capture would then exist nowhere.
+3. Only once every capture is back on disk, `git revert` the sync commit. If any could not
+   be written, **stop before reverting** and say which.
 
 Last sync only — a reversal, not a time machine. If the originals are still in the Trash,
-say so: that is the better recovery.
+say so.
 
 ## Query — ask the memory
 

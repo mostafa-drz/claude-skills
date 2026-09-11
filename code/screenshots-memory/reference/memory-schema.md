@@ -20,7 +20,7 @@ Current version: **1**.
 │   ├── cluster.md
 │   ├── index.html
 │   └── assets/                   ← copies, so the page resolves standalone
-├── assets/<id>.png               ← the one canonical image per note
+├── assets/<id>.<ext>             ← the one canonical image per note (source extension kept)
 ├── corrections.md                ← every human correction, append-only
 ├── extraction-guide.md           ← learned guide, fed to the extractor each sync
 ├── kinds.md                      ← live kind registry
@@ -44,7 +44,7 @@ captured: 2026-09-11T16:46:23Z          # kMDItemContentCreationDate — the mom
 extracted_at: 2026-09-11T18:20:00Z      # when THIS text was produced — bumps on re-extraction
 capture_type: selection                 # selection | window | display | imported
 origin_path: ~/Desktop/Screenshot 2026-09-11 at 12.46.18 PM.png
-asset: assets/2026-09-11-slack-diego-abi-deadline.png
+asset: assets/2026-09-11-slack-diego-abi-deadline.png   # source extension, not always .png
 pixels: [1416, 1096]
 confidence: 0.88                        # how well the pixels were read — nothing else
 sensitive: false
@@ -149,7 +149,8 @@ The supported read path, in order of preference:
 
 1. **`memory.json`** for filtering — kind, date, cluster, tags, entities, confidence.
 2. **`notes/<id>.md`** for the content of a specific note.
-3. **`assets/<id>.png`** for the image itself — the copy git tracks, and the only one once
+3. **The path in the note's `asset` field** for the image itself — the copy git tracks, and
+   the only one once
    the user's Trash is emptied.
 
 Two rules for consumers:
@@ -167,7 +168,7 @@ A consumer should never write into this store. Corrections flow through
 Step 8 deletes the user's original once the store provably holds it. Two checks that look
 sufficient are not, and both fail silently:
 
-**Hashing `assets/<id>.png` in the working tree proves nothing about the commit.** With
+**Hashing the working-tree asset proves nothing about the commit.** With
 git-lfs or any clean filter — including one installed globally, needing nothing in this
 repo — the committed blob is a pointer, not the image. The working-tree hash matches, the
 commit exists, the note exists, the original is deleted, and the picture is gone.
@@ -178,7 +179,7 @@ committed and later removed still returns its deletion commit.
 Both collapse into one check that reads the bytes actually stored:
 
 ```bash
-blob=$(git -C {memory-root} rev-parse HEAD:assets/{id}.png)   # proves HEAD holds the path
+blob=$(git -C {memory-root} rev-parse HEAD:{asset})   # {asset} from the note; proves HEAD holds it
 git -C {memory-root} cat-file blob "$blob" | shasum -a 256    # proves the committed bytes
 ```
 
