@@ -365,10 +365,10 @@ records `origin_path`, so a real reversal is available and is what `undo` must d
 2. Copy that commit's captures back to their recorded `origin_path`. If a path is occupied,
    **never skip it** — write alongside as `name (restored).ext`, since step 3 is about to
    remove the store's copy and a skipped capture would then exist nowhere.
-3. Only once every capture is back on disk, `git revert` the sync commit. If any could not
-   be written, **stop before reverting** and say which.
+3. Only once every capture is back on disk, `git revert` the sync commit — if any could
+   not be written, **stop before reverting** and say which.
 
-Last sync only — a reversal, not a time machine. If the originals are still in the Trash,
+Last sync only — a reversal, not a time machine; if the originals are still in the Trash,
 say so.
 
 ## Query — ask the memory
@@ -442,8 +442,7 @@ human-readable and revertible.
    then ask via `AskUserQuestion`:
    - **Looks right?** → mark `reviewed: true`, move on.
    - **Fix the text** → the user edits; save the corrected note.
-   - **Wrong kind / tags / cluster** → re-assign.
-   - **Skip** / **Stop**.
+   - **Wrong kind / tags / cluster** → re-assign · **Skip** / **Stop**.
 4. **On any correction**, record it and learn from it — append to
    `{memory-root}/corrections.md`, promote it (a lesson the user typed into the lesson
    field promotes immediately; one you inferred waits for a second occurrence) into
