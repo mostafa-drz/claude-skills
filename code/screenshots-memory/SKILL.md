@@ -324,7 +324,7 @@ create one only when nothing fits. Write/update `{memory-root}/clusters/{slug}/c
 --porcelain` and stop if it isn't — a sync that leaves the store dirty makes the next
 sync's preflight check 3 fire falsely, which trains the user to wave it through.
 
-### Step 8 — Delete the inbox originals (last, never first)
+### Step 8 — Move the inbox originals to the Trash (last, never first)
 
 Only if `originals: move`. Say **"moved to your Trash"** — not "retired", which hides it,
 and not "deleted", which overstates it. The user is entitled to know the store is now the

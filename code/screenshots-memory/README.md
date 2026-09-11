@@ -46,10 +46,10 @@ the skill refuses to run if one ever appears. It holds full-resolution pictures 
 screen — that only makes sense if it can never be pushed.
 
 **Originals move to your Trash last, and only once the store provably has them.** With
-`originals: move`, a screenshot leaves your Desktop only *after* its note is written, its
+`originals: move`, a screenshot goes to the **Trash** only *after* its note is written, its
 image committed into the store, and that commit verified — the hash has to match the
-committed bytes and git has to have it. Then the inbox copy goes to the **Trash**, and the
-store is the only copy outside it. If anything fails, nothing is moved. Only files the sync actually wrote a note for are ever
+committed bytes and git has to have it. The store is then the only copy outside the Trash.
+If anything fails, nothing is moved. Only files the sync actually wrote a note for are ever
 touched: never a folder, never something it skipped, never something you told it to leave
 alone. Prefer `originals: copy` if you'd rather keep both.
 
