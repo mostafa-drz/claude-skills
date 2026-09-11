@@ -43,9 +43,10 @@ the skill refuses to run if one ever appears. It holds full-resolution pictures 
 screen — that only makes sense if it can never be pushed.
 
 **Originals move last, never first.** A screenshot leaves your Desktop only *after* its
-note is written, its image copied, and the commit has landed. If the commit fails,
-nothing moves. Only files the sync actually wrote a note for are ever touched — never a
-folder, never something it skipped.
+note is written, its image committed into the store, and that commit verified — the hash
+has to match and git has to have it. If the commit fails, nothing moves. Only files the
+sync actually wrote a note for are ever touched: never a folder, never something it
+skipped, never something you told it to leave alone.
 
 **Sensitive captures are asked about, not assumed.** Anything that looks like
 credentials, banking, medical info or a private DM is flagged during extraction, and you
@@ -113,7 +114,7 @@ and paste the batch back with `/screenshots-memory review --apply`.
 ├── memory.json                  ← the index (other skills can read this)
 ├── notes/                       ← one Markdown file per screenshot
 ├── clusters/<slug>/             ← cluster.md + index.html + assets/
-├── assets/                      ← the screenshots, plus originals/
+├── assets/                      ← the screenshots themselves
 ├── corrections.md               ← every correction you've made
 ├── extraction-guide.md          ← what it has learned about your screen
 ├── kinds.md                     ← your kind registry

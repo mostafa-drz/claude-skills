@@ -60,7 +60,7 @@ If it's missing, treat this as first-run (see **First-time detection**)._
 Defaults when no preferences exist:
 - `memory-root`: `~/screenshots-memory/` (confirmed on first run; git-init'd so every change is diffable and revertible)
 - `inbox`: `~/Desktop` (where loose screenshots pile up; synced when no path is given)
-- `originals`: `move` (`move` = swept into the store after the commit lands · `copy` = left in place)
+- `originals`: `move` (`move` = the capture lives in the store once committed, and the inbox copy is retired · `copy` = inbox copy left alone)
 - `confidence-threshold`: `0.75` (extractions below this are flagged for `review`, never silently trusted)
 - `cluster-style`: `topic` (subject-based; `kind` is a filter chip on the page, not a folder)
 - `sensitive-policy`: `ask-batched` (flag during extraction, ask about all of them in one round at the end)
@@ -75,10 +75,9 @@ a typo. Feeding it to the extractor every sync is what makes the memory improve.
 
 ## Context
 
-_On startup, use Bash to detect: today's date (`date +%Y-%m-%d`), whether `memory-root`
-exists and is a git repo (`ls`, `git -C … rev-parse`), and the OS (`open` on macOS,
-`xdg-open` on Linux). Do NOT scan for screenshots yet — that happens inside `sync`
-after the safety preflight._
+_On startup, use Bash to detect today's date (`date +%Y-%m-%d`), whether `memory-root`
+exists and is a git repo, and the OS (`open` on macOS, `xdg-open` on Linux). Do NOT scan
+for screenshots yet — that happens inside `sync`, after the safety preflight._
 
 ## Command routing
 
@@ -88,8 +87,8 @@ Check `$ARGUMENTS`:
 - `reset` → delete **skill preferences only** (see **Reset**); the memory store is preserved. Confirm first, stop
 - `setup` → create and verify the memory store (see **Setup**), stop
 - `sync` → ingest new screenshots into memory (see **Sync**)
-- `review --apply` → **test this before plain `review`** — `--apply` is followed by a
-  fenced ```json block from a cluster page's popovers; apply that batch in one pass
+- `review --apply` → **test before plain `review`** — `--apply` is followed by a fenced
+  ```json block from a cluster page's popovers; apply that batch in one pass
 - `review` (no `--apply`) → walk low-confidence extractions one at a time (see **Review & learning**)
 - `clusters` / `browse` → (re)render and open the HTML cluster views (see **Render**)
 - `feedback` → rate the last answer/extraction (see **Review & learning**)
@@ -100,35 +99,28 @@ Check `$ARGUMENTS`:
 
 ## Help
 
+Print this, filling in the user's actual preferences:
+
 ```
 screenshots-memory — Screenshots → a queryable, private memory
 
-Usage:
-  /screenshots-memory sync [path|glob] [--since <Nd>] [--yes]
-                                          Pull new screenshots, extract, cluster
-  /screenshots-memory <question>           Ask the memory in plain language
-  /screenshots-memory review [--min-confidence <0-1>]
-                                          Correct low-confidence reads (teaches the extractor)
-  /screenshots-memory review --apply       Apply reviews collected in the HTML page
-                                          (paste the block its "Copy for Claude" button gives you)
-  /screenshots-memory clusters | browse    Re-render + open the HTML cluster browser
-  /screenshots-memory feedback             Rate the last answer/extraction
-  /screenshots-memory config               Set preferences
-  /screenshots-memory setup                Create + verify the memory store
-  /screenshots-memory reset                Clear skill preferences (your memory is preserved)
-  /screenshots-memory help                 This help
+  sync [path|glob] [--since Nd] [--kind k] [--yes]   Pull new captures, extract, cluster
+  <question>                        Ask the memory in plain language
+  review [--min-confidence 0-1]     Correct low-confidence reads (teaches the extractor)
+  review --apply <json block>       Apply reviews collected in the HTML page
+  clusters | browse                 Re-render + open the HTML browser
+  feedback · config · setup · reset · help
 
 Examples:
-  /screenshots-memory sync                         Sweep the inbox (~/Desktop)
+  /screenshots-memory sync                       Sweep the inbox (~/Desktop)
   /screenshots-memory sync ~/Downloads --since 7d
   /screenshots-memory what did Slack ask me to do last week
-  /screenshots-memory products I saved in August
 
-Memory store: {memory-root}/ — a local git repo with no remote. Plain Markdown +
-JSON you can open, edit and revert. Layout: reference/memory-schema.md
+Store: {memory-root} — a local git repo, no remote. {N} captures, {C} clusters,
+{F} flagged for review. Full guide: README.md · layout: reference/memory-schema.md
 
 Current preferences:
-  (loaded from preferences.md)
+  (list them)
 ```
 
 ## Config
@@ -142,18 +134,16 @@ Fire ONE `AskUserQuestion` (multi-question) to collect:
 5. **Tone** — `friendly-cli` / `detailed` / `minimal`
 
 Save to `~/.claude/skills/screenshots-memory/preferences.md` in the format shown under
-**Preferences**. The kind registry lives in `{memory-root}/kinds.md`, not here.
-
-Confirm warmly: "Saved. I'll use this as the baseline and keep sharpening as you correct
+**Preferences**; the kind registry lives in `{memory-root}/kinds.md`, not here. Confirm
+warmly: "Saved. I'll use this as the baseline and keep sharpening as you correct
 extractions."
 
 ## Reset
 
-`reset` deletes **only** `~/.claude/skills/screenshots-memory/preferences.md`.
-It **never** touches the memory store (`{memory-root}`) — your notes, screenshots,
-corrections and learned guide are your data and stay put (and remain git-versioned).
-Confirm exactly what was deleted: "Cleared skill preferences. Your memory store at
-{memory-root} — notes, screenshots, corrections and the learned guide — is untouched."
+`reset` deletes **only** `~/.claude/skills/screenshots-memory/preferences.md`. It
+**never** touches the memory store — notes, screenshots, corrections and the learned
+guide are the user's data and stay put, still git-versioned. Confirm exactly that:
+"Cleared skill preferences. Your memory store at {memory-root} is untouched."
 
 ## First-time detection
 
@@ -166,25 +156,22 @@ First time running /screenshots-memory — here's the shape of it:
   stop being findable. I turn them into a memory you can query.
 
   On each sync I read every new screenshot with Claude vision (no OCR key, nothing
-  uploaded), work out what KIND of thing it is — course notes, a Slack ask, a product
-  you liked, a UI you want to steal — and pull the fields that matter for that kind.
-  Each becomes a small Markdown file with a confidence score and exact provenance,
-  grouped into topic clusters and rendered as HTML you can browse.
+  uploaded), work out what KIND it is — course notes, a Slack ask, a product, a UI
+  worth stealing — and pull the fields that matter for that kind. Each becomes a
+  small Markdown file with a confidence score and exact provenance, grouped into
+  topic clusters and rendered as HTML you can browse.
 
-  Then you just ask:
-    /screenshots-memory what did Slack ask me to do last week
-    /screenshots-memory products I saved in August
+  Then you ask:  /screenshots-memory what did Slack ask me to do last week
 
   Three promises, because this skill touches your files:
     · Your memory store is a LOCAL git repo with no remote. It is never pushed.
-    · Originals move into the store only AFTER the note is written and committed.
-    · Anything that looks sensitive gets flagged and I ask before writing it down.
+    · An original leaves your Desktop only after its note is committed and verified.
+    · Anything sensitive gets flagged and I ask before writing it down.
 
   Nothing I'm unsure about gets silently guessed — it gets flagged. Fix one with
   `/screenshots-memory review` and I read your screen better next time.
 
-  Ready? `/screenshots-memory setup` creates the store, or just run
-  `/screenshots-memory sync` and I'll set it up as we go.
+  Ready? `/screenshots-memory setup`, or just `sync` and I'll set it up as we go.
 ```
 
 Then proceed. After the first successful sync, offer to save a couple of quick prefs
@@ -231,14 +218,11 @@ Parse `$ARGUMENTS`:
 - no path → sweep the **inbox** (`~/Desktop` by default)
 
 **Discovery rules differ by scope, deliberately:**
-
-- **Inbox sweep** — only files where macOS says it is a screenshot:
-  `mdfind -onlyin {inbox} 'kMDItemIsScreenCapture == 1'`.
-  This is what makes an automatic sweep safe: it can never pick up a folder, a
-  document, a photo, or anything the user merely saved there.
-- **Explicit path** — any image file (`png jpg jpeg heic webp`). If you point at a
-  photographed whiteboard or a saved product image, that's a deliberate choice and it
-  is honoured.
+- **Inbox sweep** — only what macOS itself calls a screenshot:
+  `mdfind -onlyin {inbox} 'kMDItemIsScreenCapture == 1'`. This is what makes a sweep
+  safe: it can never pick up a folder, a document, or a photo the user merely saved there.
+- **Explicit path** — any image (`png jpg jpeg heic webp`). Pointing at a photographed
+  whiteboard or a saved product image is a deliberate choice, and it's honoured.
 
 On Linux, or if `mdfind` returns nothing on a folder that clearly holds screenshots, fall
 back to filename patterns (`Screenshot*`, `Screen Shot*`, `CleanShot*`) **and say you
@@ -248,22 +232,21 @@ did** — never sync a folder by a different rule than the one you announced.
 
 For each candidate, compute `shasum -a 256 <file>`.
 
-**The hash is the identity.** Not the path, not the filename. Screenshots get renamed,
-copied, moved and duplicated, and a content hash means the same capture is one note
-however many copies exist. If the hash is already in `memory.json`, skip the file —
-and if it sits outside the store, tell the user it's a duplicate of an existing note
-so they can delete it with confidence.
+**The hash is the identity** — not the path, not the filename. Screenshots get renamed,
+copied and duplicated; a content hash makes the same capture one note however many copies
+exist. If the hash is already in `memory.json`, skip the file, and say it's a duplicate of
+an existing note so the user can delete it with confidence.
 
-Read the free provenance macOS already stores (verify per file; don't assume):
+Read the provenance macOS already stores (verify per file; don't assume):
 
 ```bash
 mdls -name kMDItemContentCreationDate -name kMDItemScreenCaptureType \
      -name kMDItemIsScreenCapture -name kMDItemPixelWidth -name kMDItemPixelHeight <file>
 ```
 
-`kMDItemContentCreationDate` is the capture moment — more trustworthy than the
-filesystem mtime, which changes when a file is copied. macOS does **not** record the
-source app, window title, or URL; those come from reading the pixels in Step 4.
+`kMDItemContentCreationDate` is the capture moment — more trustworthy than mtime, which
+changes on copy. macOS does **not** record the source app, window title or URL; those come
+from reading the pixels in Step 4.
 
 ### Step 3 — Plan gate
 
@@ -275,15 +258,15 @@ Sync plan:
   ├── Window:      {since Nd or "all"}
   ├── Found:       {N} screenshots  ({D} already in memory, skipped)
   ├── To read:     {M} images · ~{X} MB
-  ├── Originals:   {move into the store | copy, leave originals}
+  ├── Originals:   {retired once committed | left in place}
   └── Store:       {memory-root}  (local git, no remote)
 
 Reply 'go' to extract, or tweak the scope.  (add --yes next time to skip this)
 ```
 
-**Be honest when the batch is big.** Every screenshot is a vision read. If M is more
-than ~40, say so and offer to narrow by `--since` or run in batches — a first sync
-against a long-neglected folder can be hundreds of images.
+**Be honest when the batch is big.** Every screenshot is a vision read. Above ~40, say so
+and offer to narrow with `--since` or run in batches — a first sync against a neglected
+folder can be hundreds of images.
 
 ### Step 4 — Extract (Claude vision + learned guide)
 
@@ -321,28 +304,25 @@ notes — never one interruption per screenshot:
 3 of 27 captures look sensitive. The image is stored either way; this is only about
 whether I write the text into the repo.
 
-  1. Banking dashboard — RBC, balance visible          (p. Screenshot … 1.22.32 PM)
-  2. DM with Diego — appears personal                   (p. Screenshot … 9.28.31 AM)
-  3. Terminal showing what looks like an API token      (p. Screenshot … 10.16.52 AM)
+  1. Banking dashboard — RBC, balance visible      (Screenshot … 1.22.32 PM)
+  2. DM with Diego — appears personal              (Screenshot … 9.28.31 AM)
+  3. Terminal showing what looks like an API token (Screenshot … 10.16.52 AM)
 ```
 
-Offer per item: **Extract normally** · **Store image only** (note keeps kind, date,
-provenance — no transcribed text) · **Skip entirely** (not ingested; original left
-exactly where it is). Default to **Store image only** when the user declines to choose.
-
-A "store image only" note is a real note with `sensitive: true` and no `text`/`fields`.
-It stays findable by date and kind without leaking its contents.
+Offer per item: **Extract normally** · **Store image only** (keeps kind, date and
+provenance, no text) · **Skip entirely** (not ingested; original left where it is).
+Default to **Store image only** if the user declines to choose. An image-only note is a
+real note with `sensitive: true` and no `text`/`fields` — findable by date and kind
+without leaking its contents.
 
 ### Step 6 — Cluster
 
-Assign each note to a **topic** cluster — the subject, not the kind. `kind` is a filter
-chip on the page, so a product shot of a lamp and a UI shot of a room planner can
-happily share a `home-design` cluster.
-
-Reuse an existing cluster when the subject matches (check `memory.json → clusters`);
-create a new one only when nothing fits. Write/update
-`{memory-root}/clusters/{slug}/cluster.md` (title, one-paragraph summary, member note
-ids, key entities, kind mix, date range).
+Assign each note to a **topic** cluster — the subject, not the kind. Since `kind` is a
+filter chip, a product shot of a lamp and a UI shot of a room planner can share a
+`home-design` cluster. Reuse an existing cluster when the subject matches (check
+`memory.json → clusters`); create one only when nothing fits. Write/update
+`{memory-root}/clusters/{slug}/cluster.md` (title, summary, member ids, entities, kind
+mix, date range).
 
 ### Step 7 — Write, render, commit
 
@@ -363,26 +343,24 @@ sync's preflight check 3 fire falsely, which trains the user to wave it through.
 ### Step 8 — Retire the originals (last, never first)
 
 The capture now lives in the store, committed, at `assets/{id}.png`. Only if
-`originals: move`, the copy sitting in the inbox is now redundant and gets retired.
+`originals: move`, the inbox copy is redundant and gets retired.
 
-**Verify before removing anything — for each original, all three must hold:**
-1. `shasum -a 256 {memory-root}/assets/{id}.png` equals the hash recorded for that note;
-2. `git -C {memory-root} log --oneline -1 -- assets/{id}.png` returns a commit;
-3. the note file for that id exists.
+**Verify before removing anything.** For each original, all three must hold:
+`shasum -a 256 {memory-root}/assets/{id}.png` equals the note's recorded hash ·
+`git -C {memory-root} log --oneline -1 -- assets/{id}.png` returns a commit ·
+the note file exists. Then `rm` the inbox original. If any check fails, leave that
+original alone, say which and why, and carry on with the rest.
 
-Then `rm` the inbox original. If any check fails for a file, **leave that original where
-it is**, say which and why, and carry on with the rest.
-
-- Retire **only** files this sync wrote a note for. Never a folder, never a file that was
-  skipped, never anything the discovery rule didn't select.
-- A capture that couldn't be read still gets a flagged note and is still retired — so
+- Retire **only** files this sync wrote a note for — never a folder, never a skipped
+  file, never anything the discovery rule didn't select.
+- A capture that couldn't be read still gets a flagged note and is still retired, so
   nothing is silently abandoned *or* silently lost.
-- A capture the user chose to **skip entirely** is left exactly where it is.
+- A capture the user chose to **skip entirely** stays exactly where it is.
 - If Step 7's commit failed, **retire nothing**. Say so and stop.
 
-This step creates no new files, so the tree is still clean afterwards. It is also the
-only irreversible thing this skill does, which is why it is last and why it verifies the
-committed copy first rather than trusting the earlier steps.
+This creates no new files, so the tree stays clean. It is the only irreversible thing the
+skill does — hence last, and hence verifying the committed copy rather than trusting the
+earlier steps.
 
 Then report:
 
@@ -407,17 +385,17 @@ For free-text input that isn't a path, answer from the memory, not from thin air
    kinds, tags, entities, clusters and dates. Honour filters in the ask ("last week" →
    date window on `captured`; "products" → `kind: product`; "from Slack" → `app: Slack`).
    Prefer recall over precision, then read the note files.
-2. **Empty-memory bridge** — if nothing matches (common on a fresh install), don't
-   dead-end: "I don't have anything on {topic} yet. Want me to sync a folder? Which
-   one?" Then hand off to Sync with that scope.
+2. **Empty-memory bridge** — if nothing matches (common on a fresh install), don't dead-end:
+   "I don't have anything on {topic} yet. Want me to sync a folder? Which one?" Then hand
+   off to Sync with that scope.
 3. **Ground every claim** — cite the note id and capture date. Never invent a capture.
 4. **Match the shape of the ask** — a `chat` question wants actions with `who`/`ask`/`due`
    ordered by due date, not prose; `product` wants a table grouped by vendor with prices;
    a course cluster wants capture order, so it reads as a study sequence.
 5. **Confidence-aware** — when an answer leans on a low-confidence note, say so:
    "(from a capture I only read at 0.6 — worth a `review`)".
-6. **Respect `sensitive`** — never quote the text of a note stored image-only. Say it
-   exists, when it was captured, and that its contents were deliberately not recorded.
+6. **Respect `sensitive`** — never quote an image-only note. Say it exists, when it was
+   captured, and that its contents were deliberately not recorded.
 7. Offer to render the result as a cluster page if it's substantial.
 
 ## Render — HTML per cluster
@@ -436,12 +414,10 @@ a `review --apply`, or a bare `clusters`/`browse` — ends with `git -C {memory-
 && git commit -m "render: {scope}"` when anything changed, and says "already current"
 when nothing did. Uncommitted render output would make the next preflight fire falsely.
 
-**`flag` means unreviewed AND low-confidence — never low-confidence alone.** A card takes
-the `flag` class only when `confidence < threshold` **and** `reviewed` is false, and every
-card carries `data-reviewed`. This is what keeps the page's ⚠ Needs review switch and the
-terminal queue selecting the same notes: since a verdict of `ok` deliberately leaves
-`confidence` untouched, confidence alone would strand every confirmed note in the review
-view forever, and the user would re-review notes the replay guard then silently discards.
+**`flag` means low-confidence AND unreviewed — never low-confidence alone**, and every
+card carries `data-reviewed`. Since a verdict of `ok` deliberately leaves `confidence`
+untouched, flagging on confidence alone would strand every confirmed note in the review
+view forever and drift the two review queues apart.
 
 The one thing that silently breaks a page: cluster pages live at
 `clusters/<slug>/index.html`, so every referenced image must be copied into that
@@ -468,31 +444,24 @@ human-readable and revertible.
    - **Fix the text** → the user edits; save the corrected note.
    - **Wrong kind / tags / cluster** → re-assign.
    - **Skip** / **Stop**.
-4. On any correction, append to `{memory-root}/corrections.md`:
-
-The format for `corrections.md`, how a recurring lesson gets promoted into
-`extraction-guide.md`, and how a new kind is proposed are all in
-[`reference/learning-loop.md`](./reference/learning-loop.md) — load it when reviewing.
-
-5. **Promote stable patterns.** When the same lesson recurs (an app you keep
-   misidentifying, a shorthand, a client name read as a typo), add it to
-   `{memory-root}/extraction-guide.md` — the file the extractor reads on every sync.
-   Tell the user: "Learned: {pattern}. I'll apply it going forward."
-6. `git commit` the corrections so the learning history is itself versioned.
+4. **On any correction**, record it and learn from it — append to
+   `{memory-root}/corrections.md`, promote a recurring lesson into
+   `{memory-root}/extraction-guide.md` (the file the extractor reads every sync), tell
+   the user "Learned: {pattern}. I'll apply it going forward.", and `git commit` so the
+   learning history is versioned too. Formats and the promotion rule:
+   [`reference/learning-loop.md`](./reference/learning-loop.md) — load it when reviewing.
 
 ### Applying reviews from the page
 
-`review --apply` receives the block a cluster page's **Copy for Claude** button produces:
-the command line, then a fenced ```json block. Parse the array inside the fence and ignore
-the repeated command line.
+`review --apply` receives what a cluster page's **Copy for Claude** button produces: the
+command line, then a fenced ```json block. Parse the array inside the fence.
 
 **Load [`reference/learning-loop.md`](./reference/learning-loop.md) before applying a
-batch.** It carries the entry schema, the per-verdict write rules, the staleness check
-(entry `extracted_at` vs the note's — **not** `hash`, which is the image digest and never
-changes on re-extraction), and the replay guard that stops a re-pasted batch from
-clobbering a note that changed since.
+batch** — entry schema, per-verdict write rules, the staleness check (entry
+`extracted_at` vs the note's, **not** `hash`, which digests the image and never changes
+on re-extraction), and the replay guard against a re-pasted batch.
 
-Three rules that are non-negotiable and belong here rather than buried in reference:
+Three rules too important to leave in reference:
 - **`reviewed: true` clears the flag — never a confidence bump.** `confidence` records how
   well the machine read the pixels; a human agreeing doesn't improve the reading. Only
   `fix` moves it, and only to `1.0`.
@@ -504,28 +473,27 @@ Three rules that are non-negotiable and belong here rather than buried in refere
 ### `/screenshots-memory feedback`
 
 Rate the most recent answer or extraction (nailed it / close / missed) plus a free-text
-note. Append to `{memory-root}/corrections.md` and promote clear signal to
-`extraction-guide.md`. Both files are human-editable — respect whatever the user writes
-there directly.
+note. Append to `corrections.md`, promote clear signal to `extraction-guide.md`. Both are
+human-editable — respect whatever the user writes there directly.
 
 ## Principles
 
 1. **The store is local and stays local.** A git repo with no remote, holding pictures of
    the user's screen. The preflight enforces it; nothing here ever pushes.
-2. **Move last, never first.** A file leaves its folder only after its note is written and
-   committed. A failed commit means nothing moves, and only files this sync wrote a note
-   for are ever touched.
+2. **Move last, never first.** A file leaves its folder only after its note is committed
+   and that commit verified. A failed commit means nothing moves, and only files this sync
+   wrote a note for are ever touched.
 3. **Provenance or it didn't happen.** Every note records its hash, capture time, app and
    original path. Every answer cites the captures it stands on.
 4. **Confidence is honest, low confidence is visible.** A capture you half-read is flagged,
-   never silently trusted. Uncertain words are marked inline, not guessed.
+   never silently trusted; uncertain words are marked inline, not guessed. `reviewed` is
+   what clears a flag — a human agreeing doesn't improve how well the pixels were read.
 5. **Sensitive means asked, not assumed.** Flag during extraction, ask once in a batch, and
    when in doubt store the image without the text.
 6. **Kind first, structure over verbatim.** Classification decides which fields matter — a
-   wrong kind is a worse error than a slightly wrong transcription. Capture what a
-   screenshot *means* plus the lines worth quoting, not an OCR dump nobody reads.
+   wrong kind is worse than a slightly wrong transcription. Capture what a screenshot
+   *means* plus the lines worth quoting, not an OCR dump nobody reads.
 7. **The hash is the identity.** Renames, copies and duplicates collapse to one note.
-8. **Corrections are the product.** The system improves by learning this user's apps and
-   shorthand from real fixes, in human-editable files — not a hidden model. The memory is
-   plain Markdown and JSON the user owns, edits and reverts.
-9. **Warm, terse CLI tone.** One friendly line to open and close; the work speaks for itself.
+8. **Corrections are the product.** The memory improves by learning this user's apps and
+   shorthand from real fixes, in human-editable plain files they own, edit and revert —
+   not a hidden model. Warm, terse tone throughout; the work speaks for itself.
