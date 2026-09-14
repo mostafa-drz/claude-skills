@@ -45,6 +45,11 @@ and corrected — burying it defeats that.
 against a cadence that was itself an estimate. Show it as due/overdue, not as a
 command, and let the detail view show what the cadence was based on.
 
+**Toxicity is labelled by audience.** A plant can be dangerous to a cat and harmless to
+an adult, or the reverse — a single badge derived from one audience and shown as general
+safety is the failure worth preventing. Show "toxic to pets" or "safe for pets, irritant
+to humans", never a bare "toxic"/"safe".
+
 **Toxicity is visible at a glance, including when it is unknown.** Toxic belongs on the
 card — someone with a new kitten should be able to scan the list. So does `unknown`,
 rendered as its own visible state: if it falls back to blank, an unknown plant looks
@@ -64,7 +69,8 @@ generous whitespace, 12–16px radii, pill badges, hairline borders. Dark `#1212
 ground with `#ff5722` primary and `#03a9f4` secondary; light and dark via
 `prefers-color-scheme`, CSS variables only, explicit `body` background.
 
-Single column on a phone. Photos are the point — give them room, and lazy-load them.
+Single column on a phone. There are no photos to render — the log's written
+observations carry the visual history, so give *those* room rather than truncating them.
 
 ## What it must not do
 

@@ -69,8 +69,8 @@ record, which is exactly the history-destroying bug the duplicate check exists t
     "source": "species baseline, adjusted for terracotta and bright light"
   },
   "toxicity": {
-    "pets": "toxic",
-    "basis": "calcium oxalate crystals, documented across the genus",
+    "pets":   { "risk": "toxic",   "basis": "calcium oxalate crystals, documented across the genus" },
+    "humans": { "risk": "irritant", "basis": "same crystals — mouth and throat irritation if chewed" },
     "confidence": 0.86,
     "inherited_from_species_confidence": true
   },
@@ -140,9 +140,10 @@ The registry, so the library can be listed without opening every profile.
   "store": "google-drive",
   "updated": "2026-09-14",
   "plants": [
-    { "id": "monstera-deliciosa-living-room", "display_name": "The big monstera",
+    { "id": "plant-01", "display_name": "The big monstera",
       "species": "Monstera deliciosa", "room": "living room", "status": "thriving",
-      "last_watered": "2026-09-14", "water_every_days": 9, "photos": 3 }
+      "last_watered": "2026-09-14", "water_every_days": 9, "log_entries": 5,
+      "archived": false }
   ]
 }
 ```
@@ -176,9 +177,29 @@ That is genuinely append-only — every write is a create, nothing is ever rewri
 a failed write loses one entry instead of the whole history. Read the log by listing
 the folder and sorting by name.
 
-`profile.json` and `index.json` *are* rewritten whole, since they have to be. Write the
-replacement first, confirm it, then trash the old one — never the reverse, or a failure
-between the two leaves no profile at all.
+**Everything that is not a log entry is rewritten whole**, because Drive offers no other
+option: `profile.json`, `index.json`, `settings.json`, and `home.md`. `home.md` matters
+most — it is appended on every correction, and it is the learning loop, so losing it
+loses everything the skill has learned about this home.
+
+The replacement protocol, in this order every time:
+
+1. Create the new file as `<name>.new` with the full intended content.
+2. Confirm it exists and reads back correctly.
+3. Trash the old `<name>`.
+4. Rename `<name>.new` → `<name>` (`update_file` does change titles).
+
+Never trash first. A failure between steps leaves a recoverable state rather than
+nothing, and each one is identifiable:
+
+| what you find | what happened | what to do |
+|---|---|---|
+| `home.md` and `home.md.new` | interrupted between 2 and 3 | `.new` is the newer content — finish steps 3-4 |
+| `home.md.new` only | interrupted after 3 | rename it; nothing is lost |
+| two files both titled `home.md` | a duplicate write (Drive allows duplicate titles) | **stop** and show both — do not guess which is current |
+
+Check for a stray `.new` at the start of any Drive run and finish or report it, rather
+than writing on top of an interrupted update.
 
 **2. Uploads are silently converted.** `create_file` states that "supported content will
 be converted to Google first-party mime types" — a `text/plain` JSON upload becomes a
@@ -203,7 +224,7 @@ Notion has no files, so the same shape maps onto a database:
 | `index.json` | the database itself — one page per plant |
 | `profile.json` | page properties (see mapping below) |
 | `log.jsonl` | a child database on the page, one row per entry, sorted by date |
-| `photos/` | images in the page body, captioned with their date |
+| _(no photos)_ | the skill cannot store images — visual observations are log entries, as in every other store |
 | `home.md` | the body of the **Library page** below |
 | `settings.json` | a single **Library page** in the same parent, which also carries `store`, `updated`, and each plant's `log_entries` count — a database of plant rows has nowhere to put library-level values, and the store-detection rule depends on them |
 

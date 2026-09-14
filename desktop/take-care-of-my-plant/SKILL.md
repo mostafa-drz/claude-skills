@@ -41,7 +41,22 @@ to identify, diagnose, and schedule honestly) ·
 Report what you found in one line. **Never assume the store from a previous
 conversation** — the connectors available differ by device.
 
-**Probe every connected store before choosing one.** One search each. Then:
+**Probe every connected store before choosing one**, each by its defined marker — a
+generic search for "index.json" finds nothing if the library sits in a subfolder, and
+the skill would then take the "create one" branch and split the very history it is
+guarding:
+
+| store | the marker | how to look |
+|---|---|---|
+| Filesystem | `~/plants/index.json` | read that exact path |
+| Google Drive | a folder named **`Plants`** at My Drive root, containing `index.json` | search for the folder by name, then list it |
+| Notion | a page titled **`Plant Library`** with a child database | search that exact title |
+
+**A failed or inconclusive search is not an absence.** If a connector errors, times out,
+or returns something ambiguous, say so and stop — never treat "I couldn't tell" as "there
+isn't one" and create a second library on top of it.
+
+Then:
 
 | what you find | what to do |
 |---|---|

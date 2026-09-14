@@ -84,10 +84,15 @@ rather than prescribing a month of futile misting.
 This is a **safety claim**, not plant trivia. Someone is asking because a cat, a dog or
 a toddler lives there.
 
-**Record it as a typed value, never free text:** `toxic` / `non-toxic` / `unknown`, with
-the basis and a numeric confidence. The reason is the third value. In free text, "we
-don't know" and "it's fine" both end up as a blank field — and a blank card reads as
-safe. `unknown` must be visible and explicit, on the dashboard as well as in the record.
+**Record it per audience, typed, never free text.** `pets` and `humans` are separate
+fields, each `toxic` / `irritant` / `non-toxic` / `unknown` with its own basis, because
+the answers genuinely differ — a plant can be dangerous to a cat and merely unpleasant to
+an adult. One blended verdict shown as general safety is how someone with a new kitten
+gets reassured by a value that was about humans.
+
+The third value matters as much as the first two: in free text, "we don't know" and "it's
+fine" both end up blank, and a blank card reads as safe. `unknown` must be visible and
+explicit, on the dashboard as well as in the record.
 
 **Never claim toxicity more confidently than the identification it rests on.** A species
 identified at 0.6 cannot yield a confident toxicity badge; the badge inherits the lower
