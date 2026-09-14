@@ -232,15 +232,35 @@ Map **every** profile field, not a convenient subset — a partial mapping canno
 the dashboard, which needs `care_baseline.source` to explain a cadence and
 `species.confidence` to badge an uncertain ID:
 
-`display_name` → title · `species.botanical_name`, `species.common_name`,
-`uncertain_because`, `identified_from` → text · `species.confidence` → number ·
+`display_name` → title · `aliases` → multi-select (this is how "the big one" resolves
+to a plant; without it every lookup falls back to the title) · `species.botanical_name`,
+`species.common_name`, `uncertain_because`, `identified_from` → text ·
+`species.confidence` → number ·
 `room` → **text, not select** (select options are fixed at schema creation, so a new
-room would need a schema change) · `indoor`, `pot.drainage`, `archived` → checkbox ·
-`light`, `soil`, `pot.material`, `toxicity.basis`, `care_baseline.source` → text ·
-`status` → select · `acquired`, `last_repotted`, `last_watered` → date ·
+room would need a schema change) · `indoor`, `pot.drainage`, `pot.sits_in_cachepot`,
+`archived`, `toxicity.inherited_from_species_confidence` → checkbox ·
+`light`, `environment.drafts`, `soil`, `pot.material`, `pot.estimated_from`,
+`care_baseline.humidity`, `care_baseline.source` → text ·
+`status` → select · `acquired`, `last_repotted`, `last_watered`, `created`,
+`updated` → date ·
 `pot.diameter_cm`, `water_every_days`, `feed_every_days`, `rotate_every_days`,
-`toxicity.confidence` → number · `toxicity.pets` → select (toxic / non-toxic / unknown) ·
-`calendar` → text (JSON).
+`toxicity.confidence` → number · `calendar` → text (JSON).
+
+**Toxicity needs four properties, not one.** The risk is per audience, and a pet-safe
+plant that irritates a child is a different answer from a plant safe for both:
+
+| field | Notion property | type |
+|---|---|---|
+| `toxicity.pets.risk` | `Toxicity — pets` | select (`toxic` / `irritant` / `non-toxic` / `unknown`) |
+| `toxicity.pets.basis` | `Toxicity basis — pets` | text |
+| `toxicity.humans.risk` | `Toxicity — humans` | select (same options) |
+| `toxicity.humans.basis` | `Toxicity basis — humans` | text |
+
+Collapsing these into one property loses the audience, and a record that cannot say
+*who* a plant is dangerous to answers "is this safe around the cat?" with a guess. If
+either audience is unknown, set that select to `unknown` — never copy the other
+audience's value across, and never leave the property absent, which reads as safe.
+`toxicity.confidence` and `inherited_from_species_confidence` apply to both.
 
 Each plant's log is a child database; **record its `data_source_id` as a property on the
 plant page**, or every log read costs a page fetch first to find it.
