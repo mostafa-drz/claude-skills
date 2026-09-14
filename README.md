@@ -82,7 +82,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. | Yes |
 | <img src="desktop/remarkable-memory/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/remarkable-memory`](desktop/remarkable-memory/SKILL.md) | Turns handwritten reMarkable notes into a queryable semantic memory, on Claude Desktop. | Yes |
 | [`/research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. | No |
-| <img src="desktop/take-care-of-my-plant/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/take-care-of-my-plant`](desktop/take-care-of-my-plant/SKILL.md) | A plant companion that remembers your plants. | Yes |
+| <img src="desktop/take-care-of-my-plant/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/take-care-of-my-plant`](desktop/take-care-of-my-plant/SKILL.md) | Identifies a plant from a photo, builds a care profile, and keeps its watering, feeding and repotting history in a store the user already has — Filesystem, Google Drive, or Notion. | Yes |
 
 <!-- END GENERATED CATALOG -->
 

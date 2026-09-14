@@ -6,38 +6,46 @@ Loaded when onboarding a plant, writing a log entry, or reading the library.
 - [profile.json](#profilejson)
 - [log.jsonl](#logjsonl)
 - [index.json](#indexjson)
-- [Filesystem and Google Drive](#filesystem-and-google-drive)
+- [Filesystem](#filesystem)
+- [Google Drive](#google-drive)
 - [Notion](#notion)
 - [Rules that hold in every store](#rules-that-hold-in-every-store)
 
 ## The shape
 
-Three things per plant: **who it is** (profile, changes rarely), **what happened to
-it** (log, append-only), and **what it looked like** (photos, accumulate).
+Two things per plant: **who it is** (profile, changes rarely) and **what happened to
+it** (log, append-only). Photos are read in conversation and described into the log as
+text — the runtime cannot store them, so nothing here references a photo file.
 
 ```
 index.json                       the library — one row per plant
 settings.json                    store preference, units, calendar on/off
 plants/<id>/profile.json
 plants/<id>/log.jsonl
-plants/<id>/photos/YYYY-MM-DD.jpg
+plants/<id>/            (photos are NOT stored — see SKILL.md "Photos")
 ```
 
-`<id>` is a slug: `monstera-deliciosa-living-room`. Species plus location, because
-two of the same species in different rooms are different plants with different needs.
+`<id>` is **opaque and permanent**: `plant-01`, `plant-02`. Never derived from species
+or room. Both of those are expected to change — the dashboard exists partly so a wrong
+identification gets corrected, and `moved` is a first-class log kind — and an id built
+from them either becomes a lie or forces renaming every path that references it. Worse,
+two monsteras on the same shelf would collide on one id and get merged into a single
+record, which is exactly the history-destroying bug the duplicate check exists to prevent.
+
+`display_name`, species and room are attributes. Identity is the id alone.
 
 ## profile.json
 
 ```json
 {
-  "id": "monstera-deliciosa-living-room",
+  "id": "plant-01",
   "display_name": "The big monstera",
   "species": {
     "common_name": "Swiss cheese plant",
     "botanical_name": "Monstera deliciosa",
     "confidence": 0.86,
     "uncertain_because": "could be a Monstera borsigiana — the leaf fenestration pattern is similar at this size",
-    "identified_from": "photos/2026-09-14.jpg"
+    "identified_from": "photo seen 2026-09-14 — large fenestrated leaves, thick petioles, aerial root at the base"
   },
   "environment": {
     "room": "living room",
@@ -57,10 +65,17 @@ two of the same species in different rooms are different plants with different n
     "source": "species baseline, adjusted for terracotta and bright light"
   },
   "toxicity": {
-    "pets": "Toxic to cats and dogs if chewed — calcium oxalate crystals.",
-    "confidence": "high for the genus; ask a vet for anything actually ingested"
+    "pets": "toxic",
+    "basis": "calcium oxalate crystals, documented across the genus",
+    "confidence": 0.86,
+    "inherited_from_species_confidence": true
   },
   "status": "thriving",
+  "archived": false,
+  "calendar": [
+    { "task": "water", "calendar_id": "primary", "event_id": "abc123",
+      "rrule": "RRULE:FREQ=DAILY;INTERVAL=9", "created": "2026-09-14" }
+  ],
   "created": "2026-09-14",
   "updated": "2026-09-14"
 }
@@ -79,12 +94,16 @@ later.
 One JSON object per line, append-only, newest last.
 
 ```jsonl
-{"date":"2026-09-14","kind":"onboarded","detail":"Added from a photo.","photo":"photos/2026-09-14.jpg"}
-{"date":"2026-09-14","kind":"watered","detail":"Soil dry 3cm down."}
-{"date":"2026-09-21","kind":"issue","detail":"Two lower leaves yellowing.","photo":"photos/2026-09-21.jpg"}
-{"date":"2026-09-21","kind":"diagnosis","detail":"Most likely overwatering: 6 days since last water, terracotta still damp.","confidence":0.7}
-{"date":"2026-10-02","kind":"correction","detail":"Was spider mites, not overwatering.","supersedes":"2026-09-21 diagnosis"}
+{"id":"e001","at":"2026-09-14T10:32:00Z","kind":"onboarded","detail":"Added from a photo: large fenestrated leaves, one new shoot, soil dry at the surface."}
+{"id":"e002","at":"2026-09-14T10:33:00Z","kind":"watered","detail":"Soil dry 3cm down."}
+{"id":"e003","at":"2026-09-21T08:10:00Z","kind":"issue","detail":"Two lower leaves yellowing from the tip inward."}
+{"id":"e004","at":"2026-09-21T08:12:00Z","kind":"diagnosis","detail":"Most likely overwatering: 6 days since last water, terracotta still damp.","confidence":0.7}
+{"id":"e005","at":"2026-10-02T19:04:00Z","kind":"correction","detail":"Was spider mites, not overwatering.","supersedes":"e004"}
 ```
+
+Each entry carries an **id** and a full **timestamp**. A date alone cannot order two
+waterings on the same day, and `"supersedes": "2026-09-21 diagnosis"` is ambiguous the
+moment there are two that day — `supersedes` references an id.
 
 `kind` is one of: `onboarded`, `watered`, `fed`, `repotted`, `rotated`, `pruned`,
 `moved`, `photo`, `issue`, `diagnosis`, `correction`, `note`.
@@ -115,10 +134,46 @@ means the library is elsewhere — stop and say so rather than starting an empty
 The index is derived. If it disagrees with a profile, **the profile wins** and the
 index gets rebuilt.
 
-## Filesystem and Google Drive
+## Filesystem
 
-The layout above, literally. Root is `~/plants/` (Filesystem) or a `Plants` folder
-(Drive). Drive: keep one folder per plant so photos stay next to their record.
+The layout above, literally, rooted at `~/plants/`. The only store where an append is
+a real append. **Desktop-only** — invisible from a phone, so say that before creating a
+library here.
+
+## Google Drive
+
+Drive cannot do three things the layout assumes, and each one has to be worked around
+explicitly rather than discovered at runtime.
+
+**1. There is no content update.** `update_file` changes "only title and parent_id".
+Editing a file means creating a replacement. So the log is **one file per entry**:
+
+```
+plants/plant-01/log/2026-09-14T103200Z-e001.json
+plants/plant-01/log/2026-09-14T103300Z-e002.json
+```
+
+That is genuinely append-only — every write is a create, nothing is ever rewritten, and
+a failed write loses one entry instead of the whole history. Read the log by listing
+the folder and sorting by name.
+
+`profile.json` and `index.json` *are* rewritten whole, since they have to be. Write the
+replacement first, confirm it, then trash the old one — never the reverse, or a failure
+between the two leaves no profile at all.
+
+**2. Uploads are silently converted.** `create_file` states that "supported content will
+be converted to Google first-party mime types" — a `text/plain` JSON upload becomes a
+Google Doc, and what comes back is not what went in. Every write must set
+`contentMimeType: "application/json"` **and** `disableConversionToGoogleType: true`.
+
+**3. `read_file_content` cannot read these files.** Its supported types are Google-native,
+PDF, Office, ODF and images — not JSON or plain text — and it returns "a natural language
+representation" whose "format will change over time". That is unusable for parsing a care
+record. Use **`download_file_content`** and base64-decode. Never `read_file_content` for
+store data.
+
+Duplicate titles are legal in Drive, so a second `index.json` can appear silently. If a
+search returns two, stop and say so rather than picking one.
 
 ## Notion
 
@@ -130,12 +185,24 @@ Notion has no files, so the same shape maps onto a database:
 | `profile.json` | page properties (see mapping below) |
 | `log.jsonl` | a child database on the page, one row per entry, sorted by date |
 | `photos/` | images in the page body, captioned with their date |
-| `settings.json` | a single settings page in the same parent |
+| `settings.json` | a single **Library page** in the same parent, which also carries `store`, `updated`, and each plant's `log_entries` count — a database of plant rows has nowhere to put library-level values, and the store-detection rule depends on them |
 
-Property mapping: `display_name` → title · `species.botanical_name` → text ·
-`species.confidence` → number · `room` → select · `indoor` → checkbox ·
-`status` → select · `last_watered` → date · `water_every_days` → number ·
-`toxicity.pets` → text.
+Map **every** profile field, not a convenient subset — a partial mapping cannot render
+the dashboard, which needs `care_baseline.source` to explain a cadence and
+`species.confidence` to badge an uncertain ID:
+
+`display_name` → title · `species.botanical_name`, `species.common_name`,
+`uncertain_because`, `identified_from` → text · `species.confidence` → number ·
+`room` → **text, not select** (select options are fixed at schema creation, so a new
+room would need a schema change) · `indoor`, `pot.drainage`, `archived` → checkbox ·
+`light`, `soil`, `pot.material`, `toxicity.basis`, `care_baseline.source` → text ·
+`status` → select · `acquired`, `last_repotted`, `last_watered` → date ·
+`pot.diameter_cm`, `water_every_days`, `feed_every_days`, `rotate_every_days`,
+`toxicity.confidence` → number · `toxicity.pets` → select (toxic / non-toxic / unknown) ·
+`calendar` → text (JSON).
+
+Each plant's log is a child database; **record its `data_source_id` as a property on the
+plant page**, or every log read costs a page fetch first to find it.
 
 Nested objects flatten with a dot (`pot.diameter_cm` → `Pot diameter (cm)`). Keep
 `uncertain_because` as a visible text property, not buried in the page body — it is
@@ -146,9 +213,11 @@ the field most likely to matter and most likely to be forgotten.
 1. **Check for an existing plant before creating one.** Match on species plus room;
    ask when unsure. Two records for one plant splits its history in half.
 2. **The log only grows.** Corrections supersede, never overwrite.
-3. **Strip EXIF before storing a photo.** Phone photos carry GPS — the user's home.
-4. **Write the profile and its first log entry together.** A profile with no
-   `onboarded` entry looks like a plant that has never been cared for.
-5. **Never invent a value to fill a field.** `null` is a real answer.
-6. **Stores do not migrate.** Moving from Drive to Notion leaves the plants in Drive.
+3. **Write in one order: profile → log → index.** The index is disposable and can be
+   rebuilt from the profiles, so it goes last. If a write fails, say which step failed
+   and what state the plant is in — never report success for a partial write.
+4. **Never invent a value to fill a field.** `null` is a real answer.
+5. **Stores do not migrate.** Moving from Drive to Notion leaves the plants in Drive.
    Say it plainly; offer to export rather than pretending the library moved.
+6. **Photos are not stored anywhere.** They are read in conversation and described into
+   the log. Nothing in this schema points at an image file.

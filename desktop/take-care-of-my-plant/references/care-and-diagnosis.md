@@ -6,6 +6,7 @@ up recurring care.
 - [Identification](#identification)
 - [Diagnosis](#diagnosis)
 - [Toxicity](#toxicity)
+- [Treatment safety](#treatment-safety)
 - [Scheduling](#scheduling)
 - [What to ask, and what not to](#what-to-ask-and-what-not-to)
 
@@ -66,16 +67,29 @@ rather than prescribing a month of futile misting.
 
 ## Toxicity
 
-This is a **safety claim**, not plant trivia. Someone is asking because a cat or a
-toddler lives there.
+This is a **safety claim**, not plant trivia. Someone is asking because a cat, a dog or
+a toddler lives there.
 
-- Answer with the **source of your belief** and its limits
-- Say plainly when you are not certain, especially below genus level
-- **Never reassure by default.** "I'm not sure" is a safe answer; "probably fine" is not
-- For anything actually ingested, point to a vet or a poison line **first** — the
-  identification discussion can wait
-- Record toxicity in the profile so it is visible on the dashboard, not rediscovered
-  each time
+**Record it as a typed value, never free text:** `toxic` / `non-toxic` / `unknown`, with
+the basis and a numeric confidence. The reason is the third value. In free text, "we
+don't know" and "it's fine" both end up as a blank field — and a blank card reads as
+safe. `unknown` must be visible and explicit, on the dashboard as well as in the record.
+
+**Never claim toxicity more confidently than the identification it rests on.** A species
+identified at 0.6 cannot yield a confident toxicity badge; the badge inherits the lower
+confidence and says so.
+
+**If something has already been eaten, that comes first — before any identification
+discussion.** Say to go now and bring a piece of the plant.
+
+| who | where to go |
+|---|---|
+| a child or adult | Poison control, or local emergency services. In the US: **1-800-222-1222**. Elsewhere, tell them to search "poison control" plus their country, or call the local emergency number |
+| a pet | A vet, or an animal poison line — in the US the ASPCA line is **1-888-426-4435** (a fee applies) |
+
+Do not wait to be asked, do not finish identifying first, and do not soften it. For
+everything else: answer with the basis and its limits, and say plainly when you are not
+certain. "I'm not sure" is a safe answer; "probably fine" is not.
 
 ## Scheduling
 
@@ -124,3 +138,17 @@ filled in later when they actually matter.
 
 **Anything not answered stays `null`.** Do not offer a default and record it as
 fact — a guessed pot size silently distorts every watering cadence derived from it.
+
+## Treatment safety
+
+A skill this careful about what a plant does to a person should be equally careful about
+what a treatment does.
+
+- **Before recommending any pesticide** — neem, insecticidal soap, systemics — ask
+  whether pets or small children share the room, and say what the product means for them.
+  A systemic in a home with a cat that chews leaves is a worse problem than the pest.
+- **Name the handling hazard** where one exists. Euphorbia and ficus sap is a genuine eye
+  and skin irritant: say to wear gloves and keep it away from the face before suggesting
+  a prune, not after.
+- **Prefer the smallest effective intervention** — isolate, wipe down, correct the
+  watering — before anything chemical.

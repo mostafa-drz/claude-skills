@@ -1,20 +1,26 @@
 # The dashboard artifact
 
-Loaded when the user asks to see their plants. Rendered fresh from the store every
-time — it is a **view**, never a second copy of the data.
+Loaded when the user asks to see their plants. The store stays the source of truth:
+regenerate the dashboard rather than updating a stale one.
+
+**It is a published page.** A self-contained artifact necessarily embeds the plant
+records it displays, so it starts private and should only be shared deliberately —
+worth one line to the user rather than a silent assumption.
 
 ## Two views, one file
 
 From the original sketch: a searchable list, and a detail view per plant.
 
-**List** — one card per plant: photo thumbnail, display name, species (with a
-confidence badge when it is uncertain), room, status, and *when it next needs water*
-— which is the thing actually being looked for. A search box filters by name,
-species or room.
+**List** — one card per plant: display name, species (with a confidence badge when it is
+uncertain), room, status, toxicity, and *when it next needs water* — which is the thing
+actually being looked for. A search box filters by name, species or room.
 
-**Detail** — opens from a card: the profile, the care baseline with the reasoning
-behind the cadence, toxicity if known, the photo history newest first, and the care
-log as a timeline.
+**Detail** — opens from a card: the profile, the care baseline with the reasoning behind
+the cadence, toxicity with its basis, and the care log as a timeline.
+
+There are no photo thumbnails: the skill does not store photos (see SKILL.md
+"Photos"). The log's written observations carry the visual history instead — render
+those in full rather than truncating, since they are all there is to compare against.
 
 Build it as a single self-contained HTML artifact: no external scripts, fonts or
 images, inline vanilla JS only. It has to work on a phone.
@@ -33,11 +39,17 @@ and corrected — burying it defeats that.
 against a cadence that was itself an estimate. Show it as due/overdue, not as a
 command, and let the detail view show what the cadence was based on.
 
-**Toxicity is visible at a glance.** If a plant is toxic to pets, that belongs on the
-card, not three taps away. Someone with a new kitten should be able to scan the list.
+**Toxicity is visible at a glance, including when it is unknown.** Toxic belongs on the
+card — someone with a new kitten should be able to scan the list. So does `unknown`,
+rendered as its own visible state: if it falls back to blank, an unknown plant looks
+identical to a safe one. And never badge toxicity more confidently than the species ID
+it was inherited from.
 
-**Empty states say what to do.** No plants yet: say how to add one (send a photo). No
-photos for a plant: say that, rather than rendering a broken image.
+**Archived plants are hidden by default**, reachable behind a toggle, and never counted
+in "needs water". A plant that died should not nag every week.
+
+**Empty states say what to do.** No plants yet: say how to add one (send a photo). No log
+entries yet: say that, rather than rendering an empty timeline.
 
 ## Look
 
@@ -54,5 +66,5 @@ Single column on a phone. Photos are the point — give them room, and lazy-load
   conversation, so they get logged.
 - **Never invent a field to fill a layout.** A missing pot size renders as absent,
   not as a guess.
-- **Never show a photo's location metadata** — it was stripped on the way in, and
-  nothing in the view should reintroduce it.
+- **Never render a field the store does not have.** A missing pot size is absent, not a
+  guess — and an absent toxicity value is `unknown`, not blank.
