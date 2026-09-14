@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-11",
+  "updated": "2026-09-14",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -691,6 +691,25 @@
       ],
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/research-assistant/SKILL.md",
       "sideEffects": false
+    },
+    {
+      "name": "take-care-of-my-plant",
+      "platform": "desktop",
+      "description": "A plant companion that remembers your plants. Photograph one and it identifies the species, builds a profile — room, light, pot, soil, watering baseline — and keeps it in a store you already have: Filesystem, Google Drive, or Notion. Answers \"what's wrong with my plant?\" from that plant's own history and environment rather than generic advice, logs every watering, feeding, repot and issue as an append-only care record, schedules recurring care in Google Calendar when you approve it, and renders a dashboard of every plant on demand. Never asserts a species it isn't sure of, never states toxicity or a diagnosis as certain, and strips location data from photos before storing them. Use when the user photographs a plant, asks what is wrong with one, wants to log watering or repotting, asks when to water next, or wants to see how their plants are doing.",
+      "trigger": "Photographing a plant to identify or onboard it, diagnosing a sick plant, logging care, scheduling watering, or reviewing how every plant is doing.",
+      "tags": [
+        "plants",
+        "plant-care",
+        "home",
+        "diagnosis",
+        "notion",
+        "google-drive",
+        "google-calendar",
+        "desktop"
+      ],
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/take-care-of-my-plant/icon.svg",
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/take-care-of-my-plant/SKILL.md",
+      "sideEffects": true
     }
   ]
 }
