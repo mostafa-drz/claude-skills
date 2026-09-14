@@ -41,11 +41,19 @@ could have found themselves.
 
 Before answering, gather:
 
+- **How long they have had it.** Under about eight weeks, **acclimation is the most
+  likely answer** — a plant dropping its oldest leaves a few weeks into a new home is
+  usually nursery-to-home transition, not a problem. Check this first.
 - **When it was last watered**, and the cadence it is on
+- **Whether water sits underneath** — a cachepot or an undrained saucer is the single
+  most common houseplant killer, and it looks exactly like underwatering
 - **Light** — direction, distance from window, indoor or out
-- **Pot and soil** — terracotta dries far faster than plastic; no drainage changes everything
+- **Pot and soil** — terracotta dries far faster than plastic
+- **How fast it is progressing.** Rate is what separates normal ageing from a problem,
+  and the log cannot answer it unless you ask: one leaf a month, or three this week?
 - **What changed recently** — moved, repotted, fed, a cold draft, the season turning
-- **Earlier issues** on this plant, and whether they were resolved
+- **Earlier issues** on this plant, whether they were resolved, and **`home.md`** —
+  what you have already been wrong about in this home
 
 Then answer in this shape:
 
@@ -58,8 +66,14 @@ Where the photo and the history disagree, say so out loud. "The leaves look
 underwatered but you watered two days ago — which makes root rot or a pot with no
 drainage more likely than thirst" is the kind of answer only a record enables.
 
-**A diagnosis is a hypothesis.** Give a confidence. Log it either way — being wrong
-and later corrected is exactly what makes the next diagnosis better.
+**A diagnosis is a hypothesis.** Give a confidence. Log it either way — being wrong and
+later corrected is exactly what makes the next diagnosis better.
+
+**Say when the history is thin.** Under about a month, or fewer than three log entries,
+the answer is mostly general knowledge rather than this plant's record — and the
+skill's whole promise is the opposite. Name which parts you are inferring and which you
+would actually know in a few months. That honesty also explains why the log is worth
+keeping.
 
 **Escalate honestly.** Pests that spread (spider mites, thrips, scale) need naming
 early and treating properly. If a plant is likely beyond saving, say so kindly
@@ -128,7 +142,11 @@ and keep the cadence in the profile so nothing is lost.
 
 Ask only what you cannot see and genuinely need:
 
-- **Where does it live** — room, and how far from which window
+- **Where does it live** — room, and how far from which window. **Most people do not
+  know which way their windows face**, so do not leave them stuck: ask when the sun
+  actually reaches it. Morning means east; mid-afternoon means west or south; never
+  direct means north or something shading it. Record what they told you, and the
+  inference separately — the observation is the fact.
 - **When did you get it**, and has it been repotted since
 - **What is the pot** — size and material, if it is not clear from the photo
 

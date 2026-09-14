@@ -11,6 +11,12 @@ worth one line to the user rather than a silent assumption.
 
 From the original sketch: a searchable list, and a detail view per plant.
 
+**Sort by most-overdue-first.** The spec calls next-water "the thing actually being
+looked for" — so it decides the order. On a phone that ordering *is* the list's value;
+search is secondary (nobody searches ten plants, and the keyboard eats half the screen).
+
+**Put the build date in the header.** People screenshot this and look at it on Thursday.
+
 **List** — one card per plant: display name, species (with a confidence badge when it is
 uncertain), room, status, toxicity, and *when it next needs water* — which is the thing
 actually being looked for. A search box filters by name, species or room.
@@ -63,7 +69,10 @@ Single column on a phone. Photos are the point — give them room, and lazy-load
 ## What it must not do
 
 - **Never write to the store.** The dashboard is read-only. Edits go through
-  conversation, so they get logged.
+  conversation, so they get logged. But **close the loop**: a card showing "overdue 2
+  days" should say the sentence that fixes it — *say "watered the big monstera" to log
+  it*. Read-only is right; leaving the user to work out the next move is not.
+- **Detail is a full-screen view with a thumb-reachable back control**, not a modal.
 - **Never invent a field to fill a layout.** A missing pot size renders as absent,
   not as a guess.
 - **Never render a field the store does not have.** A missing pot size is absent, not a

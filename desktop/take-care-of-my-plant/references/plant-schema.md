@@ -13,12 +13,14 @@ Loaded when onboarding a plant, writing a log entry, or reading the library.
 
 ## The shape
 
-Two things per plant: **who it is** (profile, changes rarely) and **what happened to
+One thing about the **home** (`home.md` — the learning loop, see SKILL.md) and two
+things per plant: **who it is** (profile, changes rarely) and **what happened to
 it** (log, append-only). Photos are read in conversation and described into the log as
 text — the runtime cannot store them, so nothing here references a photo file.
 
 ```
 index.json                       the library — one row per plant
+home.md                          what's true about this home — read before every diagnosis
 settings.json                    store preference, units, calendar on/off
 plants/<id>/profile.json
 plants/<id>/log.jsonl
@@ -40,6 +42,7 @@ record, which is exactly the history-destroying bug the duplicate check exists t
 {
   "id": "plant-01",
   "display_name": "The big monstera",
+  "aliases": ["the big one", "the living room monstera"],
   "species": {
     "common_name": "Swiss cheese plant",
     "botanical_name": "Monstera deliciosa",
@@ -53,7 +56,8 @@ record, which is exactly the history-destroying bug the duplicate check exists t
     "light": "bright indirect, ~2m from a south window",
     "drafts": null
   },
-  "pot": { "diameter_cm": 24, "material": "terracotta", "drainage": true },
+  "pot": { "diameter_cm": 24, "estimated_from": "photo", "material": "terracotta",
+           "drainage": true, "sits_in_cachepot": false },
   "soil": "peat-free houseplant mix",
   "acquired": "2026-04-02",
   "last_repotted": "2026-04-02",
@@ -81,6 +85,11 @@ record, which is exactly the history-destroying bug the duplicate check exists t
 }
 ```
 
+**Any field may carry `estimated_from`.** People do not know their pot diameter, and
+cadence is derived from it — so the choice is not "guess or lose the input". Record the
+estimate *and* its source (`"photo"`, `"user's rough guess"`). An estimate marked as one
+is honest; an unmarked estimate is the invention the rules forbid.
+
 **Every field may be `null`.** A profile with gaps is honest; one with invented
 values is not. `species.confidence` and `uncertain_because` are required whenever
 identification came from a photo — a record that loses the uncertainty gives wrong
@@ -106,7 +115,17 @@ waterings on the same day, and `"supersedes": "2026-09-21 diagnosis"` is ambiguo
 moment there are two that day — `supersedes` references an id.
 
 `kind` is one of: `onboarded`, `watered`, `fed`, `repotted`, `rotated`, `pruned`,
-`moved`, `photo`, `issue`, `diagnosis`, `correction`, `note`.
+`moved`, `issue`, `diagnosis`, `resolved`, `correction`, `note`.
+
+**`resolved` closes an `issue`** and carries `"closes": "e003"`. Without it there is no
+way to record "I did the thing and it worked", and since the dashboard treats an
+unresolved issue as "not thriving", every plant that ever had a problem would stay
+marked struggling forever.
+
+**`status` is derived, and the log owns it.** It lives in the profile for fast reads,
+but it is recomputed from the log after every entry: an open `issue` means `struggling`
+(or `critical` if that is what the diagnosis said); a `resolved` that closes the last
+open issue returns it to `ok`, and `thriving` is earned by new growth, not by silence.
 
 **Never edit or delete a line.** A wrong diagnosis is corrected by appending a
 `correction` that names what it supersedes. The history of being wrong is what makes
@@ -185,6 +204,7 @@ Notion has no files, so the same shape maps onto a database:
 | `profile.json` | page properties (see mapping below) |
 | `log.jsonl` | a child database on the page, one row per entry, sorted by date |
 | `photos/` | images in the page body, captioned with their date |
+| `home.md` | the body of the **Library page** below |
 | `settings.json` | a single **Library page** in the same parent, which also carries `store`, `updated`, and each plant's `log_entries` count — a database of plant rows has nowhere to put library-level values, and the store-detection rule depends on them |
 
 Map **every** profile field, not a convenient subset — a partial mapping cannot render

@@ -47,13 +47,19 @@ conversation** — the connectors available differ by device.
 |---|---|
 | exactly one store has a library | use it, whatever the preference order says |
 | two or more have libraries | **stop.** Show both and ask which is canonical — this is a split library, and writing to either makes it worse |
-| none has a library | create one in the first connected store by preference: Filesystem → Google Drive → Notion |
+| none has a library | create one by preference: **Google Drive → Notion → Filesystem** |
 | no store at all | work for this conversation only, and **say plainly that nothing will persist** |
 
-**Filesystem is Desktop-only.** A library on the local disk is invisible from a phone,
-so ranking it first silently bifurcates the library for anyone who uses both. When
-creating a *new* library on Filesystem, say this and offer Drive or Notion instead —
-this is the single most likely way for someone to end up with two half-libraries.
+**Filesystem ranks last on purpose.** Plants get added from a phone, standing in front
+of them — and a local-disk library is invisible there. Ranking it first would silently
+split the library for anyone using both devices, which is the most expensive thing a
+new user can get wrong. Before creating a library on Filesystem, say the consequence
+out loud: *"Filesystem only exists on this computer — if you want to add plants from
+your phone, pick Drive or Notion."*
+
+When the detected store and the recorded one disagree, **offer the way out** rather
+than only stopping: "Your library is in Drive; I'm looking at Filesystem. Want me to
+read Drive instead?"
 
 Stores do not migrate. Moving from Drive to Notion leaves the plants in Drive; offer
 an export rather than implying the library moved.
@@ -69,6 +75,12 @@ and what connecting it would enable. Never pretend to schedule.
 
 The main path. The user sends a photo and says "add this" (or just sends it).
 
+0. **First, ask whether you already know it.** Read the index before anything else.
+   A photo is just as likely to mean "what's wrong with this?" as "add this" — and a
+   bare photo of a plant already in the library currently walks the user through
+   onboarding a second copy. One question settles it: *"Is this your big monstera, or
+   a new one?"* This also fixes the diagnosis path, which otherwise assumes the user
+   names the plant.
 1. **Identify what you can see.** Species, and the condition of the plant in the
    photo. Give an honest confidence — see
    [`care-and-diagnosis.md`](./references/care-and-diagnosis.md).
@@ -83,6 +95,15 @@ The main path. The user sends a photo and says "add this" (or just sends it).
    which step failed and what state the plant is in — never report success for a
    partial write.
 5. **Confirm in one line:** what it is, where you put it, and what you weren't sure of.
+
+**On a first run, save the plant first and offer `config` after.** Onboarding is three
+or four questions; config adds four more. Front-loading them turns a two-minute first
+plant into an eight-question interrogation, and that is where this gets abandoned.
+
+**Adding several at once** is the realistic day one — most people already own plants.
+Take several photos, ask **one** question each (which room), leave everything else
+`null`, and fill in the rest when it matters. The argument for four-questions-not-twelve
+applies harder at library scale.
 
 ### 2. Answer "what's wrong with my plant?"
 
@@ -105,6 +126,14 @@ and what to do — then log the diagnosis so the next question has more to work 
 Every watering, feeding, repot, rotation, prune, move, issue and diagnosis becomes
 one append-only entry. Accept it in whatever form it arrives — "watered the monstera",
 "repotted the fig into a 25cm pot" — and confirm briefly.
+
+**"I watered everything today"** is the Sunday ritual and will be the single most
+common thing this skill ever hears. One message → one entry per plant → one
+confirmation line, not a dialogue per plant.
+
+**Resolve nicknames.** "the big one", "the one in the bedroom". Match against
+`display_name` and `aliases`, and when a new nickname appears and resolves cleanly,
+add it to `aliases` so it works next time. With two monsteras, ask — never guess.
 
 **This skill never edits or deletes a log entry.** A correction appends an entry that
 supersedes an earlier one. Note the limit honestly: none of the three stores *enforces*
@@ -135,6 +164,42 @@ Only with Google Calendar connected, and only on explicit approval.
 
 Without a calendar, say what is missing and that connecting Google Calendar in
 settings enables it. Do not pretend to schedule.
+
+---
+
+## What it learns about your home
+
+Per-plant records are memory. **This is the learning half**, and without it every
+conversation starts from zero and the companion is just a filing cabinet.
+
+`home.md` at the store root holds what is true about *this home and this person*,
+dated and sourced. **Read it before every diagnosis and every cadence decision.**
+Append to it whenever a correction lands.
+
+```markdown
+# What I've learned about this home
+
+- The south window has a sheer curtain — "bright direct" was wrong twice.
+  _(2026-09-21, from correcting the fig's diagnosis)_
+- Three of four diagnoses here have been overwatering. Lengthen cadences by
+  default, and say that's why. _(2026-10-02)_
+- Radiators dry the flat badly in winter; everything browned at the tips last
+  January. _(2026-01-18)_
+- "the big one" means the living-room monstera. _(2026-09-14)_
+```
+
+**The promotion rule**, same as the reMarkable skill: a one-off correction lives in
+that plant's log. A lesson that **recurs**, or that the user states as a general
+truth about their home, gets promoted to `home.md` — and say so when you promote it:
+"Noted — I'll assume that window is filtered from now on."
+
+This is what makes the third diagnosis better than the first. It is also the only
+part of the skill that improves on its own.
+
+**Come back.** A diagnosis ends with something to watch, which is advice, not a
+follow-up. When an `issue` is logged and the calendar is connected, offer a one-off
+check-in — "Check the fig (yellowing)" in 7 days. One event, on approval. That single
+behaviour does more for the companion feeling than any amount of tone.
 
 ---
 
@@ -180,7 +245,20 @@ would confirm it.
 
 **Never invent a field.** An unanswered question stays `null`. A profile that looks
 complete but contains guesses is worse than one with gaps, because the gaps are what
-prompt the next question.
+prompt the next question. A value you estimated is recorded *as* estimated — see
+`estimated_from` in the schema — not as fact and not as nothing.
+
+**Hedge in proportion.** Every rule above says when to be uncertain; this one says when
+to stop. A monstera is unmistakable — say so plainly. A confidence attached to every
+sentence is its own kind of dishonesty, and it is tiring by the second week. Caveats
+belong at the moment of identification and in the record, not repeated in every later
+answer. And speak in words, not decimals: "fairly sure" in conversation, `0.86` in the
+profile.
+
+**Sometimes the answer is that nothing is wrong.** One or two yellowing lower leaves on
+a healthy plant is just age. Say that, log it as a `note`, and say what would change
+your mind. The worst outcome for a new plant owner is being told to intervene when the
+right answer was to leave it alone.
 
 ---
 
@@ -223,5 +301,12 @@ destructive, and here the care history is the irreplaceable part.
 - **Deleting calendar events** when a plant is removed.
 
 **Units** follow the user's setting; default metric, and say which you used.
+
+**Outdoor plants** need one thing indoor plants don't: the weather. Ask the rough
+climate zone or nearest city **once**, store it in `home.md`, and use it for the only
+two things that really matter — a first-frost warning for anything tender, and the fact
+that watering cadence outdoors is driven by rain and season rather than a fixed
+interval. Without that, `indoor: false` is just a label. Say so rather than implying
+outdoor care is covered.
 
 **Tone** — one warm line, then the substance. These are houseplants, not a database.
