@@ -174,7 +174,9 @@ auditors whose reports counted.
   offer to save it to `## Learned`.
 
 After every round, including the last: append a ledger row (each confirmed finding as
-`file — behaviour`, and `next` as a step name) and print the round block.
+`file — behaviour`, and `next` as a step name), append the round block **verbatim** under
+the ledger's `## Rounds`, and print it. `status` prints the last stored block — never rebuild
+one from the row.
 
 ## Step 6 — Optional review-bot gate
 
@@ -182,8 +184,12 @@ Only if the contract says `greptile` and the user agrees. Pushing a branch and o
 is outward-facing: confirm first, and never target or push the default branch.
 
 Follow `reference/review-bot.md`. The PR body is the final block from
-`reference/contract-and-ledger.md` plus a link to the contract (the ledger is local). Bot findings go
-through **Step 4** like any auditor's. Any commit after a score makes it stale.
+`reference/contract-and-ledger.md` plus a link to the contract (the ledger is local). Bot
+findings go through **Step 4** like any auditor's. Any commit after a score makes it stale.
+
+**Agreement belongs to a SHA.** If fixing bot findings moved HEAD, the earlier votes don't
+cover it: run Steps 3–5 again on the new HEAD before Step 7, then re-trigger the bot. Report
+"agreed" only for a SHA that both a blind round and the bot's score cover.
 
 ## Step 7 — Report
 

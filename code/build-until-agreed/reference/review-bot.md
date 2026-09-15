@@ -13,7 +13,9 @@ Greptile; any bot that posts a score on the PR fits the same shape.
 3. **Score.** Greptile writes `Confidence Score: <n>/5` in its summary. Record the score
    **and the SHA it reviewed**. Any later commit makes it stale: re-trigger before quoting it.
 4. **Findings.** Treat the bot as one more auditor: its blocking comments go through Step 4
-   verification; fix confirmed ones (prefer cutting), re-run the harness, commit. If the bot
+   verification; fix confirmed ones (prefer cutting), re-run the harness, commit. A new
+   commit voids the earlier agreement — go back to SKILL.md Steps 3–5 on the new HEAD before
+   re-triggering the bot. If the bot
    only re-scores after replies, reply on each thread with the fix commit or why it was
    refuted — replies are public, so keep them factual.
 5. **Stop.** The contract's target score on the current HEAD → report it. The same finding back after a

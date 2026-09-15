@@ -63,6 +63,9 @@ Branch: feat/<slug> · Base: <sha before the contract commit> · Contract: .buil
 
 ## Accepted (non-blocking)
 - <finding> — accepted at bar `poc` on <date>
+
+## Rounds
+<!-- Each round block (section 2), appended verbatim after the round. `status` prints the last one. -->
 ~~~
 
 ## 2. Round block
