@@ -1,17 +1,21 @@
 # Contract, ledger and output blocks
 
-One file per goal holds both the contract and the ledger: `{ledger-dir}/<slug>.md`. It lives
-in the target repo and is committed, so it survives context compaction and `resume` reads
-it back. Auditors read the top half; the ledger is for the user and for `resume`.
+Two files per goal, both committed in the target repo so they survive context compaction:
+
+- `{ledger-dir}/<slug>.contract.md` — what auditors read. Nothing about past rounds.
+- `{ledger-dir}/<slug>.ledger.md` — round history for the user, `status` and `resume`.
+  **Never passed to auditors or verifiers**: it holds votes and findings that would anchor them.
 
 ## Contents
-1. Contract + ledger template
+1. Contract and ledger templates
 2. Round block (printed after every round)
 3. Final block
 4. Help
 5. First-run intro
 
-## 1. Template
+## 1. Templates
+
+### `<slug>.contract.md`
 
 ~~~markdown
 # <Goal, in a few words>
@@ -39,18 +43,21 @@ it back. Auditors read the top half; the ledger is for the user and for `resume`
 - <decision> — <why>
 
 ## Bar & budget
-- **Bar:** poc | production   (poc: MEDIUM findings are accepted and listed)
+- **Bar:** poc | production   (poc: only HIGH blocks · production: HIGH and MEDIUM block)
 - **Auditors:** 3 · **Max rounds:** 5 · **Review bot:** greptile | off
+~~~
 
----
+### `<slug>.ledger.md`
 
-## Ledger
+~~~markdown
+# Ledger — <goal>
+Branch: feat/<slug>
 
-| round | audit sha | harness | goal_met votes | HIGH raised → confirmed | fixed / cut | next |
-|---|---|---|---|---|---|---|
-| 1 | abc1234 | pass | 1/3 | 4 → 2 | 2 fixed, 1 cut | round 2 |
+| round | audit sha | harness | goal_met | blocking raised → confirmed | confirmed (titles) | fixed / cut | agents | next |
+|---|---|---|---|---|---|---|---|---|
+| 1 | abc1234 | pass | 1/3 | 4 → 2 | token leaks in logs; import drops last row | 2 fixed, 1 cut | 3 + 4 | Step 2 |
 
-### Accepted MEDIUMs
+## Accepted (non-blocking)
 - <finding> — accepted at bar `poc` on <date>
 ~~~
 
@@ -62,11 +69,12 @@ Printed after every round. Plain, short, and says *why* the loop continues or st
 Round {n} of {max} — {verdict: continuing | agreed | handing back}
   Harness        {pass|fail}  ({command that failed, if any})
   Goal met       {yes}/{auditors} auditors   ({lens}: no — "{one-line reason}")
-  HIGH           {raised} raised → {confirmed} confirmed · {refuted} refuted · {decision} were documented decisions
+  Blocking       {raised} raised → {confirmed} confirmed · {refuted} refuted · {decision} were documented decisions
   Fixing         {short list, each with what it protects}
   Cutting        {short list, or —}
-  MEDIUM         {n} listed, not auto-fixed (bar: {bar})
-  Why next       {one sentence — e.g. "2 confirmed HIGHs in the auth path; re-auditing after fixes"}
+  Not blocking   {n} listed, not auto-fixed (bar: {bar})
+  Agents         {auditors} auditors + {verifiers} verifiers this round · {total} so far
+  Why next       {one sentence — e.g. "2 confirmed findings in the auth path; re-auditing after fixes"}
 ```
 
 ## 3. Final block
@@ -74,10 +82,11 @@ Round {n} of {max} — {verdict: continuing | agreed | handing back}
 ```
 Agreed after {n} rounds — {branch}
   Criteria       {k}/{k} hold · harness passes at {sha}
-  HIGH by round  {r1} → {r2} → … → 0
+  Blocking/round {r1} → {r2} → … → 0
+  Agents         {total} spawned across {n} rounds
   Verified       {confirmed} confirmed · {refuted} refuted (would have been churn)
   Cut            {what was removed}
-  Accepted       {n} MEDIUMs (see ledger) · {n} decisions recorded
+  Accepted       {n} non-blocking findings (see ledger) · {n} decisions recorded
   Review bot     {score} at {sha} | skipped
   PR             {url | none}
 
@@ -126,5 +135,7 @@ First time running /build-until-agreed — here's the shape of it:
   I stop when the checks pass and the auditors agree — or I hand back to you if we're
   going in circles. I never merge.
 
-  Heads-up: each round runs several agents, so it costs more than a normal session.
+  Heads-up: each round runs several agents (by default 3 auditors plus one verifier per
+  blocking finding), so it costs more than a normal session. Their read-only commands and
+  your test command will ask for permission unless you allow them for this session.
 ```

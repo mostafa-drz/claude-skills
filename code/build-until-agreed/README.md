@@ -20,21 +20,21 @@ It worked. It also showed exactly where a naive review loop wastes time:
 | what happened | how this skill handles it |
 |---|---|
 | Reviewers flagged deliberate scope choices as HIGH, round after round | The contract has a **Decisions & scope** section; auditors are told those aren't defects, and verifiers return `DECISION` for them |
-| About a third of the fixes were added, then cut in a later round because they protected nothing | Every HIGH is **verified** before it's fixed, and each fix must name what it protects — otherwise it's cut |
+| About a third of the fixes were added, then cut in a later round because they protected nothing | Every blocking finding is **verified** before it's fixed, and each fix must name what it protects — otherwise it's cut |
 | Fixes landed while one reviewer was still reading, so it judged a moving target | **Freeze**: commit before a round, no edits until all auditors return, and the tree is re-checked afterwards |
 | Reviewers with write access fixed the same bug on parallel branches and conflicted | Auditors and verifiers are **read-only**; one orchestrator fixes |
 | Reports got truncated and lost their verdict | Word cap plus a fixed last line: `VERDICT goal_met=… high=…` |
 | The external bot's 5/5 went stale after 70 more commits | The review-bot gate records the **SHA** each score belongs to and re-triggers after new commits |
-| Round history was lost to context compaction | The **ledger** is a committed file in the repo, and `resume` reads it |
+| Round history was lost to context compaction | The **ledger** is a committed file in the repo, and `resume` reads it — kept separate from the contract so auditors never see past rounds |
 
 ## How it works
 
 ```
 contract ──► build a slice ──► freeze ──► N blind auditors (parallel, read-only)
    ▲                                              │
-   │                                      verify each HIGH (separate verifier)
+   │                                  verify each blocking finding (separate verifier)
    │                                              │
-   └──── fix confirmed HIGHs / cut ◄── decide: harness pass · 0 confirmed HIGH · majority goal met?
+   └──── fix confirmed / cut ◄── decide: harness pass · 0 confirmed blocking · >half say goal met?
                                                   │ yes
                                          optional review-bot gate ──► report (never merge)
 ```
@@ -45,12 +45,13 @@ contract ──► build a slice ──► freeze ──► N blind auditors (pa
 2. **Build** the smallest slice that moves a criterion.
 3. **Blind audit.** Three auditors by default, each with a different lens — *adopter*,
    *correctness*, *risk & simplicity*. They get the contract, the diff and the harness, and
-   nothing else. They never see each other.
-4. **Verify.** Each HIGH goes to a fresh verifier that tries to reproduce it: `CONFIRMED`,
-   `REFUTED`, or `DECISION`. Only confirmed HIGHs get fixed.
-5. **Decide.** Agreed when the harness passes, no confirmed HIGH remains, and most auditors
-   say the goal is met. It hands back to you on the round cap, on thrash, or when a finding
-   needs a scope decision only you can make.
+   nothing else. They never see each other or the ledger of earlier rounds.
+4. **Verify.** Each blocking finding goes to a fresh verifier that tries to reproduce it:
+   `CONFIRMED`, `REFUTED`, or `DECISION`. Only confirmed ones get fixed. What blocks depends
+   on the bar: `poc` blocks on HIGH only; `production` blocks on HIGH and MEDIUM.
+5. **Decide.** Agreed when the harness passes, nothing confirmed still blocks, and more than
+   half the auditors say the goal is met. It hands back to you on the round cap, on thrash,
+   or when a finding needs a scope decision only you can make.
 6. **Review bot** (optional). Greptile or similar, as a final gate whose findings go through
    the same verification.
 
@@ -89,11 +90,14 @@ vote is only a sanity check, and the human still reviews and merges.
 The gap this fills is **goal-anchored** review. The contract is written before the build,
 auditors judge "is the goal met, with evidence", deliberate trade-offs are protected, and a
 committed ledger explains every round. If `/goal` plus `code-review` is enough for your
-task, use them — they're lighter.
+task, use them — they're lighter. Rule of thumb: a change that fits in one session and
+already has a test suite that defines "done" → `/goal`. A multi-session build, a new
+boilerplate, or anything where "done" includes *would someone else adopt this* → this skill.
 
 ## Install
 
 ```bash
+git clone https://github.com/mostafa-drz/claude-skills.git
 cp -r claude-skills/code/build-until-agreed ~/.claude/skills/
 ```
 
@@ -105,9 +109,13 @@ cp -r claude-skills/code/build-until-agreed ~/.claude/skills/
 
 ## Cost
 
-Each round runs several agents plus one verifier per HIGH, so expect it to cost well above a
-normal session. The run this came from took about ten rounds over three hours. Start with
-`--rounds 3` on a small goal to get a feel for it.
+Agents per round with the defaults: **3 auditors + 1 verifier per blocking finding**, for up
+to 5 rounds — so a run that needs three rounds with two blocking findings each spawns about
+15 agents. The round block prints the running count. The run this skill came from used 2
+reviewers for 10 rounds over about three hours. Start with `--rounds 3` on a small goal.
+
+The skill pre-approves only `git` and `gh`. Your test command and the auditors' read-only
+commands will ask for permission unless you allow them for the session.
 
 ## Safety
 

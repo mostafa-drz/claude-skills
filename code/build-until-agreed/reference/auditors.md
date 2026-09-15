@@ -26,7 +26,7 @@ will never see the others' reports, and they will never see yours. Judge indepen
 Your lens: {lens name} — {who they are}. Your question: {the question}.
 
 Read the contract first: {contract path}. It states the problem, the goal, acceptance
-criteria, the harness, and a "Decisions & scope" section.
+criteria, the harness, and a "Decisions & scope" section. Do not read any `*.ledger.md`.
 
 The work is the commit range {base}..{audit_sha} in {repo path}.
 Harness: {harness commands}
@@ -40,7 +40,7 @@ Rules:
   If you could not reproduce it, it is not a finding. No speculation.
 - Anything listed under "Decisions & scope" is a choice, not a defect. Report it only if
   the docs describe it wrongly.
-- Severity, for the contract's bar ({bar}):
+- Severity (the contract's bar, {bar}, decides which levels block — not you):
   HIGH   — a user following the docs cannot reach the goal, gets a wrong or misleading
            result, or there is a security or data-integrity problem.
   MEDIUM — real friction or risk a user would hit, with a workaround.
@@ -55,47 +55,35 @@ Report, under 700 words:
 3. Could be cut: things that don't serve a criterion.
 
 The LAST line must be exactly:
-VERDICT goal_met=<yes|no> high=<number>
+VERDICT goal_met=<yes|no> high=<number> medium=<number>
 ```
 
 ## Verifier prompt
 
-One verifier per merged HIGH. It never learns which auditor raised it or how anyone voted.
+One verifier per merged blocking finding. It never learns which auditor raised it or how anyone voted.
 
 ```
-A reviewer claims the following HIGH-severity problem. Your job is to check the claim,
+A reviewer claims the following {severity}-severity problem. Your job is to check the claim,
 not to review the work.
 
 Claim: {finding}
 Evidence given: {evidence}
 Suggested fix: {fix}
 
-Contract (goal, criteria, decisions): {contract path}
+Contract (goal, criteria, decisions): {contract path} — do not read the ledger file.
 Code: {repo path} at {audit_sha}. Harness: {harness commands}
 
 READ-ONLY: don't edit, commit or change git state; clean up anything you start.
 
 Try to reproduce it. Then answer with exactly one of:
-- CONFIRMED — you reproduced it and it meets the HIGH definition in the contract's bar.
+- CONFIRMED — you reproduced it and it meets the {severity} definition:
+  HIGH = a user following the docs can't reach the goal, gets a wrong or misleading result,
+  or there is a security or data-integrity problem. MEDIUM = real friction or risk with a workaround.
   Give your own evidence (file:line or command + output).
-- REFUTED — it doesn't reproduce, or it isn't HIGH. Say what you ran and saw.
+- REFUTED — it doesn't reproduce, or it isn't {severity}. Say what you ran and saw.
 - DECISION — it describes a trade-off already listed under "Decisions & scope", and the
   docs describe it accurately.
 
 Under 300 words. The LAST line must be exactly:
 RESULT <CONFIRMED|REFUTED|DECISION>
 ```
-
-## Why blind votes and a verifier, not debate
-
-- Letting agents see each other's reasoning pushes them toward agreement, including onto
-  wrong answers; most of the gain credited to multi-agent debate comes from plain majority
-  voting. ([arXiv 2509.05396](https://arxiv.org/abs/2509.05396),
-  [arXiv 2508.17536](https://arxiv.org/abs/2508.17536))
-- Auditors on the same model share blind spots, so a majority is weaker evidence than its
-  headcount. Distinct lenses help; the verifier and the real harness carry the weight.
-  ([arXiv 2506.07962](https://arxiv.org/abs/2506.07962))
-- Validating each finding before acting is the pattern Anthropic's own `code-review`
-  plugin uses. ([code-review.md](https://github.com/anthropics/claude-code/blob/main/plugins/code-review/commands/code-review.md))
-- A grader separate from the builder, with criteria agreed before the work, is what made
-  long-running builds hold up. ([Anthropic: harness design for long-running apps](https://www.anthropic.com/engineering/harness-design-long-running-apps))
