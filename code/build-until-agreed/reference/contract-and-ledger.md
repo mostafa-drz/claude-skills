@@ -1,10 +1,12 @@
 # Contract, ledger and output blocks
 
-Two files per goal, both committed in the target repo so they survive context compaction:
+Two files per goal. Both are plain files on disk, so they survive context compaction:
 
-- `{ledger-dir}/<slug>.contract.md` — what auditors read. Nothing about past rounds.
-- `{ledger-dir}/<slug>.ledger.md` — round history for the user, `status` and `resume`.
-  **Never passed to auditors or verifiers**: it holds votes and findings that would anchor them.
+- `.build-until-agreed/<slug>.contract.md` — committed in the repo; what auditors read.
+  Nothing about past rounds.
+- `<git-common-dir>/build-until-agreed/<slug>.ledger.md` — round history for the user,
+  `status` and `resume`. It lives inside git's own directory, so it is never committed and
+  no `git diff` can show it to an auditor: the votes and findings it holds would anchor them.
 
 ## Contents
 1. Contract and ledger templates
@@ -44,18 +46,19 @@ Two files per goal, both committed in the target repo so they survive context co
 
 ## Bar & budget
 - **Bar:** poc | production   (poc: only HIGH blocks · production: HIGH and MEDIUM block)
-- **Auditors:** 3 · **Max rounds:** 5 · **Review bot:** greptile | off
+- **Auditors:** 3 · **Max rounds:** 5 · **Review bot:** greptile, target 5/5 | off
 ~~~
 
 ### `<slug>.ledger.md`
 
 ~~~markdown
 # Ledger — <goal>
-Branch: feat/<slug>
+Branch: feat/<slug> · Base: <merge-base sha> · Contract: .build-until-agreed/<slug>.contract.md
 
-| round | audit sha | harness | goal_met | blocking raised → confirmed | confirmed (titles) | fixed / cut | agents | next |
-|---|---|---|---|---|---|---|---|---|
-| 1 | abc1234 | pass | 1/3 | 4 → 2 | token leaks in logs; import drops last row | 2 fixed, 1 cut | 3 + 4 | Step 2 |
+| round | audit sha | harness | goal_met | blocking raised → confirmed | confirmed (file — behaviour) | fixed / cut | next |
+|---|---|---|---|---|---|---|---|
+| 0 | — | — | — | — | — | contract agreed | Step 2 |
+| 1 | abc1234 | pass | 1/3 | 4 → 2 | `src/log.ts` — prints the token; `import.ts` — drops last row | 2 fixed, 1 cut | Step 2 |
 
 ## Accepted (non-blocking)
 - <finding> — accepted at bar `poc` on <date>

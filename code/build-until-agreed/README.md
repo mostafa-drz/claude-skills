@@ -25,7 +25,7 @@ It worked. It also showed exactly where a naive review loop wastes time:
 | Reviewers with write access fixed the same bug on parallel branches and conflicted | Auditors and verifiers are **read-only**; one orchestrator fixes |
 | Reports got truncated and lost their verdict | Word cap plus a fixed last line: `VERDICT goal_met=… high=…` |
 | The external bot's 5/5 went stale after 70 more commits | The review-bot gate records the **SHA** each score belongs to and re-triggers after new commits |
-| Round history was lost to context compaction | The **ledger** is a committed file in the repo, and `resume` reads it — kept separate from the contract so auditors never see past rounds |
+| Round history was lost to context compaction | The **ledger** is a file on disk that `resume` reads. It lives inside git's own directory, so it's never committed and no diff can show past rounds to an auditor |
 
 ## How it works
 
@@ -111,15 +111,19 @@ cp -r claude-skills/code/build-until-agreed ~/.claude/skills/
 
 Agents per round with the defaults: **3 auditors + 1 verifier per blocking finding**, for up
 to 5 rounds — so a run that needs three rounds with two blocking findings each spawns about
-15 agents. The round block prints the running count. The run this skill came from used 2
+15 agents. At `--bar production` MEDIUMs are verified too, so expect more verifiers. The round
+block prints the running count. The run this skill came from used 2
 reviewers for 10 rounds over about three hours. Start with `--rounds 3` on a small goal.
 
-The skill pre-approves only `git` and `gh`. Your test command and the auditors' read-only
-commands will ask for permission unless you allow them for the session.
+The skill's tool grant lasts only until your next message, and it never covers your test
+command. After the contract questions, expect prompts for `git`, `gh`, the harness and the
+auditors' commands unless you allow them for the session.
 
 ## Safety
 
 - Stops if the working tree has uncommitted changes. Never stashes or resets your work.
 - Works on a feature branch. Never pushes to the default branch and **never merges**.
 - Asks before pushing or opening a PR.
-- `reset` clears preferences only. Ledgers are project history and stay.
+- `reset` clears preferences only. Contracts and ledgers stay.
+- The contract is committed to the branch under `.build-until-agreed/`; keep it or remove it
+  before merging — your call. The ledger is local to your clone.

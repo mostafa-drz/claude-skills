@@ -2,10 +2,6 @@
 
 Prompts used verbatim by Steps 3 and 4. Fill the `{…}` slots; pass nothing else.
 
-Every rule here exists because its absence cost a real run: reviewers re-flagging declared
-scope as HIGH, truncated reports missing their verdict line, speculative findings driving
-fixes that were cut two rounds later, and reviewers judging a tree that changed under them.
-
 ## Lenses
 
 Distinct lenses are what make auditors useful; three copies of one reviewer mostly find the
@@ -26,7 +22,7 @@ will never see the others' reports, and they will never see yours. Judge indepen
 Your lens: {lens name} — {who they are}. Your question: {the question}.
 
 Read the contract first: {contract path}. It states the problem, the goal, acceptance
-criteria, the harness, and a "Decisions & scope" section. Do not read any `*.ledger.md`.
+criteria, the harness, and a "Decisions & scope" section.
 
 The work is the commit range {base}..{audit_sha} in {repo path}.
 Harness: {harness commands}
@@ -70,7 +66,7 @@ Claim: {finding}
 Evidence given: {evidence}
 Suggested fix: {fix}
 
-Contract (goal, criteria, decisions): {contract path} — do not read the ledger file.
+Contract (goal, criteria, decisions): {contract path}
 Code: {repo path} at {audit_sha}. Harness: {harness commands}
 
 READ-ONLY: don't edit, commit or change git state; clean up anything you start.
