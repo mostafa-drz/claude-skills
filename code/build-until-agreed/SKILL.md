@@ -111,7 +111,8 @@ remaining failure is itself the thing to audit.
 2. Spawn `auditors` subagents **in one message** (parallel), `subagent_type:
    general-purpose`, each with a different lens, using the auditor prompt in
    `reference/auditors.md`. Pass the contract path, the base..audit SHA range, and the
-   harness — nothing else.
+   harness — nothing else. Leave auditors **unnamed**: named subagents appear in each
+   other's sibling roster and could message each other, which breaks blindness.
 3. Wait for all of them. Do not edit meanwhile.
 4. `git status --porcelain` and `git rev-parse HEAD` again. If either changed, an auditor
    wrote: discard that auditor's verdict, report it, and ask before touching the tree.
