@@ -90,8 +90,8 @@ Check `$ARGUMENTS`:
 2. `git status --porcelain` — uncommitted changes → **stop and ask**. Never stash, reset or
    commit someone else's work.
 3. Find the default branch (`gh repo view --json defaultBranchRef -q .defaultBranchRef.name`,
-   else `git symbolic-ref --short refs/remotes/origin/HEAD`). On it → create `feat/<slug>`
-   before any write.
+   else `git symbolic-ref --short refs/remotes/origin/HEAD`, else ask — never guess). On it →
+   create `feat/<slug>` before any write.
 4. Read the repo's own conventions (CLAUDE.md, CONTRIBUTING, README, test/lint config). The
    harness should be *their* commands, not new ones.
 5. Tell the user once: this skill's tool grant lasts only until their next message, and the
