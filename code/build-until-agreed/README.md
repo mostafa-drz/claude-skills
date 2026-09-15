@@ -25,7 +25,7 @@ It worked. It also showed exactly where a naive review loop wastes time:
 | Reviewers with write access fixed the same bug on parallel branches and conflicted | Auditors and verifiers are **read-only**; one orchestrator fixes |
 | Reports got truncated and lost their verdict | Word cap plus a fixed last line: `VERDICT goal_met=… high=…` |
 | The external bot's 5/5 went stale after 70 more commits | The review-bot gate records the **SHA** each score belongs to and re-triggers after new commits |
-| Round history was lost to context compaction | The **ledger** is a file on disk that `resume` reads. It lives inside git's own directory, so it's never committed and no diff can show past rounds to an auditor |
+| Round history was lost to context compaction | The **ledger** is a file on disk that `resume` reads. It's git-ignored, so it never lands in the commit range auditors read, or in your PR |
 
 ## How it works
 
@@ -74,8 +74,10 @@ The note this started from said "debate and consensus". The evidence points the 
 
 **The honest limit:** auditors running on the same model make correlated mistakes
 ([arXiv 2506.07962](https://arxiv.org/abs/2506.07962)), so three agreeing auditors are not
-three independent proofs. That's why the real harness and the verifier carry the weight, the
-vote is only a sanity check, and the human still reviews and merges.
+three independent proofs. Blindness is also partly instructed rather than enforced: what
+auditors are *given* holds no past rounds, but a determined agent could still browse the
+disk. That's why the real harness and the verifier carry the weight, the vote is only a
+sanity check, and the human still reviews and merges.
 
 ## What already exists, and the gap
 
@@ -89,7 +91,7 @@ vote is only a sanity check, and the human still reviews and merges.
 
 The gap this fills is **goal-anchored** review. The contract is written before the build,
 auditors judge "is the goal met, with evidence", deliberate trade-offs are protected, and a
-committed ledger explains every round. If `/goal` plus `code-review` is enough for your
+local ledger explains every round. If `/goal` plus `code-review` is enough for your
 task, use them — they're lighter. Rule of thumb: a change that fits in one session and
 already has a test suite that defines "done" → `/goal`. A multi-session build, a new
 boilerplate, or anything where "done" includes *would someone else adopt this* → this skill.
@@ -126,4 +128,4 @@ auditors' commands unless you allow them for the session.
 - Asks before pushing or opening a PR.
 - `reset` clears preferences only. Contracts and ledgers stay.
 - The contract is committed to the branch under `.build-until-agreed/`; keep it or remove it
-  before merging — your call. The ledger is local to your clone.
+  before merging — your call. The ledger is git-ignored and stays local.

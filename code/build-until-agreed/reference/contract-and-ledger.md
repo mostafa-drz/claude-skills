@@ -1,12 +1,12 @@
 # Contract, ledger and output blocks
 
-Two files per goal. Both are plain files on disk, so they survive context compaction:
+Two files per goal in `.build-until-agreed/`, both plain files on disk, so they survive
+context compaction:
 
-- `.build-until-agreed/<slug>.contract.md` — committed in the repo; what auditors read.
-  Nothing about past rounds.
-- `<git-common-dir>/build-until-agreed/<slug>.ledger.md` — round history for the user,
-  `status` and `resume`. It lives inside git's own directory, so it is never committed and
-  no `git diff` can show it to an auditor: the votes and findings it holds would anchor them.
+- `<slug>.contract.md` — committed; what auditors read. Nothing about past rounds.
+- `<slug>.ledger.md` — round history for the user, `status` and `resume`. Git-ignored by a
+  committed `.gitignore` (`*.ledger.md`), so it never lands in a commit range an auditor
+  reads, or in the PR: the votes and findings it holds would anchor them.
 
 ## Contents
 1. Contract and ledger templates
@@ -38,6 +38,7 @@ Two files per goal. Both are plain files on disk, so they survive context compac
 ```bash
 <commands that exit non-zero on failure — the repo's own test/lint/typecheck/smoke>
 ```
+Parallel-safe: yes | orchestrator-only   (orchestrator-only: auditors read its output instead)
 
 ## Decisions & scope
 <!-- Choices, not defects. Auditors are told not to report these. Add to it whenever the
@@ -53,7 +54,7 @@ Two files per goal. Both are plain files on disk, so they survive context compac
 
 ~~~markdown
 # Ledger — <goal>
-Branch: feat/<slug> · Base: <merge-base sha> · Contract: .build-until-agreed/<slug>.contract.md
+Branch: feat/<slug> · Base: <sha before the contract commit> · Contract: .build-until-agreed/<slug>.contract.md
 
 | round | audit sha | harness | goal_met | blocking raised → confirmed | confirmed (file — behaviour) | fixed / cut | next |
 |---|---|---|---|---|---|---|---|
@@ -139,6 +140,5 @@ First time running /build-until-agreed — here's the shape of it:
   going in circles. I never merge.
 
   Heads-up: each round runs several agents (by default 3 auditors plus one verifier per
-  blocking finding), so it costs more than a normal session. Their read-only commands and
-  your test command will ask for permission unless you allow them for this session.
+  blocking finding), so it costs more than a normal session.
 ```

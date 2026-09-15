@@ -22,10 +22,7 @@ allowed-tools:
   - Read
   - Write
   - Edit
-  - Glob
-  - Grep
   - Agent
-  - Monitor
   - Bash(git *)
   - Bash(gh *)
   - Bash(rm ~/.claude/skills/build-until-agreed/preferences.md)
@@ -46,8 +43,8 @@ claims before acting on them.
    isn't one, say so and stop — we don't build for the sake of building.
 2. **Auditors are blind and read-only.** Fresh, **unnamed**, never `fork` — each round. They
    get the contract file, the commit range and the harness — never the ledger, the builder's
-   reasoning, earlier findings, or each other's verdicts. The ledger lives outside the repo's
-   tracked files, so no diff can show it to them.
+   reasoning, earlier findings, or each other's verdicts. The ledger is git-ignored, so no
+   commit range can show it to them.
 3. **Nothing is fixed until it is verified.** A blocking finding is a claim until a separate
    verifier reproduces it. Documented decisions are not defects.
 4. **Freeze while auditing.** Commit before a round; no edits until every auditor returns.
@@ -66,8 +63,9 @@ is missing, use these defaults and show the first-run intro from
 - `auditors`: 3 · `max-rounds`: 5 · `bar`: `poc` · `review-bot`: `greptile` or `off` (asked in the contract)
 - `lenses`: `adopter`, `correctness`, `risk-and-simplicity` (defined in `reference/auditors.md`)
 - Contract: `.build-until-agreed/<slug>.contract.md` in the target repo (committed)
-- Ledger: `$(git rev-parse --git-common-dir)/build-until-agreed/<slug>.ledger.md` — inside git's
-  own directory: never committed, never in a diff, shared by every branch and worktree
+- Ledger: `.build-until-agreed/<slug>.ledger.md` next to it, git-ignored by a committed
+  `.build-until-agreed/.gitignore` containing `*.ledger.md` — never committed, never in a diff,
+  never in the PR, and not a protected path (`.git` and `.claude` writes always prompt)
 
 Flags override for one run. `## Learned` holds trade-offs the user accepted in past runs;
 offer them as Decisions when drafting a contract.
@@ -79,9 +77,10 @@ Check `$ARGUMENTS`:
 - `config` → one `AskUserQuestion` (auditors, max-rounds, bar, review-bot); save; stop
 - `reset` → delete **only** the preferences file; contracts and ledgers in repos are project
   history and are never touched. Say exactly that. Stop
-- `status` → read the newest ledger, print its last round block, stop
-- `resume` → read the newest ledger, check out its `Branch` (Step 0's clean-tree rule applies),
-  run Step 0, continue at the step in its `next` column
+- `status` → read the ledger whose `Branch` is the current branch (`ls -t
+  .build-until-agreed/*.ledger.md`); none or several → ask. Print its last round block, stop
+- `resume` → find the ledger the same way, run Step 0, continue at the step in its `next`
+  column
 - anything else → the goal, in plain words. Empty → ask for it
 
 ## Step 0 — Safety and context
@@ -90,13 +89,16 @@ Check `$ARGUMENTS`:
 2. `git status --porcelain` — uncommitted changes → **stop and ask**. Never stash, reset or
    commit someone else's work.
 3. Find the default branch (`gh repo view --json defaultBranchRef -q .defaultBranchRef.name`,
-   else `git symbolic-ref --short refs/remotes/origin/HEAD`, else ask — never guess). On it →
-   create `feat/<slug>` before any write.
+   else `git symbolic-ref --short refs/remotes/origin/HEAD` with the `origin/` prefix
+   stripped, else ask — never guess). On it → create `feat/<slug>` before any write.
 4. Read the repo's own conventions (CLAUDE.md, CONTRIBUTING, README, test/lint config). The
    harness should be *their* commands, not new ones.
 5. Tell the user once: this skill's tool grant lasts only until their next message, and the
    harness is never pre-approved. After any question or hand-back, `git`, `gh`, the harness
    and the auditors' commands prompt unless allowed for the session.
+6. The harness will run in several auditors at once, in this checkout. If it can't run in
+   parallel or it rewrites tracked files (snapshots, lockfiles, formatters), mark it
+   `orchestrator-only` in the contract: auditors then read its output instead of running it.
 
 ## Step 1 — The contract
 
@@ -108,9 +110,10 @@ failure) · **Decisions & scope** (trade-offs auditors must not report as defect
 
 Confirm with one `AskUserQuestion` round (max 4 questions, headers ≤ 12 chars): criteria
 right? · bar · budget · review bot at the end. Anything vague ("works well", "is secure")
-gets rewritten as something a stranger could check. Commit the contract:
-`docs(agreed): contract for <slug>`. Then create the ledger with its header — branch, and
-`base` = `git merge-base HEAD <default branch>` — and a round-0 row whose `next` is Step 2.
+gets rewritten as something a stranger could check. Record `base` = `git rev-parse HEAD`
+(the commit before the contract, so earlier work on the branch is never audited). Commit the
+contract and `.build-until-agreed/.gitignore`: `docs(agreed): contract for <slug>`. Then
+create the ledger with its header — branch and base — and a round-0 row whose `next` is Step 2.
 
 **The bar decides what blocks.** `poc`: only HIGH blocks; MEDIUMs are listed and accepted.
 `production`: HIGH **and** MEDIUM block, and both go through verification.
@@ -123,23 +126,24 @@ remaining failure is itself the thing to audit.
 
 ## Step 3 — Blind audit round
 
-1. Commit everything. Record `HEAD` as the audit SHA.
+1. Commit your own changes **by path** (never `git add -A`, which would sweep in anything
+   untracked). Record `HEAD` as the audit SHA, and note `git status --porcelain` output.
 2. Spawn `auditors` subagents **in one message** (parallel), `subagent_type:
    general-purpose`, unnamed, each with a different lens, using the auditor prompt in
    `reference/auditors.md`. Pass the contract path, `base..audit SHA` (base from the ledger
-   header, so every round judges the whole build, not the last delta), and the harness —
-   nothing else.
+   header, so every round judges the whole build, not the last delta), and the harness — or,
+   if it is `orchestrator-only`, your harness output at that SHA — nothing else.
 3. Wait for all of them. Do not edit meanwhile.
-4. Check `git rev-parse HEAD` and `git status --porcelain --untracked-files=no` (build output
-   from the harness is not a write). If either changed, the round is void: discard **every**
-   verdict from it, report what changed, and ask before touching the tree. Repeat this check
-   after verifiers return (Step 4).
+4. Compare `git rev-parse HEAD` and `git status --porcelain` with step 1. A changed HEAD or a
+   modified tracked file voids the round: discard **every** verdict from it, report what
+   changed, and ask before touching the tree. New untracked files → list them and ask (they
+   may be harness output). Repeat this check after verifiers return (Step 4).
 5. Parse each report's last line: `VERDICT goal_met=<yes|no> high=<n> medium=<n>`. A report
    without it is incomplete — `SendMessage` that auditor once for the line, else count it as `no`.
 
 ## Step 4 — Verify before fixing
 
-1. Collect the **blocking** findings for the bar (Step 1). Merge duplicates (same file or
+1. Collect the **blocking** findings for the bar (Step 1). Merge duplicates (same file **and**
    behaviour) across auditors; keep every auditor's evidence.
 2. For each, spawn one unnamed verifier (parallel) with the verifier prompt in
    `reference/auditors.md`. It gets the finding, the contract, the SHA — not the auditor's
@@ -185,6 +189,7 @@ through **Step 4** like any auditor's. Any commit after a score makes it stale.
 
 Print the final block from `reference/contract-and-ledger.md`. State the honest limit:
 auditors on the same model make correlated mistakes, so "agreed" means *checked*, not
-*proven* — the harness and the human review are still the real gates. Mention that
-`.build-until-agreed/` is in the branch: keeping or removing it before merge is their call.
+*proven* — the harness and the human review are still the real gates. Mention that the
+contract is in the branch under `.build-until-agreed/`: keeping or removing it before merge is
+their call.
 End with: "The merge is yours."
