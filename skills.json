@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-14",
+  "updated": "2026-09-15",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -71,6 +71,23 @@
         "testing"
       ],
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/build-incremental/SKILL.md",
+      "sideEffects": true
+    },
+    {
+      "name": "build-until-agreed",
+      "platform": "code",
+      "description": "Builds toward a goal agreed up front, then has independent read-only auditors judge whether it is actually met — looping build → blind audit → verify → fix until the harness passes, no verified blocking finding remains, and more than half of the auditors agree the goal is met. Starts from the user's problem, not the feature: writes a short contract (who hurts, acceptance criteria, harness command, declared decisions, severity bar, round budget) before any code. Auditors never see each other, earlier rounds, or the builder's reasoning; every blocking finding is re-checked by a separate verifier before anything is fixed, so deliberate trade-offs and unreproducible claims don't drive churn. Keeps a per-round ledger, prefers cutting to adding, stops and hands back on thrash or the round cap, and can finish with an external review-bot gate. Never merges. Use for long-running or exploratory builds, boilerplates, or any change where \"done\" should be checked by someone other than the builder.",
+      "trigger": "Building toward a goal where done should be judged by independent auditors, not the builder — long-running or exploratory builds, boilerplates, POCs heading to a PR.",
+      "tags": [
+        "coding",
+        "agents",
+        "review",
+        "quality",
+        "testing",
+        "automation"
+      ],
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/code/build-until-agreed/icon.svg",
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/build-until-agreed/SKILL.md",
       "sideEffects": true
     },
     {
