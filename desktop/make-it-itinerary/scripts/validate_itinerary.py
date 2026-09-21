@@ -36,6 +36,55 @@ PACE_LIMIT = {"relaxed": 3, "balanced": 4, "packed": 6}
 MIN_TRANSFER_MIN = 15
 
 
+# The expected type of every field, checked before any semantic rule runs. A wrong type
+# (a number where a list belongs, a string where an object belongs) is reported with
+# its path instead of crashing a later check, because the validator is the step that
+# must never fail on a malformed file. "?" marks optional (absent or null is fine).
+S, I, N = str, int, (int, float)
+CHECK = {"status": S, "claim?": S, "source?": S, "checked_on?": S, "why?": S}
+ITEM = {"id": S, "start": S, "end?": S, "kind": S, "title": S, "place?": S,
+        "notes?": S, "booking?": S, "cost?": S, "check?": CHECK}
+SHAPE = {
+    "schema": I, "id": S, "revision?": I, "title": S, "generated_on": S,
+    "trip": {"destination": S, "start": S, "end": S, "timezone?": S,
+             "party": {"adults": I, "children?": [N], "notes?": S},
+             "travel_mode?": S, "pace": S, "budget?": S,
+             "interests?": [S], "avoid?": [S]},
+    "brief?": [{"field": S, "value": S, "origin": S, "why?": S}],
+    "days": [{"date": S, "title?": S, "base?": S, "summary?": S,
+              "if_it_rains?": S, "items?": [ITEM]}],
+    "stays?": [{"id": S, "name": S, "nights": [S], "booking?": S, "cost?": S,
+                "check?": CHECK}],
+    "before_you_go?": [S],
+}
+
+
+def shape_errors(value, spec, path="plan"):
+    """Return type errors for value against spec, each naming the path and the fix."""
+    out = []
+    if isinstance(spec, dict):
+        if not isinstance(value, dict):
+            return [f"{path} must be an object, got {type(value).__name__}"]
+        for key, sub in spec.items():
+            name, optional = key.rstrip("?"), key.endswith("?")
+            if value.get(name) is None:
+                if not optional:
+                    out.append(f"{path}.{name} is missing")
+                continue
+            out += shape_errors(value[name], sub, f"{path}.{name}")
+    elif isinstance(spec, list):
+        if not isinstance(value, list):
+            return [f"{path} must be a list, got {type(value).__name__}"]
+        for i, v in enumerate(value):
+            if spec[0] is N and v is None:
+                continue  # an unknown child's age is null, by design
+            out += shape_errors(v, spec[0], f"{path}[{i}]")
+    elif not isinstance(value, spec) or isinstance(value, bool):
+        want = "a number" if spec is N else {str: "text", int: "a whole number"}[spec]
+        out.append(f"{path} must be {want}, got {json.dumps(value)[:40]}")
+    return out
+
+
 def minutes(hhmm):
     h, m = hhmm.split(":")
     return int(h) * 60 + int(m)
@@ -60,6 +109,13 @@ def main(path):
         return 1
     except json.JSONDecodeError as exc:
         print(f"ERROR: {path} is not valid JSON (line {exc.lineno}, col {exc.colno}): {exc.msg}")
+        return 1
+
+    shape = shape_errors(plan, SHAPE)
+    if shape:
+        for e in shape:
+            print("ERROR:", e)
+        print(f"\nResult: NOT renderable. {len(shape)} field(s) have the wrong type; fix these first.")
         return 1
 
     if plan.get("schema") != 1:
@@ -265,7 +321,7 @@ def main(path):
     # The page keys each checklist tick by the task's text, so two identical tasks would
     # share one tick: ticking one would show the other as done.
     todo = plan.get("before_you_go") or []
-    if not isinstance(todo, list) or any(not str(t).strip() for t in todo):
+    if not isinstance(todo, list) or any(not isinstance(t, str) or not t.strip() for t in todo):
         err("before_you_go must be a list of non-empty task strings")
     else:
         dupes = sorted({t for t in todo if todo.count(t) > 1})
