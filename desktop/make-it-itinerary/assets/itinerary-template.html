@@ -225,7 +225,17 @@ footer{color:var(--muted);font-size:.8rem;margin-top:28px}
   // Toolbar: day jump, "needs action" filter, print.
   var bar = el("nav", "toolbar");
   var nav = el("div", "daynav");
-  var todayIso = new Date().toISOString().slice(0, 10);
+  // "Today" is the date at the destination, so the page opens on the right day even
+  // before the phone's clock changes timezone. toISOString() would give the UTC date,
+  // which is already tomorrow on a North American evening.
+  function localIso(tz) {
+    try {
+      if (tz) return new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+    } catch (e) { /* unknown zone: fall back to the device's date */ }
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  var todayIso = localIso(trip.timezone);
   (data.days || []).forEach(function (d, i) {
     var a = el("a", d.date === todayIso ? "today" : "", "Day " + (i + 1));
     a.href = "#day-" + d.date;
