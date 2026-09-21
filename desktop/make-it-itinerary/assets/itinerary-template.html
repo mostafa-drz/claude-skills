@@ -271,17 +271,22 @@ footer{color:var(--muted);font-size:.8rem;margin-top:28px}
   // Before you go: the only interactive state, kept per viewer in this browser.
   if ((data.before_you_go || []).length) {
     // Keyed by the plan's stable id, so ticks survive a retitled or re-dated plan.
-    var key = "itinerary-todo:" + (data.id || data.title || "") ;
-    var done = store.get(key) || {};
+    var key = "itinerary-todo:v2:" + (data.id || data.title || "");
+    var done = store.get(key);
+    if (!done || typeof done !== "object" || Array.isArray(done)) done = {};
     var tc = el("section", "card");
     tc.appendChild(el("h2", "", "Before you go"));
     var ul = el("ul", "todo");
-    data.before_you_go.forEach(function (t, i) {
-      var li = el("li", done[i] ? "done" : "");
-      var cb = el("input"); cb.type = "checkbox"; cb.checked = !!done[i];
+    // Ticks are keyed by the task's own text, not its position: the key survives edits,
+    // so an index would carry a tick onto a different, newly added task. A task whose
+    // wording changes starts unticked again, which is the safe direction to fail.
+    data.before_you_go.forEach(function (t) {
+      var li = el("li", done[t] ? "done" : "");
+      var cb = el("input"); cb.type = "checkbox"; cb.checked = !!done[t];
       cb.setAttribute("aria-label", t);
       cb.addEventListener("change", function () {
-        done[i] = cb.checked; li.className = cb.checked ? "done" : ""; store.set(key, done);
+        if (cb.checked) done[t] = true; else delete done[t];
+        li.className = cb.checked ? "done" : ""; store.set(key, done);
       });
       li.appendChild(cb); li.appendChild(el("span", "", t));
       ul.appendChild(li);
