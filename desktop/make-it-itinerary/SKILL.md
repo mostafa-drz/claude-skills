@@ -160,14 +160,16 @@ versus left to confirm, and **what to book first**. Offer the other formats in o
 | asked for | do |
 |---|---|
 | **PDF** | Use this environment's PDF capability to build a file with the same sections and badges as the page. If file creation isn't available, point to the page's **Print / save PDF** button. Its print layout is built for this: one day per page, with source URLs printed |
-| **Calendar** | `python3 scripts/make_ics.py itinerary.json trip.ics`, then share the file. Say it imports into Google, Apple and Outlook calendars, and that every event carries its notes and verification status. Relay the script's note if the timezone was unknown |
+| **Calendar** | `python3 scripts/make_ics.py itinerary.json trip.ics`, then share the file. Say it imports into Google, Apple and Outlook calendars, that every event carries its notes and verification status, and suggest importing into a separate calendar, so an updated plan can replace the old one cleanly. Relay the script's note if the timezone was unknown |
 | **Text to paste** (a family chat) | Short Markdown: a line per item with time, title and place, days as headings, and "⚠ book" / "⚠ confirm" markers. No tables, since chat apps mangle them |
 
 All of these render from the same `itinerary.json`, so they can't drift apart.
 
 ### 7. Changing the plan
 
-Edits change the data, then re-validate and re-render **the same artifact**. Anything whose
+Edits change the data, then re-validate and re-render **the same artifact**. **Keep every
+item's `id` when it moves**, give only new items new ids, and add 1 to `revision`. Calendar
+events are matched by those ids, so a renamed id duplicates the event. Anything whose
 verification was specific to a day or time goes back through step 4 when it moves. State
 what changed in one or two lines. Never regenerate the whole plan for a small edit, because
 unexplained changes elsewhere cost trust. See [`examples.md`](./references/examples.md), C.

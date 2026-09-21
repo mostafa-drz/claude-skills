@@ -27,6 +27,8 @@ to the data followed by a re-render.
 ```json
 {
   "schema": 1,
+  "id": "ottawa-family-oct",
+  "revision": 0,
   "title": "Ottawa with the kids — 4 days",
   "generated_on": "2026-09-20",
   "trip": {
@@ -53,6 +55,7 @@ to the data followed by a re-render.
       "base": "Downtown hotel",
       "items": [
         {
+          "id": "check-in",
           "start": "15:00", "end": "15:30", "kind": "stay",
           "title": "Check in", "place": "The hotel you picked",
           "booking": "required",
@@ -65,7 +68,7 @@ to the data followed by a re-render.
     }
   ],
   "stays": [
-    { "name": "The hotel you picked", "nights": ["2026-10-09", "2026-10-10", "2026-10-11"],
+    { "id": "hotel", "name": "The hotel you picked", "nights": ["2026-10-09", "2026-10-10", "2026-10-11"],
       "booking": "required", "check": { "status": "unverified" } }
   ],
   "before_you_go": ["Reserve kayaks — weekends sell out (see day 3)."]
@@ -77,6 +80,9 @@ to the data followed by a re-render.
 | field | rule |
 |---|---|
 | `schema` | always `1`. Bump it only when the shape changes |
+| `id` | a short slug (`a-z`, `0-9`, `-`) set **once** when the plan is created. Never changed, even if the trip is retitled |
+| `revision` | `0` on creation, **+1 on every edit**. The calendar export uses it so apps know the newer version |
+| `items[].id` · `stays[].id` | a short slug from the item's content at creation (`kayak-dows-lake`), unique across the plan, **kept unchanged when the item moves** to another day or time. Calendar event IDs are built from it, so a new id on a moved item duplicates the event in the user's calendar. A genuinely new item gets a new id |
 | `generated_on` | the date the plan was checked, ISO `YYYY-MM-DD`. Every `checked_on` is on or before it |
 | `trip.start` / `trip.end` | ISO dates, inclusive. `days` has exactly one entry per date in that range, in order |
 | `trip.timezone` | an IANA zone (`America/Halifax`), used by the `.ics` export. `null` if unknown. The calendar then falls back to floating local times and says so |
@@ -129,6 +135,7 @@ The smallest file the validator accepts: a one-day plan with a single unverified
 ```json
 {
   "schema": 1,
+  "id": "wakefield-day-trip",
   "title": "Day trip",
   "generated_on": "2026-09-20",
   "trip": { "destination": "Wakefield, Quebec", "start": "2026-10-03",
@@ -138,7 +145,7 @@ The smallest file the validator accepts: a one-day plan with a single unverified
   "days": [
     { "date": "2026-10-03", "title": "Village and covered bridge",
       "items": [
-        { "start": "10:00", "end": "12:00", "kind": "activity",
+        { "id": "covered-bridge", "start": "10:00", "end": "12:00", "kind": "activity",
           "title": "Walk to the covered bridge", "booking": "walk-in",
           "check": { "status": "unverified" } }
       ] }

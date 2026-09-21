@@ -270,7 +270,8 @@ footer{color:var(--muted);font-size:.8rem;margin-top:28px}
 
   // Before you go: the only interactive state, kept per viewer in this browser.
   if ((data.before_you_go || []).length) {
-    var key = "itinerary-todo:" + (data.title || "") + ":" + trip.start;
+    // Keyed by the plan's stable id, so ticks survive a retitled or re-dated plan.
+    var key = "itinerary-todo:" + (data.id || data.title || "") ;
     var done = store.get(key) || {};
     var tc = el("section", "card");
     tc.appendChild(el("h2", "", "Before you go"));

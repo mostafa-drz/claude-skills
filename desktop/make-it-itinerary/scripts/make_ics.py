@@ -13,11 +13,16 @@ IANA timezone, so a phone still set to its home timezone before the trip shows e
 at the right local hour. Without a timezone the events are "floating" local times, and the
 script says so.
 
-Format rules from RFC 5545: CRLF line endings, lines folded at 75 octets, text values
-escaped (backslash, semicolon, comma, newline), and a stable UID per item, so re-importing
-an edited plan updates events instead of duplicating them in clients that honour UIDs.
+Format rules from RFC 5545: CRLF line endings, lines folded at 75 octets, and text values
+escaped (backslash, semicolon, comma, newline).
+
+Each event's UID comes from the plan's `id` and the item's `id`, both set once and never
+changed, so an item keeps its UID when it moves to another day or time. SEQUENCE is the
+plan's `revision`, which goes up on every edit, so a client that matches events by UID
+can tell the re-imported version is newer. Some calendar apps import a file only once,
+whatever the UIDs say. Their users replace the old trip events instead, which is why the
+skill suggests importing into a separate calendar.
 """
-import hashlib
 import json
 import sys
 from datetime import date, datetime, timedelta, timezone
@@ -51,9 +56,8 @@ def fold(line):
     return "\r\n ".join(part.decode("utf-8") for part in out)
 
 
-def uid(*parts):
-    digest = hashlib.sha1("|".join(map(str, parts)).encode("utf-8")).hexdigest()[:20]
-    return f"{digest}@make-it-itinerary"
+def uid(plan_id, item_id):
+    return f"{item_id}.{plan_id}@make-it-itinerary"
 
 
 def main(src, dst):
@@ -84,6 +88,7 @@ def main(src, dst):
              "PRODID:-//make-it-itinerary//EN", "CALSCALE:GREGORIAN",
              f"X-WR-CALNAME:{esc(plan['title'])}"]
     count, skipped = 0, 0
+    plan_id, seq = plan["id"], int(plan.get("revision", 0))
 
     for d in plan["days"]:
         day = date.fromisoformat(d["date"])
@@ -115,7 +120,8 @@ def main(src, dst):
             elif chk.get("status") == "unverified":
                 desc.append("Not verified online. Confirm before you go.")
             lines += ["BEGIN:VEVENT",
-                      f"UID:{uid(plan['title'], d['date'], start, it.get('title'))}",
+                      f"UID:{uid(plan_id, it['id'])}",
+                      f"SEQUENCE:{seq}",
                       f"DTSTAMP:{now}",
                       f"DTSTART:{stamp(day, start)}",
                       f"DTEND:{stamp(day, end)}",
@@ -138,7 +144,8 @@ def main(src, dst):
             continue
         first, last = nights[0], nights[-1] + timedelta(days=1)  # DTEND is exclusive
         lines += ["BEGIN:VEVENT",
-                  f"UID:{uid(plan['title'], 'stay', s.get('name'), first)}",
+                  f"UID:{uid(plan_id, s['id'])}",
+                  f"SEQUENCE:{seq}",
                   f"DTSTAMP:{now}",
                   f"DTSTART;VALUE=DATE:{first.strftime('%Y%m%d')}",
                   f"DTEND;VALUE=DATE:{last.strftime('%Y%m%d')}",

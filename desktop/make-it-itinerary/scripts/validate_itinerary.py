@@ -24,6 +24,7 @@ ORIGINS = {"said", "inferred", "asked", "assumed"}
 PACES = {"relaxed", "balanced", "packed"}
 BUDGETS = {"budget", "mid", "premium", None}
 HHMM = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")
+ID = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}$")
 
 # Activities per day before a pace reads as overloaded. Meals, travel, stays and free
 # time don't count. Three is a full relaxed day with children: a morning thing, an
@@ -65,6 +66,24 @@ def main(path):
         err(f"schema is {plan.get('schema')!r}; this validator understands schema 1")
     if not str(plan.get("title", "")).strip():
         err("title is empty; the page header needs one")
+    # Calendar UIDs are built from these ids, so they must survive every edit: an id
+    # derived from a title or a time would change when the item moves, and a re-imported
+    # calendar would then duplicate the event instead of updating it.
+    if not ID.match(str(plan.get("id", ""))):
+        err("id must be a short slug (a-z, 0-9, -) set once when the plan is created, never changed")
+    rev = plan.get("revision", 0)
+    if not isinstance(rev, int) or rev < 0:
+        err("revision must be a whole number: 0 on creation, +1 on every edit")
+    seen_ids = {}
+
+    def check_id(where, value):
+        value = str(value or "")
+        if not ID.match(value):
+            err(f"{where}: id {value!r} must be a short slug (a-z, 0-9, -), kept unchanged when the item moves")
+        elif value in seen_ids:
+            err(f"{where}: id {value!r} is already used by {seen_ids[value]}. Ids are unique across the plan")
+        else:
+            seen_ids[value] = where
 
     generated = parse_date(plan.get("generated_on"))
     if generated is None:
@@ -177,6 +196,7 @@ def main(path):
             where = f"{label} item {j + 1} ({it.get('title') or 'untitled'})"
             if not str(it.get("title", "")).strip():
                 err(f"{where}: title is empty")
+            check_id(where, it.get("id"))
             if it.get("kind") not in KINDS:
                 err(f"{where}: kind {it.get('kind')!r} must be one of {sorted(KINDS)}")
             if it.get("booking", "unknown") not in BOOKING:
@@ -218,6 +238,7 @@ def main(path):
         where = f"stay {k + 1} ({s.get('name') or 'unnamed'})"
         if not str(s.get("name", "")).strip():
             err(f"{where}: name is empty")
+        check_id(where, s.get("id"))
         nights = s.get("nights")
         if not isinstance(nights, list) or not nights:
             err(f"{where}: nights must be a list of ISO dates, one per night slept there")
