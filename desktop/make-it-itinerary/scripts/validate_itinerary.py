@@ -262,6 +262,16 @@ def main(path):
         check_block(where, s.get("check"), {"kind": "stay", "place": s.get("name"),
                                             "booking": s.get("booking")})
 
+    # The page keys each checklist tick by the task's text, so two identical tasks would
+    # share one tick: ticking one would show the other as done.
+    todo = plan.get("before_you_go") or []
+    if not isinstance(todo, list) or any(not str(t).strip() for t in todo):
+        err("before_you_go must be a list of non-empty task strings")
+    else:
+        dupes = sorted({t for t in todo if todo.count(t) > 1})
+        if dupes:
+            err(f"before_you_go lists the same task twice: {dupes}. Merge them, or make each one specific")
+
     for w in warnings:
         print("WARN: ", w)
     for e in errors:

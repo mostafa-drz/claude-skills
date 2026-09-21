@@ -98,7 +98,7 @@ to the data followed by a re-render.
 | `stays[].name` | where they sleep, as the user named it or as you suggested it |
 | `stays[].nights` | ISO dates, one per night slept there, consecutive, within the trip. A night on the trip's last date is allowed (a morning departure). Two separate runs at the same place are two stays |
 | `stays[].cost` · `booking` · `check` | same rules as items |
-| `before_you_go` | things that must happen **before** the trip: bookings, passes, tickets that sell out |
+| `before_you_go` | things that must happen **before** the trip: bookings, passes, tickets that sell out. Each task is unique and specific ("Reserve kayaks for Sat 10 Oct", not "Book it"). The page remembers ticks by task text |
 
 A value you don't know is `null` or left out. **Never fill a field to make the page look
 complete.** An empty field tells the user something is missing, and a made-up one hides it.

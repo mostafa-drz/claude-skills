@@ -280,7 +280,9 @@ footer{color:var(--muted);font-size:.8rem;margin-top:28px}
     // Ticks are keyed by the task's own text, not its position: the key survives edits,
     // so an index would carry a tick onto a different, newly added task. A task whose
     // wording changes starts unticked again, which is the safe direction to fail.
-    data.before_you_go.forEach(function (t) {
+    // Duplicates are a validation error; rendering each text once is the backstop, so
+    // two identical tasks can never share a tick.
+    data.before_you_go.filter(function (t, i, all) { return all.indexOf(t) === i; }).forEach(function (t) {
       var li = el("li", done[t] ? "done" : "");
       var cb = el("input"); cb.type = "checkbox"; cb.checked = !!done[t];
       cb.setAttribute("aria-label", t);
