@@ -205,7 +205,30 @@ def main(path):
                  f"Cut one, or tell the user it's a full day")
 
     for k, s in enumerate(plan.get("stays") or []):
-        check_block(f"stay {k + 1} ({s.get('name') or 'unnamed'})", s.get("check"))
+        where = f"stay {k + 1} ({s.get('name') or 'unnamed'})"
+        if not str(s.get("name", "")).strip():
+            err(f"{where}: name is empty")
+        nights = s.get("nights")
+        if not isinstance(nights, list) or not nights:
+            err(f"{where}: nights must be a list of ISO dates, one per night slept there")
+        else:
+            parsed = [parse_date(n) for n in nights]
+            bad = [str(n) for n, p in zip(nights, parsed) if p is None]
+            if bad:
+                err(f"{where}: nights {', '.join(bad)} are not ISO dates (YYYY-MM-DD)")
+            else:
+                parsed.sort()
+                if len(set(parsed)) != len(parsed):
+                    err(f"{where}: a night is listed twice")
+                if start and end and (parsed[0] < start or parsed[-1] > end):
+                    err(f"{where}: nights {parsed[0]}..{parsed[-1]} fall outside the trip {start}..{end}")
+                gaps = [str(b) for a, b in zip(parsed, parsed[1:]) if (b - a).days > 1]
+                if gaps:
+                    # The calendar shows a stay as one continuous block, so a gap would
+                    # claim nights that were spent elsewhere.
+                    err(f"{where}: nights are not consecutive (break before {', '.join(gaps)}). "
+                        f"Split it into one stay per consecutive run")
+        check_block(where, s.get("check"))
 
     for w in warnings:
         print("WARN: ", w)

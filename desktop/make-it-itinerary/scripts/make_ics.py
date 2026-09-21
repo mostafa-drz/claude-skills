@@ -128,14 +128,17 @@ def main(src, dst):
             count += 1
 
     for s in plan.get("stays") or []:
-        nights = sorted(s.get("nights") or [])
+        try:
+            nights = sorted(date.fromisoformat(n) for n in s.get("nights") or [])
+        except (TypeError, ValueError):
+            nights = []
         if not nights:
+            print(f"SKIPPED stay {s.get('name')!r}: no valid nights (run validate_itinerary.py)")
             skipped += 1
             continue
-        first = date.fromisoformat(nights[0])
-        last = date.fromisoformat(nights[-1]) + timedelta(days=1)  # DTEND is exclusive
+        first, last = nights[0], nights[-1] + timedelta(days=1)  # DTEND is exclusive
         lines += ["BEGIN:VEVENT",
-                  f"UID:{uid(plan['title'], 'stay', s.get('name'), nights[0])}",
+                  f"UID:{uid(plan['title'], 'stay', s.get('name'), first)}",
                   f"DTSTAMP:{now}",
                   f"DTSTART;VALUE=DATE:{first.strftime('%Y%m%d')}",
                   f"DTEND;VALUE=DATE:{last.strftime('%Y%m%d')}",
@@ -147,7 +150,7 @@ def main(src, dst):
     with open(dst, "w", encoding="utf-8", newline="") as fh:
         fh.write("\r\n".join(fold(line) for line in lines) + "\r\n")
 
-    print(f"Wrote {dst}: {count} event(s)" + (f", skipped {skipped} without a time" if skipped else "") + ".")
+    print(f"Wrote {dst}: {count} event(s)" + (f", skipped {skipped} (see above or: no start time)" if skipped else "") + ".")
     if note:
         print("NOTE:", note)
     return 0

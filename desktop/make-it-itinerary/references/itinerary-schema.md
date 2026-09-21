@@ -64,7 +64,10 @@ to the data followed by a re-render.
       "if_it_rains": "Swap the market walk for the Museum of Nature (indoor)."
     }
   ],
-  "stays": [],
+  "stays": [
+    { "name": "The hotel you picked", "nights": ["2026-10-09", "2026-10-10", "2026-10-11"],
+      "booking": "required", "check": { "status": "unverified" } }
+  ],
   "before_you_go": ["Reserve kayaks — weekends sell out (see day 3)."]
 }
 ```
@@ -86,6 +89,9 @@ to the data followed by a re-render.
 | `items[].booking` | `required` · `recommended` · `walk-in` · `unknown` |
 | `items[].cost` | free text with a currency and a range ("CA$18–24 per adult"). Omit it rather than invent one |
 | `if_it_rains` | optional per day. Include it for any day that depends on weather |
+| `stays[].name` | where they sleep, as the user named it or as you suggested it |
+| `stays[].nights` | ISO dates, one per night slept there, consecutive, within the trip. A night on the trip's last date is allowed (a morning departure). Two separate runs at the same place are two stays |
+| `stays[].cost` · `booking` · `check` | same rules as items |
 | `before_you_go` | things that must happen **before** the trip: bookings, passes, tickets that sell out |
 
 A value you don't know is `null` or left out. **Never fill a field to make the page look
