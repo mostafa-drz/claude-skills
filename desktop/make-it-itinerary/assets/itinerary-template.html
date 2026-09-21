@@ -326,7 +326,7 @@ footer{color:var(--muted);font-size:.8rem;margin-top:28px}
       if (it.cost) tags.appendChild(el("span", "pill", it.cost));
       if (tags.childNodes.length) body.appendChild(tags);
 
-      // No check block means nothing to verify (free time, a walk): no badge at all.
+      // "none" (nothing to verify) and free time render without a badge.
       var c = it.check || {};
       var box;
       if (c.status === "verified") {

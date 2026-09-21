@@ -44,7 +44,9 @@ noise.
 | transfer | a realistic duration, and whether a ferry or road has a schedule or a seasonal closure | |
 
 Free time, "walk around the old town" and meals with no specific venue need no check.
-They render without a badge, not as "not verified", because there's nothing to verify.
+Mark them `{"status": "none"}` (free time can leave `check` out entirely). They render
+without a badge, not as "not verified", because there's nothing to verify. A **named**
+place is different, even a walk-in café: whether it's open that day is the check.
 
 ## How to verify
 

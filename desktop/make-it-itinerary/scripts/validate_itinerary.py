@@ -19,7 +19,7 @@ from datetime import date, timedelta
 
 KINDS = {"activity", "meal", "travel", "stay", "free"}
 BOOKING = {"required", "recommended", "walk-in", "unknown"}
-STATUS = {"verified", "unverified", "conflict"}
+STATUS = {"verified", "unverified", "conflict", "none"}
 ORIGINS = {"said", "inferred", "asked", "assumed"}
 PACES = {"relaxed", "balanced", "packed"}
 BUDGETS = {"budget", "mid", "premium", None}
@@ -120,12 +120,20 @@ def main(path):
     verified = unverified = conflicts = 0
     pace_limit = PACE_LIMIT.get(trip.get("pace"))
 
-    def check_block(where, chk):
-        nonlocal verified, unverified, conflicts
+    nothing_to_check = 0
+
+    def check_block(where, chk, item=None):
+        nonlocal verified, unverified, conflicts, nothing_to_check
+        # Verification status is never implied by a missing field: a named restaurant
+        # with no check would otherwise pass silently and drop out of the page's meter.
+        # Only free time may leave it out.
         if chk is None:
-            return  # nothing to verify (free time, a walk): the page shows no badge
+            if not item or item.get("kind") != "free":
+                err(f"{where}: no check block. Use {{\"status\": \"unverified\"}} if it should be "
+                    f"checked but wasn't, or {{\"status\": \"none\"}} if there is genuinely nothing to verify")
+            return
         if not isinstance(chk, dict):
-            err(f"{where}: check must be an object, or left out when there is nothing to verify")
+            err(f"{where}: check must be an object")
             return
         status = chk.get("status")
         if status not in STATUS:
@@ -149,6 +157,12 @@ def main(path):
                 err(f"{where}: a conflict needs a claim describing what the sources disagree on")
             if not src.startswith(("http://", "https://")):
                 err(f"{where}: a conflict needs a source for at least one side")
+        elif status == "none":
+            nothing_to_check += 1
+            if item and item.get("booking") in ("required", "recommended"):
+                err(f"{where}: needs booking, so it can't be 'nothing to verify'. Check it, or mark it unverified")
+            elif item and item.get("kind") in ("meal", "stay") and item.get("place"):
+                warn(f"{where}: a named place marked 'nothing to verify'. Is it open that day?")
         else:
             unverified += 1
 
@@ -178,11 +192,7 @@ def main(path):
                 err(f"{where}: ends at {e}, not after it starts at {s}. Split an overnight item across two days")
             if it.get("kind") == "activity":
                 activities += 1
-            # Something that has to be booked is exactly where an unchecked plan fails on
-            # the day, so leaving out its check is almost always an oversight.
-            if it.get("check") is None and it.get("booking") in ("required", "recommended"):
-                warn(f"{where}: needs booking but has no check block. Verify it, or mark it unverified")
-            check_block(where, it.get("check"))
+            check_block(where, it.get("check"), it)
 
             if prev and s:
                 p_end = prev.get("end") or prev.get("start")
@@ -228,15 +238,17 @@ def main(path):
                     # claim nights that were spent elsewhere.
                     err(f"{where}: nights are not consecutive (break before {', '.join(gaps)}). "
                         f"Split it into one stay per consecutive run")
-        check_block(where, s.get("check"))
+        check_block(where, s.get("check"), {"kind": "stay", "place": s.get("name"),
+                                            "booking": s.get("booking")})
 
     for w in warnings:
         print("WARN: ", w)
     for e in errors:
         print("ERROR:", e)
-    total = verified + unverified + conflicts
+    total = verified + unverified + conflicts + nothing_to_check
     print(f"\n{len(days)} day(s), {total} checked item(s): "
-          f"{verified} verified, {unverified} unverified, {conflicts} conflict(s).")
+          f"{verified} verified, {unverified} unverified, {conflicts} conflict(s)"
+          + (f", {nothing_to_check} with nothing to verify." if nothing_to_check else "."))
     print("Result:", "NOT renderable. Fix the errors above." if errors
           else "renderable" + (f", with {len(warnings)} warning(s)." if warnings else "."))
     return 1 if errors else 0

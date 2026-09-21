@@ -101,16 +101,19 @@ complete.** An empty field tells the user something is missing, and a made-up on
 
 `check` is how the page decides which badge to show, so its rules are strict.
 
-**Leave `check` out** when there is nothing to verify, such as free time, "walk the old
-town", or a meal with no specific venue. The page then shows no badge. `unverified` is
-different: it means the item *should* be checked and couldn't be, and the page flags it
-for the user.
+Every item and stay carries a `check`, and only `free` time may leave it out. Verification
+status is never implied by a missing field. When there is genuinely nothing to verify,
+such as "walk the old town" or a meal with no specific venue, say so with
+`{"status": "none"}`. The page shows no badge for it. `unverified` is different: it means
+the item *should* be checked and couldn't be, and the page flags it for the user. A named
+restaurant is almost never `none`, because whether it's open that day is the check.
 
 | `status` | requires | means |
 |---|---|---|
 | `verified` | `claim`, `source` (an `http(s)` URL you actually opened this session), `checked_on` | a source you read confirms the claim **for the trip dates** |
 | `unverified` | `claim` optional | you couldn't confirm it, or search wasn't available |
 | `conflict` | `claim` describing the disagreement, `source` for at least one side | sources disagree. The page shows both sides and the user decides |
+| `none` | nothing; not allowed when booking is `required` or `recommended` | nothing here depends on a fact that could be wrong on the day |
 
 - `claim` is the **specific** thing confirmed, such as "open Sat 10–17 in October". "It's a
   nice place" isn't a claim.

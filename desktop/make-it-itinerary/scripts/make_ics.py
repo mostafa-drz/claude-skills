@@ -112,7 +112,7 @@ def main(src, dst):
                 desc.append(f"Checked {chk.get('checked_on')}: {chk.get('claim')} ({chk.get('source')})")
             elif chk.get("status") == "conflict":
                 desc.append(f"Sources disagree: {chk.get('claim')}")
-            else:
+            elif chk.get("status") == "unverified":
                 desc.append("Not verified online. Confirm before you go.")
             lines += ["BEGIN:VEVENT",
                       f"UID:{uid(plan['title'], d['date'], start, it.get('title'))}",
