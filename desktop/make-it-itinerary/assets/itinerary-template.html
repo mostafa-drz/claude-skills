@@ -182,8 +182,8 @@ footer{color:var(--muted);font-size:.8rem;margin-top:28px}
   var n = { verified: 0, unverified: 0, conflict: 0 };
   (data.days || []).forEach(function (d) {
     (d.items || []).forEach(function (it) {
-      var s = (it.check || {}).status || "unverified";
-      if (n[s] !== undefined) n[s]++;
+      var s = (it.check || {}).status;
+      if (s && n[s] !== undefined) n[s]++;
     });
   });
   var total = n.verified + n.unverified + n.conflict;
@@ -201,6 +201,11 @@ footer{color:var(--muted);font-size:.8rem;margin-top:28px}
   var meta = el("div", "meta");
   [partyText(trip.party), trip.travel_mode && ("by " + trip.travel_mode), trip.pace && (trip.pace + " pace"),
    trip.budget && (trip.budget + " budget")].filter(Boolean).forEach(function (t) { meta.appendChild(el("span", "pill", t)); });
+  // An assumed date is the one assumption that can make the whole plan wrong, so it goes
+  // in the header, not only in the brief.
+  (data.brief || []).forEach(function (b) {
+    if (b.origin === "assumed" && /date|when/i.test(b.field)) meta.appendChild(el("span", "pill warn", "Dates assumed: " + b.value));
+  });
   head.appendChild(meta);
   if (total) {
     var meter = el("div", "meter");
@@ -311,7 +316,8 @@ footer{color:var(--muted);font-size:.8rem;margin-top:28px}
       if (it.cost) tags.appendChild(el("span", "pill", it.cost));
       if (tags.childNodes.length) body.appendChild(tags);
 
-      var c = it.check || { status: "unverified" };
+      // No check block means nothing to verify (free time, a walk): no badge at all.
+      var c = it.check || {};
       var box;
       if (c.status === "verified") {
         box = el("div", "check");
@@ -323,7 +329,7 @@ footer{color:var(--muted);font-size:.8rem;margin-top:28px}
         box.appendChild(el("span", "pill bad", "Sources disagree"));
         box.appendChild(document.createTextNode(" " + (c.claim || "") + " "));
         var u2 = safeUrl(c.source); if (u2) box.appendChild(link(u2, "source"));
-      } else if (it.kind !== "travel" && it.kind !== "free") {
+      } else if (c.status === "unverified") {
         box = el("div", "check warn");
         box.appendChild(el("span", "pill warn", "Not verified"));
         box.appendChild(document.createTextNode(" " + (c.claim ? c.claim + ". " : "") + "Confirm before you go."));

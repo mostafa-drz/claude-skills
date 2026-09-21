@@ -93,7 +93,12 @@ complete.** An empty field tells the user something is missing, and a made-up on
 
 ## The check block
 
-`check` is how the page decides which badge to show, so its rules are strict:
+`check` is how the page decides which badge to show, so its rules are strict.
+
+**Leave `check` out** when there is nothing to verify, such as free time, "walk the old
+town", or a meal with no specific venue. The page then shows no badge. `unverified` is
+different: it means the item *should* be checked and couldn't be, and the page flags it
+for the user.
 
 | `status` | requires | means |
 |---|---|---|

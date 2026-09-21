@@ -122,8 +122,10 @@ def main(path):
 
     def check_block(where, chk):
         nonlocal verified, unverified, conflicts
+        if chk is None:
+            return  # nothing to verify (free time, a walk): the page shows no badge
         if not isinstance(chk, dict):
-            err(f"{where}: missing check block; use {{\"status\": \"unverified\"}} if nothing was checked")
+            err(f"{where}: check must be an object, or left out when there is nothing to verify")
             return
         status = chk.get("status")
         if status not in STATUS:
@@ -176,6 +178,10 @@ def main(path):
                 err(f"{where}: ends at {e}, not after it starts at {s}. Split an overnight item across two days")
             if it.get("kind") == "activity":
                 activities += 1
+            # Something that has to be booked is exactly where an unchecked plan fails on
+            # the day, so leaving out its check is almost always an oversight.
+            if it.get("check") is None and it.get("booking") in ("required", "recommended"):
+                warn(f"{where}: needs booking but has no check block. Verify it, or mark it unverified")
             check_block(where, it.get("check"))
 
             if prev and s:

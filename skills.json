@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-15",
+  "updated": "2026-09-21",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -677,6 +677,26 @@
       ],
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/inbox-catchup/SKILL.md",
       "sideEffects": true
+    },
+    {
+      "name": "make-it-itinerary",
+      "platform": "desktop",
+      "description": "Turns an existing travel conversation into a day-by-day trip itinerary. Reads what was already discussed (destination, the hotel picked, restaurants liked, activities rejected), asks only the few questions that change the plan (dates, who is going, car or not), each with a default so \"just go\" works, then checks every suggestion online for the actual trip dates: seasons, opening hours, booking rules. Delivers an interactive HTML itinerary, with PDF, calendar (.ics) or plain-text versions on request. Marks what it assumed and what it could not verify instead of guessing, and never books anything. Use when the user says \"make it an itinerary\", \"/make-it-itinerary\", \"turn this into a trip plan\", \"plan our days\", \"put this in a schedule\", or wants a trip they have been discussing organised into days, including from a cold start with no prior conversation.",
+      "trigger": "Saying 'make it an itinerary' after chatting about a trip, or asking to turn a trip conversation into a day-by-day plan.",
+      "tags": [
+        "travel",
+        "itinerary",
+        "trip-planning",
+        "design-thinking",
+        "verification",
+        "html",
+        "pdf",
+        "calendar",
+        "desktop"
+      ],
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/make-it-itinerary/icon.svg",
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/make-it-itinerary/SKILL.md",
+      "sideEffects": false
     },
     {
       "name": "remarkable-memory",

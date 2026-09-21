@@ -1,0 +1,71 @@
+[
+  {
+    "name": "thin-conversation-cape-breton",
+    "skills": ["make-it-itinerary"],
+    "conversation": [
+      "User: What's Cape Breton like, and what's around it?",
+      "Assistant: (overview of the island, the Cabot Trail, Baddeck, Cheticamp, Ingonish)",
+      "User: Where are the best places to stay?",
+      "Assistant: (lists a few areas and a hotel or two in each)"
+    ],
+    "query": "make it an itinerary",
+    "expected_behavior": [
+      "Does not produce a plan before asking: dates and party are blocking gaps",
+      "Asks at most three questions in one round, each with a proposed default, and offers 'just go'",
+      "Asks about timing first or prominently, because the destination is seasonal",
+      "After answers, checks seasonal opening for the trip dates before scheduling stays and attractions",
+      "Runs validate_itinerary.py and renders the page with render_page.py",
+      "Every scenic or outdoor day has an if_it_rains alternative"
+    ]
+  },
+  {
+    "name": "rich-conversation-ottawa-family",
+    "skills": ["make-it-itinerary"],
+    "conversation": [
+      "User: Tell me about Ottawa and the area around it.",
+      "User: We're visiting with the family, 4 of us. Where should we stay?",
+      "Assistant: (three hotel options)",
+      "User: We'll take the second one. Where should we eat?",
+      "Assistant: (asks preferences, then suggests restaurants; the user likes two of them)"
+    ],
+    "query": "make it an itinerary, and we want to do some kayaking",
+    "expected_behavior": [
+      "Keeps the second hotel exactly; does not suggest or swap in a different hotel",
+      "Does not re-ask the party size or the hotel",
+      "Asks only for the dates and the children's ages",
+      "Verifies the kayak operator's season and age policy for the trip dates",
+      "Schedules the liked restaurants near where the family will be at mealtime",
+      "Lists kayak reservations in before_you_go"
+    ]
+  },
+  {
+    "name": "edit-after-delivery",
+    "skills": ["make-it-itinerary"],
+    "conversation": [
+      "(a delivered 3-day itinerary where day 2 includes a museum verified as open that day)"
+    ],
+    "query": "swap days 2 and 3 and add something for a rainy afternoon",
+    "expected_behavior": [
+      "Edits itinerary.json rather than regenerating the plan",
+      "Re-verifies the museum for its new weekday instead of keeping the old verified badge",
+      "Adds a verified or clearly unverified rain option",
+      "Re-validates and re-renders the same artifact",
+      "States what changed in one or two lines"
+    ]
+  },
+  {
+    "name": "no-web-search",
+    "skills": ["make-it-itinerary"],
+    "conversation": [
+      "User: We're thinking 2 days in Quebec City next month, just the two of us, no car."
+    ],
+    "query": "make it an itinerary (web search disabled in this chat)",
+    "expected_behavior": [
+      "Says before building that web search is unavailable and offers the choice",
+      "If the user proceeds, marks every place-specific item unverified with no source URL",
+      "Invents no prices, hours or URLs",
+      "Adds a before_you_go line to confirm hours and seasons",
+      "The page's meter shows 0 checked"
+    ]
+  }
+]
