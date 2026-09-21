@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trip itinerary</title>
+<!--
+  make-it-itinerary page template.
+  Fill it by replacing ONLY the JSON inside <script id="itinerary-data"> with a validated
+  itinerary.json. Everything else renders from that data. Escape "</" as "<\/" inside
+  the JSON so a value can never close the script tag early.
+  No external scripts, fonts or images: it has to open anywhere, including offline on the
+  trip, and print cleanly to PDF.
+-->
+<style>
+:root{
+  --bg:#f7f7f5; --surface:#ffffff; --faint:#f1f1ee; --text:#1b1b1b; --muted:#6b6b6b;
+  --line:#e4e4e0; --accent:#e64a19; --accent2:#0288d1;
+  --ok:#2e7d32; --ok-bg:#e8f5e9; --warn:#b26a00; --warn-bg:#fff4e0;
+  --bad:#c62828; --bad-bg:#fdecea; --radius:14px;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#121212; --surface:#1b1b1b; --faint:#222; --text:#ececec; --muted:#9a9a9a;
+    --line:#2c2c2c; --accent:#ff5722; --accent2:#03a9f4;
+    --ok:#81c784; --ok-bg:#1d2a1e; --warn:#ffb74d; --warn-bg:#2d2415;
+    --bad:#ef9a9a; --bad-bg:#2e1b1b; --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.7rem;line-height:1.2;margin:0 0 6px;letter-spacing:-.01em}
+h2{font-size:1.05rem;margin:0 0 12px}
+a{color:var(--accent2)}
+.sub{color:var(--muted);margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;
+  background:var(--faint);border:1px solid var(--line);font-size:.8rem;white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--ok);border-color:transparent}
+.pill.warn{background:var(--warn-bg);color:var(--warn);border-color:transparent}
+.pill.bad{background:var(--bad-bg);color:var(--bad);border-color:transparent}
+.pill.accent{color:var(--accent);border-color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:18px 18px 16px;margin:16px 0}
+.meter{height:6px;border-radius:6px;background:var(--faint);overflow:hidden;display:flex;margin-top:14px}
+.meter i{display:block;height:100%}
+.legend{font-size:.8rem;color:var(--muted);margin-top:6px}
+.toolbar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;
+  display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--line)}
+.toolbar button,.toolbar a.btn{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:999px;
+  border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;text-decoration:none}
+.toolbar button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+.daynav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.daynav a{font-size:.8rem;padding:4px 10px;border-radius:999px;border:1px solid var(--line);
+  color:var(--text);text-decoration:none;white-space:nowrap}
+.daynav a.today{border-color:var(--accent);color:var(--accent)}
+.brief{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:.9rem;margin:0}
+.brief dt{color:var(--muted)}
+.brief dd{margin:0}
+.origin{font-size:.72rem;color:var(--muted);margin-left:6px}
+.origin.assumed{color:var(--warn)}
+.todo{list-style:none;padding:0;margin:0}
+.todo li{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-top:1px solid var(--line)}
+.todo li:first-child{border-top:0}
+.todo input{margin-top:4px;accent-color:var(--accent)}
+.todo li.done span{text-decoration:line-through;color:var(--muted)}
+.day{scroll-margin-top:64px}
+.day.today{border-color:var(--accent)}
+.dayhead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.dayhead .date{color:var(--muted);font-size:.85rem}
+.items{list-style:none;margin:12px 0 0;padding:0}
+.item{display:grid;grid-template-columns:104px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.time{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--muted);font-size:.85rem;padding-top:1px}
+.item .title{font-weight:600}
+.item.travel .title,.item.free .title{font-weight:500;color:var(--muted)}
+.kind{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-right:6px}
+.place{font-size:.85rem;color:var(--muted)}
+.notes{margin:6px 0 0;font-size:.9rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.check{font-size:.8rem;margin-top:8px;padding:8px 10px;border-radius:10px;background:var(--faint)}
+.check.warn{background:var(--warn-bg)}
+.check.bad{background:var(--bad-bg)}
+.rain{margin-top:12px;padding:10px 12px;border-radius:10px;border:1px dashed var(--line);font-size:.9rem}
+.empty{color:var(--muted);font-style:italic}
+.hidden{display:none!important}
+footer{color:var(--muted);font-size:.8rem;margin-top:28px}
+@media (max-width:560px){
+  .wrap{padding:20px 16px 48px}
+  .item{grid-template-columns:1fr;gap:2px}
+  .brief{grid-template-columns:1fr}
+  .brief dt{margin-top:6px}
+}
+@media print{
+  :root{--bg:#fff;--surface:#fff;--faint:#f4f4f4;--text:#000;--muted:#555;--line:#ddd;--shadow:none}
+  .toolbar,.no-print{display:none!important}
+  .card{break-inside:avoid-page;margin:10px 0}
+  .day{break-before:page}
+  .day:first-of-type{break-before:auto}
+  a{color:inherit;text-decoration:none}
+  a[data-print-url]::after{content:" (" attr(data-print-url) ")";font-size:.75rem;color:#555;word-break:break-all}
+  .hidden{display:block!important}
+  .item.hidden{display:grid!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <p class="empty">Loading the itinerary…</p>
+</div>
+
+<script type="application/json" id="itinerary-data">
+{"schema":1,"title":"Replace this JSON with the validated itinerary","generated_on":"2026-01-01",
+ "trip":{"destination":"—","start":"2026-01-01","end":"2026-01-01","party":{"adults":1,"children":[]},"pace":"balanced"},
+ "brief":[],"days":[{"date":"2026-01-01","title":"","items":[]}]}
+</script>
+
+<script>
+(function () {
+  "use strict";
+  var app = document.getElementById("app");
+  var data;
+  try {
+    data = JSON.parse(document.getElementById("itinerary-data").textContent);
+  } catch (e) {
+    app.innerHTML = "";
+    app.appendChild(el("p", "empty", "This itinerary's data couldn't be read. Ask Claude to re-render the page."));
+    return;
+  }
+
+  var trip = data.trip || {};
+  var LABEL = { said: "from your chat", inferred: "inferred from your chat", asked: "you answered", assumed: "I assumed" };
+  var BOOK = { required: ["Book ahead", "bad"], recommended: ["Booking recommended", "warn"], "walk-in": ["Walk-in", ""], unknown: ["", ""] };
+
+  // Every value from the data goes through textContent, never innerHTML.
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined && text !== null) n.textContent = text;
+    return n;
+  }
+  function safeUrl(u) { return typeof u === "string" && /^https?:\/\//i.test(u) ? u : null; }
+  function link(url, text) {
+    var a = el("a", "", text);
+    a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer";
+    a.setAttribute("data-print-url", url);
+    return a;
+  }
+  function mapsUrl(place) {
+    var q = [place, trip.destination].filter(Boolean).join(", ");
+    return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+  }
+  function fmtDate(iso, opts) {
+    var p = String(iso).split("-");
+    var d = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2]));
+    if (isNaN(d)) return iso;
+    return d.toLocaleDateString(undefined, Object.assign({ timeZone: "UTC" }, opts));
+  }
+  function partyText(p) {
+    if (!p) return "";
+    var s = p.adults + (p.adults === 1 ? " adult" : " adults");
+    var kids = p.children || [];
+    if (kids.length) {
+      var ages = kids.map(function (a) { return a === null ? "?" : a; }).join(", ");
+      s += ", " + kids.length + (kids.length === 1 ? " child" : " children") + " (" + ages + ")";
+    }
+    return s;
+  }
+  function needsAction(it) {
+    var st = (it.check || {}).status;
+    return it.booking === "required" || it.booking === "recommended" || st === "unverified" || st === "conflict";
+  }
+  var store = {
+    get: function (k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* private mode: fine */ } }
+  };
+
+  // Counts for the header meter.
+  var n = { verified: 0, unverified: 0, conflict: 0 };
+  (data.days || []).forEach(function (d) {
+    (d.items || []).forEach(function (it) {
+      var s = (it.check || {}).status || "unverified";
+      if (n[s] !== undefined) n[s]++;
+    });
+  });
+  var total = n.verified + n.unverified + n.conflict;
+
+  app.innerHTML = "";
+  document.title = data.title || "Trip itinerary";
+
+  // Header.
+  var head = el("header");
+  head.appendChild(el("h1", "", data.title));
+  var when = trip.start === trip.end
+    ? fmtDate(trip.start, { weekday: "long", month: "long", day: "numeric", year: "numeric" })
+    : fmtDate(trip.start, { month: "short", day: "numeric" }) + " – " + fmtDate(trip.end, { month: "short", day: "numeric", year: "numeric" });
+  head.appendChild(el("p", "sub", [trip.destination, when].filter(Boolean).join(" · ")));
+  var meta = el("div", "meta");
+  [partyText(trip.party), trip.travel_mode && ("by " + trip.travel_mode), trip.pace && (trip.pace + " pace"),
+   trip.budget && (trip.budget + " budget")].filter(Boolean).forEach(function (t) { meta.appendChild(el("span", "pill", t)); });
+  head.appendChild(meta);
+  if (total) {
+    var meter = el("div", "meter");
+    [["verified", "var(--ok)"], ["conflict", "var(--bad)"], ["unverified", "var(--warn)"]].forEach(function (p) {
+      if (!n[p[0]]) return;
+      var i = el("i"); i.style.width = (100 * n[p[0]] / total) + "%"; i.style.background = p[1];
+      meter.appendChild(i);
+    });
+    head.appendChild(meter);
+    head.appendChild(el("div", "legend",
+      n.verified + " of " + total + " checked online on " + fmtDate(data.generated_on, { month: "short", day: "numeric", year: "numeric" }) +
+      (n.conflict ? " · " + n.conflict + " where sources disagree" : "") +
+      (n.unverified ? " · " + n.unverified + " to confirm yourself" : "")));
+  }
+  app.appendChild(head);
+
+  // Toolbar: day jump, "needs action" filter, print.
+  var bar = el("nav", "toolbar");
+  var nav = el("div", "daynav");
+  var todayIso = new Date().toISOString().slice(0, 10);
+  (data.days || []).forEach(function (d, i) {
+    var a = el("a", d.date === todayIso ? "today" : "", "Day " + (i + 1));
+    a.href = "#day-" + d.date;
+    a.title = fmtDate(d.date, { weekday: "long", month: "short", day: "numeric" });
+    nav.appendChild(a);
+  });
+  bar.appendChild(nav);
+  var filter = el("button", "", "Only things to book or confirm");
+  filter.setAttribute("aria-pressed", "false");
+  bar.appendChild(filter);
+  var printBtn = el("button", "", "Print / save PDF");
+  printBtn.addEventListener("click", function () { window.print(); });
+  bar.appendChild(printBtn);
+  app.appendChild(bar);
+
+  // What the plan is built on: said vs assumed, so the user can overrule an assumption.
+  if ((data.brief || []).length) {
+    var bc = el("section", "card");
+    bc.appendChild(el("h2", "", "What I planned around"));
+    var dl = el("dl", "brief");
+    data.brief.forEach(function (b) {
+      dl.appendChild(el("dt", "", b.field));
+      var dd = el("dd", "", b.value);
+      var o = el("span", "origin" + (b.origin === "assumed" ? " assumed" : ""), LABEL[b.origin] || b.origin);
+      dd.appendChild(o);
+      if (b.origin === "assumed" && b.why) dd.appendChild(el("div", "origin assumed", b.why));
+      dl.appendChild(dd);
+    });
+    bc.appendChild(dl);
+    app.appendChild(bc);
+  }
+
+  // Before you go: the only interactive state, kept per viewer in this browser.
+  if ((data.before_you_go || []).length) {
+    var key = "itinerary-todo:" + (data.title || "") + ":" + trip.start;
+    var done = store.get(key) || {};
+    var tc = el("section", "card");
+    tc.appendChild(el("h2", "", "Before you go"));
+    var ul = el("ul", "todo");
+    data.before_you_go.forEach(function (t, i) {
+      var li = el("li", done[i] ? "done" : "");
+      var cb = el("input"); cb.type = "checkbox"; cb.checked = !!done[i];
+      cb.setAttribute("aria-label", t);
+      cb.addEventListener("change", function () {
+        done[i] = cb.checked; li.className = cb.checked ? "done" : ""; store.set(key, done);
+      });
+      li.appendChild(cb); li.appendChild(el("span", "", t));
+      ul.appendChild(li);
+    });
+    tc.appendChild(ul);
+    app.appendChild(tc);
+  }
+
+  // Days.
+  (data.days || []).forEach(function (d, i) {
+    var sec = el("section", "card day" + (d.date === todayIso ? " today" : ""));
+    sec.id = "day-" + d.date;
+    var dh = el("div", "dayhead");
+    dh.appendChild(el("h2", "", "Day " + (i + 1) + (d.title ? " · " + d.title : "")));
+    dh.appendChild(el("span", "date", fmtDate(d.date, { weekday: "long", month: "long", day: "numeric" }) + (d.base ? " · based in " + d.base : "")));
+    sec.appendChild(dh);
+    if (d.summary) sec.appendChild(el("p", "notes", d.summary));
+
+    var items = d.items || [];
+    if (!items.length) sec.appendChild(el("p", "empty", "Nothing planned: a free day."));
+    var ol = el("ol", "items");
+    items.forEach(function (it) {
+      var li = el("li", "item " + (it.kind || ""));
+      if (needsAction(it)) li.setAttribute("data-action", "1");
+      li.appendChild(el("div", "time", it.start ? it.start + (it.end ? "–" + it.end : "") : ""));
+      var body = el("div");
+      var t = el("div");
+      t.appendChild(el("span", "kind", it.kind));
+      t.appendChild(el("span", "title", it.title));
+      body.appendChild(t);
+      if (it.place) {
+        var pl = el("div", "place");
+        var a = link(mapsUrl(it.place), it.place);
+        a.removeAttribute("data-print-url");
+        pl.appendChild(a);
+        body.appendChild(pl);
+      }
+      if (it.notes) body.appendChild(el("p", "notes", it.notes));
+
+      var tags = el("div", "tags");
+      var b = BOOK[it.booking] || BOOK.unknown;
+      if (b[0]) tags.appendChild(el("span", "pill " + b[1], b[0]));
+      if (it.cost) tags.appendChild(el("span", "pill", it.cost));
+      if (tags.childNodes.length) body.appendChild(tags);
+
+      var c = it.check || { status: "unverified" };
+      var box;
+      if (c.status === "verified") {
+        box = el("div", "check");
+        box.appendChild(el("span", "pill ok", "Checked " + fmtDate(c.checked_on, { month: "short", day: "numeric" })));
+        box.appendChild(document.createTextNode(" " + (c.claim || "") + " "));
+        var u = safeUrl(c.source); if (u) box.appendChild(link(u, "source"));
+      } else if (c.status === "conflict") {
+        box = el("div", "check bad");
+        box.appendChild(el("span", "pill bad", "Sources disagree"));
+        box.appendChild(document.createTextNode(" " + (c.claim || "") + " "));
+        var u2 = safeUrl(c.source); if (u2) box.appendChild(link(u2, "source"));
+      } else if (it.kind !== "travel" && it.kind !== "free") {
+        box = el("div", "check warn");
+        box.appendChild(el("span", "pill warn", "Not verified"));
+        box.appendChild(document.createTextNode(" " + (c.claim ? c.claim + ". " : "") + "Confirm before you go."));
+      }
+      if (box) body.appendChild(box);
+      li.appendChild(body);
+      ol.appendChild(li);
+    });
+    sec.appendChild(ol);
+    if (d.if_it_rains) {
+      var r = el("div", "rain");
+      r.appendChild(el("strong", "", "If it rains: "));
+      r.appendChild(document.createTextNode(d.if_it_rains));
+      sec.appendChild(r);
+    }
+    app.appendChild(sec);
+  });
+
+  // Where you're staying.
+  if ((data.stays || []).length) {
+    var sc = el("section", "card");
+    sc.appendChild(el("h2", "", "Where you're staying"));
+    var sl = el("ul", "todo");
+    data.stays.forEach(function (s) {
+      var li = el("li");
+      var span = el("span", "", s.name + (s.nights && s.nights.length ? " · " + s.nights.length + (s.nights.length === 1 ? " night" : " nights") : "") + (s.cost ? " · " + s.cost : ""));
+      li.appendChild(span);
+      var st = (s.check || {}).status;
+      li.appendChild(el("span", "pill " + (st === "verified" ? "ok" : st === "conflict" ? "bad" : "warn"),
+        st === "verified" ? "checked" : st === "conflict" ? "sources disagree" : "confirm"));
+      sl.appendChild(li);
+    });
+    sc.appendChild(sl);
+    app.appendChild(sc);
+  }
+
+  var foot = el("footer", "", "Made with make-it-itinerary from your conversation. Hours, prices and availability change, so anything marked \"Not verified\" is worth a quick check before you rely on it. To change the plan, just tell Claude what to move.");
+  app.appendChild(foot);
+
+  // "Needs action" filter: hides days' settled items, keeps what needs booking or checking.
+  filter.addEventListener("click", function () {
+    var on = filter.getAttribute("aria-pressed") !== "true";
+    filter.setAttribute("aria-pressed", String(on));
+    document.querySelectorAll(".item").forEach(function (li) {
+      li.classList.toggle("hidden", on && !li.hasAttribute("data-action"));
+    });
+    document.querySelectorAll(".day").forEach(function (sec) {
+      var visible = sec.querySelectorAll(".item:not(.hidden)").length;
+      sec.classList.toggle("hidden", on && visible === 0);
+    });
+  });
+
+  // During the trip, open on today.
+  var today = document.getElementById("day-" + todayIso);
+  if (today && !location.hash) today.scrollIntoView();
+})();
+</script>
+</body>
+</html>
