@@ -109,9 +109,11 @@ footer p{margin:6px 0}
   @page{margin:14mm 12mm}
   body{padding:0;font-size:12.5px}
   header{padding-top:0}
-  .progress,.tools,.value button{display:none!important}
-  .phase{break-inside:auto;margin-top:14px}
+  .progress,.tools,.value button,footer .storage{display:none!important}
+  /* Keep a phase on one page when it fits; a taller one still breaks, between steps. */
+  .phase{break-inside:avoid-page;overflow:visible;margin-top:14px}
   .phase-head{break-after:avoid}
+  .detail,.wait,.note,.confirm{font-size:11.5px}
   .step,.wait,.note,.value{break-inside:avoid}
   .step.done label,.step.done .detail{text-decoration:none}
   .step input{appearance:none;-webkit-appearance:none;width:12px;height:12px;margin-top:3px;
@@ -285,7 +287,7 @@ footer p{margin:6px 0}
   });
 
   var footer = el("footer");
-  footer.appendChild(el("p", null, "Ticks save in this browser only. Revision " + data.revision +
+  footer.appendChild(el("p", "storage", "Ticks save in this browser only. Revision " + data.revision +
     (data.generated_on ? ", " + data.generated_on : "") + "."));
   (data.footer || []).forEach(function (line) { footer.appendChild(inline(el("p"), line)); });
   app.appendChild(footer);
