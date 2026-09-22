@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-21",
+  "updated": "2026-09-22",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -696,6 +696,26 @@
       ],
       "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/make-it-itinerary/icon.svg",
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/make-it-itinerary/SKILL.md",
+      "sideEffects": false
+    },
+    {
+      "name": "make-it-runbook",
+      "platform": "desktop",
+      "description": "Turns the current conversation into a trackable, phase-by-phase runbook: a page with a checkbox per step, a progress bar, amber bars for forced waits, notes for warnings, and copyable literal values (commands, DNS records, amounts). Distills the chat first, so only the final agreed state survives: advice that was later corrected, changed values and tangents are dropped, steps run in real execution order, and each wait sits where it actually blocks. Ticks persist in the browser; prints to PDF with empty boxes. Use when the user says \"make it a runbook\", \"/make-it-runbook\", \"turn this into a checklist I can track\", \"give me a step-by-step I can follow\", \"make this trackable\", or wants setup steps, a migration or any multi-step plan discussed in the chat as something to work through. Not for a plain answer, a to-do app, or a project or team task tracker.",
+      "trigger": "Saying 'make it a runbook' after working out a setup or plan in the chat, or asking for a checklist to track the steps discussed.",
+      "tags": [
+        "runbook",
+        "checklist",
+        "setup",
+        "instructions",
+        "distillation",
+        "progress-tracking",
+        "html",
+        "pdf",
+        "desktop"
+      ],
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/make-it-runbook/icon.svg",
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/make-it-runbook/SKILL.md",
       "sideEffects": false
     },
     {

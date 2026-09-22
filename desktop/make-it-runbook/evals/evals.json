@@ -1,0 +1,79 @@
+[
+  {
+    "name": "superseded-advice",
+    "skills": ["make-it-runbook"],
+    "conversation": "fixture-conversation.md",
+    "query": "Can you make all of that into a checklist I can track as I go?",
+    "reference_output": "expected-runbook.json",
+    "expected_behavior": [
+      "Shows only 'secondary domain'; 'alias domain' does not appear as an instruction",
+      "Carries the DMARC value with p=none verbatim; p=reject appears nowhere",
+      "Puts DMARC last, after the SPF/DKIM settle wait, though it was discussed before the domains were added",
+      "Places the 24–72 h wait right after activating Gmail, with blocks pointing at the DKIM step",
+      "Copies the MX and SPF records character for character into values",
+      "Makes the booking-page edition warning a note, not a step",
+      "Drops the logo tangent entirely",
+      "Marks the mirror domain optional with a confirm, rather than including it as agreed or dropping it",
+      "Numbers steps s1..sN in document order and passes validate_runbook.py with no errors",
+      "Closes in at most three lines, naming what was dropped as superseded"
+    ]
+  },
+  {
+    "name": "republish-after-change",
+    "skills": ["make-it-runbook"],
+    "conversation": "(the superseded-advice runbook delivered as revision 1; the user has ticked s1-s6)",
+    "query": "Actually skip the mirror domain for good, and add a step before the nameserver switch to screenshot the current DNS records as a backup.",
+    "expected_behavior": [
+      "Edits runbook.json rather than regenerating it, after copying it to runbook.prev.json",
+      "Retires s7 into retired_ids and does not reuse it",
+      "Gives the new backup step s14, placed before s2, not a renumbered s2",
+      "Keeps every other id unchanged, so the user's ticks on s1-s6 still mean the same steps",
+      "Sets revision to 2 and passes validate_runbook.py with --previous runbook.prev.json",
+      "Re-renders the same artifact and states the change in one or two lines"
+    ]
+  },
+  {
+    "name": "blocking-ambiguity",
+    "skills": ["make-it-runbook"],
+    "conversation": [
+      "User: I need to move our small office from the old NAS to cloud storage.",
+      "Assistant: Two routes: (A) sync the NAS to the cloud drive with the vendor's app, then cut over; (B) export everything, bulk-upload, and retire the NAS. A is gentler, B is faster.",
+      "User: Hmm, both have points. What would the steps be for each?",
+      "Assistant: (steps for A, then steps for B, including a 48 h initial sync for A)"
+    ],
+    "query": "make it a runbook",
+    "expected_behavior": [
+      "Does not build a runbook that mixes the two routes",
+      "Asks one round of at most three questions in plain text, led by which route, each with a proposed default",
+      "Does not re-ask anything the conversation settled",
+      "After the answer, builds only the chosen route; the 48 h sync becomes a wait bar only if route A was chosen"
+    ]
+  },
+  {
+    "name": "secret-in-conversation",
+    "skills": ["make-it-runbook"],
+    "conversation": [
+      "User: Setting up the deploy. Here's the token they gave me: tok_live_EXAMPLE123 — where does it go?",
+      "Assistant: Add it as a repository secret named DEPLOY_TOKEN (Settings → Secrets and variables → Actions → New repository secret), then reference it in the workflow as ${{ secrets.DEPLOY_TOKEN }}."
+    ],
+    "query": "turn this into a checklist I can track",
+    "expected_behavior": [
+      "The token value appears nowhere in runbook.json or the page",
+      "The step says where to get the token instead",
+      "The literal ${{ secrets.DEPLOY_TOKEN }} appears verbatim in values",
+      "Mentions in the closing lines that the token was left out on purpose"
+    ]
+  },
+  {
+    "name": "should-not-trigger",
+    "skills": ["make-it-runbook"],
+    "conversation": [
+      "User: What's the SPF record for Google Workspace?"
+    ],
+    "query": "(no further request)",
+    "expected_behavior": [
+      "Does not start the skill: this is a plain question, not a request to track steps",
+      "Answers directly, in the chat"
+    ]
+  }
+]
