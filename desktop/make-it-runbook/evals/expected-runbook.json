@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "key": "harbor-pottery-email",
+  "title": "Harbor Pottery Email Runbook",
+  "subtitle": "DNS → Workspace domains → mailboxes → authentication → warm-up. Amber bars are forced waits; do the next phase while one runs.",
+  "revision": 1,
+  "generated_on": "2026-09-22",
+  "retired_ids": [],
+  "phases": [
+    {
+      "title": "Point the domains at your DNS host",
+      "where": "registrar · DNS host",
+      "items": [
+        { "type": "step", "id": "s1", "action": "Check DNSSEC is off at the registrar, for both domains",
+          "detail": "If it's on, switching nameservers silently breaks resolution." },
+        { "type": "step", "id": "s2", "action": "Switch the nameservers",
+          "detail": "Domain list → Manage → Nameservers → Custom DNS → paste the two nameservers your DNS host shows." },
+        { "type": "step", "id": "s3", "action": "Wait for both domains to show Active at the DNS host",
+          "detail": "Usually under an hour." }
+      ]
+    },
+    {
+      "title": "Add the domains to Workspace",
+      "where": "admin console",
+      "items": [
+        { "type": "step", "id": "s4", "action": "Add both domains as secondary domains",
+          "detail": "Account → Domains → Manage domains → Add a domain → secondary. **Not** alias domains: those mirror every user of the primary." },
+        { "type": "step", "id": "s5", "action": "Verify each domain",
+          "detail": "Add the TXT record the console shows at your DNS host, then click Verify." },
+        { "type": "step", "id": "s6", "action": "Activate Gmail on both, and add the MX record at your DNS host",
+          "values": [ { "label": "MX, each domain", "text": "Type MX   Name @   Server smtp.google.com   Priority 1" } ] },
+        { "type": "step", "id": "s7", "action": "Add harborpottery-ca.example as a mirror", "optional": true,
+          "detail": "Same as the steps above: secondary domain, verify, MX. No DKIM if it never sends.",
+          "confirm": "you said you'd decide later. Skip this until you have." },
+        { "type": "wait", "duration": "24–72 h", "blocks": "s10",
+          "text": "No DKIM key until 24–72 hours after Gmail is activated. Do Phase 3 while you wait." }
+      ]
+    },
+    {
+      "title": "While you wait",
+      "where": "DNS host · admin console",
+      "items": [
+        { "type": "step", "id": "s8", "action": "Add SPF for both domains",
+          "values": [ { "label": "TXT, each domain", "text": "Type TXT   Name @   Value v=spf1 include:_spf.google.com ~all" } ] },
+        { "type": "step", "id": "s9", "action": "Create the outreach mailbox",
+          "detail": "`hello@harborpottery-mail.example`, used for outreach and nothing else." },
+        { "type": "note", "title": "Check your edition before planning the booking page.",
+          "text": "Appointment schedules need Business Standard or above; Starter doesn't have them. Billing in the admin console shows your edition. On Starter: upgrade one seat, or use a separate booking tool." }
+      ]
+    },
+    {
+      "title": "Authentication",
+      "where": "admin console · DNS host",
+      "items": [
+        { "type": "step", "id": "s10", "action": "Generate a DKIM key for each domain",
+          "detail": "Apps → Google Workspace → Gmail → Authenticate email → Generate new record (2048-bit) → add the TXT at your DNS host → **Start authentication**." },
+        { "type": "step", "id": "s11", "action": "Confirm DKIM and SPF pass",
+          "detail": "Send yourself a test from each domain → Show original → look for `DKIM: PASS` and `SPF: PASS`." },
+        { "type": "wait", "duration": "+48 h", "blocks": "s12",
+          "text": "Let SPF and DKIM settle before adding DMARC." },
+        { "type": "step", "id": "s12", "action": "Add DMARC for both domains",
+          "detail": "Starts at `p=none` to observe before enforcing.",
+          "values": [ { "label": "TXT, each domain", "text": "Type TXT   Name _dmarc   Value v=DMARC1; p=none; rua=mailto:dmarc@harborpottery.example" } ] }
+      ]
+    },
+    {
+      "title": "Warm up the outreach mailbox",
+      "where": "Gmail",
+      "items": [
+        { "type": "step", "id": "s13", "action": "Warm up hello@ by hand for about three weeks",
+          "detail": "Real one-to-one emails to people who reply. No cold sends before then." }
+      ]
+    }
+  ],
+  "footer": [
+    "harborpottery.example is for customers; harborpottery-mail.example is for outreach only."
+  ]
+}
