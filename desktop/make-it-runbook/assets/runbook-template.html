@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Runbook</title>
+<!--
+  make-it-runbook page template.
+  Fill it by replacing ONLY the JSON inside <script id="runbook-data"> with a validated
+  runbook.json (scripts/render_page.py does this). Everything else renders from that data,
+  and every value is set with textContent, so nothing in the data is ever parsed as HTML.
+  Fonts are the only external request, with system fallbacks: the page works offline.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=Public+Sans:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#f6f8f7; --surface:#ffffff; --ink:#1c2422; --muted:#5b6663; --line:#dde4e1;
+  --accent:#0b6e4f; --accent-soft:#e3f0ea;
+  --wait-bg:#fdf3e3; --wait-border:#e7c98a; --wait-ink:#8a5a10;
+  --code-bg:#eef2f0; --done:#9aa8a3;
+  --head:"Archivo",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --body:"Public Sans",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141917; --surface:#1c2320; --ink:#e6ebe9; --muted:#93a09b; --line:#2c3532;
+    --accent:#4cc396; --accent-soft:#1c3229;
+    --wait-bg:#2a2214; --wait-border:#5c4820; --wait-ink:#e2b76a;
+    --code-bg:#232c28; --done:#5b6663; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141917; --surface:#1c2320; --ink:#e6ebe9; --muted:#93a09b; --line:#2c3532;
+  --accent:#4cc396; --accent-soft:#1c3229;
+  --wait-bg:#2a2214; --wait-border:#5c4820; --wait-ink:#e2b76a;
+  --code-bg:#232c28; --done:#5b6663; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0 16px 64px;background:var(--bg);color:var(--ink);
+  font:15.5px/1.55 var(--body);-webkit-text-size-adjust:100%}
+.wrap{max-width:760px;margin:0 auto}
+header{padding:40px 0 8px}
+h1{font-family:var(--head);font-size:clamp(26px,5vw,34px);font-weight:700;letter-spacing:-.02em;
+  margin:0 0 6px;text-wrap:balance}
+.sub{color:var(--muted);margin:0;max-width:60ch}
+.progress{display:flex;align-items:center;gap:10px;margin-top:18px;font-size:13px;color:var(--muted)}
+.bar{flex:1;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:3px;transition:width .25s}
+.count{font-variant-numeric:tabular-nums;white-space:nowrap}
+.tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-top:10px;font-size:13px}
+.tools a,.tools button{font:inherit;color:var(--accent);background:none;border:0;padding:0;cursor:pointer;
+  text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.tools .next{color:var(--muted)}
+.tools .next a{color:var(--ink)}
+.phase{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-top:22px;overflow:hidden}
+.phase-head{display:flex;align-items:baseline;gap:12px;padding:16px 18px 12px;border-bottom:1px solid var(--line)}
+.pnum{font-family:var(--head);font-weight:700;font-size:13px;color:var(--accent);letter-spacing:.06em;white-space:nowrap}
+.phase-head h2{font-family:var(--head);font-size:17px;font-weight:600;margin:0}
+.phase.complete .phase-head h2::after{content:" ✓";color:var(--accent)}
+.where{margin-left:auto;font-size:12px;color:var(--muted);text-align:right}
+.steps{list-style:none;margin:0;padding:6px 0}
+.step{display:flex;gap:12px;padding:11px 18px;align-items:flex-start;scroll-margin-top:24px}
+.step + .step{border-top:1px solid var(--line)}
+.step input{flex:none;width:19px;height:19px;margin:2px 0 0;accent-color:var(--accent);cursor:pointer}
+.step .body{min-width:0;flex:1}
+.step label{cursor:pointer}
+.step label b{font-weight:600}
+.step.done label,.step.done .detail{color:var(--done);text-decoration:line-through;text-decoration-thickness:1px}
+.detail{display:block;color:var(--muted);font-size:13.5px;margin-top:2px}
+.tag{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);
+  border:1px solid var(--line);border-radius:4px;padding:0 5px;margin-left:6px;vertical-align:1px;white-space:nowrap}
+.confirm{display:block;margin-top:6px;font-size:13px;color:var(--wait-ink);background:var(--wait-bg);
+  border:1px solid var(--wait-border);border-radius:6px;padding:4px 8px}
+code{font-family:var(--mono);font-size:12.5px;background:var(--code-bg);border-radius:4px;padding:1px 6px;overflow-wrap:anywhere}
+.value{position:relative;margin:8px 0 2px;background:var(--code-bg);border-radius:6px}
+.value .label{display:block;padding:6px 10px 0;font-size:11px;font-weight:600;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--muted)}
+.value pre{margin:0;padding:8px 64px 8px 10px;font:12.5px/1.7 var(--mono);white-space:pre;overflow-x:auto}
+.value button{position:absolute;top:6px;right:6px;font:600 11.5px var(--body);color:var(--accent);
+  background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:2px 8px;cursor:pointer}
+.wait{display:flex;gap:10px;align-items:flex-start;background:var(--wait-bg);border-top:1px solid var(--wait-border);
+  border-bottom:1px solid var(--wait-border);color:var(--wait-ink);padding:11px 18px;font-size:13.5px}
+.wait code{background:transparent;border:1px solid var(--wait-border)}
+.clock{flex:none;font-family:var(--head);font-weight:700;font-size:12px;letter-spacing:.05em;
+  border:1px solid var(--wait-border);border-radius:4px;padding:2px 7px;white-space:nowrap}
+.note{margin:10px 18px 14px;padding:10px 12px;border-left:3px solid var(--accent);background:var(--accent-soft);
+  border-radius:0 6px 6px 0;font-size:13.5px}
+.note b{font-weight:600}
+footer{margin-top:30px;color:var(--muted);font-size:13px}
+footer p{margin:6px 0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:520px){
+  .phase-head{flex-wrap:wrap}
+  .where{margin-left:0;text-align:left;width:100%}
+}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+@media print{
+  :root,:root[data-theme="dark"]{
+    --bg:#fff; --surface:#fff; --ink:#111; --muted:#555; --line:#d6dcd9;
+    --accent:#0b6e4f; --accent-soft:#e3f0ea;
+    --wait-bg:#fdf3e3; --wait-border:#e7c98a; --wait-ink:#8a5a10; --code-bg:#eef2f0; --done:#111;
+    color-scheme:light;
+  }
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{margin:14mm 12mm}
+  body{padding:0;font-size:12.5px}
+  header{padding-top:0}
+  .progress,.tools,.value button{display:none!important}
+  .phase{break-inside:auto;margin-top:14px}
+  .phase-head{break-after:avoid}
+  .step,.wait,.note,.value{break-inside:avoid}
+  .step.done label,.step.done .detail{text-decoration:none}
+  .step input{appearance:none;-webkit-appearance:none;width:12px;height:12px;margin-top:3px;
+    border:1.5px solid #333;border-radius:2px;background:#fff}
+  .value pre{white-space:pre-wrap;overflow-wrap:anywhere;padding-right:10px}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><p class="sub">Loading the runbook…</p></div>
+
+<script type="application/json" id="runbook-data">
+{"schema":1,"key":"template","title":"Replace this JSON with the validated runbook","subtitle":"",
+ "revision":1,"generated_on":"2026-01-01","retired_ids":[],
+ "phases":[{"title":"Phase","where":"somewhere","items":[{"type":"step","id":"s1","action":"A step"}]}]}
+</script>
+
+<script>
+(function () {
+  "use strict";
+  var data = JSON.parse(document.getElementById("runbook-data").textContent);
+  var app = document.getElementById("app");
+  var KEY = "make-it-runbook:" + data.key;
+
+  // Storage is a convenience: it can be missing or throw (private windows, previews),
+  // and the page must work the same without it.
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { saved = {}; }
+  function persist() { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {} }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  // The only inline marks: `code` and **bold**. Everything else stays text.
+  function inline(parent, str) {
+    String(str || "").split(/(`[^`]+`|\*\*[^*]+\*\*)/).forEach(function (part) {
+      if (!part) return;
+      if (part.charAt(0) === "`" && part.length > 1 && part.slice(-1) === "`") parent.appendChild(el("code", null, part.slice(1, -1)));
+      else if (part.slice(0, 2) === "**" && part.length > 4 && part.slice(-2) === "**") parent.appendChild(el("b", null, part.slice(2, -2)));
+      else parent.appendChild(document.createTextNode(part));
+    });
+    return parent;
+  }
+
+  function copy(text, btn) {
+    function done(ok) {
+      btn.textContent = ok ? "Copied" : "Select";
+      setTimeout(function () { btn.textContent = "Copy"; }, 1400);
+    }
+    function fallback() {
+      // Clipboard can be blocked inside a sandboxed frame: select the text instead,
+      // so one Cmd/Ctrl+C finishes the job.
+      try {
+        var range = document.createRange();
+        range.selectNodeContents(btn.parentNode.querySelector("pre"));
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+        done(document.execCommand && document.execCommand("copy"));
+      } catch (e) { done(false); }
+    }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done(true); }, fallback);
+      } else fallback();
+    } catch (e) { fallback(); }
+  }
+
+  document.title = data.title || "Runbook";
+  document.documentElement.lang = data.lang || "en";
+
+  var header = el("header");
+  header.appendChild(el("h1", null, data.title));
+  if (data.subtitle) header.appendChild(inline(el("p", "sub"), data.subtitle));
+  var progress = el("div", "progress");
+  progress.setAttribute("role", "status");
+  var bar = el("div", "bar"), fill = el("i"), count = el("span", "count");
+  bar.appendChild(fill); progress.appendChild(bar); progress.appendChild(count);
+  header.appendChild(progress);
+  var tools = el("div", "tools");
+  var next = el("span", "next");
+  var printBtn = el("button", null, "Print / save PDF");
+  printBtn.type = "button";
+  printBtn.addEventListener("click", function () { window.print(); });
+  var resetBtn = el("button", null, "Clear ticks");
+  resetBtn.type = "button";
+  // Two clicks, because one stray tap would lose someone's progress and there is no undo.
+  var armed = null;
+  resetBtn.addEventListener("click", function () {
+    if (!armed) {
+      resetBtn.textContent = "Click again to clear all ticks";
+      armed = setTimeout(function () { armed = null; resetBtn.textContent = "Clear ticks"; }, 3000);
+      return;
+    }
+    clearTimeout(armed); armed = null; resetBtn.textContent = "Clear ticks";
+    boxes.forEach(function (b) { b.checked = false; saved[b.id] = false; mark(b); });
+    persist(); update();
+  });
+  tools.appendChild(next); tools.appendChild(printBtn); tools.appendChild(resetBtn);
+  header.appendChild(tools);
+  app.textContent = "";
+  app.appendChild(header);
+
+  var boxes = [], phases = [];
+  (data.phases || []).forEach(function (phase, pi) {
+    var sec = el("section", "phase");
+    var head = el("div", "phase-head");
+    head.appendChild(el("span", "pnum", "PHASE " + (pi + 1)));
+    head.appendChild(el("h2", null, phase.title));
+    if (phase.where) head.appendChild(el("span", "where", phase.where));
+    sec.appendChild(head);
+    var list = null, own = [];
+    (phase.items || []).forEach(function (item) {
+      if (item.type === "step") {
+        if (!list) { list = el("ul", "steps"); sec.appendChild(list); }
+        var li = el("li", "step");
+        li.id = "step-" + item.id;
+        var box = el("input");
+        box.type = "checkbox"; box.id = item.id;
+        var body = el("div", "body");
+        var label = el("label");
+        label.htmlFor = item.id;
+        inline(label.appendChild(el("b")), item.action);
+        if (item.optional) label.appendChild(el("span", "tag", "Optional"));
+        if (item.detail) inline(label.appendChild(el("span", "detail")), item.detail);
+        body.appendChild(label);
+        if (item.confirm) {
+          var c = el("span", "confirm");
+          c.appendChild(el("b", null, "Confirm before doing: "));
+          inline(c, item.confirm);
+          body.appendChild(c);
+        }
+        (item.values || []).forEach(function (v) {
+          var box2 = el("div", "value");
+          if (v.label) box2.appendChild(el("span", "label", v.label));
+          box2.appendChild(el("pre", null, v.text));
+          var b = el("button", null, "Copy");
+          b.type = "button";
+          b.setAttribute("aria-label", "Copy " + (v.label || "value"));
+          b.addEventListener("click", function () { copy(v.text, b); });
+          box2.appendChild(b);
+          body.appendChild(box2);
+        });
+        li.appendChild(box); li.appendChild(body); list.appendChild(li);
+        box.checked = saved[item.id] === true;
+        box.addEventListener("change", function () {
+          saved[box.id] = box.checked; persist(); mark(box); update();
+        });
+        box._action = item.action;
+        boxes.push(box); own.push(box);
+        mark(box);
+      } else {
+        list = null; // a wait or note breaks the list, so later steps start a new one
+        if (item.type === "wait") {
+          var w = el("div", "wait");
+          w.appendChild(el("span", "clock", item.duration));
+          w.appendChild(inline(el("span"), item.text));
+          sec.appendChild(w);
+        } else if (item.type === "note") {
+          var n = el("div", "note");
+          n.setAttribute("role", "note");
+          if (item.title) { n.appendChild(el("b", null, item.title)); n.appendChild(document.createTextNode(" ")); }
+          inline(n, item.text);
+          sec.appendChild(n);
+        }
+      }
+    });
+    phases.push({ sec: sec, boxes: own });
+    app.appendChild(sec);
+  });
+
+  var footer = el("footer");
+  footer.appendChild(el("p", null, "Ticks save in this browser only. Revision " + data.revision +
+    (data.generated_on ? ", " + data.generated_on : "") + "."));
+  (data.footer || []).forEach(function (line) { footer.appendChild(inline(el("p"), line)); });
+  app.appendChild(footer);
+
+  function mark(box) {
+    var li = box.closest(".step");
+    if (li) li.classList.toggle("done", box.checked);
+  }
+  function update() {
+    var done = boxes.filter(function (b) { return b.checked; }).length;
+    var total = boxes.length || 1;
+    fill.style.width = (done / total * 100) + "%";
+    count.textContent = done + " of " + boxes.length + " done";
+    phases.forEach(function (p) {
+      p.sec.classList.toggle("complete", p.boxes.length > 0 && p.boxes.every(function (b) { return b.checked; }));
+    });
+    var first = boxes.filter(function (b) { return !b.checked; })[0];
+    next.textContent = "";
+    if (first) {
+      next.appendChild(document.createTextNode("Next: "));
+      var a = el("a", null, first._action.replace(/`|\*\*/g, ""));
+      a.href = "#step-" + first.id;
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        var target = document.getElementById("step-" + first.id);
+        if (target) target.scrollIntoView({ block: "center" });
+        first.focus({ preventScroll: true });
+      });
+      next.appendChild(a);
+    } else if (boxes.length) {
+      next.textContent = "All done.";
+    }
+  }
+  update();
+})();
+</script>
+</body>
+</html>
