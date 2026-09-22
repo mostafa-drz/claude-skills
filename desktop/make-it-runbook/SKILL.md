@@ -135,6 +135,9 @@ what keep the user's ticks attached to the right steps.
    step, because a tick on the old meaning isn't a tick on the new.
 3. Add 1 to `revision`, then validate against the last delivery:
    `python3 scripts/validate_runbook.py runbook.json --previous runbook.prev.json`
+   A kept id whose values changed always fails: retire it. A kept id whose `action`
+   changed fails too, unless it's the same step in new words: then add `--reworded s4`.
+   Only vouch for that when a tick on the old wording really means the new one is done.
 4. Render, show the same artifact again, and state what changed in one or two lines.
 
 ---

@@ -34,11 +34,11 @@ the HTML.
         { "type": "wait", "duration": "24–72 h", "blocks": "s5",
           "text": "The provider won't issue a signing key until then. Start Phase 2 meanwhile." },
         { "type": "note", "title": "Pick one sending domain.",
-          "text": "Outreach lives on `example-mail.com`; client mail never does." }
+          "text": "Outreach lives on `example.net`; client mail never does." }
       ]
     }
   ],
-  "footer": ["Domains: example.com (client-facing), example-mail.com (sending only)"]
+  "footer": ["Domains: example.com (client-facing), example.net (sending only)"]
 }
 ```
 
@@ -51,7 +51,7 @@ the HTML.
 | `revision` | `1` on first delivery, +1 on every republish |
 | `generated_on` | ISO date of this revision |
 | `retired_ids` | step ids that existed in an earlier revision and were removed. Never reused |
-| `phases` | 1–12, usually 3–8, in execution order |
+| `phases` | at least 1, usually 3–8, in execution order |
 | `phase.where` | where the phase happens: a site, an app, a room ("admin console · dns host") |
 | `footer` | optional lines of standing context (accounts, which domain is for what) |
 
@@ -111,13 +111,15 @@ only link between a saved tick and a step, so:
 ```bash
 python3 scripts/validate_runbook.py runbook.json
 python3 scripts/validate_runbook.py runbook.json --previous runbook.prev.json   # on republish
+python3 scripts/validate_runbook.py runbook.json --previous runbook.prev.json --reworded s4
 ```
 
 Errors (exit 1): missing or malformed fields, a duplicate or badly-formed id, an id listed
 in `retired_ids` still in use, a wait that `blocks` an unknown or earlier step, an empty
 note, a runbook with no steps. With `--previous`: a changed `key`, a revision that didn't
 go up, a previous id that vanished without being retired, a new id not numbered above
-every id ever used.
+every id ever used, a kept id whose `values` changed, and a kept id whose `action`
+changed unless it's listed in `--reworded` (same step, new words).
 
 Warnings: fewer than 3 or more than 8 phases, a first revision whose ids aren't `s1…sN` in
 order, a long `action`, a phase with more than 12 steps, an unmatched backtick.

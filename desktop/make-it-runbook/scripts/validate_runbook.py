@@ -4,6 +4,7 @@
 Usage:
   python3 scripts/validate_runbook.py runbook.json
   python3 scripts/validate_runbook.py runbook.json --previous runbook.prev.json
+  python3 scripts/validate_runbook.py runbook.json --previous runbook.prev.json --reworded s4,s9
 
 Standard library only. Exits 1 on any error, 0 otherwise; warnings never fail the run.
 Every message names the item and the fix, so the agent can correct the data and re-run.
@@ -180,10 +181,32 @@ def validate(doc, r):
             pos += 1
 
 
-def compare(doc, prev, r):
-    """A republish must keep every delivered id meaning the same step."""
-    if not isinstance(prev, dict):
-        r.err("--previous", "previous runbook is not a JSON object")
+def step_map(doc):
+    out = {}
+    for phase in doc.get("phases") or []:
+        if not isinstance(phase, dict):
+            continue
+        for item in phase.get("items") or []:
+            if isinstance(item, dict) and item.get("type") == "step" and isinstance(item.get("id"), str):
+                out[item["id"]] = item
+    return out
+
+
+def literal_values(step):
+    values = step.get("values") if isinstance(step.get("values"), list) else []
+    return [v.get("text") for v in values if isinstance(v, dict)]
+
+
+def compare(doc, prev, r, reworded=()):
+    """A republish must keep every delivered id meaning the same step.
+
+    Ids alone can't prove that: an id kept on a step whose meaning changed would carry
+    the old tick onto new work. So a kept id must keep its literal values exactly, and its
+    action unless the caller vouches, with --reworded, that only the wording changed.
+    """
+    if not isinstance(prev, dict) or not isinstance(doc, dict):
+        if not isinstance(prev, dict):
+            r.err("--previous", "previous runbook is not a JSON object")
         return
     if text(doc.get("key")) != text(prev.get("key")):
         r.err("key", f"changed from {prev.get('key')!r}; the key never changes, or every saved tick is lost")
@@ -202,6 +225,17 @@ def compare(doc, prev, r):
         r.err("retired_ids", f"{sid} was in the previous revision and is gone; add it to retired_ids")
     for sid in sorted(prev_retired - retired, key=lambda s: id_num(s) or 0):
         r.err("retired_ids", f"{sid} was retired before; keep it retired so it is never reused")
+    old_steps, new_steps = step_map(prev), step_map(doc)
+    for sid in sorted(now & before, key=lambda s: id_num(s) or 0):
+        old, new = old_steps.get(sid, {}), new_steps.get(sid, {})
+        if literal_values(old) != literal_values(new):
+            r.err(sid, "kept its id but its values changed, so a tick on the old value would show the "
+                       "new one as done. Retire the id and add the step under a new one")
+        elif text(old.get("action")) != text(new.get("action")) and sid not in reworded:
+            r.err(sid, f"action changed from {text(old.get('action'))!r}. If it's the same step reworded, "
+                       f"re-run with --reworded {sid}; if its meaning changed, retire the id and add a new one")
+    for sid in sorted(set(reworded) - (now & before), key=lambda s: id_num(s) or 0):
+        r.warn("--reworded", f"{sid} is not a step kept from the previous revision; ignored")
     high = max((id_num(s) or 0 for s in ever), default=0)
     for sid in sorted(now - ever, key=lambda s: id_num(s) or 0):
         if (id_num(sid) or 0) <= high:
@@ -210,7 +244,14 @@ def compare(doc, prev, r):
 
 def main(argv):
     args = argv[1:]
-    prev_path = None
+    prev_path, reworded = None, ()
+    if "--reworded" in args:
+        i = args.index("--reworded")
+        if i + 1 >= len(args):
+            print("ERROR: --reworded needs step ids, e.g. --reworded s4,s9")
+            return 2
+        reworded = tuple(x.strip() for x in args[i + 1].split(",") if x.strip())
+        del args[i:i + 2]
     if "--previous" in args:
         i = args.index("--previous")
         if i + 1 >= len(args):
@@ -219,7 +260,7 @@ def main(argv):
         prev_path = args[i + 1]
         del args[i:i + 2]
     if len(args) != 1:
-        print("Usage: python3 scripts/validate_runbook.py runbook.json [--previous runbook.prev.json]")
+        print("Usage: python3 scripts/validate_runbook.py runbook.json [--previous runbook.prev.json [--reworded s4,s9]]")
         return 2
 
     r = Report()
@@ -235,7 +276,9 @@ def main(argv):
         except (OSError, json.JSONDecodeError) as exc:
             print(f"ERROR: cannot read {prev_path}: {exc}")
             return 1
-        compare(doc, prev, r)
+        compare(doc, prev, r, reworded)
+    elif reworded:
+        r.warn("--reworded", "only means something with --previous; ignored")
 
     for e in r.errors:
         print(f"ERROR {e}")

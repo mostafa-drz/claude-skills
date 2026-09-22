@@ -126,8 +126,9 @@ Checked locally:
 - The validator passes `evals/expected-runbook.json`, and rejects a file seeded with each
   error class: duplicate, malformed or retired ids, a wait blocking an earlier or unknown
   step, an empty note or value, a bad key, no steps. On republish it rejects a changed
-  key, a revision that didn't go up, a vanished id that wasn't retired, and a retired id
-  brought back.
+  key, a revision that didn't go up, a vanished id that wasn't retired, a retired id
+  brought back, and a kept id whose values or action changed (so an old tick can't mark
+  new work done; a pure rewording is vouched for with `--reworded`).
 - The page was screenshotted at 390px and 900px in light and dark, printed to PDF, and
   loaded with a hostile title and detail (`</script><img onerror=…>`), which rendered as
   text.
