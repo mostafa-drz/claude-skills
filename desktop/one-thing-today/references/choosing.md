@@ -76,7 +76,7 @@ with the calendar entry (or the day) as evidence. Don't dig up work to fill it.
 - **why**: 2–3 sentences, plain, the way a friend who's good at priorities would put it.
   Name the consequence. No hype, no "crucial", no "unlock".
 - **evidence**: 1–4 lines, each `{source, fact}`. `source` is exactly a name from
-  `sources_checked`, or `You`, `Memory` or `Past chats`. Facts are short and specific: a
+  `sources_checked` (which includes `Memory` and `Past chats` when read), or `You`. Facts are short and specific: a
   subject line, an event time, a status, a date last done.
 - **how**: 1–3 steps. Each is one physical action of 140 characters or less, with
   `minutes`. The first is 25 minutes or less and names the exact thing to open or do.

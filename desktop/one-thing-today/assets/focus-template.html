@@ -95,7 +95,9 @@ footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-si
   var data = JSON.parse(document.getElementById("focus-data").textContent);
   var app = document.getElementById("app");
   var area = (data.area || "all").trim();
-  var KEY = "one-thing-today:" + data.date + ":" + area.toLowerCase();
+  // Keyed by the focus itself, so a same-day re-pick never inherits the old one's "done".
+  function hash(str) { var h = 5381; for (var i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) >>> 0; return h.toString(36); }
+  var KEY = "one-thing-today:" + data.date + ":" + area.toLowerCase() + ":" + hash(String(data.focus || ""));
   var L = Object.assign({
     one_thing: "Your one thing", why: "Why this", how: "How", start: "Start here",
     done_when: "Done when", good_enough: "Good enough", can_wait: "Can wait",

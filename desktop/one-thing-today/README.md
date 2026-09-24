@@ -165,8 +165,8 @@ Checked locally:
 
 - **Validator.** Both examples pass. It rejects each of these:
   - a focus over 90 characters
-  - four steps, or a first step of 60 minutes
-  - no evidence, or evidence citing a source that wasn't read
+  - four steps, a first step of 60 minutes, or `"minutes": true`
+  - no evidence, or evidence citing a source that wasn't read (Memory and Past chats included)
   - a bad outcome value or an empty day
   - an area over 24 characters
   - an unknown `done_storage`

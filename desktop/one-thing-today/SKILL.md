@@ -67,7 +67,8 @@ in this conversation: never assume a source from a previous run, and never menti
 source you didn't read. What to pull, and the time window, is in
 [`choosing.md`](./references/choosing.md).
 
-Record each source actually read in `sources_checked`, and each that failed or isn't
+Record each source actually read in `sources_checked`, including `Memory` and `Past chats`
+when you read them, and each that failed or isn't
 connected in `sources_missing`. Name the account when it matters: "Gmail (personal)".
 **A failed read is not an empty inbox.** Say it failed, rather than choosing as if nothing
 were there.

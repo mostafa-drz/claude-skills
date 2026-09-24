@@ -68,10 +68,10 @@ def main(path):
         if not isinstance(e, dict) or not text(e.get("source")) or not text(e.get("fact")):
             errors.append(f"{where}: needs a non-empty source and fact")
             continue
-        if text(e["source"]) not in checked and text(e["source"]) not in ("You", "Memory", "Past chats"):
+        if text(e["source"]) not in checked and text(e["source"]) != "You":
             errors.append(
                 f"{where}: source '{e['source']}' is not in sources_checked. Cite only what you read; "
-                "use 'You' for something the user said in this chat"
+                "add Memory or Past chats there when you read them; use 'You' for the user's words in this chat"
             )
 
     how = doc.get("how")
@@ -86,12 +86,12 @@ def main(path):
         if len(text(s["step"])) > 140:
             errors.append(f"{where}: step over 140 chars. One concrete action, not a paragraph")
         minutes = s.get("minutes")
-        if minutes is not None and (not isinstance(minutes, int) or minutes <= 0):
+        if minutes is not None and (isinstance(minutes, bool) or not isinstance(minutes, int) or minutes <= 0):
             errors.append(f"{where}: minutes must be a positive whole number, or omitted")
         if i == 0:
             if minutes is None:
                 errors.append("how[0]: the first step needs minutes. Starting is the point, so size it")
-            elif isinstance(minutes, int) and minutes > 25:
+            elif isinstance(minutes, int) and not isinstance(minutes, bool) and minutes > 25:
                 errors.append(f"how[0]: first step is {minutes} min, cap is 25. Make the start smaller")
 
     not_today = doc.get("not_today", [])
