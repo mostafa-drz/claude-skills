@@ -112,20 +112,27 @@ medications, passwords and codes never go on the page or into memory.
 
 Write `focus.json` (shape: [`evals/example-focus.json`](./evals/example-focus.json)) in
 the conversation's language. Set `lang`, and when it isn't English, add `labels` for the
-page headings. Set `done_storage` from settings. Then run:
+page headings. Set `done_storage` from settings. Then validate:
 
 ```bash
 python3 scripts/validate_focus.py focus.json
-python3 scripts/render_page.py focus.json focus.html
 ```
 
-The validator exits non-zero with a fix per error. **Fix and re-run until it passes.** It
-uses the standard library only.
+It exits non-zero with a fix per error. **Fix and re-run until it passes.** It uses the
+standard library only.
 
-Show `focus.html` as an HTML artifact. It works on a phone, follows light and dark mode,
-and shows the area and the last focus. **Mark it done** saves to the artifact's own
-storage when this surface provides it, otherwise to the browser, so the page works either
-way. If artifacts aren't available, give the same content as text.
+**Write the page once.** With artifacts available, create the HTML artifact directly:
+[`assets/focus-template.html`](./assets/focus-template.html) copied unchanged, except for
+the JSON inside `<script type="application/json" id="focus-data">`. Get that JSON from
+`python3 scripts/render_page.py focus.json --data`, which prints it with `</` already
+escaped, and paste it as printed. Don't also render a file.
+
+Without artifacts, run `python3 scripts/render_page.py focus.json focus.html`, share the
+file, and give the same content as text.
+
+The page works on a phone, follows light and dark mode, and shows the area and the last
+focus. **Mark it done** saves to the artifact's own storage when this surface provides it,
+otherwise to the browser, so the page works either way.
 
 Close in **two lines at most**:
 - the sources read (and any that failed), and the one thing that almost won, so the user

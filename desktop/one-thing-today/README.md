@@ -129,6 +129,9 @@ finishes. Auto-approve matters: without it, the 07:30 run waits for your go-ahea
 - **Artifact storage with a browser fallback.** The help center documents per-artifact
   personal storage but not its script API. The page looks for `window.storage` and falls
   back to `localStorage`, guarding every call, so it works either way.
+- **The page is generated once.** Claude writes the artifact as the template plus the data
+  block, which `render_page.py --data` prints already escaped. A full rendered file is only
+  made when artifacts aren't available, so the page is never written twice.
 - **`side_effects: true`**, because it writes to memory and can create a scheduled task.
   It only schedules after a yes, and says what it saved every time.
 
@@ -150,7 +153,7 @@ one-thing-today/
 ├── references/choosing.md           gather, pick, write, learn (area-aware)
 ├── scripts/
 │   ├── validate_focus.py            the focus rules as checks
-│   └── render_page.py               focus.json → self-contained HTML
+│   └── render_page.py               --data for the artifact; a full file when no artifacts
 ├── assets/focus-template.html
 ├── evals/
 │   ├── evals.json                   ten acceptance scenarios
@@ -174,7 +177,7 @@ Checked locally:
 
   It warns on a focus that joins two things, and on non-English pages with no labels.
 - **Page.** Screenshotted in dark mode (work) and light mode (personal). A hostile focus
-  (`</script><img onerror=…>`) is escaped by the renderer and set with `textContent`.
+  (`</script><img onerror=…>`) is escaped by the renderer (`--data` and full-file modes) and set with `textContent`.
 - **Done state.** It survives a reload with browser storage. With a stand-in
   `window.storage`, it's written to artifact storage, and to the browser as well.
 - **Accessibility.** The focus ring uses `--ink` (3:1 or better in both themes), and the

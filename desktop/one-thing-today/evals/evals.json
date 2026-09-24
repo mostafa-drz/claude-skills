@@ -13,7 +13,7 @@
       "Every evidence line names a source that was actually read",
       "First step is 25 minutes or less and names the document to open",
       "Puts inbox cleanup or similar busywork in not_today",
-      "focus.json passes validate_focus.py and the page is shown as an artifact",
+      "focus.json passes validate_focus.py; the artifact is written once (template plus render_page.py --data), with no separate full render",
       "Closes in two lines: sources read and the runner-up; asks about the last focus in the same message, not before the page"
     ]
   },
