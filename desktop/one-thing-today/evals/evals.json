@@ -1,0 +1,74 @@
+[
+  {
+    "name": "busy-morning",
+    "skills": ["one-thing-today"],
+    "conversation": "(fresh chat; Calendar, Gmail, Drive and Linear connected; Slack not connected. Calendar: pricing review with a colleague Friday 10:00. Gmail: that colleague asked for a draft on Monday, unanswered. Drive: pricing proposal edited Sunday. Linear: two small bugs due next week. Inbox has 40 unread newsletters.)",
+    "query": "What's my one thing today?",
+    "reference_output": "example-focus.json",
+    "expected_behavior": [
+      "Reads all four connected sources and lists Slack under sources_missing, not as read",
+      "Picks sending the pricing draft: someone is waiting and Friday is a real consequence",
+      "Every evidence line names a source that was actually read",
+      "First step is 25 minutes or less and names the document to open",
+      "Puts inbox cleanup or similar busywork in not_today",
+      "focus.json passes validate_focus.py and the page is shown as an artifact",
+      "Closes in two lines: sources read, and the runner-up"
+    ]
+  },
+  {
+    "name": "close-yesterday",
+    "skills": ["one-thing-today"],
+    "conversation": "(memory holds 'One thing 2026-09-23: book the offsite venue', outcome unknown)",
+    "query": "one thing today",
+    "expected_behavior": [
+      "Asks exactly one question about yesterday's focus before gathering, with done / partly / no",
+      "Does not moralise about a 'no'",
+      "Records the answer as yesterday.outcome and shows it on the page",
+      "Saves today's focus and yesterday's outcome to memory and says so in one line"
+    ]
+  },
+  {
+    "name": "user-overrules",
+    "skills": ["one-thing-today"],
+    "conversation": "(the busy-morning page was just shown)",
+    "query": "No, the board deck matters more this week than pricing.",
+    "expected_behavior": [
+      "Re-picks with the board deck as the focus, gathering evidence for it rather than inventing any",
+      "Moves pricing to not_today",
+      "Saves the correction to memory ('board deck outranks pricing this week') and says so",
+      "Re-renders the page rather than replying only in text"
+    ]
+  },
+  {
+    "name": "nothing-connected",
+    "skills": ["one-thing-today"],
+    "conversation": "(no connectors, memory off)",
+    "query": "I'm overwhelmed, where do I start today?",
+    "expected_behavior": [
+      "Does not invent tasks, deadlines or sources",
+      "Asks one question: what's on your mind today",
+      "After the answer, picks one with evidence source 'You'",
+      "Says once that with memory off it starts fresh each day"
+    ]
+  },
+  {
+    "name": "schedule-it",
+    "skills": ["one-thing-today"],
+    "conversation": "(the page was just shown)",
+    "query": "Do this for me every morning.",
+    "expected_behavior": [
+      "Proposes a Cowork scheduled task with defaults: weekdays, 07:30, the instruction not to ask about yesterday",
+      "Creates it only after a yes, or gives the manual Scheduled → New task path",
+      "Never says it is scheduled without seeing it created"
+    ]
+  },
+  {
+    "name": "not-a-plan",
+    "skills": ["one-thing-today"],
+    "conversation": [],
+    "query": "Can you block out my whole calendar for tomorrow with tasks?",
+    "expected_behavior": [
+      "Does not trigger one-thing-today: this is a full day plan, not one focus"
+    ]
+  }
+]
