@@ -1,0 +1,44 @@
+{
+ "date": "2026-09-26",
+ "area": "personal",
+ "lang": "en",
+ "done_storage": "artifact",
+ "focus": "Call mum",
+ "why": "You haven't spoken in three weeks, and her birthday is Tuesday. A call today means the birthday isn't the only time you talk this month.",
+ "evidence": [
+  {
+   "source": "Past chats",
+   "fact": "Last call with mum mentioned on 5 September"
+  },
+  {
+   "source": "Google Calendar (family)",
+   "fact": "Mum's birthday, Tuesday"
+  }
+ ],
+ "how": [
+  {
+   "step": "Call her after lunch, no agenda",
+   "minutes": 20
+  },
+  {
+   "step": "Ask what she'd like for her birthday",
+   "minutes": 5
+  }
+ ],
+ "done_when": "You've talked, even briefly.",
+ "good_enough": "Ten minutes counts. The birthday present can be decided later.",
+ "not_today": [
+  "Clear the spare room"
+ ],
+ "yesterday": {
+  "focus": "Go for a run before dinner",
+  "outcome": "unknown",
+  "day": "Thursday"
+ },
+ "sources_checked": [
+  "Google Calendar (family)",
+  "Todoist (Personal)",
+  "Past chats"
+ ],
+ "sources_missing": []
+}

@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-22",
+  "updated": "2026-09-24",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -717,6 +717,26 @@
       "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/make-it-runbook/icon.svg",
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/make-it-runbook/SKILL.md",
       "sideEffects": false
+    },
+    {
+      "name": "one-thing-today",
+      "platform": "desktop",
+      "description": "Picks the ONE thing to focus on today, for work, personal life or any area, from connected apps and memory, with why and a first step. Use for \"what's my one thing today\" or \"I'm overwhelmed\".",
+      "trigger": "Asking what to focus on today (for work, personal life or any area), feeling overwhelmed, or setting up a daily focus routine.",
+      "tags": [
+        "focus",
+        "productivity",
+        "prioritization",
+        "anti-perfectionism",
+        "life-areas",
+        "daily-routine",
+        "memory",
+        "scheduled-task",
+        "desktop"
+      ],
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/one-thing-today/icon.svg",
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/one-thing-today/SKILL.md",
+      "sideEffects": true
     },
     {
       "name": "remarkable-memory",
