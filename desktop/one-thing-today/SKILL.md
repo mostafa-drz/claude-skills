@@ -1,34 +1,30 @@
 ---
 name: one-thing-today
 description: >-
-  Picks the one thing to focus on today, and says why and how. Reads every connected
-  source (calendar, email, chat, docs, tickets, tasks) plus Claude's memory and past chats,
-  then chooses a single focus: the move that unblocks others, beats a real deadline, or
-  compounds. Renders it as a bold, minimal page with the focus, cited reasons and at most
-  three small steps. The first step is under 25 minutes. Learns from each day's outcome
-  through memory, and can be set up as a daily scheduled task. Against perfectionism: it
-  says what "good enough" is and what can wait. Use when the user says "one thing today",
-  "/one-thing-today", "what should I focus on today", "what's my one thing", "I'm
-  overwhelmed, where do I start", or wants a daily focus routine. Not for a full day plan,
-  a to-do list or a schedule.
+  Picks the ONE thing to focus on today, for work, personal life or any area, from connected
+  apps and memory, with why and a first step. Use for "what's my one thing today" or "I'm
+  overwhelmed".
 metadata:
   side_effects: true
-  trigger: "Asking what to focus on today, feeling overwhelmed and wanting one place to start, or setting up a daily focus routine."
-  tags: "focus, productivity, prioritization, anti-perfectionism, daily-routine, memory, scheduled-task, desktop"
+  trigger: "Asking what to focus on today (for work, personal life or any area), feeling overwhelmed, or setting up a daily focus routine."
+  tags: "focus, productivity, prioritization, anti-perfectionism, life-areas, daily-routine, memory, scheduled-task, desktop"
 ---
 
 # One thing today
 
-Getting 1% better every day beats a perfect plan that never starts. This skill reads
-everything you've connected, then gives you **one** thing: what it is, why it's the one,
-and how to start in the next 25 minutes. Everything else can wait, and the page says so.
+Getting 1% better every day beats a perfect plan that never starts. This skill reads what
+you've connected and what Claude remembers about you, then gives you **one** thing for
+today: what it is, why it's the one, and how to start in the next 25 minutes. It works for
+any part of life: work, personal, health, family, learning, a side project. Everything
+else can wait, and the page says so.
 
-It starts automatically on a matching request in Claude Desktop and claude.ai. "What's my
-one thing today?" is the natural trigger.
+It starts automatically when the request matches: "what's my one thing today?", "one
+thing for personal life today", "I'm overwhelmed, where do I start?". It's not for a full
+day plan, a to-do list or a schedule.
 
-One reference, **read it every run**: [`choosing.md`](./references/choosing.md) (how to
-gather, how to pick, how to learn). Data shape: the `focus.json` example in
-[`evals/example-focus.json`](./evals/example-focus.json).
+One reference, **read it every run**: [`choosing.md`](./references/choosing.md) (gather,
+pick, write, learn). Data shape: [`evals/example-focus.json`](./evals/example-focus.json).
+Defaults: [Configuration](#configuration), at the end of this file.
 
 ---
 
@@ -36,112 +32,154 @@ gather, how to pick, how to learn). Data shape: the `focus.json` example in
 
 ```
 Focus progress:
-- [ ] 1. Close yesterday (one question, only if there was a yesterday)
-- [ ] 2. Gather: every connected source + memory + past chats, today's window only
+- [ ] 0. Settings: the chat, then saved settings in memory, then Configuration
+- [ ] 1. Area: which part of life this run is for
+- [ ] 2. Gather: the area's sources + memory + past chats (+ last focus, same area)
 - [ ] 3. Pick one (choosing.md), and write why with evidence
 - [ ] 4. Write focus.json → validate → render → show the page
 - [ ] 5. Learn: save what changed, in one line
 ```
 
-### 1. Close yesterday
+### 0. Settings
 
-Search memory and past chats for the last one-thing-today focus. If there is one from the
-last few days and its outcome is unknown, ask **one** question before anything else:
-"Yesterday's one thing was *X*. Did it happen? (done / partly / no)". Accept any answer,
-including no answer, and record it as `yesterday.outcome` (`unknown` if they skip).
-**Never guilt.** A "no" is data about what gets in the way, not a failure.
+Look in memory for the line starting **"one-thing-today settings:"**. **What the user says
+in this chat wins, then the saved settings, then [Configuration](#configuration).** A
+saved "skip Slack" holds until the user changes it; the "never assume a source" rule below
+is about what's *connected*, not about preferences.
 
-In a scheduled run nobody is there to answer, so don't ask. Use `unknown`, or evidence of
-completion if you can see it (the email was sent, the ticket closed).
+### 1. Area
+
+The area is free text (`work`, `personal`, `health`, `family`, `side project`…), or
+`all`. Resolve it in this order: the request ("my one thing for personal life"), the
+scheduled task's instruction, a saved day rule ("Sat–Sun: personal"), then `all`.
+
+The area decides three things: **which sources are read** (the saved area map, for example
+`work = Gmail (work), Slack, Linear`), **which candidates can win**, and **what goes on the
+page**. On a personal page, nothing from work appears, not even under *Can wait* or in
+the sources footer. With no map saved, use judgement: a work Slack isn't personal, a
+family calendar isn't work. Say which sources you counted as the area in the closing line,
+and offer to save the map.
 
 ### 2. Gather
 
-Probe every connected source, in parallel where you can. Use whatever is connected in
-this conversation: never assume a source from a previous run, and never mention a source
-you didn't read. What to pull from each, and the time window, is in
+Probe the area's connected sources, in parallel where you can. Use whatever is connected
+in this conversation: never assume a source from a previous run, and never mention a
+source you didn't read. What to pull, and the time window, is in
 [`choosing.md`](./references/choosing.md).
 
-Record every source you actually read in `sources_checked` and every one that failed or
-isn't connected in `sources_missing`. **A failed read is not an empty inbox.** Say it
-failed rather than choosing as if nothing were there.
+Record each source actually read in `sources_checked`, and each that failed or isn't
+connected in `sources_missing`. Name the account when it matters: "Gmail (personal)".
+**A failed read is not an empty inbox.** Say it failed, rather than choosing as if nothing
+were there.
 
-If **nothing** is connected and memory is empty, don't guess. Ask one question: "What's on
-your mind for today? Paste it or list it, I'll pick one." Then pick from that, with
-`You` as the source.
+**The last focus.** In the same pass, look in memory and past chats for the most recent
+one-thing-today focus **for the same area** within the last 7 days. Put it in
+`yesterday`, with `day` set to the day it was for ("Friday" on a Monday, "Yesterday"
+otherwise). Its outcome is `unknown` unless the user said, or you can see it happened (the
+email was sent, the ticket closed).
+
+If nothing is connected and memory is empty, don't guess. Ask one question: "What's on your
+mind for today? List it or paste it, I'll pick one." Then pick from that, with `You` as the
+source.
 
 ### 3. Pick one
 
 Follow the rubric in [`choosing.md`](./references/choosing.md). In short: the thing that
-**unblocks someone**, **beats a real deadline**, or **compounds**, weighted by what the
-user said matters to them (memory), and discounted if it's busywork dressed as progress.
+**someone is waiting on** (a colleague, family, or a promise to yourself), that **slips
+with a real consequence**, that **compounds**, or that **keeps getting avoided**. Weigh it
+by what the user said matters in this area, and discount busywork.
 
 - **One thing.** Not two joined by "and". If two tie, pick the one with the earlier
   consequence and put the other in `not_today`.
-- **Why** is two or three plain sentences a person would say out loud, backed by 1–4
-  `evidence` lines, each naming the source it came from. No evidence, no claim.
-- **How** is at most three steps. The first is small enough to start now (≤25 min) and
-  concrete enough to need no further thinking: which file, which person, which sentence.
+- **Why** is two or three plain sentences backed by 1–4 `evidence` lines, each naming
+  its source. No evidence, no claim.
+- **How** is at most three steps. The first takes 25 minutes or less and needs no further
+  thinking: which file, which person, which sentence.
 - **Done when** is observable. **Good enough** names the bar and what to skip: this is
-  where perfectionism gets cut. **Not today** lists up to three tempting things that can
-  wait, so letting go of them is a decision, not a leak.
+  where perfectionism gets cut. **Not today** lists up to three tempting things from the
+  same area that can wait.
+- **An off day is a valid answer.** On a weekend, a holiday or a calendar out-of-office
+  day, when the area is `all` or `work`, or when nothing is pressing, say so: "Nothing
+  needs you today." Then offer one small, optional thing that's good for the user, for
+  example a personal goal or a walk.
 
-Private content stays private: quote a subject line, not an email body. Never put a
-password, a code or a medical detail on the page.
+**Privacy.** Quote a subject line, not an email body. A health *goal* or *task* is fine
+("book the physio follow-up", "run three times a week"). Diagnoses, results,
+medications, passwords and codes never go on the page or into memory.
 
 ### 4. Build the page
 
-Write `focus.json` (shape: [`evals/example-focus.json`](./evals/example-focus.json)), then:
+Write `focus.json` (shape: [`evals/example-focus.json`](./evals/example-focus.json)) in
+the conversation's language. Set `lang`, and when it isn't English, add `labels` for the
+page headings. Set `done_storage` from settings. Then run:
 
 ```bash
 python3 scripts/validate_focus.py focus.json
 python3 scripts/render_page.py focus.json focus.html
 ```
 
-The validator exits non-zero with a fix per error: a focus over 90 characters, more than
-three steps, a first step over 25 minutes, or an evidence line citing a source not in
-`sources_checked`. **Fix and re-run until it passes.** Standard library only.
+The validator exits non-zero with a fix per error. **Fix and re-run until it passes.** It
+uses the standard library only.
 
-Show `focus.html` as an HTML artifact. It's self-contained, phone-first, light and dark,
-and has a **Mark it done** button saved in that browser. If artifacts aren't available,
-give the same content as text: the focus in bold, why in two lines, the steps numbered.
+Show `focus.html` as an HTML artifact. It works on a phone, follows light and dark mode,
+and shows the area and the last focus. **Mark it done** saves to the artifact's own
+storage when this surface provides it, otherwise to the browser, so the page works either
+way. If artifacts aren't available, give the same content as text.
 
-Close in **two lines at most**: which sources were read (and any that failed), and the one
-thing that almost won, so the user can overrule it.
+Close in **two lines at most**:
+- the sources read (and any that failed), and the one thing that almost won, so the user
+  can overrule it;
+- when there's a last focus with an unknown outcome, ask "Did *X* happen?" in the same
+  message. Offer *done / partly / not this time*, and never guilt: a "no" is information
+  about what gets in the way.
 
 ### 5. Learn
 
-The skill improves only through memory, so this step is not optional when memory is on.
-Save to memory, briefly and only what's new (rules in
+The skill improves only through memory, so this step isn't optional when memory is on.
+Save briefly, **tag every line with its area**, and save only what's new (rules in
 [`choosing.md`](./references/choosing.md#learning)):
 
-- today's focus and date, and yesterday's outcome if you learned it;
-- a pattern, only once it has repeated (three "no"s on afternoon focuses → "mornings work
-  better");
-- anything the user corrected: "not that, the board deck matters more" is the strongest
-  signal there is.
+- today's focus, for example `One thing 2026-09-24 [work]: …`, and the last focus's outcome
+  when you learn it, including "done" said in chat;
+- a correction ("not that, the board deck matters more"), which is the strongest signal;
+- a pattern, but only after it has repeated three times in that area.
 
-Say in one line what you saved ("Noted: you'd rather start with writing."). If memory is
-off, say once that it will start fresh each day, and that turning on memory in Settings
-lets it learn.
+Say in one line what you saved. Memory can come back empty: in a project (each project has
+its own memory), in incognito, with memory turned off, or on a free plan (no past-chat
+search). If so, say once that it will start fresh, and why.
 
 ---
 
 ## Make it a daily routine
 
-On `schedule` (or "do this every morning"), set up a **Cowork scheduled task**. These run
-in the cloud on a daily or weekdays cadence, even when the computer is asleep or the app
-is closed, with connectors and skills available. They need a paid plan
-([help center](https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork)).
+On "schedule it" or "do this every morning", set up a **scheduled task**. These run in the
+cloud, even when the computer is asleep or the app is closed, with connectors and skills
+available, on paid plans. Where memory is on, a cloud run uses it too
+([scheduled tasks](https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork),
+[release notes](https://support.claude.com/en/articles/12138966-release-notes)).
 
-1. Propose it in one message, with defaults the user can accept with "yes":
-   **name** "One thing today", **cadence** weekdays, **time** 07:30 local,
-   **instruction** "Run one-thing-today for today. Don't ask about yesterday; mark it
-   unknown unless you can see it was done."
-2. If this surface offers to schedule from chat, use it once the user agrees. Otherwise
-   give the manual path: **Cowork → Scheduled → New task → Set up manually**, with the
-   values above to paste.
-3. **Never claim it's scheduled unless you saw it created.** Past and upcoming runs, and
-   pausing, live in the Scheduled section.
+1. **Propose it in one message**, with defaults the user can accept with "yes":
+   - name "One thing today"
+   - frequency weekdays
+   - time 07:30 local
+   - **approval mode: auto-approve**, because this task only reads and writes to memory.
+     Otherwise the 07:30 run waits for a go-ahead.
+   - instruction: "Run one-thing-today for today, area: work. Lead with a five-line text
+     version, then the page."
+   - any saved settings that differ from the defaults, such as "Skip Slack", so the run
+     keeps them even without memory
+
+   **Offer a pair** when the user has more than one area: *Weekdays 07:30, area: work* and
+   *Weekends 09:00, area: personal*. Name them "One thing today · work" and "… · personal".
+2. **Create it once the user agrees**, using the scheduling this surface offers from chat.
+   Otherwise, point to the **Scheduled** section in the sidebar (in Cowork, if the app
+   still shows it separately). There, **New task → Create with Claude** or **Set up
+   manually** takes the same values.
+3. **Never say it's scheduled unless you saw it created.** Runs, edits and the pause switch
+   are in **Scheduled**, and a push notification arrives when a run finishes.
+
+A scheduled run can't ask questions. It never asks about the last focus, and leads with
+text in case the page can't be shown there.
 
 ---
 
@@ -152,21 +190,47 @@ is closed, with connectors and skills available. They need a paid plan
 - **Don't pretend to know priorities you can't see.** When the sources don't settle it,
   say so and pick the smallest move that keeps the most important thread alive.
 - **One is the point.** Don't sneak a second focus into the steps or the why.
-- **The done button is per browser.** It doesn't reach Claude; the page says to tell
-  Claude tomorrow.
+- **Stay in the area.** A personal page never carries work items, and the other way round.
 
 ## Conventions
 
-**`help`**: one sentence on what this does, which sources are connected right now, and the
-three things to say: "one thing today", "schedule it", "that's not it, it's X".
+**`help`**: one sentence on what this does, which sources are connected now, the current
+settings, and the things to say: "one thing today", "one thing for personal", "that's not
+it, it's X", "schedule it", `config`, `reset`.
 
-**`config`**: for this conversation, in one round: time window (default: today, plus
-tomorrow morning), sources to skip, tone (default: calm and direct). Desktop skills can't
-save settings between conversations. Say so, and offer to save the preference to memory
-instead, which the next run reads.
+**`config`**: change settings in one round, with the current value shown for each: areas
+and their sources, day rules, sources to skip, window, tone, done storage, schedule. Save
+them to memory as a single "one-thing-today settings:" line, replacing the old one. Desktop
+skills can't keep files, and memory is what the next run reads. If the user has a
+schedule, offer to update its instruction too.
 
-**`reset`**: forgets this conversation's config and the one-thing-today entries in
-memory, after naming what will be removed and getting a yes. It never touches the user's
-email, calendar, tasks or any other source.
+**`reset`**: removes the "one-thing-today settings:" line and this chat's changes, going
+back to [Configuration](#configuration). **It never touches your history, outcomes,
+corrections or goals**, nor any email, calendar or task. Say so when confirming.
+**"Forget my one-thing history"** is separate: it lists the entries it would remove and
+removes them only after a yes.
 
-**Tone**: calm, direct, a little warm. One line to open, the page, two lines to close.
+**Tone**: calm, direct and a little warm, like a friend who's good at priorities. One line
+to open, the page, two lines to close.
+
+## Configuration
+
+Defaults. Saved settings live in memory as one line, "one-thing-today settings: …".
+**What you say in the chat beats saved settings, which beat these defaults.** To change a
+default for everyone, edit this list, re-zip and re-upload.
+
+- area: `all`. Day rules: none (suggest "Sat–Sun: personal" when the user has areas)
+- areas map: none (judgement, then offer to save one)
+- window: today, plus anything due before noon on the next working day
+- lookback: 7 days, for threads and promises waiting on you
+- sources: every connected one in the area; skip: none
+- done storage: `artifact` (the artifact's own storage), falling back to `browser`
+- ask about the last focus: yes, in the closing lines (never in a scheduled run)
+- tone: calm, direct, a little warm
+- schedule: weekdays 07:30, area work; weekends 09:00, area personal (offered as a pair)
+- language: the conversation's
+
+These are fixed, not settings, and the validator enforces them:
+- one focus of 90 characters or less
+- at most 3 steps, with a first step of 25 minutes or less
+- evidence that cites only sources read in this run
