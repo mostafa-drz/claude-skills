@@ -10,6 +10,9 @@
   focus.json (scripts/render_page.py does this). Everything renders from that data with
   textContent, so nothing in the data is ever parsed as HTML. Fonts are the only external
   request, with system fallbacks: the page works offline.
+  "Mark it done" saves to the artifact's own storage when the surface provides one
+  (done_storage: "artifact", the default), else to localStorage. Every call is guarded, so
+  the page renders the same with no storage at all.
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,7 +20,7 @@
 <style>
 :root{
   --bg:#f4f5f7; --surface:#ffffff; --ink:#101218; --muted:#636876; --line:#e1e3e9;
-  --accent:#2f47ff; --accent-soft:#e7eaff; --done:#1f8a5b;
+  --accent:#2f47ff; --accent-soft:#e7eaff; --done:#17704a;
   --display:"Bricolage Grotesque",-apple-system,"Segoe UI",Roboto,sans-serif;
   --body:"Instrument Sans",-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
@@ -71,8 +74,8 @@ section h2{margin:0 0 12px}
 .donebtn{font:600 15px var(--body);color:var(--bg);background:var(--accent);border:0;border-radius:999px;
   padding:12px 22px;cursor:pointer;transition:transform .15s}
 .donebtn:hover{transform:translateY(-1px)}
-.donebtn:focus-visible{outline:3px solid var(--accent-soft);outline-offset:2px}
-.donebtn[aria-pressed="true"]{background:var(--done)}
+.donebtn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.donebtn.is-done{background:var(--done)}
 .donebox small{color:var(--muted);font-size:13px}
 .later{margin:0;padding:0 0 0 18px;color:var(--muted);font-size:14.5px}
 .later li+li{margin-top:4px}
@@ -91,7 +94,37 @@ footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-si
 (function () {
   var data = JSON.parse(document.getElementById("focus-data").textContent);
   var app = document.getElementById("app");
-  var KEY = "one-thing-today:" + data.date;
+  var area = (data.area || "all").trim();
+  var KEY = "one-thing-today:" + data.date + ":" + area.toLowerCase();
+  var L = Object.assign({
+    one_thing: "Your one thing", why: "Why this", how: "How", start: "Start here",
+    done_when: "Done when", good_enough: "Good enough", can_wait: "Can wait",
+    mark_done: "Mark it done", marked_done: "Done. That's the 1%",
+    tell_claude: "Say \u201cdone\u201d in the chat too, so Claude learns.",
+    read_from: "Read from", not_available: "Not available"
+  }, data.labels || {});
+  document.documentElement.lang = data.lang || "en";
+  if (area !== "all") document.title = "One Thing Today · " + area;
+
+  // Storage: the artifact's own storage when this surface provides it, else the browser.
+  var store = {
+    get: function () {
+      if (data.done_storage !== "browser" && window.storage && typeof window.storage.get === "function") {
+        return Promise.resolve().then(function () { return window.storage.get(KEY); })
+          .then(function (r) { return r && typeof r === "object" ? r.value : r; })
+          .catch(function () { return store.localGet(); });
+      }
+      return Promise.resolve(store.localGet());
+    },
+    set: function (v) {
+      store.localSet(v);
+      if (data.done_storage !== "browser" && window.storage && typeof window.storage.set === "function") {
+        try { Promise.resolve(window.storage.set(KEY, v)).catch(function () {}); } catch (e) {}
+      }
+    },
+    localGet: function () { try { return localStorage.getItem(KEY); } catch (e) { return null; } },
+    localSet: function (v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
+  };
 
   function el(tag, cls, text) {
     var n = document.createElement(tag);
@@ -103,24 +136,25 @@ footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-si
 
   var when = new Date(data.date + "T12:00:00");
   var dateText = isNaN(when) ? data.date :
-    when.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+    when.toLocaleDateString(data.lang || undefined, { weekday: "long", month: "long", day: "numeric" });
 
   var top = add(app, el("div", "top"));
   add(top, el("span", "label", dateText));
-  add(top, el("span", "pct", "+1% today"));
+  add(top, el("span", "pct", "+1%"));
 
   var hero = add(app, el("header", "hero"));
-  add(hero, el("div", "label", "Your one thing"));
+  add(hero, el("div", "label", L.one_thing + (area !== "all" ? " · " + area : "")));
   var h1 = add(hero, el("h1", null, data.focus.replace(/[.!]$/, "")));
   add(h1, el("span", "dot", "."));
   if (data.yesterday && data.yesterday.focus) {
-    var words = { done: "done", partial: "partly done", not_done: "didn't happen", unknown: "no word yet" };
+    var words = { done: "done", partial: "partly done", not_done: "not this time", unknown: "" };
+    var w = words[data.yesterday.outcome] || "";
     add(hero, el("p", "yesterday",
-      "Yesterday: " + data.yesterday.focus + " (" + (words[data.yesterday.outcome] || "no word yet") + ")"));
+      (data.yesterday.day || "Yesterday") + ": " + data.yesterday.focus + (w ? " (" + w + ")" : "")));
   }
 
   var why = add(app, el("section"));
-  add(why, el("h2", "label", "Why this"));
+  add(why, el("h2", "label", L.why));
   add(why, el("p", "why", data.why));
   var ev = add(why, el("ul", "evidence"));
   (data.evidence || []).forEach(function (e) {
@@ -130,17 +164,17 @@ footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-si
   });
 
   var how = add(app, el("section"));
-  add(how, el("h2", "label", "How"));
+  add(how, el("h2", "label", L.how));
   var ol = add(how, el("ol", "steps"));
   (data.how || []).forEach(function (s, i) {
     var li = add(ol, el("li"));
     var body = add(li, el("div"));
-    if (i === 0) add(body, el("span", "start", "Start here"));
+    if (i === 0) add(body, el("span", "start", L.start));
     add(body, el("span", null, s.step));
     add(li, el("span", "min", s.minutes ? s.minutes + " min" : ""));
   });
   var lines = add(how, el("div", "lines"));
-  [["Done when", data.done_when], ["Good enough", data.good_enough]].forEach(function (pair) {
+  [[L.done_when, data.done_when], [L.good_enough, data.good_enough]].forEach(function (pair) {
     if (!pair[1]) return;
     var p = add(lines, el("p"));
     add(p, el("b", null, pair[0] + ": "));
@@ -148,35 +182,36 @@ footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-si
   });
 
   var box = add(how, el("div", "donebox"));
-  var btn = add(box, el("button", "donebtn"));
+  var btn = add(box, el("button", "donebtn", L.mark_done));
   btn.id = "done-toggle";
   btn.type = "button";
   var note = add(box, el("small", null, ""));
+  note.setAttribute("aria-live", "polite");
   var done = false;
-  try { done = localStorage.getItem(KEY) === "1"; } catch (e) {}
   function paint() {
-    btn.setAttribute("aria-pressed", done ? "true" : "false");
-    btn.textContent = done ? "Done. That's the 1%" : "Mark it done";
-    note.textContent = done ? "Tell Claude tomorrow, so it learns." : "Saved in this browser only.";
+    btn.textContent = done ? L.marked_done : L.mark_done;
+    btn.classList.toggle("is-done", done);
+    note.textContent = done ? L.tell_claude : "";
   }
   btn.addEventListener("click", function () {
     done = !done;
-    try { localStorage.setItem(KEY, done ? "1" : "0"); } catch (e) {}
+    store.set(done ? "1" : "0");
     paint();
   });
   paint();
+  store.get().then(function (v) { done = v === "1"; paint(); });
 
   if (data.not_today && data.not_today.length) {
     var later = add(app, el("section"));
-    add(later, el("h2", "label", "Can wait"));
+    add(later, el("h2", "label", L.can_wait));
     var ul = add(later, el("ul", "later"));
     data.not_today.forEach(function (t) { add(ul, el("li", null, t)); });
   }
 
   var foot = add(app, el("footer"));
-  add(foot, el("span", null, "Read from: " + (data.sources_checked || []).join(" · ")));
+  add(foot, el("span", null, L.read_from + ": " + (data.sources_checked || []).join(" · ")));
   if (data.sources_missing && data.sources_missing.length) {
-    add(foot, el("span", null, "Not available: " + data.sources_missing.join(" · ")));
+    add(foot, el("span", null, L.not_available + ": " + data.sources_missing.join(" · ")));
   }
 })();
 </script>

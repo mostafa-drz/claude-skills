@@ -18,6 +18,9 @@ from pathlib import Path
 
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 OUTCOMES = ("done", "partial", "not_done", "unknown")
+STORAGE = ("artifact", "browser")
+LABEL_KEYS = ("one_thing", "why", "how", "start", "done_when", "good_enough", "can_wait",
+              "mark_done", "marked_done", "tell_claude", "read_from", "not_available")
 LIMITS = {"focus": 90, "why": 320, "done_when": 160, "good_enough": 160}
 
 
@@ -103,8 +106,33 @@ def main(path):
     if y is not None:
         if not isinstance(y, dict) or not text(y.get("focus")):
             errors.append("yesterday: when present, needs a focus")
-        elif y.get("outcome") not in OUTCOMES:
-            errors.append(f"yesterday.outcome: one of {', '.join(OUTCOMES)}. Use unknown unless the user said")
+        else:
+            if y.get("outcome") not in OUTCOMES:
+                errors.append(f"yesterday.outcome: one of {', '.join(OUTCOMES)}. Use unknown unless the user said")
+            if "day" in y and not text(y.get("day")):
+                errors.append("yesterday.day: when present, the day it was for ('Yesterday', 'Friday')")
+
+    area = doc.get("area", "all")
+    if not text(area) or len(text(area)) > 24:
+        errors.append("area: optional, 1-24 chars (work, personal, health...), default 'all'")
+
+    if doc.get("done_storage", "artifact") not in STORAGE:
+        errors.append(f"done_storage: one of {', '.join(STORAGE)}")
+
+    lang = doc.get("lang", "en")
+    if not re.match(r"^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$", text(lang)):
+        errors.append("lang: a language tag such as en, es, fa, pt-BR")
+    labels = doc.get("labels", {})
+    if not isinstance(labels, dict):
+        errors.append("labels: optional object of heading overrides")
+    else:
+        for k, v in labels.items():
+            if k not in LABEL_KEYS:
+                errors.append(f"labels.{k}: unknown key; allowed: {', '.join(LABEL_KEYS)}")
+            elif not text(v):
+                errors.append(f"labels.{k}: must be non-empty text")
+        if text(lang) and not text(lang).startswith("en") and not labels:
+            warnings.append("labels: page headings will be English while lang is not; add labels")
 
     for w in warnings:
         print("WARNING:", w)
