@@ -178,11 +178,14 @@ Checked locally:
   It warns on a focus that joins two things, and on non-English pages with no labels.
 - **Page.** Screenshotted in dark mode (work) and light mode (personal). A hostile focus
   (`</script><img onerror=…>`) is escaped by the renderer (`--data` and full-file modes) and set with `textContent`.
-- **Done state.** It survives a reload with browser storage. Each save is timestamped and
-  the newest copy wins, tested with a stand-in `window.storage`:
+- **Done state.** It survives a reload with browser storage. Each save is timestamped (never
+  earlier than any copy already seen), writes run in order, and the newest copy wins, tested with a stand-in `window.storage`:
   - a click during a slow storage read stays done;
   - after a failed artifact write and a reload, the newer browser copy wins;
   - a newer value from another device wins;
+  - a device whose clock runs an hour ahead can't undo a later change made here;
+  - a click before the first read, and rapid toggles with writes finishing out of order,
+    both end on the last state;
   - the page still works when storage throws, or doesn't exist.
 - **Accessibility.** The focus ring uses `--ink` (3:1 or better in both themes), and the
   done-state text meets 4.5:1.

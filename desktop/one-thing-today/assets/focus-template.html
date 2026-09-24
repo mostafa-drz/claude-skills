@@ -110,9 +110,12 @@ footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-si
 
   // Storage: the artifact's own storage when this surface provides it, and always the
   // browser too. Each save is "0|1:<timestamp>", and a read takes the newest copy, so a
-  // failed artifact write can't hide a newer browser save.
+  // failed artifact write can't hide a newer browser save. Timestamps never go backwards
+  // from what this page has seen (a device with a fast clock can't win by skew), and
+  // artifact writes run one at a time, each writing the latest value.
   var useArtifact = data.done_storage !== "browser" && window.storage &&
     typeof window.storage.get === "function" && typeof window.storage.set === "function";
+  var clock = 0, want = false, latest = null, writing = Promise.resolve();
   function parse(v) {
     var m = /^([01]):(\d+)$/.exec(v == null ? "" : String(v));
     return m ? { done: m[1] === "1", t: +m[2] } : null;
@@ -120,21 +123,35 @@ footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-si
   var store = {
     get: function () {
       var local = parse(store.localGet());
+      if (local) clock = Math.max(clock, local.t);
       if (!useArtifact) return Promise.resolve(local);
-      return Promise.resolve().then(function () { return window.storage.get(KEY); })
+      var read = Promise.resolve().then(function () { return window.storage.get(KEY); })
         .then(function (r) { return parse(r && typeof r === "object" ? r.value : r); },
               function () { return null; })
         .then(function (remote) {
-          if (!remote) return local;
-          if (!local) return remote;
-          return remote.t >= local.t ? remote : local;
+          var best = !remote ? local : !local ? remote : remote.t >= local.t ? remote : local;
+          if (best) clock = Math.max(clock, best.t);
+          return best;
         });
+      // Writes wait for this read, so their timestamps are stamped after every copy is seen.
+      writing = read.then(function () {}, function () {});
+      return read;
+    },
+    stamp: function () {
+      clock = Math.max(Date.now(), clock + 1);
+      latest = (want ? "1" : "0") + ":" + clock;
+      store.localSet(latest);
     },
     set: function (done) {
-      var v = (done ? "1" : "0") + ":" + Date.now();
-      store.localSet(v);
+      want = done;
+      store.stamp();
       if (useArtifact) {
-        try { Promise.resolve(window.storage.set(KEY, v)).catch(function () {}); } catch (e) {}
+        writing = writing.then(function () {
+          store.stamp();
+          var v = latest;
+          return Promise.resolve().then(function () { return window.storage.set(KEY, v); })
+            .catch(function () {});
+        });
       }
     },
     localGet: function () { try { return localStorage.getItem(KEY); } catch (e) { return null; } },
