@@ -100,9 +100,10 @@ by what the user said matters in this area, and discount busywork.
   where perfectionism gets cut. **Not today** lists up to three tempting things from the
   same area that can wait.
 - **An off day is a valid answer.** On a weekend, a holiday or a calendar out-of-office
-  day, when the area is `all` or `work`, or when nothing is pressing, say so: "Nothing
-  needs you today." Then offer one small, optional thing that's good for the user, for
-  example a personal goal or a walk.
+  day, or when nothing is pressing, say so, and **stay in the run's area**. A `work` run
+  says "No work needs you today", with a rest focus such as "Take the day off", and
+  nothing personal. Only an `all` run may offer one small, optional personal step, such as
+  a goal or a walk.
 
 **Privacy.** Quote a subject line, not an email body. A health *goal* or *task* is fine
 ("book the physio follow-up", "run three times a week"). Diagnoses, results,
@@ -177,8 +178,11 @@ available, on paid plans. Where memory is on, a cloud run uses it too
    - any saved settings that differ from the defaults, such as "Skip Slack", so the run
      keeps them even without memory
 
-   **Offer a pair** when the user has more than one area: *Weekdays 07:30, area: work* and
-   *Weekends 09:00, area: personal*. Name them "One thing today · work" and "… · personal".
+   **Offer a pair** when the user has more than one area: *weekdays 07:30, area: work*, and
+   *daily 09:00, area: personal, on Saturday and Sunday only*. There's no weekends
+   frequency (the options are hourly, daily, weekly, weekdays or manual), so the personal
+   task's instruction starts "On Saturday and Sunday only: … On other days, reply 'Not
+   today' and stop." Name them "One thing today · work" and "… · personal".
 2. **Create it once the user agrees**, using the scheduling this surface offers from chat.
    Otherwise, point to the **Scheduled** section in the sidebar (in Cowork, if the app
    still shows it separately). There, **New task → Create with Claude** or **Set up
@@ -235,7 +239,7 @@ default for everyone, edit this list, re-zip and re-upload.
 - done storage: `artifact` (the artifact's own storage), falling back to `browser`
 - ask about the last focus: yes, in the closing lines (never in a scheduled run)
 - tone: calm, direct, a little warm
-- schedule: weekdays 07:30, area work; weekends 09:00, area personal (offered as a pair)
+- schedule: weekdays 07:30, area work; daily 09:00, area personal, Sat–Sun only (a pair)
 - language: the conversation's
 
 These are fixed, not settings, and the validator enforces them:

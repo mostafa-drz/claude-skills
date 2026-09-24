@@ -108,19 +108,32 @@ footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-si
   document.documentElement.lang = data.lang || "en";
   if (area !== "all") document.title = "One Thing Today · " + area;
 
-  // Storage: the artifact's own storage when this surface provides it, else the browser.
+  // Storage: the artifact's own storage when this surface provides it, and always the
+  // browser too. Each save is "0|1:<timestamp>", and a read takes the newest copy, so a
+  // failed artifact write can't hide a newer browser save.
+  var useArtifact = data.done_storage !== "browser" && window.storage &&
+    typeof window.storage.get === "function" && typeof window.storage.set === "function";
+  function parse(v) {
+    var m = /^([01]):(\d+)$/.exec(v == null ? "" : String(v));
+    return m ? { done: m[1] === "1", t: +m[2] } : null;
+  }
   var store = {
     get: function () {
-      if (data.done_storage !== "browser" && window.storage && typeof window.storage.get === "function") {
-        return Promise.resolve().then(function () { return window.storage.get(KEY); })
-          .then(function (r) { return r && typeof r === "object" ? r.value : r; })
-          .catch(function () { return store.localGet(); });
-      }
-      return Promise.resolve(store.localGet());
+      var local = parse(store.localGet());
+      if (!useArtifact) return Promise.resolve(local);
+      return Promise.resolve().then(function () { return window.storage.get(KEY); })
+        .then(function (r) { return parse(r && typeof r === "object" ? r.value : r); },
+              function () { return null; })
+        .then(function (remote) {
+          if (!remote) return local;
+          if (!local) return remote;
+          return remote.t >= local.t ? remote : local;
+        });
     },
-    set: function (v) {
+    set: function (done) {
+      var v = (done ? "1" : "0") + ":" + Date.now();
       store.localSet(v);
-      if (data.done_storage !== "browser" && window.storage && typeof window.storage.set === "function") {
+      if (useArtifact) {
         try { Promise.resolve(window.storage.set(KEY, v)).catch(function () {}); } catch (e) {}
       }
     },
@@ -189,7 +202,7 @@ footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-si
   btn.type = "button";
   var note = add(box, el("small", null, ""));
   note.setAttribute("aria-live", "polite");
-  var done = false;
+  var done = false, touched = false;
   function paint() {
     btn.textContent = done ? L.marked_done : L.mark_done;
     btn.classList.toggle("is-done", done);
@@ -197,11 +210,13 @@ footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-si
   }
   btn.addEventListener("click", function () {
     done = !done;
-    store.set(done ? "1" : "0");
+    touched = true;
+    store.set(done);
     paint();
   });
   paint();
-  store.get().then(function (v) { done = v === "1"; paint(); });
+  // A read that finishes after the user has clicked must not undo the click.
+  store.get().then(function (saved) { if (saved && !touched) { done = saved.done; paint(); } });
 
   if (data.not_today && data.not_today.length) {
     var later = add(app, el("section"));

@@ -64,9 +64,11 @@ most important stated goal for the area.
 **An event isn't the one thing.** Preparing for a meeting, booking an appointment, or
 getting to one can be.
 
-**Off days.** On a weekend, a holiday or an out-of-office day, a run for `all` or `work`
-starts from "Nothing needs you today". The focus becomes a rest or a small personal step,
-with the calendar entry (or the day) as evidence. Don't dig up work to fill it.
+**Off days.** On a weekend, a holiday or an out-of-office day, a `work` or `all` run
+starts from "Nothing needs you today", with the calendar entry (or the day) as evidence.
+Don't dig up work to fill it. **Stay in the area**: a `work` run's focus is a rest ("Take
+the day off"), never a personal task labelled as work. Only an `all` run may suggest a
+small personal step.
 
 ## Write it
 

@@ -68,7 +68,7 @@
     "query": "Do this for me every morning.",
     "expected_behavior": [
       "Proposes weekdays 07:30 with approval mode auto-approve and an instruction naming the area",
-      "Offers a weekend personal pair when the user has more than one area",
+      "Offers a pair when the user has more than one area: the personal task runs daily with an instruction limited to Saturday and Sunday, since no weekends frequency exists",
       "Writes non-default saved settings into the instruction",
       "Creates it only after a yes, or points to Scheduled → New task",
       "Never says it is scheduled without seeing it created"
@@ -112,7 +112,8 @@
     "query": "one thing today",
     "expected_behavior": [
       "Opens with 'Nothing needs you today' and does not dig up work",
-      "Offers one small optional thing that's good for the user, citing the out-of-office event"
+      "For area all, offers one small optional personal step, citing the out-of-office event",
+      "For area work, the focus is a rest ('Take the day off') and nothing personal appears on a work-labelled page"
     ]
   },
   {
