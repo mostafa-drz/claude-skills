@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-22",
+  "updated": "2026-09-24",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -717,6 +717,25 @@
       "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/make-it-runbook/icon.svg",
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/make-it-runbook/SKILL.md",
       "sideEffects": false
+    },
+    {
+      "name": "one-thing-today",
+      "platform": "desktop",
+      "description": "Picks the one thing to focus on today, and says why and how. Reads every connected source (calendar, email, chat, docs, tickets, tasks) plus Claude's memory and past chats, then chooses a single focus: the move that unblocks others, beats a real deadline, or compounds. Renders it as a bold, minimal page with the focus, cited reasons and at most three small steps. The first step is under 25 minutes. Learns from each day's outcome through memory, and can be set up as a daily scheduled task. Against perfectionism: it says what \"good enough\" is and what can wait. Use when the user says \"one thing today\", \"/one-thing-today\", \"what should I focus on today\", \"what's my one thing\", \"I'm overwhelmed, where do I start\", or wants a daily focus routine. Not for a full day plan, a to-do list or a schedule.",
+      "trigger": "Asking what to focus on today, feeling overwhelmed and wanting one place to start, or setting up a daily focus routine.",
+      "tags": [
+        "focus",
+        "productivity",
+        "prioritization",
+        "anti-perfectionism",
+        "daily-routine",
+        "memory",
+        "scheduled-task",
+        "desktop"
+      ],
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/one-thing-today/icon.svg",
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/one-thing-today/SKILL.md",
+      "sideEffects": true
     },
     {
       "name": "remarkable-memory",

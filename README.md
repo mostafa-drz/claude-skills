@@ -75,7 +75,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/workday-summary`](code/workday-summary/SKILL.md) | Summarizes work done today into timesheet-ready bullet points. | Yes |
 | [`/workflow-advisor`](code/workflow-advisor/SKILL.md) | Analyzes recent Claude Code conversations and local Claude state (skills, settings, memory files, CLAUDE.md), researches the latest Claude Code features and best practices online, and suggests one workflow improvement at a time with reasoning and a concrete action item. | Yes |
 
-### Claude Desktop (7)
+### Claude Desktop (8)
 
 | Skill | What it does | Side effects |
 |---|---|---|
@@ -83,6 +83,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. | Yes |
 | <img src="desktop/make-it-itinerary/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/make-it-itinerary`](desktop/make-it-itinerary/SKILL.md) | Turns an existing travel conversation into a day-by-day trip itinerary. | No |
 | <img src="desktop/make-it-runbook/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/make-it-runbook`](desktop/make-it-runbook/SKILL.md) | Turns the current conversation into a trackable, phase-by-phase runbook: a page with a checkbox per step, a progress bar, amber bars for forced waits, notes for warnings, and copyable literal values (commands, DNS records, amounts). | No |
+| <img src="desktop/one-thing-today/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/one-thing-today`](desktop/one-thing-today/SKILL.md) | Picks the one thing to focus on today, and says why and how. | Yes |
 | <img src="desktop/remarkable-memory/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/remarkable-memory`](desktop/remarkable-memory/SKILL.md) | Turns handwritten reMarkable notes into a queryable semantic memory, on Claude Desktop. | Yes |
 | [`/research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. | No |
 | <img src="desktop/take-care-of-my-plant/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/take-care-of-my-plant`](desktop/take-care-of-my-plant/SKILL.md) | Identifies a plant from a photo, builds a care profile, and keeps its watering, feeding and repotting history in a store the user already has — Filesystem, Google Drive, or Notion. | Yes |
