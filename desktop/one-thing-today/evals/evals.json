@@ -1,8 +1,10 @@
 [
   {
     "name": "busy-morning",
-    "skills": ["one-thing-today"],
-    "conversation": "(fresh chat; Calendar, Gmail, Drive and Linear connected; Slack not connected. Calendar: pricing review with a colleague Friday 10:00. Gmail: that colleague asked for a draft on Monday, unanswered. Drive: pricing proposal edited Sunday. Linear: two small bugs due next week. Inbox has 40 unread newsletters.)",
+    "skills": [
+      "one-thing-today"
+    ],
+    "conversation": "(fresh chat; Calendar, Gmail (work), Drive and Linear connected; Slack not connected. Calendar: pricing review with a colleague Friday 10:00. Gmail: that colleague asked for a draft on Monday, unanswered. Drive: pricing proposal edited Sunday. Linear: two small bugs due next week. Inbox has 40 unread newsletters.)",
     "query": "What's my one thing today?",
     "reference_output": "example-focus.json",
     "expected_behavior": [
@@ -12,24 +14,28 @@
       "First step is 25 minutes or less and names the document to open",
       "Puts inbox cleanup or similar busywork in not_today",
       "focus.json passes validate_focus.py and the page is shown as an artifact",
-      "Closes in two lines: sources read, and the runner-up"
+      "Closes in two lines: sources read and the runner-up; asks about the last focus in the same message, not before the page"
     ]
   },
   {
     "name": "close-yesterday",
-    "skills": ["one-thing-today"],
-    "conversation": "(memory holds 'One thing 2026-09-23: book the offsite venue', outcome unknown)",
+    "skills": [
+      "one-thing-today"
+    ],
+    "conversation": "(Monday. Memory holds 'One thing 2026-09-25 [work]: book the offsite venue', outcome unknown)",
     "query": "one thing today",
     "expected_behavior": [
-      "Asks exactly one question about yesterday's focus before gathering, with done / partly / no",
-      "Does not moralise about a 'no'",
-      "Records the answer as yesterday.outcome and shows it on the page",
-      "Saves today's focus and yesterday's outcome to memory and says so in one line"
+      "Does not block on a question before gathering; shows the page first",
+      "Labels the last focus 'Friday', not 'Yesterday'",
+      "Asks once, in the closing lines: done / partly / not this time, with no moralising",
+      "Saves today's focus with its [work] tag, and the outcome once answered, and says so in one line"
     ]
   },
   {
     "name": "user-overrules",
-    "skills": ["one-thing-today"],
+    "skills": [
+      "one-thing-today"
+    ],
     "conversation": "(the busy-morning page was just shown)",
     "query": "No, the board deck matters more this week than pricing.",
     "expected_behavior": [
@@ -41,7 +47,9 @@
   },
   {
     "name": "nothing-connected",
-    "skills": ["one-thing-today"],
+    "skills": [
+      "one-thing-today"
+    ],
     "conversation": "(no connectors, memory off)",
     "query": "I'm overwhelmed, where do I start today?",
     "expected_behavior": [
@@ -53,18 +61,78 @@
   },
   {
     "name": "schedule-it",
-    "skills": ["one-thing-today"],
+    "skills": [
+      "one-thing-today"
+    ],
     "conversation": "(the page was just shown)",
     "query": "Do this for me every morning.",
     "expected_behavior": [
-      "Proposes a Cowork scheduled task with defaults: weekdays, 07:30, the instruction not to ask about yesterday",
-      "Creates it only after a yes, or gives the manual Scheduled → New task path",
+      "Proposes weekdays 07:30 with approval mode auto-approve and an instruction naming the area",
+      "Offers a weekend personal pair when the user has more than one area",
+      "Writes non-default saved settings into the instruction",
+      "Creates it only after a yes, or points to Scheduled → New task",
       "Never says it is scheduled without seeing it created"
     ]
   },
   {
+    "name": "personal-on-saturday",
+    "skills": [
+      "one-thing-today"
+    ],
+    "conversation": "(Saturday. Memory: 'one-thing-today settings: Sat–Sun: personal; areas: work = Gmail (work), Slack, Linear; personal = Calendar (family), Todoist (Personal)'. Work Gmail has an urgent-looking thread from a client.)",
+    "query": "What's my one thing today?",
+    "reference_output": "example-focus-personal.json",
+    "expected_behavior": [
+      "Resolves the area to personal from the saved day rule",
+      "Does not read work Gmail, Slack or Linear, and none of them appear on the page, in not_today or in the footer",
+      "Picks a personal focus such as calling a family member, with evidence from personal sources, memory or past chats",
+      "The page header shows 'Your one thing · personal'"
+    ]
+  },
+  {
+    "name": "two-routines",
+    "skills": [
+      "one-thing-today"
+    ],
+    "conversation": "(Memory: 'One thing 2026-09-24 [work]: send pricing draft', 'One thing 2026-09-24 [personal]: call mum'. Scheduled instruction: 'Run one-thing-today for today, area: personal'.)",
+    "query": "(scheduled run, 2026-09-25)",
+    "expected_behavior": [
+      "The last focus shown is 'call mum', never the work focus",
+      "Does not ask any question",
+      "Leads with a five-line text version, then the page",
+      "Applies only [personal] and [all] memory lines"
+    ]
+  },
+  {
+    "name": "off-day",
+    "skills": [
+      "one-thing-today"
+    ],
+    "conversation": "(Calendar shows 'Out of office' all day; area all)",
+    "query": "one thing today",
+    "expected_behavior": [
+      "Opens with 'Nothing needs you today' and does not dig up work",
+      "Offers one small optional thing that's good for the user, citing the out-of-office event"
+    ]
+  },
+  {
+    "name": "reset-keeps-history",
+    "skills": [
+      "one-thing-today"
+    ],
+    "conversation": "(Memory holds settings plus three weeks of [work] runs, corrections and goals)",
+    "query": "reset",
+    "expected_behavior": [
+      "Removes only the 'one-thing-today settings:' line after a yes",
+      "States that history, outcomes, corrections and goals stay",
+      "Mentions 'forget my one-thing history' as the separate way to clear history"
+    ]
+  },
+  {
     "name": "not-a-plan",
-    "skills": ["one-thing-today"],
+    "skills": [
+      "one-thing-today"
+    ],
     "conversation": [],
     "query": "Can you block out my whole calendar for tomorrow with tasks?",
     "expected_behavior": [

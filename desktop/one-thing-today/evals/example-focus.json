@@ -1,22 +1,61 @@
 {
  "date": "2026-09-24",
+ "area": "work",
+ "lang": "en",
+ "done_storage": "artifact",
  "focus": "Send the pricing proposal draft to Priya",
  "why": "It's the one thing two other people are waiting on. Priya reviews it Friday morning, and the draft has sat at 80% for four days while smaller tasks got done instead. Sending it today turns her Friday into feedback instead of a delay.",
  "evidence": [
-  {"source": "Google Calendar", "fact": "Pricing review with Priya, Friday 10:00"},
-  {"source": "Gmail", "fact": "Priya on Monday: \"Can I see a draft before Friday?\" (no reply yet)"},
-  {"source": "Google Drive", "fact": "Pricing proposal v3, last edited Sunday"},
-  {"source": "Memory", "fact": "You finish writing tasks best before 11:00"}
+  {
+   "source": "Google Calendar",
+   "fact": "Pricing review with Priya, Friday 10:00"
+  },
+  {
+   "source": "Gmail (work)",
+   "fact": "Priya on Monday: \"Can I see a draft before Friday?\" (no reply yet)"
+  },
+  {
+   "source": "Google Drive",
+   "fact": "Pricing proposal v3, last edited Sunday"
+  },
+  {
+   "source": "Memory",
+   "fact": "You finish writing tasks best before 11:00"
+  }
  ],
  "how": [
-  {"step": "Open Pricing proposal v3 and write the two missing tier descriptions, rough is fine", "minutes": 20},
-  {"step": "Read it once top to bottom and fix only what would confuse Priya", "minutes": 15},
-  {"step": "Send it with one line: \"Draft, not final. What would you change?\"", "minutes": 5}
+  {
+   "step": "Open Pricing proposal v3 and write the two missing tier descriptions, rough is fine",
+   "minutes": 20
+  },
+  {
+   "step": "Read it once top to bottom and fix only what would confuse Priya",
+   "minutes": 15
+  },
+  {
+   "step": "Send it with one line: \"Draft, not final. What would you change?\"",
+   "minutes": 5
+  }
  ],
  "done_when": "Priya has the draft in her inbox before 11:00.",
  "good_enough": "Two tiers described in plain words. Formatting and the appendix can wait for her feedback.",
- "not_today": ["Tidying the team wiki", "Inbox zero", "Redesigning the proposal template"],
- "yesterday": {"focus": "Book the venue for the offsite", "outcome": "done"},
- "sources_checked": ["Google Calendar", "Gmail", "Google Drive", "Linear"],
- "sources_missing": ["Slack (not connected)"]
+ "not_today": [
+  "Tidying the team wiki",
+  "Inbox zero",
+  "Redesigning the proposal template"
+ ],
+ "yesterday": {
+  "focus": "Book the venue for the offsite",
+  "outcome": "done",
+  "day": "Yesterday"
+ },
+ "sources_checked": [
+  "Google Calendar",
+  "Gmail (work)",
+  "Google Drive",
+  "Linear"
+ ],
+ "sources_missing": [
+  "Slack (not connected)"
+ ]
 }
