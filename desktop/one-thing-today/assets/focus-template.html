@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One Thing Today</title>
+<!--
+  one-thing-today page template.
+  Fill it by replacing ONLY the JSON inside <script id="focus-data"> with a validated
+  focus.json (scripts/render_page.py does this). Everything renders from that data with
+  textContent, so nothing in the data is ever parsed as HTML. Fonts are the only external
+  request, with system fallbacks: the page works offline.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Instrument+Sans:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#f4f5f7; --surface:#ffffff; --ink:#101218; --muted:#636876; --line:#e1e3e9;
+  --accent:#2f47ff; --accent-soft:#e7eaff; --done:#1f8a5b;
+  --display:"Bricolage Grotesque",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --body:"Instrument Sans",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1015; --surface:#161922; --ink:#f1f2f5; --muted:#9398a6; --line:#262a35;
+    --accent:#8c9cff; --accent-soft:#1d2240; --done:#5fd29c; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1015; --surface:#161922; --ink:#f1f2f5; --muted:#9398a6; --line:#262a35;
+  --accent:#8c9cff; --accent-soft:#1d2240; --done:#5fd29c; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0 16px;padding-block:0 72px;background:var(--bg);color:var(--ink);
+  font:16px/1.6 var(--body);-webkit-text-size-adjust:100%}
+.wrap{max-width:680px;margin:0 auto}
+.label{font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:36px 0}
+.pct{font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid var(--accent);
+  border-radius:999px;padding:2px 10px;white-space:nowrap}
+.hero{padding-block:40px 36px;border-bottom:1px solid var(--line)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,8.2vw,60px);line-height:1.02;
+  letter-spacing:-.035em;margin:14px 0 0;text-wrap:balance}
+h1 .dot{color:var(--accent)}
+.yesterday{margin:18px 0 0;font-size:14px;color:var(--muted)}
+section{padding-block:30px 6px}
+section h2{margin:0 0 12px}
+.why{font-size:19px;line-height:1.5;margin:0;max-width:60ch;text-wrap:pretty}
+.evidence{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:8px}
+.evidence li{display:flex;gap:12px;align-items:baseline;font-size:14.5px;color:var(--muted)}
+.evidence .src{flex:none;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--ink);
+  background:var(--accent-soft);border-radius:4px;padding:1px 7px}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s;display:grid;gap:10px}
+.steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:baseline;
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.steps li::before{content:counter(s);font-family:var(--display);font-weight:800;font-size:22px;
+  line-height:1;color:var(--muted)}
+.steps li:first-child{border-color:var(--accent)}
+.steps li:first-child::before{color:var(--accent)}
+.steps .min{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.start{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:2px}
+.lines{display:grid;gap:14px;margin-top:22px}
+.lines p{margin:0;font-size:15px}
+.lines b{font-weight:600}
+.donebox{margin-top:34px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.donebtn{font:600 15px var(--body);color:var(--bg);background:var(--accent);border:0;border-radius:999px;
+  padding:12px 22px;cursor:pointer;transition:transform .15s}
+.donebtn:hover{transform:translateY(-1px)}
+.donebtn:focus-visible{outline:3px solid var(--accent-soft);outline-offset:2px}
+.donebtn[aria-pressed="true"]{background:var(--done)}
+.donebox small{color:var(--muted);font-size:13px}
+.later{margin:0;padding:0 0 0 18px;color:var(--muted);font-size:14.5px}
+.later li+li{margin-top:4px}
+footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);
+  display:grid;gap:4px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+@media (max-width:420px){.steps li{grid-template-columns:28px 1fr}.steps .min{grid-column:2}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script type="application/json" id="focus-data">
+{"date":"2026-09-24","focus":"Example focus","why":"Example why.","evidence":[{"source":"Google Calendar","fact":"Example"}],"how":[{"step":"Example step","minutes":15}],"done_when":"Example","good_enough":"Example","sources_checked":["Google Calendar"]}
+</script>
+<script>
+(function () {
+  var data = JSON.parse(document.getElementById("focus-data").textContent);
+  var app = document.getElementById("app");
+  var KEY = "one-thing-today:" + data.date;
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function add(parent, child) { parent.appendChild(child); return child; }
+
+  var when = new Date(data.date + "T12:00:00");
+  var dateText = isNaN(when) ? data.date :
+    when.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+
+  var top = add(app, el("div", "top"));
+  add(top, el("span", "label", dateText));
+  add(top, el("span", "pct", "+1% today"));
+
+  var hero = add(app, el("header", "hero"));
+  add(hero, el("div", "label", "Your one thing"));
+  var h1 = add(hero, el("h1", null, data.focus.replace(/[.!]$/, "")));
+  add(h1, el("span", "dot", "."));
+  if (data.yesterday && data.yesterday.focus) {
+    var words = { done: "done", partial: "partly done", not_done: "didn't happen", unknown: "no word yet" };
+    add(hero, el("p", "yesterday",
+      "Yesterday: " + data.yesterday.focus + " (" + (words[data.yesterday.outcome] || "no word yet") + ")"));
+  }
+
+  var why = add(app, el("section"));
+  add(why, el("h2", "label", "Why this"));
+  add(why, el("p", "why", data.why));
+  var ev = add(why, el("ul", "evidence"));
+  (data.evidence || []).forEach(function (e) {
+    var li = add(ev, el("li"));
+    add(li, el("span", "src", e.source));
+    add(li, el("span", null, e.fact));
+  });
+
+  var how = add(app, el("section"));
+  add(how, el("h2", "label", "How"));
+  var ol = add(how, el("ol", "steps"));
+  (data.how || []).forEach(function (s, i) {
+    var li = add(ol, el("li"));
+    var body = add(li, el("div"));
+    if (i === 0) add(body, el("span", "start", "Start here"));
+    add(body, el("span", null, s.step));
+    add(li, el("span", "min", s.minutes ? s.minutes + " min" : ""));
+  });
+  var lines = add(how, el("div", "lines"));
+  [["Done when", data.done_when], ["Good enough", data.good_enough]].forEach(function (pair) {
+    if (!pair[1]) return;
+    var p = add(lines, el("p"));
+    add(p, el("b", null, pair[0] + ": "));
+    p.appendChild(document.createTextNode(pair[1]));
+  });
+
+  var box = add(how, el("div", "donebox"));
+  var btn = add(box, el("button", "donebtn"));
+  btn.id = "done-toggle";
+  btn.type = "button";
+  var note = add(box, el("small", null, ""));
+  var done = false;
+  try { done = localStorage.getItem(KEY) === "1"; } catch (e) {}
+  function paint() {
+    btn.setAttribute("aria-pressed", done ? "true" : "false");
+    btn.textContent = done ? "Done. That's the 1%" : "Mark it done";
+    note.textContent = done ? "Tell Claude tomorrow, so it learns." : "Saved in this browser only.";
+  }
+  btn.addEventListener("click", function () {
+    done = !done;
+    try { localStorage.setItem(KEY, done ? "1" : "0"); } catch (e) {}
+    paint();
+  });
+  paint();
+
+  if (data.not_today && data.not_today.length) {
+    var later = add(app, el("section"));
+    add(later, el("h2", "label", "Can wait"));
+    var ul = add(later, el("ul", "later"));
+    data.not_today.forEach(function (t) { add(ul, el("li", null, t)); });
+  }
+
+  var foot = add(app, el("footer"));
+  add(foot, el("span", null, "Read from: " + (data.sources_checked || []).join(" · ")));
+  if (data.sources_missing && data.sources_missing.length) {
+    add(foot, el("span", null, "Not available: " + data.sources_missing.join(" · ")));
+  }
+})();
+</script>
+</body>
+</html>
