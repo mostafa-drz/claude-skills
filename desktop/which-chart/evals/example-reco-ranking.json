@@ -1,0 +1,424 @@
+{
+ "key": "support-tickets-by-channel",
+ "title": "Support Tickets by Channel",
+ "lang": "en",
+ "brief": {
+  "use_case": "Support operations dashboard",
+  "question": "Which channels carry the most tickets, and is the mix shifting to chat?",
+  "audience": "Support leads, weekly review",
+  "surface": "Full panel",
+  "assumed": []
+ },
+ "data": {
+  "source": "description",
+  "illustrative": true,
+  "rows": [
+   {
+    "month": "2026-04",
+    "channel": "Email",
+    "tickets": 420
+   },
+   {
+    "month": "2026-05",
+    "channel": "Email",
+    "tickets": 400
+   },
+   {
+    "month": "2026-06",
+    "channel": "Email",
+    "tickets": 380
+   },
+   {
+    "month": "2026-07",
+    "channel": "Email",
+    "tickets": 360
+   },
+   {
+    "month": "2026-08",
+    "channel": "Email",
+    "tickets": 350
+   },
+   {
+    "month": "2026-09",
+    "channel": "Email",
+    "tickets": 330
+   },
+   {
+    "month": "2026-04",
+    "channel": "Chat",
+    "tickets": 300
+   },
+   {
+    "month": "2026-05",
+    "channel": "Chat",
+    "tickets": 340
+   },
+   {
+    "month": "2026-06",
+    "channel": "Chat",
+    "tickets": 380
+   },
+   {
+    "month": "2026-07",
+    "channel": "Chat",
+    "tickets": 430
+   },
+   {
+    "month": "2026-08",
+    "channel": "Chat",
+    "tickets": 470
+   },
+   {
+    "month": "2026-09",
+    "channel": "Chat",
+    "tickets": 520
+   },
+   {
+    "month": "2026-04",
+    "channel": "Phone",
+    "tickets": 210
+   },
+   {
+    "month": "2026-05",
+    "channel": "Phone",
+    "tickets": 200
+   },
+   {
+    "month": "2026-06",
+    "channel": "Phone",
+    "tickets": 190
+   },
+   {
+    "month": "2026-07",
+    "channel": "Phone",
+    "tickets": 185
+   },
+   {
+    "month": "2026-08",
+    "channel": "Phone",
+    "tickets": 170
+   },
+   {
+    "month": "2026-09",
+    "channel": "Phone",
+    "tickets": 160
+   },
+   {
+    "month": "2026-04",
+    "channel": "Social",
+    "tickets": 60
+   },
+   {
+    "month": "2026-05",
+    "channel": "Social",
+    "tickets": 75
+   },
+   {
+    "month": "2026-06",
+    "channel": "Social",
+    "tickets": 90
+   },
+   {
+    "month": "2026-07",
+    "channel": "Social",
+    "tickets": 100
+   },
+   {
+    "month": "2026-08",
+    "channel": "Social",
+    "tickets": 120
+   },
+   {
+    "month": "2026-09",
+    "channel": "Social",
+    "tickets": 140
+   },
+   {
+    "month": "2026-04",
+    "channel": "Community",
+    "tickets": 40
+   },
+   {
+    "month": "2026-05",
+    "channel": "Community",
+    "tickets": 45
+   },
+   {
+    "month": "2026-06",
+    "channel": "Community",
+    "tickets": 42
+   },
+   {
+    "month": "2026-07",
+    "channel": "Community",
+    "tickets": 50
+   },
+   {
+    "month": "2026-08",
+    "channel": "Community",
+    "tickets": 55
+   },
+   {
+    "month": "2026-09",
+    "channel": "Community",
+    "tickets": 60
+   }
+  ],
+  "fields": [
+   {
+    "name": "month",
+    "type": "temporal",
+    "role": "time"
+   },
+   {
+    "name": "channel",
+    "type": "nominal",
+    "role": "category",
+    "note": "5 channels"
+   },
+   {
+    "name": "tickets",
+    "type": "quantitative",
+    "role": "measure"
+   }
+  ],
+  "notes": [
+   "Illustrative: six months, one row per month per channel (30 rows), made up to show the forms."
+  ]
+ },
+ "relationships": [
+  "ranking",
+  "part-to-whole"
+ ],
+ "options": [
+  {
+   "id": "sorted-bar",
+   "rank": "pick",
+   "name": "Channels ranked by tickets",
+   "answers": "Which channels carry the most?",
+   "why": [
+    {
+     "text": "Length on a common scale, sorted, reads the ranking directly.",
+     "cites": [
+      1
+     ]
+    }
+   ],
+   "costs": [
+    "Totals only; the shift over time is invisible."
+   ],
+   "spec": {
+    "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+    "data": {
+     "name": "table"
+    },
+    "height": 180,
+    "mark": {
+     "type": "bar",
+     "color": "#2a78d6"
+    },
+    "encoding": {
+     "y": {
+      "field": "channel",
+      "type": "nominal",
+      "sort": "-x",
+      "title": null
+     },
+     "x": {
+      "aggregate": "sum",
+      "field": "tickets",
+      "type": "quantitative",
+      "title": "Tickets, last 6 months"
+     },
+     "tooltip": [
+      {
+       "field": "channel"
+      },
+      {
+       "aggregate": "sum",
+       "field": "tickets",
+       "title": "tickets",
+       "format": ","
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "normalized",
+   "rank": "alternative",
+   "name": "Channel share per month",
+   "answers": "Is the mix shifting?",
+   "choose_if": "the shift matters more than the ranking.",
+   "why": [
+    {
+     "text": "Proportional stacked columns show part-to-whole per month.",
+     "cites": [
+      2
+     ]
+    },
+    {
+     "text": "Put the channel you care about at the bottom, where it has a baseline.",
+     "judgement": true
+    }
+   ],
+   "costs": [
+    "Only the bottom band has a common baseline."
+   ],
+   "spec": {
+    "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+    "data": {
+     "name": "table"
+    },
+    "height": 220,
+    "mark": {
+     "type": "bar",
+     "stroke": "#fcfcfb",
+     "strokeWidth": 2
+    },
+    "encoding": {
+     "x": {
+      "field": "month",
+      "type": "ordinal",
+      "timeUnit": "utcyearmonth",
+      "title": null,
+      "axis": {
+       "format": "%b",
+       "labelAngle": 0
+      }
+     },
+     "y": {
+      "aggregate": "sum",
+      "field": "tickets",
+      "type": "quantitative",
+      "stack": "normalize",
+      "axis": {
+       "format": ".0%"
+      },
+      "title": null
+     },
+     "color": {
+      "field": "channel",
+      "type": "nominal",
+      "sort": [
+       "Chat",
+       "Email",
+       "Phone",
+       "Social",
+       "Community"
+      ],
+      "scale": {
+       "domain": [
+        "Chat",
+        "Email",
+        "Phone",
+        "Social",
+        "Community"
+       ],
+       "range": [
+        "#2a78d6",
+        "#eb6834",
+        "#1baf7a",
+        "#eda100",
+        "#e87ba4"
+       ]
+      },
+      "title": null
+     },
+     "order": {
+      "field": "channel"
+     },
+     "tooltip": [
+      {
+       "field": "channel"
+      },
+      {
+       "aggregate": "sum",
+       "field": "tickets",
+       "title": "tickets"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "multiples",
+   "rank": "alternative",
+   "name": "One small chart per channel",
+   "answers": "How is each channel trending?",
+   "choose_if": "each channel has an owner who wants their own trend.",
+   "why": [
+    {
+     "text": "Repeating one form on a shared scale keeps the comparison to position.",
+     "cites": [
+      1
+     ]
+    }
+   ],
+   "costs": [
+    "Needs width; five panels is the comfortable limit here."
+   ],
+   "spec": {
+    "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+    "data": {
+     "name": "table"
+    },
+    "facet": {
+     "field": "channel",
+     "type": "nominal",
+     "title": null
+    },
+    "spec": {
+     "height": 90,
+     "mark": {
+      "type": "line",
+      "color": "#2a78d6",
+      "point": true
+     },
+     "encoding": {
+      "x": {
+       "field": "month",
+       "type": "temporal",
+       "title": null,
+       "axis": {
+        "format": "%b",
+        "tickCount": 3,
+        "formatType": "utc"
+       },
+       "scale": {
+        "type": "utc"
+       }
+      },
+      "y": {
+       "field": "tickets",
+       "type": "quantitative",
+       "title": null
+      }
+     }
+    },
+    "columns": 3
+   }
+  }
+ ],
+ "avoid": [
+  {
+   "name": "A donut per month",
+   "why": "angles across circles can't be compared over time.",
+   "cites": [
+    2
+   ]
+  }
+ ],
+ "screenshots": [],
+ "build_notes": [],
+ "sources": [
+  {
+   "label": "Cleveland & McGill (1984), Graphical Perception, JASA",
+   "url": "https://doi.org/10.1080/01621459.1984.10478080"
+  },
+  {
+   "label": "Few (2011), Displays for Combining Time-Series and Part-to-Whole",
+   "url": "https://www.perceptualedge.com/articles/visual_business_intelligence/displays_for_combining_time-series_and_part-to-whole.pdf"
+  }
+ ]
+}

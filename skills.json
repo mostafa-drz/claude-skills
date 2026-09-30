@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-24",
+  "updated": "2026-09-30",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -787,6 +787,26 @@
       "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/take-care-of-my-plant/icon.svg",
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/take-care-of-my-plant/SKILL.md",
       "sideEffects": true
+    },
+    {
+      "name": "which-chart",
+      "platform": "desktop",
+      "description": "Recommends the right chart for your data and use case: reads data or screenshots, asks up to 3 questions, then gives one pick and alternatives drawn from your rows. For \"which chart should I use?\"",
+      "trigger": "Sharing data, screenshots or a use case and asking which chart or visualization fits, e.g. 'how should I show sentiment over time on my dashboard?'",
+      "tags": [
+        "data-visualization",
+        "charts",
+        "dashboard",
+        "chart-selection",
+        "vega-lite",
+        "sentiment",
+        "design",
+        "accessibility",
+        "desktop"
+      ],
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/which-chart/icon.svg",
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/which-chart/SKILL.md",
+      "sideEffects": false
     }
   ]
 }

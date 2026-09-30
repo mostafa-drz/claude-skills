@@ -75,7 +75,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/workday-summary`](code/workday-summary/SKILL.md) | Summarizes work done today into timesheet-ready bullet points. | Yes |
 | [`/workflow-advisor`](code/workflow-advisor/SKILL.md) | Analyzes recent Claude Code conversations and local Claude state (skills, settings, memory files, CLAUDE.md), researches the latest Claude Code features and best practices online, and suggests one workflow improvement at a time with reasoning and a concrete action item. | Yes |
 
-### Claude Desktop (8)
+### Claude Desktop (9)
 
 | Skill | What it does | Side effects |
 |---|---|---|
@@ -87,6 +87,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | <img src="desktop/remarkable-memory/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/remarkable-memory`](desktop/remarkable-memory/SKILL.md) | Turns handwritten reMarkable notes into a queryable semantic memory, on Claude Desktop. | Yes |
 | [`/research-assistant`](desktop/research-assistant/SKILL.md) | Researches a topic systematically and produces a structured briefing. | No |
 | <img src="desktop/take-care-of-my-plant/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/take-care-of-my-plant`](desktop/take-care-of-my-plant/SKILL.md) | Identifies a plant from a photo, builds a care profile, and keeps its watering, feeding and repotting history in a store the user already has — Filesystem, Google Drive, or Notion. | Yes |
+| <img src="desktop/which-chart/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/which-chart`](desktop/which-chart/SKILL.md) | Recommends the right chart for your data and use case: reads data or screenshots, asks up to 3 questions, then gives one pick and alternatives drawn from your rows. | No |
 
 <!-- END GENERATED CATALOG -->
 
