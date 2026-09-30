@@ -86,9 +86,12 @@ sentiment over time for my brand dashboard?"* and attach what you have.
   Where sources disagree (where neutral goes), the skill says so rather than hiding it.
 - **Vega-Lite for every option.** One declarative spec is both the preview and the handoff:
   portable, editable in the [online editor](https://vega.github.io/editor/), and easy to
-  port. Rendered with vega-embed (`actions: false`, SVG) from jsDelivr, pinned to major
-  versions as the [embed docs](https://vega.github.io/vega-lite/usage/embed.html) allow.
-  Without the CDN, each card shows its spec.
+  port. Rendered with vega-embed (`actions: false`, SVG) from jsDelivr, as in the
+  [embed docs](https://vega.github.io/vega-lite/usage/embed.html), but pinned to **exact
+  versions with Subresource Integrity** hashes
+  ([MDN](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity)):
+  the page holds your rows, so a changed CDN file fails to load instead of running.
+  Without the scripts, each card shows its spec.
 - **Colour**: warm/cool diverging poles with a grey middle
   ([ColorBrewer](https://colorbrewer2.org/learnmore/schemes_full.html)), no red vs green
   ([Okabe & Ito](https://jfly.uni-koeln.de/color/)), and never colour alone
@@ -132,13 +135,15 @@ which-chart/
 
 Checked locally:
 
-- Both examples pass the validator. It rejects zero or two picks, unknown fields, citations
+- Both examples pass the validator. It rejects zero or two picks, unknown fields, any
+  nested `data` other than the user's table, citations
   that don't resolve, unlabelled illustrative data, independent y scales on a layer, and
   pies over time. It warns on red-plus-green ranges and on date-only fields without UTC
   handling.
 - Pages rendered in headless Chrome: light and dark, 1200px, and 390px in an iframe (no
   horizontal scroll). Every chart type in the patterns was drawn: diverging columns, vconcat
   panels, net line, 100% stack, sorted bar, facets.
-- With the CDN blocked, each card shows its spec and a message instead of a chart.
+- With the CDN blocked, or a script whose hash doesn't match, each card shows its spec and
+  a message instead of a chart.
 - A hostile title, option name and data value (`</script>`, `<img onerror>`) render as
   text.

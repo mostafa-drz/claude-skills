@@ -10,8 +10,8 @@
   "assumed": []
  },
  "data": {
-  "source": "csv",
-  "illustrative": false,
+  "source": "description",
+  "illustrative": true,
   "rows": [
    {
     "month": "2026-04",
@@ -183,7 +183,7 @@
    }
   ],
   "notes": [
-   "Six months, one row per month per channel (30 rows)."
+   "Illustrative: six months, one row per month per channel (30 rows), made up to show the forms."
   ]
  },
  "relationships": [

@@ -121,10 +121,18 @@ def check_spec(errors, warnings, where, spec, field_names, allow_repeat):
         return
     if not any(k in spec for k in TOP_LEVEL_VIEWS):
         errors.append(f"{where}.spec: no mark, layer, facet, concat or repeat; it would draw nothing")
-    data = spec.get("data")
-    if data != {"name": "table"}:
+    if spec.get("data") != {"name": "table"}:
         errors.append(f'{where}.spec.data: must be {{"name": "table"}}, so the chart reads the '
                       f"rows in data.rows (the page supplies them); don't inline values")
+
+    # Any nested data source (a layer, facet or concat view, or a lookup's "from") must be the
+    # same table: a view with its own url or values would chart something other than the rows.
+    def nested_data(node, path):
+        if isinstance(node, dict) and "data" in node and path != "spec" and \
+                node["data"] not in (None, {"name": "table"}):
+            errors.append(f'{where}.{path}.data: nested views read the user\'s rows too; use '
+                          f'{{"name": "table"}} or remove it')
+    walk(spec, nested_data)
     if "datasets" in spec:
         errors.append(f"{where}.spec.datasets: remove it; the page adds the rows")
     if "$schema" not in spec:
@@ -220,15 +228,15 @@ def main(path):
             field_names.append(f["name"])
             if f.get("type") not in FIELD_TYPES:
                 errors.append(f"data.fields[{i}].type: one of {', '.join(FIELD_TYPES)}")
-            if rows and not any(f["name"] in r for r in rows[:50]):
-                errors.append(f"data.fields[{i}]: '{f['name']}' appears in none of the first rows")
+            if rows and not any(f["name"] in r for r in rows):
+                errors.append(f"data.fields[{i}]: '{f['name']}' appears in none of the rows")
     if rows:
-        extra = set().union(*(r.keys() for r in rows[:50])) - set(field_names)
+        extra = set().union(*(r.keys() for r in rows)) - set(field_names)
         if extra:
             warnings.append(f"data.rows: columns not described in data.fields: {', '.join(sorted(extra))}")
 
     date_only = {f for f in field_names
-                 if rows and all(DATE_ONLY.match(str(r.get(f, ""))) for r in rows[:50] if f in r)}
+                 if rows and all(DATE_ONLY.match(str(r[f])) for r in rows if f in r)}
 
     rel = doc.get("relationships")
     if not isinstance(rel, list) or not rel or any(r not in RELATIONSHIPS for r in rel):

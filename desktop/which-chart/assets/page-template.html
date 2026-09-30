@@ -11,9 +11,12 @@
   set with textContent, rows go to Vega-Lite as data, so nothing in the data is parsed as HTML.
   Charts need the three Vega scripts below; without them each card shows its spec instead.
 -->
-<script src="https://cdn.jsdelivr.net/npm/vega@6"></script>
-<script src="https://cdn.jsdelivr.net/npm/vega-lite@6"></script>
-<script src="https://cdn.jsdelivr.net/npm/vega-embed@7"></script>
+<!-- Exact versions with Subresource Integrity: the page holds the user's rows, so a changed CDN
+     file must fail to load (the page then shows each spec) rather than run. To upgrade, change
+     a version and recompute: openssl dgst -sha384 -binary FILE | openssl base64 -A -->
+<script src="https://cdn.jsdelivr.net/npm/vega@6.4.0/build/vega.min.js" integrity="sha384-VKdcJr3ZaBIJMbVcopTAI/JEuUkSY6qnwVu9iLuw0DnQ9gQ1JjsfZJhXFQAgNi43" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@6.4.3/build/vega-lite.min.js" integrity="sha384-9/70gNCfOu6G7xXvkdreMfuqAEsoaGJVXV2BN/JLRXkSmcGvnMqtsRx8HZtUWAvI" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@7.3.0/build/vega-embed.min.js" integrity="sha384-Muy1QRxYFeNrA1zShc1KtN4OfipkR/61gt+HWqN57c1Zxu3Oe16TsilsruVVjfKL" crossorigin="anonymous"></script>
 <style>
 :root{
   --page:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
@@ -254,8 +257,10 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted)}
         if (!spec.width) spec.width = "container";
         spec.autosize = spec.autosize || { type: "fit-x", contains: "padding" };
       }
-      window.vegaEmbed(c.node, spec, { actions:false, renderer:"svg", config: cfg })
-        .catch(function(e){ c.node.textContent = "Couldn't draw this spec: " + e.message; });
+      try {
+        window.vegaEmbed(c.node, spec, { actions:false, renderer:"svg", config: cfg })
+          .catch(function(e){ c.node.textContent = "Couldn't draw this spec: " + e.message; });
+      } catch (e) { c.node.textContent = "Couldn't draw this spec: " + e.message; }
     });
   }
 
@@ -344,7 +349,8 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted)}
   });
   setText("footer", L.footer);
 
-  if (typeof window.vegaEmbed !== "function"){
+  // All three must load: with integrity pinning, one tampered file blocks just that script.
+  if (typeof window.vegaEmbed !== "function" || !window.vega || !window.vegaLite){
     charts.forEach(function(c){ c.node.appendChild(el("p","chart-fallback",L.no_charts)); });
     document.querySelectorAll("pre.spec").forEach(function(p){ p.hidden = false; });
     return;
