@@ -35,7 +35,7 @@ Compare progress:
 - [ ] 0. Settings: the chat, then saved settings in memory, then Configuration
 - [ ] 1. Frame: what, which candidates (2-5), what matters, budget
 - [ ] 2. Research: specs and prices, each value with its source (research.md)
-- [ ] 3. Choose rows: what differs and what matters, 6-20 rows
+- [ ] 3. Choose rows: what differs and what matters, 8-14 rows
 - [ ] 4. Pick: for this person's priorities, with the rows that decide it
 - [ ] 5. Write compare.json → validate → render → show the page
 - [ ] 6. Close: two lines, then stay in the chat for follow-ups
@@ -77,12 +77,12 @@ Follow [`research.md`](./references/research.md). The short version:
 - **Unknown stays unknown.** A value you couldn't find is `null` with a `note`, shown as
   "—". Never fill a gap with a guess, an older model's number, or "typical" values.
 - No web access in this conversation? Say so, compare only from what the user pasted and
-  your knowledge, set `offline: true`, and mark every value's source as `Claude
-  (unverified)`. The page shows a banner.
+  your knowledge, set `offline: true`, and cite a source of kind `claude` for those
+  values. The page shows a banner.
 
 ### 3. Choose rows
 
-6–20 rows, grouped (`Price`, `Performance`, `Battery`, `Size & weight`…). Keep a row if
+Aim for 8–14 rows (the validator allows 3–20), grouped (`Price`, `Performance`, `Battery`, `Size & weight`…). Keep a row if
 it **differs** between products or is a stated **priority**; drop rows every product
 shares, unless the user asked about it. Numeric rows set `better` (`higher` or `lower`) so
 the page can draw the difference. Yes/no features use `true` / `false`.
@@ -186,7 +186,7 @@ default for everyone, edit this list, re-zip and re-upload.
 - country and currency: from the conversation; ask only if prices would differ
 - shortlist size (category only): 3
 - stores: the maker's own store and major retailers in the country; skip: none
-- rows: 6-20, differences and priorities first
+- rows: 8-14 (3-20 allowed), differences and priorities first
 - ask before comparing: only when budget or priorities would change the pick (one message)
 - tone: calm, plain
 - language: the conversation's

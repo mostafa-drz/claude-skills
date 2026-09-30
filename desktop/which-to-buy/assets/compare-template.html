@@ -216,7 +216,7 @@ footer ul{margin:0;padding-left:18px}
     var s;
     try {
       s = new Intl.NumberFormat(data.lang || undefined, { style: "currency", currency: pr.currency,
-        maximumFractionDigits: pr.amount % 1 ? 2 : 0 }).format(pr.amount);
+        minimumFractionDigits: pr.amount % 1 ? 2 : 0, maximumFractionDigits: pr.amount % 1 ? 2 : 0 }).format(pr.amount);
     } catch (e) { s = pr.amount + " " + pr.currency; }
     return (pr.from ? L.from + " " : "") + s;
   }
@@ -365,9 +365,9 @@ footer ul{margin:0;padding-left:18px}
       i.style.width = (prios.length ? counts[p.id] / prios.length * 100 : 0) + "%";
       add(r, el("span", "num", counts[p.id] + " / " + prios.length + " " + L.wins));
     });
-    if (data.assumptions && data.assumptions.length) {
-      add(ps, el("p", "hint", L.assumed + ": " + data.assumptions.join(" · ")));
-    }
+  }
+  if (data.assumptions && data.assumptions.length) {
+    add(app, el("p", "hint", L.assumed + ": " + data.assumptions.join(" · ")));
   }
 
   // Product cards
