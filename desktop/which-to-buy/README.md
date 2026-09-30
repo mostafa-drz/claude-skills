@@ -138,12 +138,17 @@ Checked locally:
   - a price with no date
   - a pick, runner-up, priority or deciding row that doesn't exist, or a runner-up that
     is the pick
-  - a *best for* label the product doesn't win, including "Lowest price"
+  - a *best for* label with no row, or one the product doesn't win (including "Lowest
+    price"), or on a row with an unknown value, which has no winner
   - text in a numeric row, a row keyed `price` (reserved), or an unknown label key
   - every source from Claude's knowledge but `offline` not set
 
   It warns when the pick loses on one of its own deciding rows, when prices mix
-  currencies, and when more than three rows are identical across products.
+  currencies, when more than three rows are identical across products, and when some
+  sources are Claude's knowledge (the page then shows a banner and marks those values
+  *Unverified*).
+- **No winner on an unknown.** A row where any product's value is "—" marks no winner and
+  counts toward nobody's priorities.
 - **Page.** Screenshotted at 1200 px and at 375 px (inside an iframe, since headless
   Chrome won't size a window that narrow): no horizontal page scroll, the table scrolls
   in its box with the spec column pinned.

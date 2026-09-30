@@ -76,7 +76,8 @@ how it fits their life, what it costs to own.
    sentences with the trade-off stated honestly. `because`: the 1–4 rows that decided
    it. `runner_up.when`: the one condition that would flip the pick, in the user's terms.
 6. **`best_for`** labels are earned by winning a row ("Lightest" needs the lowest weight).
-   The validator checks this when you give a `row`.
+   Every label names its `row`, and the validator checks the product wins it. A row
+   where any product's value is unknown has no winner: the unknown one might be better.
 
 No priorities given? Pick for the most common reason people buy the category, say that
 in `assumptions`, and make the runner-up condition the other common reason.

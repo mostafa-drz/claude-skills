@@ -185,7 +185,8 @@ footer ul{margin:0;padding-left:18px}
     copied: "Copied. Paste it in the chat to keep going.",
     copy_failed: "Couldn't copy here. Select it and paste it in the chat:",
     sources: "Sources", not_available: "Couldn't read", unknown: "Not found",
-    wins: "wins", yes: "Yes", no: "No", from: "from", compared: "compared",
+    partly_unverified: "Some values are from Claude\u2019s knowledge, not a page read today. They\u2019re marked unverified.",
+    unverified: "Unverified", wins: "wins", yes: "Yes", no: "No", from: "from", compared: "compared",
     matters: "matters", page: "Page", ask_hint: "Each button copies a question with this comparison\u2019s context. Paste it in the chat.",
     offline: "No web access this run: specs and prices are from Claude's knowledge and unverified."
   }, data.labels || {});
@@ -202,10 +203,10 @@ footer ul{margin:0;padding-left:18px}
   function isNum(v) { return typeof v === "number" && isFinite(v); }
 
   var products = data.products || [];
-  var byId = {};
+  var byId = Object.create(null);
   products.forEach(function (p) { byId[p.id] = p; });
   var sources = data.sources || [];
-  var srcIndex = {};
+  var srcIndex = Object.create(null);
   sources.forEach(function (s, i) { srcIndex[s.id] = i + 1; });
   var pick = byId[data.verdict && data.verdict.pick] || products[0];
   var because = (data.verdict && data.verdict.because) || [];
@@ -224,7 +225,7 @@ footer ul{margin:0;padding-left:18px}
   // The price row is built from the products, so the table and the cards can't disagree.
   // It only compares when every price shares a currency.
   var rows = (data.rows || []).slice();
-  var currencies = {};
+  var currencies = Object.create(null);
   products.forEach(function (p) { if (p.price) currencies[p.price.currency] = 1; });
   var oneCurrency = Object.keys(currencies).length === 1;
   var priceRow = { key: "price", label: L.price, group: L.price, better: oneCurrency ? "lower" : null, values: {} };
@@ -234,7 +235,7 @@ footer ul{margin:0;padding-left:18px}
       : { v: null, note: p.price_note };
   });
   rows.unshift(priceRow);
-  var rowByKey = {};
+  var rowByKey = Object.create(null);
   rows.forEach(function (r) { rowByKey[r.key] = r; });
 
   function known(r) {
@@ -242,8 +243,9 @@ footer ul{margin:0;padding-left:18px}
       .filter(function (c) { return c && c.v !== null && c.v !== undefined; });
   }
   function winners(r) {
+    // A winner has to beat every product. While any value is unknown, nobody wins the row.
     var cells = known(r);
-    if (cells.length < 2) return {};
+    if (cells.length < 2 || cells.length < products.length) return {};
     var out = {};
     if (r.better && cells.every(function (c) { return isNum(c.v); })) {
       var vals = cells.map(function (c) { return c.v; });
@@ -312,7 +314,10 @@ footer ul{margin:0;padding-left:18px}
   add(top, el("p", "label", (isNaN(when) ? data.date :
     when.toLocaleDateString(data.lang || undefined, { month: "long", day: "numeric", year: "numeric" })) + " · " + data.title));
   add(top, el("span", "pill", products.length + " " + L.compared));
+  var fromClaude = Object.create(null);
+  sources.forEach(function (s) { if (s.kind === "claude") fromClaude[s.id] = 1; });
   if (data.offline) add(app, el("div", "banner", L.offline));
+  else if (Object.keys(fromClaude).length) add(app, el("div", "banner", L.partly_unverified));
 
   // Verdict
   var hero = add(app, el("header", "hero"));
@@ -404,12 +409,12 @@ footer ul{margin:0;padding-left:18px}
   add(hr, el("th", null, ""));
   products.forEach(function (p) { add(hr, el("th", p === pick ? "is-pick" : null, p.name)); });
   var tbody = add(table, el("tbody"));
-  var groups = [], groupRows = {};
+  var groups = [], groupRows = Object.create(null);
   rows.forEach(function (r) {
     if (!groupRows[r.group]) { groupRows[r.group] = []; groups.push(r.group); }
     groupRows[r.group].push(r);
   });
-  var prioKeys = {};
+  var prioKeys = Object.create(null);
   prios.forEach(function (p) { prioKeys[p.row] = 1; });
   var toggleable = [];
 
@@ -439,6 +444,7 @@ footer ul{margin:0;padding-left:18px}
       i.style.width = Math.max(4, c.v / max * 100) + "%";
     }
     if (c.note) add(td, el("span", "note", c.note));
+    if (fromClaude[c.source] && !data.offline) add(td, el("span", "note", L.unverified));
   }
 
   groups.forEach(function (g) {

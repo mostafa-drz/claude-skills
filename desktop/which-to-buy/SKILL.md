@@ -97,8 +97,8 @@ The rubric is in [`research.md`](./references/research.md#pick). In short:
 - **`because`**: 1–4 row keys that decide it. The page highlights them. If the pick loses
   on one of its own `because` rows, it's the wrong reason; the validator warns.
 - **`runner_up`** with the one condition that flips it ("if you fly a lot").
-- **`best_for`**: up to three honest labels such as "Best value" or "Lightest", each
-  earned by a row.
+- **`best_for`**: up to three honest labels such as "Lowest price" or "Lightest", each
+  with the `row` it wins outright. A row with an unknown value has no winner.
 - **Deal-breakers** go in the pick's `cons`, not hidden.
 - If it's genuinely a toss-up, say so in the headline and let the runner-up condition do
   the work. Never manufacture a winner.

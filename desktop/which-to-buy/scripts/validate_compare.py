@@ -23,7 +23,8 @@ BETTER = ("higher", "lower")
 LABEL_KEYS = ("pick", "why", "decided_by", "runner_up", "best_for", "priorities", "assumed",
               "side_by_side", "differences_only", "price", "pros", "cons", "ask", "ask_about",
               "copied", "copy_failed", "sources", "not_available", "unknown", "wins", "offline",
-              "yes", "no", "from", "compared", "matters", "page", "ask_hint")
+              "yes", "no", "from", "compared", "matters", "page", "ask_hint",
+              "partly_unverified", "unverified")
 
 
 def text(value):
@@ -92,8 +93,11 @@ def main(path):
     offline = doc.get("offline", False)
     if not isinstance(offline, bool):
         errors.append("offline: true or false (true when there was no web access this run)")
-    if offline is False and sources and all(isinstance(s, dict) and s.get("kind") == "claude" for s in sources):
+    claude_ids = [text(s.get("id")) for s in sources if isinstance(s, dict) and s.get("kind") == "claude"]
+    if offline is False and sources and len(claude_ids) == len(sources):
         errors.append("offline: every source is 'claude' but offline is false. Set offline: true so the page says so")
+    elif offline is False and claude_ids:
+        warnings.append(f"sources: {', '.join(claude_ids)} are Claude's knowledge; the page will mark those values unverified. Replace them with pages you read where you can")
 
     def cite(where, sid):
         if text(sid) not in source_ids:
@@ -217,7 +221,7 @@ def main(path):
         if key == "price":
             prices = {p["id"]: p["price"]["amount"] for p in products
                       if isinstance(p, dict) and isinstance(p.get("price"), dict) and is_num(p["price"].get("amount"))}
-            if len(prices) < 2 or len(currencies) != 1:
+            if len(prices) < 2 or len(prices) < len(pids) or len(currencies) != 1:
                 return None
             low = min(prices.values())
             return {pid for pid, a in prices.items() if a == low}
@@ -225,8 +229,8 @@ def main(path):
         if not r or r.get("better") not in BETTER or not isinstance(r.get("values"), dict):
             return None
         nums = {pid: c["v"] for pid, c in r["values"].items() if isinstance(c, dict) and is_num(c.get("v"))}
-        if len(nums) < 2:
-            return None
+        if len(nums) < 2 or len(nums) < len(pids):
+            return None  # an unknown value might be the best, so nobody wins
         best = (max if r["better"] == "higher" else min)(nums.values())
         return {pid for pid, v in nums.items() if v == best}
 
@@ -277,7 +281,7 @@ def main(path):
             errors.append("verdict.runner_up.when: the condition that flips it, 120 chars or less")
     best_for = v.get("best_for", [])
     if not isinstance(best_for, list) or len(best_for) > 3:
-        errors.append("verdict.best_for: optional, at most 3 {label, id, row?}")
+        errors.append("verdict.best_for: optional, at most 3 {label, id, row}")
         best_for = []
     seen = set()
     for i, b in enumerate(best_for):
@@ -290,14 +294,15 @@ def main(path):
         seen.add(text(b["label"]).lower())
         if text(b.get("id")) not in pids:
             errors.append(f"{where}.id: not a product id")
-        row = b.get("row")
-        if row is not None:
-            if text(row) not in keys and text(row) != "price":
-                errors.append(f"{where}.row: '{row}' is not a row key")
-            else:
-                w = winners(text(row))
-                if w is not None and text(b.get("id")) not in w:
-                    errors.append(f"{where}: '{b.get('id')}' doesn't win row '{row}'. The label has to be earned")
+        row = text(b.get("row"))
+        if row not in keys and row != "price":
+            errors.append(f"{where}.row: required, the row key that earns the label ('price', 'weight')")
+        else:
+            w = winners(row)
+            if w is None:
+                errors.append(f"{where}: row '{row}' has no winner (no 'better', a tie, or an unknown value). Pick a row the product wins outright")
+            elif text(b.get("id")) not in w:
+                errors.append(f"{where}: '{b.get('id')}' doesn't win row '{row}'. The label has to be earned")
 
     lang = doc.get("lang", "en")
     if not re.match(r"^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$", text(lang)):
