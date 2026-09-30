@@ -1,0 +1,93 @@
+[
+  {
+    "name": "named-products-with-priorities",
+    "skills": ["which-to-buy"],
+    "conversation": "(fresh chat, web search on. Earlier the user said they fly a lot, wear glasses, budget about $450 CAD.)",
+    "query": "Hush Aria 2 vs Northwind Quiet Pro vs Vale Studio, which should I get?",
+    "reference_output": "example-compare.json",
+    "expected_behavior": [
+      "Does not ask questions: products, priorities and budget are already in the chat",
+      "Reads maker spec pages first, a measurement review for noise, and Canadian retailers for price",
+      "Every value cites a source id that appears in sources; unknowns are null with a note, never guessed",
+      "Priorities map to rows (noise, battery, weight) and the pick is argued from them, with the gap stated in units",
+      "compare.json passes validate_compare.py; the artifact is written once (template plus render_page.py --data)",
+      "Closes in two lines: key sources (and Amazon.ca failing), and the one thing that would change the pick"
+    ]
+  },
+  {
+    "name": "category-only",
+    "skills": ["which-to-buy"],
+    "conversation": "(fresh chat, web search on)",
+    "query": "I need a robot vacuum under $500, which one?",
+    "expected_behavior": [
+      "Asks at most one message with at most two questions (e.g. pets or carpets, mopping needed), offering 'just compare'",
+      "Shortlists 3 current models within budget and says why each made the list",
+      "Does not compare more than five",
+      "States assumptions on the page when the user answered 'just compare'"
+    ]
+  },
+  {
+    "name": "too-many-products",
+    "skills": ["which-to-buy"],
+    "conversation": "(user pastes seven laptop links)",
+    "query": "compare these",
+    "expected_behavior": [
+      "Does not render seven columns; asks which to drop, or keeps the five closest to stated priorities and names the two left out",
+      "The validator would reject six or more products"
+    ]
+  },
+  {
+    "name": "missing-spec",
+    "skills": ["which-to-buy"],
+    "conversation": "(the maker of one product doesn't publish its quick-charge time)",
+    "query": "Compare the Vale Studio with the Quiet Pro",
+    "expected_behavior": [
+      "Shows the missing value as '—' with a note ('Not published'), not an estimate or a previous model's number",
+      "Does not let the missing value decide the pick"
+    ]
+  },
+  {
+    "name": "pasted-follow-up",
+    "skills": ["which-to-buy"],
+    "conversation": "(the headphones page was just shown)",
+    "query": "About the Hush Aria 2 (from my which-to-buy comparison of Noise-cancelling headphones: Hush Aria 2, Northwind Quiet Pro, Vale Studio): does it work well with glasses?",
+    "expected_behavior": [
+      "Recognises the pasted prompt and answers in the chat from the same comparison",
+      "Cites a source for the answer, or says none was found",
+      "Re-renders the page only if the answer changed a value or the pick, and says what changed"
+    ]
+  },
+  {
+    "name": "priority-change",
+    "skills": ["which-to-buy"],
+    "conversation": "(the headphones page was just shown, pick is Quiet Pro)",
+    "query": "Actually I don't wear glasses on flights, silence matters most.",
+    "expected_behavior": [
+      "Re-orders priorities with noise first and re-picks (likely the Aria 2), stating the gap in dB",
+      "Keeps the old pick as runner-up with its condition",
+      "Re-renders the page rather than answering only in text"
+    ]
+  },
+  {
+    "name": "no-web-access",
+    "skills": ["which-to-buy"],
+    "conversation": "(web search is off in this conversation)",
+    "query": "Kindle Paperwhite vs Kobo Clara, which one?",
+    "expected_behavior": [
+      "Says there's no web access and that specs and prices will be from its own knowledge, unverified",
+      "Sets offline: true so the page shows the banner; every source is kind 'claude'",
+      "Does not present prices as current"
+    ]
+  },
+  {
+    "name": "remember-preference",
+    "skills": ["which-to-buy"],
+    "conversation": "(after a comparison)",
+    "query": "Remember that I'm in Canada and quiet matters more than power for anything with a motor.",
+    "expected_behavior": [
+      "Saves one 'which-to-buy settings:' memory line (country Canada, CAD; standing priority) replacing any older one",
+      "Says in one line what it saved",
+      "Next comparison applies it, and chat instructions still override it"
+    ]
+  }
+]
