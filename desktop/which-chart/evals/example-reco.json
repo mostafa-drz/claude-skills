@@ -1,0 +1,778 @@
+{
+ "key": "brand-sentiment-over-time",
+ "title": "Brand Sentiment Over Time",
+ "lang": "en",
+ "brief": {
+  "use_case": "Brand-engagement dashboard for a consumer brand; sentiment analysis of social mentions",
+  "question": "Is sentiment about the brand getting better or worse week to week, and when did it turn?",
+  "audience": "Brand and social team, daily glance",
+  "surface": "Dashboard panel, about 600×280",
+  "stack": "React",
+  "assumed": [
+   "surface"
+  ]
+ },
+ "data": {
+  "source": "description",
+  "illustrative": true,
+  "rows": [
+   {
+    "week": "2026-06-29",
+    "sentiment": "Negative",
+    "mentions": 140
+   },
+   {
+    "week": "2026-06-29",
+    "sentiment": "Neutral",
+    "mentions": 520
+   },
+   {
+    "week": "2026-06-29",
+    "sentiment": "Positive",
+    "mentions": 410
+   },
+   {
+    "week": "2026-07-06",
+    "sentiment": "Negative",
+    "mentions": 151
+   },
+   {
+    "week": "2026-07-06",
+    "sentiment": "Neutral",
+    "mentions": 505
+   },
+   {
+    "week": "2026-07-06",
+    "sentiment": "Positive",
+    "mentions": 432
+   },
+   {
+    "week": "2026-07-13",
+    "sentiment": "Negative",
+    "mentions": 138
+   },
+   {
+    "week": "2026-07-13",
+    "sentiment": "Neutral",
+    "mentions": 540
+   },
+   {
+    "week": "2026-07-13",
+    "sentiment": "Positive",
+    "mentions": 455
+   },
+   {
+    "week": "2026-07-20",
+    "sentiment": "Negative",
+    "mentions": 160
+   },
+   {
+    "week": "2026-07-20",
+    "sentiment": "Neutral",
+    "mentions": 512
+   },
+   {
+    "week": "2026-07-20",
+    "sentiment": "Positive",
+    "mentions": 440
+   },
+   {
+    "week": "2026-07-27",
+    "sentiment": "Negative",
+    "mentions": 149
+   },
+   {
+    "week": "2026-07-27",
+    "sentiment": "Neutral",
+    "mentions": 530
+   },
+   {
+    "week": "2026-07-27",
+    "sentiment": "Positive",
+    "mentions": 468
+   },
+   {
+    "week": "2026-08-03",
+    "sentiment": "Negative",
+    "mentions": 158
+   },
+   {
+    "week": "2026-08-03",
+    "sentiment": "Neutral",
+    "mentions": 525
+   },
+   {
+    "week": "2026-08-03",
+    "sentiment": "Positive",
+    "mentions": 452
+   },
+   {
+    "week": "2026-08-10",
+    "sentiment": "Negative",
+    "mentions": 520
+   },
+   {
+    "week": "2026-08-10",
+    "sentiment": "Neutral",
+    "mentions": 610
+   },
+   {
+    "week": "2026-08-10",
+    "sentiment": "Positive",
+    "mentions": 300
+   },
+   {
+    "week": "2026-08-17",
+    "sentiment": "Negative",
+    "mentions": 390
+   },
+   {
+    "week": "2026-08-17",
+    "sentiment": "Neutral",
+    "mentions": 560
+   },
+   {
+    "week": "2026-08-17",
+    "sentiment": "Positive",
+    "mentions": 352
+   },
+   {
+    "week": "2026-08-24",
+    "sentiment": "Negative",
+    "mentions": 260
+   },
+   {
+    "week": "2026-08-24",
+    "sentiment": "Neutral",
+    "mentions": 540
+   },
+   {
+    "week": "2026-08-24",
+    "sentiment": "Positive",
+    "mentions": 398
+   },
+   {
+    "week": "2026-08-31",
+    "sentiment": "Negative",
+    "mentions": 190
+   },
+   {
+    "week": "2026-08-31",
+    "sentiment": "Neutral",
+    "mentions": 528
+   },
+   {
+    "week": "2026-08-31",
+    "sentiment": "Positive",
+    "mentions": 430
+   },
+   {
+    "week": "2026-09-07",
+    "sentiment": "Negative",
+    "mentions": 160
+   },
+   {
+    "week": "2026-09-07",
+    "sentiment": "Neutral",
+    "mentions": 515
+   },
+   {
+    "week": "2026-09-07",
+    "sentiment": "Positive",
+    "mentions": 471
+   },
+   {
+    "week": "2026-09-14",
+    "sentiment": "Negative",
+    "mentions": 150
+   },
+   {
+    "week": "2026-09-14",
+    "sentiment": "Neutral",
+    "mentions": 522
+   },
+   {
+    "week": "2026-09-14",
+    "sentiment": "Positive",
+    "mentions": 489
+   }
+  ],
+  "fields": [
+   {
+    "name": "week",
+    "type": "temporal",
+    "role": "time",
+    "note": "week starting Monday"
+   },
+   {
+    "name": "sentiment",
+    "type": "ordinal",
+    "role": "category",
+    "note": "Negative < Neutral < Positive"
+   },
+   {
+    "name": "mentions",
+    "type": "quantitative",
+    "role": "measure",
+    "note": "count of classified mentions"
+   }
+  ],
+  "notes": [
+   "Grain: one row per week per sentiment (36 rows). Aggregate daily data to weeks for this panel; daily is noisy at this size.",
+   "Shares are computed per week in the spec, so the chart works on raw counts."
+  ]
+ },
+ "relationships": [
+  "change-over-time",
+  "part-to-whole"
+ ],
+ "options": [
+  {
+   "id": "diverging-bars",
+   "rank": "pick",
+   "name": "Diverging stacked columns by week",
+   "answers": "Is it getting better or worse, and when did it turn?",
+   "why": [
+    {
+     "text": "Built for ordered scales like negative–neutral–positive: neutral straddles zero in grey, positive stacks up and negative down, so a week's balance is how far it reaches above versus below the line.",
+     "cites": [
+      1,
+      8
+     ]
+    },
+    {
+     "text": "One column per week on a shared axis: a spike in negative shows at a glance as a longer red column below the line.",
+     "cites": [
+      1
+     ]
+    },
+    {
+     "text": "Bar lengths on a common axis are judged far more accurately than the angles of a pie per week.",
+     "cites": [
+      3,
+      1
+     ]
+    }
+   ],
+   "costs": [
+    "Shows shares, not volume: a quiet week and a viral week look the same size.",
+    "Needs a small transform to centre neutral (included in the spec)."
+   ],
+   "spec": {
+    "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+    "data": {
+     "name": "table"
+    },
+    "height": 240,
+    "transform": [
+     {
+      "joinaggregate": [
+       {
+        "op": "sum",
+        "field": "mentions",
+        "as": "total"
+       }
+      ],
+      "groupby": [
+       "week"
+      ]
+     },
+     {
+      "calculate": "datum.mentions / datum.total",
+      "as": "share"
+     },
+     {
+      "calculate": "datum.sentiment === 'Negative' ? 1 : datum.sentiment === 'Neutral' ? 2 : 3",
+      "as": "order"
+     },
+     {
+      "calculate": "datum.sentiment === 'Negative' ? datum.share : datum.sentiment === 'Neutral' ? datum.share / 2 : 0",
+      "as": "below"
+     },
+     {
+      "stack": "share",
+      "groupby": [
+       "week"
+      ],
+      "sort": [
+       {
+        "field": "order"
+       }
+      ],
+      "as": [
+       "s0",
+       "s1"
+      ]
+     },
+     {
+      "joinaggregate": [
+       {
+        "op": "sum",
+        "field": "below",
+        "as": "offset"
+       }
+      ],
+      "groupby": [
+       "week"
+      ]
+     },
+     {
+      "calculate": "datum.s0 - datum.offset",
+      "as": "y0"
+     },
+     {
+      "calculate": "datum.s1 - datum.offset",
+      "as": "y1"
+     }
+    ],
+    "layer": [
+     {
+      "mark": {
+       "type": "bar",
+       "stroke": "#fcfcfb",
+       "strokeWidth": 2
+      },
+      "encoding": {
+       "x": {
+        "field": "week",
+        "type": "ordinal",
+        "timeUnit": "utcyearmonthdate",
+        "title": null,
+        "axis": {
+         "format": "%b %d",
+         "labelAngle": 0
+        }
+       },
+       "y": {
+        "field": "y0",
+        "type": "quantitative",
+        "title": "Share of mentions (negative below, positive above)",
+        "axis": {
+         "format": ".0%"
+        }
+       },
+       "y2": {
+        "field": "y1"
+       },
+       "color": {
+        "field": "sentiment",
+        "type": "nominal",
+        "title": null,
+        "scale": {
+         "domain": [
+          "Negative",
+          "Neutral",
+          "Positive"
+         ],
+         "range": [
+          "#e34948",
+          "#bdbcb5",
+          "#2a78d6"
+         ]
+        },
+        "legend": {
+         "orient": "top"
+        }
+       },
+       "order": {
+        "field": "order"
+       },
+       "tooltip": [
+        {
+         "field": "week",
+         "type": "temporal",
+         "format": "%b %d, %Y",
+         "formatType": "utc"
+        },
+        {
+         "field": "sentiment"
+        },
+        {
+         "field": "share",
+         "format": ".0%"
+        },
+        {
+         "field": "mentions",
+         "format": ","
+        }
+       ]
+      }
+     },
+     {
+      "mark": {
+       "type": "rule",
+       "strokeWidth": 1
+      },
+      "encoding": {
+       "y": {
+        "datum": 0
+       },
+       "color": {
+        "value": "#898781"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "total-and-shares",
+   "rank": "alternative",
+   "name": "Total mentions over share lines",
+   "answers": "How loud was it, and how did the mix move?",
+   "choose_if": "volume matters as much as mood, for example to tell a crisis from a quiet week.",
+   "why": [
+    {
+     "text": "Few's recommended form for time series plus part-to-whole: a line of the total aligned above lines of the parts.",
+     "cites": [
+      2
+     ]
+    },
+    {
+     "text": "Each sentiment is its own line on a common baseline, so all three trends are readable, not just the bottom one.",
+     "cites": [
+      2,
+      3
+     ]
+    }
+   ],
+   "costs": [
+    "Two panels need more height than a single tile.",
+    "Lines of share don't show that the three always add to 100%."
+   ],
+   "spec": {
+    "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+    "data": {
+     "name": "table"
+    },
+    "vconcat": [
+     {
+      "height": 90,
+      "title": "Total mentions",
+      "mark": {
+       "type": "line",
+       "strokeWidth": 2,
+       "color": "#52514e"
+      },
+      "encoding": {
+       "x": {
+        "field": "week",
+        "type": "temporal",
+        "title": null,
+        "axis": {
+         "format": "%b %d",
+         "labels": false,
+         "formatType": "utc"
+        },
+        "scale": {
+         "type": "utc"
+        }
+       },
+       "y": {
+        "aggregate": "sum",
+        "field": "mentions",
+        "type": "quantitative",
+        "title": null,
+        "axis": {
+         "format": "~s",
+         "tickCount": 3
+        }
+       },
+       "tooltip": [
+        {
+         "field": "week",
+         "type": "temporal",
+         "format": "%b %d",
+         "formatType": "utc"
+        },
+        {
+         "aggregate": "sum",
+         "field": "mentions",
+         "title": "mentions",
+         "format": ","
+        }
+       ]
+      }
+     },
+     {
+      "height": 150,
+      "title": "Share by sentiment",
+      "transform": [
+       {
+        "joinaggregate": [
+         {
+          "op": "sum",
+          "field": "mentions",
+          "as": "total"
+         }
+        ],
+        "groupby": [
+         "week"
+        ]
+       },
+       {
+        "calculate": "datum.mentions / datum.total",
+        "as": "share"
+       }
+      ],
+      "mark": {
+       "type": "line",
+       "strokeWidth": 2,
+       "point": {
+        "size": 30
+       }
+      },
+      "encoding": {
+       "x": {
+        "field": "week",
+        "type": "temporal",
+        "title": null,
+        "axis": {
+         "format": "%b %d",
+         "formatType": "utc"
+        },
+        "scale": {
+         "type": "utc"
+        }
+       },
+       "y": {
+        "field": "share",
+        "type": "quantitative",
+        "title": null,
+        "axis": {
+         "format": ".0%"
+        }
+       },
+       "color": {
+        "field": "sentiment",
+        "type": "nominal",
+        "title": null,
+        "scale": {
+         "domain": [
+          "Negative",
+          "Neutral",
+          "Positive"
+         ],
+         "range": [
+          "#e34948",
+          "#bdbcb5",
+          "#2a78d6"
+         ]
+        },
+        "legend": {
+         "orient": "top"
+        }
+       },
+       "tooltip": [
+        {
+         "field": "week",
+         "type": "temporal",
+         "format": "%b %d",
+         "formatType": "utc"
+        },
+        {
+         "field": "sentiment"
+        },
+        {
+         "field": "share",
+         "format": ".0%"
+        }
+       ]
+      }
+     }
+    ],
+    "resolve": {
+     "scale": {
+      "x": "shared"
+     }
+    }
+   }
+  },
+  {
+   "id": "net-sentiment",
+   "rank": "alternative",
+   "name": "Net sentiment line",
+   "answers": "Is the balance positive or negative right now?",
+   "choose_if": "the panel is a small tile or a KPI row and one trend line is all that fits.",
+   "why": [
+    {
+     "text": "A deviation chart: one line against a fixed zero reference, the simplest read of 'better or worse'.",
+     "cites": [
+      4
+     ]
+    }
+   ],
+   "costs": [
+    "Hides neutral and volume entirely.",
+    "A net score is a team convention, not a standard; define it on the dashboard."
+   ],
+   "spec": {
+    "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+    "data": {
+     "name": "table"
+    },
+    "height": 200,
+    "transform": [
+     {
+      "calculate": "datum.sentiment === 'Positive' ? datum.mentions : datum.sentiment === 'Negative' ? -datum.mentions : 0",
+      "as": "signed"
+     },
+     {
+      "aggregate": [
+       {
+        "op": "sum",
+        "field": "signed",
+        "as": "net_count"
+       },
+       {
+        "op": "sum",
+        "field": "mentions",
+        "as": "total"
+       }
+      ],
+      "groupby": [
+       "week"
+      ]
+     },
+     {
+      "calculate": "datum.net_count / datum.total",
+      "as": "net"
+     }
+    ],
+    "layer": [
+     {
+      "mark": {
+       "type": "rule",
+       "strokeWidth": 1
+      },
+      "encoding": {
+       "y": {
+        "datum": 0
+       },
+       "color": {
+        "value": "#898781"
+       }
+      }
+     },
+     {
+      "mark": {
+       "type": "line",
+       "strokeWidth": 2,
+       "color": "#2a78d6",
+       "point": {
+        "size": 30,
+        "color": "#2a78d6"
+       }
+      },
+      "encoding": {
+       "x": {
+        "field": "week",
+        "type": "temporal",
+        "title": null,
+        "axis": {
+         "format": "%b %d",
+         "formatType": "utc"
+        },
+        "scale": {
+         "type": "utc"
+        }
+       },
+       "y": {
+        "field": "net",
+        "type": "quantitative",
+        "title": "Net sentiment (positive − negative share)",
+        "axis": {
+         "format": "+.0%"
+        }
+       },
+       "tooltip": [
+        {
+         "field": "week",
+         "type": "temporal",
+         "format": "%b %d",
+         "formatType": "utc"
+        },
+        {
+         "field": "net",
+         "format": "+.0%",
+         "title": "net"
+        },
+        {
+         "field": "total",
+         "format": ",",
+         "title": "mentions"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "avoid": [
+  {
+   "name": "A pie or donut per week",
+   "why": "angles across separate circles can't be compared; the series fails at the one job, change over time.",
+   "cites": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "Volume bars plus sentiment line on two y-axes",
+   "why": "the alignment of the two scales is arbitrary and invents correlations.",
+   "cites": [
+    5
+   ]
+  },
+  {
+   "name": "Red vs green for negative vs positive",
+   "why": "the most common colour-vision deficiency can't separate them; use blue vs red with grey neutral, plus a legend.",
+   "cites": [
+    6,
+    7
+   ]
+  }
+ ],
+ "screenshots": [],
+ "build_notes": [
+  "Colours: Positive #2a78d6, Neutral #bdbcb5, Negative #e34948 (dark mode #3987e5, #57564f, #e66767). Checked for colour-vision separation.",
+  "Keep the legend and the table view: neutral grey is deliberately low-contrast, so it needs a second way to be read.",
+  "Order the stack Negative → Neutral → Positive, never alphabetical.",
+  "Porting to Recharts: stacked BarChart with stackOffset=\"sign\"; negative as a negative value, neutral split into two half-series either side of zero."
+ ],
+ "sources": [
+  {
+   "label": "Robbins & Heiberger (2011), Plotting Likert and Other Rating Scales",
+   "url": "http://www.asasrms.org/Proceedings/y2011/Files/300784_64164.pdf"
+  },
+  {
+   "label": "Few (2011), Displays for Combining Time-Series and Part-to-Whole",
+   "url": "https://www.perceptualedge.com/articles/visual_business_intelligence/displays_for_combining_time-series_and_part-to-whole.pdf"
+  },
+  {
+   "label": "Cleveland & McGill (1984), Graphical Perception, JASA",
+   "url": "https://doi.org/10.1080/01621459.1984.10478080"
+  },
+  {
+   "label": "Financial Times, Visual Vocabulary",
+   "url": "https://github.com/Financial-Times/chart-doctor/tree/main/visual-vocabulary"
+  },
+  {
+   "label": "Few (2008), Dual-Scaled Axes in Graphs",
+   "url": "https://www.perceptualedge.com/articles/visual_business_intelligence/dual-scaled_axes.pdf"
+  },
+  {
+   "label": "Okabe & Ito, Color Universal Design",
+   "url": "https://jfly.uni-koeln.de/color/"
+  },
+  {
+   "label": "W3C, WCAG 2.2 Understanding 1.4.1 Use of Color",
+   "url": "https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html"
+  },
+  {
+   "label": "Vega-Lite example: diverging stacked bar",
+   "url": "https://vega.github.io/vega-lite/examples/bar_diverging_stack_transform.html"
+  }
+ ]
+}

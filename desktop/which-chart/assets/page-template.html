@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Which chart</title>
+<!--
+  which-chart page template.
+  Fill it by replacing ONLY the JSON inside <script id="reco-data"> with a validated
+  reco.json (scripts/render_page.py does this). Everything renders from that data: text is
+  set with textContent, rows go to Vega-Lite as data, so nothing in the data is parsed as HTML.
+  Charts need the three Vega scripts below; without them each card shows its spec instead.
+-->
+<!-- Exact versions with Subresource Integrity: the page holds the user's rows, so a changed CDN
+     file must fail to load (the page then shows each spec) rather than run. To upgrade, change
+     a version and recompute: openssl dgst -sha384 -binary FILE | openssl base64 -A -->
+<script src="https://cdn.jsdelivr.net/npm/vega@6.4.0/build/vega.min.js" integrity="sha384-VKdcJr3ZaBIJMbVcopTAI/JEuUkSY6qnwVu9iLuw0DnQ9gQ1JjsfZJhXFQAgNi43" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@6.4.3/build/vega-lite.min.js" integrity="sha384-9/70gNCfOu6G7xXvkdreMfuqAEsoaGJVXV2BN/JLRXkSmcGvnMqtsRx8HZtUWAvI" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@7.3.0/build/vega-embed.min.js" integrity="sha384-Muy1QRxYFeNrA1zShc1KtN4OfipkR/61gt+HWqN57c1Zxu3Oe16TsilsruVVjfKL" crossorigin="anonymous"></script>
+<style>
+:root{
+  --page:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --ring:rgba(11,11,11,.10);
+  --accent:#2a78d6; --accent-soft:#e8f0fb; --warn-bg:#fdf3e3; --warn-line:#e7c98a; --warn-ink:#7a4d08;
+  --bad:#b3261e; --code:#f0efec;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --page:#0d0d0d; --surface:#1a1a19; --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.10);
+    --accent:#3987e5; --accent-soft:#16263a; --warn-bg:#2a2214; --warn-line:#5c4820; --warn-ink:#e2b76a;
+    --bad:#f2b8b5; --code:#242423; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --page:#0d0d0d; --surface:#1a1a19; --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.10);
+  --accent:#3987e5; --accent-soft:#16263a; --warn-bg:#2a2214; --warn-line:#5c4820; --warn-ink:#e2b76a;
+  --bad:#f2b8b5; --code:#242423; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0 16px 72px;background:var(--page);color:var(--ink);font:15px/1.55 var(--sans);
+  -webkit-text-size-adjust:100%}
+.wrap{max-width:980px;margin:0 auto}
+header{padding:36px 0 4px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+h1{font-size:clamp(24px,4.4vw,32px);line-height:1.2;letter-spacing:-.015em;margin:6px 0 10px;text-wrap:balance}
+.question{font-size:clamp(17px,2.6vw,20px);color:var(--ink);margin:0;max-width:62ch;text-wrap:pretty}
+.question::before{content:"“";color:var(--muted)} .question::after{content:"”";color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;gap:6px 8px;margin:14px 0 0;padding:0;list-style:none}
+.meta li{font-size:12.5px;color:var(--ink-2);border:1px solid var(--ring);border-radius:999px;padding:2px 10px;background:var(--surface)}
+.meta li b{font-weight:600;color:var(--muted);margin-right:4px}
+.meta li.assumed{border-style:dashed}
+.banner{margin:18px 0 0;padding:10px 14px;border-radius:8px;background:var(--warn-bg);border:1px solid var(--warn-line);
+  color:var(--warn-ink);font-size:13.5px}
+h2{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:38px 0 12px}
+.card{background:var(--surface);border:1px solid var(--ring);border-radius:12px;padding:18px 18px 16px;min-width:0}
+.card h3{font-size:18px;margin:0;letter-spacing:-.01em}
+.pick h3{font-size:22px}
+.badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--accent);background:var(--accent-soft);border-radius:4px;padding:1px 7px;margin-bottom:8px}
+.answers{color:var(--ink-2);margin:4px 0 0}
+.chart{margin:14px 0 6px;min-height:120px;width:100%}
+.chart .vega-embed{width:100%}
+.chart-fallback{font-size:13px;color:var(--muted)}
+.pick-body{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:8px 28px}
+.pick-body .chart{grid-column:1/-1}
+@media (max-width:760px){.pick-body{grid-template-columns:1fr}}
+.list-h{font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:10px 0 4px}
+ul.plain{margin:0;padding-left:18px} ul.plain li{margin:3px 0}
+.judgement{color:var(--muted);font-size:12.5px}
+sup a{color:var(--accent);text-decoration:none;font-size:11px;margin-left:1px}
+.choose-if{margin:10px 0 0;font-size:14px}
+.choose-if b{font-weight:600}
+.alts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:14px}
+.tools{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:12px;font-size:13px}
+.tools button{font:inherit;color:var(--accent);background:none;border:0;padding:0;cursor:pointer;
+  text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+pre.spec{margin:10px 0 0;max-height:320px;overflow:auto;background:var(--code);border-radius:8px;padding:10px 12px;
+  font:12px/1.5 var(--mono);white-space:pre}
+.table-wrap{margin-top:10px;max-height:280px;overflow:auto;border:1px solid var(--ring);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:12.5px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:5px 10px;border-bottom:1px solid var(--grid);white-space:nowrap}
+th{position:sticky;top:0;background:var(--surface);font-weight:600;color:var(--ink-2)}
+.avoid li{margin:6px 0} .avoid b{color:var(--bad);font-weight:600}
+.shot{margin:0 0 10px} .shot b{font-weight:600}
+.shot .seen{color:var(--ink-2)}
+.fields-wrap{overflow-x:auto}
+.fields td,.fields th{white-space:normal;vertical-align:top}
+.fields td:first-child{font-family:var(--mono);font-size:12px;white-space:nowrap}
+.sources li{margin:3px 0;overflow-wrap:anywhere} .sources a{color:var(--accent)}
+footer{margin-top:40px;font-size:12.5px;color:var(--muted)}
+[hidden]{display:none!important}
+@media print{.tools,pre.spec{display:none} body{background:#fff} .card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow" id="eyebrow">Which chart</p>
+    <h1 id="title"></h1>
+    <p class="question" id="question"></p>
+    <ul class="meta" id="meta"></ul>
+    <p class="banner" id="illustrative" hidden></p>
+  </header>
+
+  <h2 id="h-pick">The pick</h2>
+  <section class="card pick" id="pick"></section>
+
+  <h2 id="h-alts">Also good, if…</h2>
+  <section class="alts" id="alts"></section>
+
+  <div id="avoid-block" hidden>
+    <h2 id="h-avoid">Avoid</h2>
+    <section class="card"><ul class="plain avoid" id="avoid"></ul></section>
+  </div>
+
+  <div id="shots-block" hidden>
+    <h2 id="h-shots">What I read from your screenshots</h2>
+    <section class="card" id="shots"></section>
+  </div>
+
+  <h2 id="h-data">Your data</h2>
+  <section class="card">
+    <div class="fields-wrap"><table class="fields"><thead><tr><th>Field</th><th>Type</th><th>Role</th><th>Note</th></tr></thead>
+      <tbody id="fields"></tbody></table></div>
+    <ul class="plain" id="data-notes" style="margin-top:10px"></ul>
+  </section>
+
+  <div id="build-block" hidden>
+    <h2 id="h-build">Build notes</h2>
+    <section class="card"><ul class="plain" id="build"></ul></section>
+  </div>
+
+  <h2 id="h-sources">Sources</h2>
+  <ol class="sources" id="sources"></ol>
+
+  <footer id="footer"></footer>
+</div>
+
+<script type="application/json" id="reco-data">{}</script>
+<script>
+(function(){
+  "use strict";
+  var R = JSON.parse(document.getElementById("reco-data").textContent || "{}");
+  var L = Object.assign({
+    eyebrow:"Which chart", pick:"The pick", alts:"Also good, if…", avoid:"Avoid",
+    shots:"What I read from your screenshots", data:"Your data", build:"Build notes", sources:"Sources",
+    why:"Why", costs:"What it costs", choose_if:"Choose this if", copy:"Copy Vega-Lite spec",
+    copied:"Copied", judgement:"judgement, not a cited finding", show_spec:"Show spec", hide_spec:"Hide spec", show_table:"Show table",
+    hide_table:"Hide table", seen:"Seen", verdict:"Verdict", illustrative:"Illustrative data: these rows "
+    + "were made up to show the shape of yours, so read the chart form, not the trend.",
+    no_charts:"Chart preview needs the Vega scripts, which didn't load here. The spec below is complete; "
+    + "paste it into vega.github.io/editor to see it.",
+    audience:"Audience", surface:"Where", stack:"Stack", relationship:"Relationship",
+    footer:"Charts are Vega-Lite specs reading your rows; copy one into your stack or ask Claude to port it."
+  }, R.labels || {});
+  if (R.lang) document.documentElement.lang = R.lang;
+
+  function $(id){ return document.getElementById(id); }
+  function el(tag, cls, txt){ var e=document.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; }
+  function setText(id, t){ $(id).textContent = t; }
+
+  ["eyebrow","pick","alts","avoid","shots","data","build","sources"].forEach(function(k){
+    var h = $(k==="eyebrow" ? "eyebrow" : "h-"+k); if (h) h.textContent = L[k];
+  });
+
+  var brief = R.brief || {}, assumed = brief.assumed || [];
+  setText("title", R.title || "");
+  setText("question", brief.question || "");
+  [["audience","audience"],["surface","surface"],["stack","stack"]].forEach(function(p){
+    if (!brief[p[0]]) return;
+    var li = el("li", assumed.indexOf(p[0])>=0 ? "assumed" : ""); li.appendChild(el("b",null,L[p[1]]));
+    li.appendChild(document.createTextNode(brief[p[0]] + (assumed.indexOf(p[0])>=0 ? " (assumed)" : "")));
+    $("meta").appendChild(li);
+  });
+  if (R.relationships && R.relationships.length){
+    var li = el("li"); li.appendChild(el("b",null,L.relationship));
+    li.appendChild(document.createTextNode(R.relationships.join(" + ").replace(/-/g," "))); $("meta").appendChild(li);
+  }
+  var data = R.data || {};
+  if (data.illustrative){ $("illustrative").hidden=false; $("illustrative").textContent = L.illustrative; }
+
+  function cites(parent, list){
+    (list||[]).forEach(function(n){
+      var s = el("sup"), a = el("a", null, "[" + n + "]"); a.href = "#src-" + n; s.appendChild(a); parent.appendChild(s);
+    });
+  }
+  function reasonList(items){
+    var ul = el("ul","plain");
+    (items||[]).forEach(function(w){
+      var li = el("li"); if (typeof w === "string"){ li.textContent = w; } else { li.textContent = w.text; cites(li, w.cites); if (w.judgement) li.appendChild(el("span","judgement"," (" + L.judgement + ")")); }
+      ul.appendChild(li);
+    });
+    return ul;
+  }
+
+  // ---- theme for Vega: read the page tokens, and step palette colours for dark mode ----
+  var DARK_STEP = { // light -> dark, from the reference palette (validated both modes)
+    "#2a78d6":"#3987e5","#eb6834":"#d95926","#1baf7a":"#199e70","#eda100":"#c98500",
+    "#e87ba4":"#d55181","#008300":"#008300","#4a3aa7":"#9085e9","#e34948":"#e66767","#bdbcb5":"#57564f",
+    "#fcfcfb":"#1a1a19", // chart surface: the 2px gap between stacked segments
+    "#52514e":"#c3c2b7", "#898781":"#898781" // secondary ink, muted rule
+  };
+  function isDark(){ return getComputedStyle(document.documentElement).colorScheme.indexOf("dark") >= 0; }
+  function tok(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  function themed(spec, dark){
+    var s = JSON.stringify(spec);
+    if (dark) s = s.replace(/#[0-9a-fA-F]{6}\b/g, function(h){ return DARK_STEP[h.toLowerCase()] || h; });
+    return JSON.parse(s);
+  }
+  function vegaConfig(){
+    var ink2 = tok("--ink-2"), muted = tok("--muted"), grid = tok("--grid"), axis = tok("--axis"), font = tok("--sans");
+    return {
+      background: null, font: font, padding: 4,
+      view: { stroke: null },
+      axis: { domainColor: axis, tickColor: axis, gridColor: grid, gridWidth: 1, labelColor: muted,
+              titleColor: ink2, labelFontSize: 11, titleFontSize: 11.5, titleFontWeight: 600, labelPadding: 4 },
+      legend: { labelColor: ink2, titleColor: ink2, labelFontSize: 12, titleFontSize: 11.5, orient: "top",
+                symbolType: "square", symbolSize: 110 },
+      header: { labelColor: ink2, titleColor: ink2, labelFontSize: 12 },
+      title: { color: tok("--ink"), fontSize: 13, fontWeight: 600, anchor: "start" },
+      text: { color: ink2 },
+      line: { strokeWidth: 2 },
+      bar: { cornerRadiusEnd: 2 },
+      range: { category: ["#2a78d6","#eb6834","#1baf7a","#eda100","#e87ba4","#008300","#4a3aa7","#e34948"] }
+    };
+  }
+  function withRows(spec){
+    var s = JSON.parse(JSON.stringify(spec));
+    s.datasets = { table: data.rows || [] };
+    return s;
+  }
+
+  var charts = [];
+  function draw(){
+    var dark = isDark(), cfg = vegaConfig();
+    if (cfg.range && dark) cfg.range.category = cfg.range.category.map(function(h){ return DARK_STEP[h] || h; });
+    charts.forEach(function(c){
+      var spec = themed(withRows(c.spec), dark);
+      var parts = spec.vconcat || spec.hconcat || spec.concat;
+      if (parts){
+        // "container" width only works on a single view; size concatenated views from the card.
+        var w = Math.max(200, c.node.clientWidth - 70);
+        var each = spec.vconcat ? w : Math.floor(w / parts.length) - 20;
+        parts.forEach(function(p){ if (!p.width) p.width = each; });
+      } else if (spec.facet && spec.spec){
+        // facet cells can't be "container" wide either: split the card between the columns
+        var cols = spec.columns || spec.facet.columns || 3;
+        if (!spec.spec.width) spec.spec.width = Math.max(90, Math.floor((c.node.clientWidth - 40) / cols) - 30);
+      } else if (spec.repeat){
+        // repeat: the author sets the cell width
+      } else {
+        if (!spec.width) spec.width = "container";
+        spec.autosize = spec.autosize || { type: "fit-x", contains: "padding" };
+      }
+      try {
+        window.vegaEmbed(c.node, spec, { actions:false, renderer:"svg", config: cfg })
+          .catch(function(e){ c.node.textContent = "Couldn't draw this spec: " + e.message; });
+      } catch (e) { c.node.textContent = "Couldn't draw this spec: " + e.message; }
+    });
+  }
+
+  function chartBlock(o){
+    var box = el("div","chart"); box.setAttribute("role","img"); box.setAttribute("aria-label", o.name + ". " + (o.answers||""));
+    charts.push({ node: box, spec: o.spec || {} });
+    return box;
+  }
+
+  function toolRow(o){
+    var row = el("div","tools"), full = JSON.stringify(withRows(o.spec||{}), null, 2);
+    var copy = el("button", null, L.copy), specBtn = el("button", null, L.show_spec), tblBtn = el("button", null, L.show_table);
+    copy.type = specBtn.type = tblBtn.type = "button";
+    var pre = el("pre","spec", full); pre.hidden = true;
+    var tbl = el("div","table-wrap"); tbl.hidden = true;
+    copy.onclick = function(){
+      function done(){ copy.textContent = L.copied; setTimeout(function(){ copy.textContent = L.copy; }, 1400); }
+      try { navigator.clipboard.writeText(full).then(done, function(){ pre.hidden=false; specBtn.textContent=L.hide_spec; }); }
+      catch(e){ pre.hidden=false; specBtn.textContent=L.hide_spec; }
+    };
+    specBtn.onclick = function(){ pre.hidden = !pre.hidden; specBtn.textContent = pre.hidden ? L.show_spec : L.hide_spec; };
+    tblBtn.onclick = function(){
+      if (!tbl.firstChild) tbl.appendChild(rowsTable());
+      tbl.hidden = !tbl.hidden; tblBtn.textContent = tbl.hidden ? L.show_table : L.hide_table;
+    };
+    row.appendChild(copy); row.appendChild(specBtn); row.appendChild(tblBtn);
+    var frag = document.createDocumentFragment(); frag.appendChild(row); frag.appendChild(pre); frag.appendChild(tbl);
+    return frag;
+  }
+  function rowsTable(){
+    var rows = data.rows || [], cols = (data.fields||[]).map(function(f){ return f.name; });
+    var t = el("table"), thead = el("thead"), tr = el("tr"), tb = el("tbody");
+    cols.forEach(function(c){ tr.appendChild(el("th",null,c)); }); thead.appendChild(tr); t.appendChild(thead);
+    rows.slice(0, 500).forEach(function(r){
+      var row = el("tr"); cols.forEach(function(c){ row.appendChild(el("td",null, r[c]==null ? "" : String(r[c]))); }); tb.appendChild(row);
+    });
+    t.appendChild(tb); return t;
+  }
+
+  var opts = R.options || [];
+  opts.forEach(function(o){
+    if (o.rank === "pick"){
+      var c = $("pick");
+      c.appendChild(el("span","badge",L.pick));
+      c.appendChild(el("h3",null,o.name));
+      c.appendChild(el("p","answers",o.answers));
+      var body = el("div","pick-body");
+      body.appendChild(chartBlock(o));
+      var left = el("div"); left.appendChild(el("p","list-h",L.why)); left.appendChild(reasonList(o.why));
+      var right = el("div"); right.appendChild(el("p","list-h",L.costs)); right.appendChild(reasonList(o.costs));
+      body.appendChild(left); body.appendChild(right); c.appendChild(body);
+      c.appendChild(toolRow(o));
+    } else {
+      var a = el("article","card");
+      a.appendChild(el("h3",null,o.name));
+      a.appendChild(el("p","answers",o.answers));
+      a.appendChild(chartBlock(o));
+      if (o.choose_if){ var p = el("p","choose-if"); p.appendChild(el("b",null,L.choose_if + ": ")); p.appendChild(document.createTextNode(o.choose_if)); a.appendChild(p); }
+      a.appendChild(el("p","list-h",L.why)); a.appendChild(reasonList(o.why));
+      a.appendChild(el("p","list-h",L.costs)); a.appendChild(reasonList(o.costs));
+      a.appendChild(toolRow(o));
+      $("alts").appendChild(a);
+    }
+  });
+
+  if ((R.avoid||[]).length){
+    $("avoid-block").hidden = false;
+    R.avoid.forEach(function(v){ var li = el("li"); li.appendChild(el("b",null,v.name)); li.appendChild(document.createTextNode(" — " + v.why)); cites(li, v.cites); $("avoid").appendChild(li); });
+  }
+  if ((R.screenshots||[]).length){
+    $("shots-block").hidden = false;
+    R.screenshots.forEach(function(s){
+      var d = el("div","shot"); d.appendChild(el("b",null,s.label));
+      d.appendChild(el("div","seen", L.seen + ": " + s.seen)); d.appendChild(el("div",null, L.verdict + ": " + s.verdict));
+      $("shots").appendChild(d);
+    });
+  }
+  (data.fields||[]).forEach(function(f){
+    var tr = el("tr"); [f.name, f.type, f.role||"", f.note||""].forEach(function(v){ tr.appendChild(el("td",null,v)); }); $("fields").appendChild(tr);
+  });
+  (data.notes||[]).forEach(function(n){ $("data-notes").appendChild(el("li",null,n)); });
+  if ((R.build_notes||[]).length){ $("build-block").hidden = false; R.build_notes.forEach(function(n){ $("build").appendChild(el("li",null,n)); }); }
+  (R.sources||[]).forEach(function(s, i){
+    var li = el("li"); li.id = "src-" + (i+1); var a = el("a", null, s.label); a.href = s.url; a.target = "_blank"; a.rel = "noopener";
+    li.appendChild(a); $("sources").appendChild(li);
+  });
+  setText("footer", L.footer);
+
+  // All three must load: with integrity pinning, one tampered file blocks just that script.
+  if (typeof window.vegaEmbed !== "function" || !window.vega || !window.vegaLite){
+    charts.forEach(function(c){ c.node.appendChild(el("p","chart-fallback",L.no_charts)); });
+    document.querySelectorAll("pre.spec").forEach(function(p){ p.hidden = false; });
+    return;
+  }
+  draw();
+  var mq = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)");
+  if (mq && mq.addEventListener) mq.addEventListener("change", draw);
+  new MutationObserver(draw).observe(document.documentElement, { attributes:true, attributeFilter:["data-theme"] });
+})();
+</script>
+</body>
+</html>
