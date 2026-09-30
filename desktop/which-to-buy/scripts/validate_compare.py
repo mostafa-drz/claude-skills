@@ -225,14 +225,22 @@ def main(path):
                 return None
             low = min(prices.values())
             return {pid for pid, a in prices.items() if a == low}
+        # Mirrors winners() in the page template: numeric rows with `better`, and yes/no rows
+        # where some products are yes. An unknown value might be the best, so nobody wins.
         r = keys.get(key)
-        if not r or r.get("better") not in BETTER or not isinstance(r.get("values"), dict):
+        if not r or not isinstance(r.get("values"), dict):
             return None
-        nums = {pid: c["v"] for pid, c in r["values"].items() if isinstance(c, dict) and is_num(c.get("v"))}
-        if len(nums) < 2 or len(nums) < len(pids):
-            return None  # an unknown value might be the best, so nobody wins
-        best = (max if r["better"] == "higher" else min)(nums.values())
-        return {pid for pid, v in nums.items() if v == best}
+        vals = {pid: c.get("v") for pid, c in r["values"].items() if isinstance(c, dict) and c.get("v") is not None}
+        if len(vals) < 2 or len(vals) < len(pids):
+            return None
+        if r.get("better") in BETTER and all(is_num(v) for v in vals.values()):
+            best = (max if r["better"] == "higher" else min)(vals.values())
+            won = {pid for pid, v in vals.items() if v == best}
+        elif all(isinstance(v, bool) for v in vals.values()):
+            won = {pid for pid, v in vals.items() if v}
+        else:
+            return None
+        return won if 0 < len(won) < len(vals) else None
 
     # Priorities.
     priorities = doc.get("priorities", [])

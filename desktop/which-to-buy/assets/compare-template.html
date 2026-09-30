@@ -215,9 +215,16 @@ footer ul{margin:0;padding-left:18px}
     var pr = p.price;
     if (!pr) return null;
     var s;
+    // Whole amounts drop the decimals; otherwise show at least the currency's own digits
+    // (3 for KWD) and never fewer than the amount has, so two prices can't round together.
     try {
-      s = new Intl.NumberFormat(data.lang || undefined, { style: "currency", currency: pr.currency,
-        minimumFractionDigits: pr.amount % 1 ? 2 : 0, maximumFractionDigits: pr.amount % 1 ? 2 : 0 }).format(pr.amount);
+      var opts = { style: "currency", currency: pr.currency };
+      var own = new Intl.NumberFormat("en", opts).resolvedOptions().maximumFractionDigits;
+      var has = (String(pr.amount).split(".")[1] || "").length;
+      var digits = has ? Math.min(20, Math.max(own, has)) : 0;
+      opts.minimumFractionDigits = digits;
+      opts.maximumFractionDigits = digits;
+      s = new Intl.NumberFormat(data.lang || undefined, opts).format(pr.amount);
     } catch (e) { s = pr.amount + " " + pr.currency; }
     return (pr.from ? L.from + " " : "") + s;
   }
