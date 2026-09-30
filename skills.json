@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-24",
+  "updated": "2026-09-30",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -786,6 +786,25 @@
       ],
       "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/take-care-of-my-plant/icon.svg",
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/take-care-of-my-plant/SKILL.md",
+      "sideEffects": true
+    },
+    {
+      "name": "which-to-buy",
+      "platform": "desktop",
+      "description": "Compares 2-5 products side by side on one page: specs, prices, visual differences, and a pick for what matters to you. Use for \"which should I buy\", \"X vs Y\" or \"compare these\".",
+      "trigger": "Choosing between products to buy, asking 'X vs Y', 'which should I get', or pasting product links to compare.",
+      "tags": [
+        "shopping",
+        "comparison",
+        "decision",
+        "specs",
+        "visualization",
+        "recommendation",
+        "artifact",
+        "desktop"
+      ],
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/desktop/which-to-buy/icon.svg",
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/desktop/which-to-buy/SKILL.md",
       "sideEffects": true
     }
   ]
