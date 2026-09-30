@@ -1,0 +1,79 @@
+[
+  {
+    "name": "sentiment-over-time-description-only",
+    "skills": ["which-chart"],
+    "query": "As a developer I'm building a dashboard for brand engagement. How should I visualize sentiment analysis (positive, negative, neutral) over time for a brand?",
+    "reference_output": "example-reco.json",
+    "expected_behavior": [
+      "Asks one round of at most three questions in plain text, led by the one question the viewer must answer, each with a proposed default; asks nothing about colours",
+      "After 'go', builds illustrative weekly rows, sets data.illustrative true, and the page shows the illustrative banner",
+      "Names change-over-time and part-to-whole as the relationships",
+      "Gives exactly one pick (diverging stacked columns for 'better or worse') and 1–3 alternatives, each with choose_if",
+      "Keeps sentiment in order Negative → Neutral → Positive, blue positive, grey neutral, red negative; never red vs green",
+      "Mentions the neutral-placement disagreement (centred vs set aside) or its cost",
+      "Lists a pie per period and a dual axis under avoid, each with a cited reason",
+      "Every why line cites a source in reco.sources or is marked judgement; validate_reco.py passes",
+      "Closes in two lines: the pick, what would change it, and an offer to port to React"
+    ]
+  },
+  {
+    "name": "csv-and-screenshot",
+    "skills": ["which-chart"],
+    "conversation": "User attaches sentiment_daily.csv (date, brand, positive, neutral, negative, 365 days × 3 brands) and a screenshot of their current dashboard showing three donut charts, one per month.",
+    "query": "This is what we have now. What should it be? We want to compare our brand against two competitors.",
+    "expected_behavior": [
+      "Profiles the CSV with code: wide format (one column per sentiment), daily grain, 3 brands, counts not shares",
+      "Reshapes to long format and aggregates to weeks or months so rows stay under 1,500, saying so in data.notes",
+      "Sets data.illustrative false and data.source csv",
+      "Fills screenshots with what the donuts show and a verdict citing why a pie per period fails over time",
+      "Asks no question the request already answered (the question is comparing brands)",
+      "Picks a form that compares brands on a common scale, such as small multiples of the diverging columns or net lines, with a shared y scale",
+      "Uses utc time units for date-only strings (no validator warning)"
+    ]
+  },
+  {
+    "name": "brief-already-settled",
+    "skills": ["which-chart"],
+    "conversation": "User pastes 40 rows: product, revenue_q3. 'Small tile on the exec dashboard, execs just need to see which products bring in the most. We use Recharts.'",
+    "query": "Which chart?",
+    "expected_behavior": [
+      "Asks no questions: question, surface, audience and stack are all given",
+      "Picks a sorted horizontal bar (ranking), perhaps top 10 plus 'Other' given the tile size",
+      "Does not pick a pie or treemap for 40 close values; lists the pie under avoid",
+      "Offers to port the pick to Recharts in the closing lines"
+    ]
+  },
+  {
+    "name": "what-about-follow-up",
+    "skills": ["which-chart"],
+    "conversation": "(the sentiment page from the first scenario has been delivered)",
+    "query": "What about a 100% stacked area chart? It looks nicer.",
+    "expected_behavior": [
+      "Evaluates it against the same brief rather than restarting",
+      "Explains in one or two lines that only the bottom band has a common baseline, citing Few (2011)",
+      "Keeps the pick unless the question changed; adds the stacked area to avoid if likely to be built",
+      "Edits reco.json and re-renders the same artifact rather than a new one"
+    ]
+  },
+  {
+    "name": "personal-data-in-rows",
+    "skills": ["which-chart"],
+    "conversation": "User uploads mentions.csv with columns: timestamp, username, message_text, sentiment.",
+    "query": "How should I chart sentiment from this?",
+    "expected_behavior": [
+      "Aggregates to counts per period per sentiment before building rows",
+      "No username or message_text value appears in reco.json or the page",
+      "Says in the closing lines that it kept only counts"
+    ]
+  },
+  {
+    "name": "should-not-trigger",
+    "skills": ["which-chart"],
+    "conversation": ["User: In Recharts, how do I change the tooltip background colour?"],
+    "query": "(no further request)",
+    "expected_behavior": [
+      "Does not start the skill: this is a library how-to, not a chart choice",
+      "Answers directly in the chat"
+    ]
+  }
+]
