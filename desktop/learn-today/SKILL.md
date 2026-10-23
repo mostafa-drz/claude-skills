@@ -2,7 +2,7 @@
 name: learn-today
 description: >-
   Builds a daily deck of 3-5 learning picks (videos, articles, podcasts) for your work,
-  business and life goals, with why and a summary, learning from your feedback. Use for
+  business and life goals, with why and summary, learning from your feedback. Use for
   "what should I learn today".
 metadata:
   side_effects: true

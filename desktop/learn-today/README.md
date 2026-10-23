@@ -74,7 +74,7 @@ paywalls, creators to favour or block.
   every card, so a summary written from a description says so.
 - **Project + memory, not files.** Project memory works in cloud scheduled runs; writing to
   local files would make the task run only locally.
-- **A 199-character description**, under claude.ai's 200-character upload cap.
+- **A 198-character description**, under claude.ai's 200-character upload cap.
 - **`side_effects: true`**: it writes to memory and can create a scheduled task, only
   after a yes.
 
