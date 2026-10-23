@@ -1,0 +1,101 @@
+{
+ "_note": "Fictional example of the shape. Every link and creator here is a placeholder; a real deck only holds links opened this run.",
+ "date": "2026-10-23",
+ "lang": "en",
+ "feedback_storage": "artifact",
+ "mix": ["work", "business", "life"],
+ "daily_minutes": 30,
+ "intro": "Your pitch is Thursday, so today leads with pitching. Shorter videos, like you asked.",
+ "adjusted": [
+  {"change": "Shorter picks: you skipped the last two long podcasts", "source": "Memory"},
+  {"change": "More from Lena Ortiz: you 👍 her pricing teardown", "source": "Memory"}
+ ],
+ "items": [
+  {
+   "title": "Teardown: a B2B pitch that closed in one meeting",
+   "creator": "Lena Ortiz",
+   "url": "https://www.youtube.com/watch?v=EXAMPLE0001",
+   "format": "video",
+   "minutes": 14,
+   "area": "work",
+   "why": "You pitch to Northwind on Thursday. This walks through a real first-meeting pitch, slide by slide, by the creator whose pricing video you liked.",
+   "because": [
+    {"source": "Google Calendar", "fact": "Northwind intro pitch, Thursday 14:00"},
+    {"source": "Memory", "fact": "👍 Lena Ortiz pricing teardown (Oct 20): 'great examples'"}
+   ],
+   "summary": [
+    "Open with their problem in their words, not your company history",
+    "One slide of proof (a number, a logo, a quote) beats five of features",
+    "End on a specific next step with a date, never 'let us know'"
+   ],
+   "try": "Rewrite the first slide of your Northwind deck as one sentence about their problem.",
+   "verified_by": "oembed",
+   "summary_from": "transcript"
+  },
+  {
+   "title": "Why your best customers churn first",
+   "creator": "Field Notes on SaaS",
+   "url": "https://example.com/articles/best-customers-churn",
+   "format": "article",
+   "minutes": 9,
+   "area": "business",
+   "why": "Retention is your Q4 goal, and this argues the at-risk accounts are the power users, with a simple way to spot them.",
+   "because": [
+    {"source": "Project files", "fact": "Goals note: 'Q4: net retention above 110%'"}
+   ],
+   "summary": [
+    "Heavy users hit your product's limits first, so they leave first",
+    "Watch for a drop in breadth (features used), not just logins",
+    "A 15-minute call with three power users finds most of the gaps"
+   ],
+   "try": "List your five heaviest accounts and note the last time you spoke to each.",
+   "verified_by": "opened",
+   "summary_from": "page"
+  },
+  {
+   "title": "The two-minute wind-down: sleep habits that stick",
+   "creator": "Open Mind Radio",
+   "url": "https://example.com/podcast/two-minute-wind-down",
+   "format": "podcast",
+   "minutes": 12,
+   "full_minutes": 38,
+   "area": "life",
+   "why": "You said you want to stop working past 22:00. This episode is about tiny, fixed shutdown routines rather than willpower.",
+   "because": [
+    {"source": "Memory", "fact": "[life] Learn goal: stop working after 22:00"}
+   ],
+   "summary": [
+    "A fixed 'shutdown phrase' tells your brain work is over",
+    "Write tomorrow's first task before closing the laptop",
+    "Best part from 06:40: why a routine beats a rule"
+   ],
+   "try": "Tonight, write tomorrow's first task on paper, then close the laptop.",
+   "verified_by": "opened",
+   "summary_from": "description"
+  },
+  {
+   "title": "Negotiation for people who hate negotiating",
+   "creator": "Harbor Business School (open lecture)",
+   "url": "https://www.youtube.com/watch?v=EXAMPLE0002&t=310",
+   "format": "video",
+   "minutes": 12,
+   "full_minutes": 52,
+   "area": "business",
+   "stretch": true,
+   "why": "A stretch pick: Northwind will ask about price, and this lecture's anchoring section is the part you need.",
+   "because": [
+    {"source": "Google Calendar", "fact": "Northwind intro pitch, Thursday 14:00"}
+   ],
+   "summary": [
+    "Anchor first, with a number you can justify in one sentence",
+    "Silence after a number is a tool, not a problem",
+    "From 05:10: trading concessions instead of giving them"
+   ],
+   "try": "Write the one sentence that justifies your Northwind price.",
+   "verified_by": "oembed",
+   "summary_from": "transcript"
+  }
+ ],
+ "sources_checked": ["Google Calendar", "Linear", "Project files", "Memory", "Past chats", "Web search"],
+ "sources_missing": ["Gmail (not connected)"]
+}
