@@ -75,7 +75,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/workday-summary`](code/workday-summary/SKILL.md) | Summarizes work done today into timesheet-ready bullet points. | Yes |
 | [`/workflow-advisor`](code/workflow-advisor/SKILL.md) | Analyzes recent Claude Code conversations and local Claude state (skills, settings, memory files, CLAUDE.md), researches the latest Claude Code features and best practices online, and suggests one workflow improvement at a time with reasoning and a concrete action item. | Yes |
 
-### Claude Desktop (10)
+### Claude Desktop (11)
 
 | Skill | What it does | Side effects |
 |---|---|---|
