@@ -28,9 +28,10 @@ LABEL_KEYS = ("today", "top_pick", "stretch", "why", "you_get", "try", "open", "
               "picks", "in_all", "of", "from_transcript", "from_page", "from_description")
 YOUTUBE_HOSTS = ("youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be")
 # BCP 47, simplified: language, then optional script, region and variants.
-LANG_RE = re.compile(r"^[a-z]{2,3}(-[A-Z][a-z]{3})?(-([A-Z]{2}|\d{3}))?(-([A-Za-z0-9]{5,8}|\d[A-Za-z0-9]{3}))*$")
-# Playback-only query parameters: they change where a link starts, not what it is.
-PLAYBACK = {"t", "start", "si", "feature", "utm_source", "utm_medium", "utm_campaign"}
+LANG_RE = re.compile(r"^[a-z]{2,3}(-[a-z]{4})?(-([a-z]{2}|\d{3}))?(-([a-z0-9]{5,8}|\d[a-z0-9]{3}))*$", re.I)
+# Tracking parameters never change what a page is. Playback ones (t, si...) only matter on
+# YouTube, where the video id alone identifies the piece; elsewhere ?t= can be a page id.
+TRACKING = ("utm_",)
 
 
 def link_key(parsed):
@@ -40,7 +41,7 @@ def link_key(parsed):
         vid = parsed.path.strip("/") if host == "youtu.be" else (parse_qs(parsed.query).get("v") or [""])[0]
         if vid:
             return ("youtube", vid)
-    query = sorted((k, v) for k, vs in parse_qs(parsed.query).items() if k not in PLAYBACK for v in vs)
+    query = sorted((k, v) for k, vs in parse_qs(parsed.query).items() if not k.startswith(TRACKING) for v in vs)
     return (host.removeprefix("www."), parsed.path.rstrip("/"), tuple(query))
 
 

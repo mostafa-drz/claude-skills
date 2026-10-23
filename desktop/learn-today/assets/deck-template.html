@@ -164,9 +164,9 @@ h1[tabindex="-1"]:focus,h2[tabindex="-1"]:focus{outline:none}
   // Feedback state: {r: {index: "up"|"down"}, d: {index: true}, t: timestamp}. Saved to the
   // browser always and to artifact storage when present; on load the newer copy wins.
   var KEY = "learn-today:" + data.date + ":" + hash(items.map(function (i) { return i.url; }).join("|"));
-  // Taps made before saved feedback finishes loading are kept per card and laid over it,
-  // so a quick tap never erases earlier ratings.
-  var state = { r: {}, d: {}, t: 0 }, loaded = false, early = {};
+  // Taps made before saved feedback finishes loading are kept per card and per field
+  // (rating, done) and laid over it, so a quick tap never erases anything it didn't touch.
+  var state = { r: {}, d: {}, t: 0 }, loaded = false, early = { r: {}, d: {} };
   var useArtifact = data.feedback_storage !== "browser" && window.storage &&
     typeof window.storage.get === "function" && typeof window.storage.set === "function";
   var writing = Promise.resolve();
@@ -280,10 +280,13 @@ h1[tabindex="-1"]:focus,h2[tabindex="-1"]:focus{outline:none}
       b.type = "button";
       b.setAttribute("aria-pressed", "false");
       b.addEventListener("click", function () {
-        if (!loaded) early[i] = true;
         if (p[0] === "done") { if (state.d[i]) delete state.d[i]; else state.d[i] = true; }
         else if (state.r[i] === p[0]) delete state.r[i];
         else state.r[i] = p[0];
+        if (!loaded) {
+          if (p[0] === "done") early.d[i] = !!state.d[i];
+          else early.r[i] = state.r[i] || null;
+        }
         save(); paintFeedback();
       });
       set[p[0]] = b;
@@ -384,12 +387,10 @@ h1[tabindex="-1"]:focus,h2[tabindex="-1"]:focus{outline:none}
     loaded = true;
     if (!saved) return;
     var merged = { r: Object.assign({}, saved.r), d: Object.assign({}, saved.d), t: Math.max(saved.t, state.t) };
-    Object.keys(early).forEach(function (i) {
-      if (state.r[i]) merged.r[i] = state.r[i]; else delete merged.r[i];
-      if (state.d[i]) merged.d[i] = true; else delete merged.d[i];
-    });
+    Object.keys(early.r).forEach(function (i) { if (early.r[i]) merged.r[i] = early.r[i]; else delete merged.r[i]; });
+    Object.keys(early.d).forEach(function (i) { if (early.d[i]) merged.d[i] = true; else delete merged.d[i]; });
     state = merged;
-    if (Object.keys(early).length) save();
+    if (Object.keys(early.r).length || Object.keys(early.d).length) save();
     paintFeedback();
   });
 })();
