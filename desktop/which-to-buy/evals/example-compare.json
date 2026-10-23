@@ -1,0 +1,122 @@
+{
+  "date": "2026-09-30",
+  "title": "Noise-cancelling headphones",
+  "lang": "en",
+  "priorities": [
+    {"label": "Quiet on long flights", "row": "anc"},
+    {"label": "Battery", "row": "battery"},
+    {"label": "Comfortable with glasses", "row": "weight"}
+  ],
+  "assumptions": [
+    "Budget around $450 CAD, from what you said earlier",
+    "Prices from Canadian stores, read today"
+  ],
+  "products": [
+    {
+      "id": "aria-2",
+      "name": "Hush Aria 2",
+      "tagline": "Quietest of the three, heavier",
+      "url": "https://example.com/hush/aria-2",
+      "price": {"amount": 449, "currency": "CAD", "where": "Hush store", "as_of": "2026-09-30", "source": "hush-store"},
+      "pros": ["Best noise cancelling measured", "Folds flat into a small case"],
+      "cons": ["Heaviest here at 290 g", "No aptX support"]
+    },
+    {
+      "id": "quiet-pro",
+      "name": "Northwind Quiet Pro",
+      "tagline": "Lightest and longest battery",
+      "url": "https://example.com/northwind/quiet-pro",
+      "price": {"amount": 399, "currency": "CAD", "where": "Best Buy", "as_of": "2026-09-30", "source": "bestbuy-qp"},
+      "pros": ["60 h battery", "Light, soft pads"],
+      "cons": ["Cancelling a step behind on low rumble"]
+    },
+    {
+      "id": "vale-studio",
+      "name": "Vale Studio",
+      "tagline": "Best sound, weakest cancelling",
+      "url": "https://example.com/vale/studio",
+      "price": {"amount": 379, "currency": "CAD", "where": "Vale store", "as_of": "2026-09-30", "from": true, "source": "vale-store"},
+      "pros": ["Most natural sound", "Replaceable battery"],
+      "cons": ["Noticeably weaker cancelling", "Doesn't fold"]
+    }
+  ],
+  "rows": [
+    {"key": "anc", "label": "Noise reduction (low rumble)", "group": "Noise", "unit": "dB", "better": "higher",
+     "values": {
+       "aria-2": {"v": 31, "source": "lab-review", "note": "Measured, 50-200 Hz"},
+       "quiet-pro": {"v": 26, "source": "lab-review"},
+       "vale-studio": {"v": 19, "source": "lab-review"}}},
+    {"key": "transparency", "label": "Transparency mode", "group": "Noise",
+     "values": {
+       "aria-2": {"v": true, "source": "hush-specs"},
+       "quiet-pro": {"v": true, "source": "northwind-specs"},
+       "vale-studio": {"v": false, "source": "vale-specs"}}},
+    {"key": "battery", "label": "Battery, cancelling on", "group": "Battery", "unit": "h", "better": "higher",
+     "values": {
+       "aria-2": {"v": 30, "source": "hush-specs"},
+       "quiet-pro": {"v": 60, "source": "northwind-specs"},
+       "vale-studio": {"v": 40, "source": "vale-specs"}}},
+    {"key": "quick-charge", "label": "10 min charge gives", "group": "Battery", "unit": "h", "better": "higher",
+     "values": {
+       "aria-2": {"v": 5, "source": "hush-specs"},
+       "quiet-pro": {"v": 6, "source": "northwind-specs"},
+       "vale-studio": {"v": null, "note": "Not published"}}},
+    {"key": "weight", "label": "Weight", "group": "Comfort", "unit": "g", "better": "lower",
+     "values": {
+       "aria-2": {"v": 290, "source": "hush-specs"},
+       "quiet-pro": {"v": 250, "source": "northwind-specs"},
+       "vale-studio": {"v": 275, "source": "vale-specs"}}},
+    {"key": "clamp", "label": "Clamping force", "group": "Comfort",
+     "values": {
+       "aria-2": {"v": "Firm", "source": "lab-review"},
+       "quiet-pro": {"v": "Light", "source": "lab-review"},
+       "vale-studio": {"v": "Medium", "source": "lab-review"}}},
+    {"key": "folds", "label": "Folds flat", "group": "Travel",
+     "values": {
+       "aria-2": {"v": true, "source": "hush-specs"},
+       "quiet-pro": {"v": true, "source": "northwind-specs"},
+       "vale-studio": {"v": false, "source": "vale-specs"}}},
+    {"key": "codecs", "label": "Codecs", "group": "Connection",
+     "values": {
+       "aria-2": {"v": "AAC, LDAC", "source": "hush-specs"},
+       "quiet-pro": {"v": "AAC, aptX Adaptive", "source": "northwind-specs"},
+       "vale-studio": {"v": "AAC, aptX HD", "source": "vale-specs"}}},
+    {"key": "multipoint", "label": "Two devices at once", "group": "Connection",
+     "values": {
+       "aria-2": {"v": true, "source": "hush-specs"},
+       "quiet-pro": {"v": true, "source": "northwind-specs"},
+       "vale-studio": {"v": true, "source": "vale-specs"}}},
+    {"key": "warranty", "label": "Warranty", "group": "Ownership", "unit": "yr", "better": "higher",
+     "values": {
+       "aria-2": {"v": 1, "source": "hush-store"},
+       "quiet-pro": {"v": 2, "source": "bestbuy-qp"},
+       "vale-studio": {"v": 2, "source": "vale-store"}}}
+  ],
+  "verdict": {
+    "pick": "quiet-pro",
+    "headline": "Northwind Quiet Pro: quiet enough, light on glasses, and it lasts the trip",
+    "why": "It's the lightest with the gentlest clamp, which matters most with glasses on a long flight. Its cancelling is 5 dB behind the Aria 2 on engine rumble, noticeable but not night and day, and it doubles the battery for $50 less.",
+    "because": ["weight", "battery", "clamp"],
+    "runner_up": {"id": "aria-2", "when": "if silence matters more than comfort and you don't wear glasses"},
+    "best_for": [
+      {"label": "Quietest", "id": "aria-2", "row": "anc"},
+      {"label": "Longest battery", "id": "quiet-pro", "row": "battery"},
+      {"label": "Lowest price", "id": "vale-studio", "row": "price"}
+    ]
+  },
+  "ask": [
+    "Is 5 dB less cancelling noticeable on a plane?",
+    "Will any of these go on sale soon?",
+    "Which one is easiest to repair?"
+  ],
+  "sources": [
+    {"id": "hush-specs", "title": "Hush Aria 2 spec page", "kind": "maker", "url": "https://example.com/hush/aria-2/specs"},
+    {"id": "northwind-specs", "title": "Northwind Quiet Pro tech specs", "kind": "maker", "url": "https://example.com/northwind/quiet-pro/specs"},
+    {"id": "vale-specs", "title": "Vale Studio manual", "kind": "maker", "url": "https://example.com/vale/studio/manual"},
+    {"id": "lab-review", "title": "Headphone lab measurements", "kind": "review", "url": "https://example.com/lab/anc-2026"},
+    {"id": "hush-store", "title": "Hush store (CA)", "kind": "retailer", "url": "https://example.com/hush/store"},
+    {"id": "bestbuy-qp", "title": "Best Buy Canada listing", "kind": "retailer", "url": "https://example.com/bestbuy/quiet-pro"},
+    {"id": "vale-store", "title": "Vale store (CA)", "kind": "retailer", "url": "https://example.com/vale/store"}
+  ],
+  "sources_missing": ["Amazon.ca (blocked the fetch)"]
+}

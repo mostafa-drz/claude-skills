@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Which To Buy</title>
+<!--
+  which-to-buy page template.
+  Fill it by replacing ONLY the JSON inside <script id="compare-data"> with a validated
+  compare.json (scripts/render_page.py does this). Everything renders from that data with
+  textContent, so nothing in the data is ever parsed as HTML. Fonts are the only external
+  request, with system fallbacks: the page works offline.
+  "Ask Claude" copies a prompt to paste into the chat: an artifact can't post into the
+  conversation itself. Copying falls back to showing the prompt, selected, when the
+  clipboard is blocked. The "differences only" toggle is remembered in localStorage,
+  guarded, so the page renders the same without it.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Instrument+Sans:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#f4f5f7; --surface:#ffffff; --ink:#101218; --muted:#5f6472; --line:#e1e3e9;
+  --accent:#2f47ff; --accent-soft:#e7eaff; --bar:#c9cedb; --good:#17704a; --bad:#b4232c;
+  --display:"Bricolage Grotesque",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --body:"Instrument Sans",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1015; --surface:#161922; --ink:#f1f2f5; --muted:#9398a6; --line:#262a35;
+    --accent:#8c9cff; --accent-soft:#1d2240; --bar:#3a4050; --good:#5fd29c; --bad:#ff8a8f; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1015; --surface:#161922; --ink:#f1f2f5; --muted:#9398a6; --line:#262a35;
+  --accent:#8c9cff; --accent-soft:#1d2240; --bar:#3a4050; --good:#5fd29c; --bad:#ff8a8f; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0 16px 88px;background:var(--bg);color:var(--ink);
+  font:16px/1.55 var(--body);-webkit-text-size-adjust:100%}
+.wrap{max-width:960px;margin:0 auto}
+a{color:inherit;text-decoration-color:var(--line);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px;border-radius:6px}
+.label{font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted);margin:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:32px}
+.pill{font-family:var(--mono);font-size:12px;color:var(--accent);border:1px solid var(--accent);
+  border-radius:999px;padding:2px 10px;white-space:nowrap}
+.banner{margin-top:18px;padding:10px 14px;border:1px solid var(--bad);border-radius:10px;font-size:14px}
+
+/* Verdict */
+.hero{padding:34px 0 30px;border-bottom:1px solid var(--line)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(32px,7vw,54px);line-height:1.03;
+  letter-spacing:-.035em;margin:12px 0 0;text-wrap:balance}
+h1 .dot{color:var(--accent)}
+.headline{font-size:19px;line-height:1.45;margin:14px 0 0;max-width:62ch;text-wrap:pretty}
+.why{color:var(--muted);margin:10px 0 0;max-width:66ch;text-wrap:pretty}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;align-items:center}
+.chip{font-size:13px;border-radius:999px;padding:3px 11px;background:var(--accent-soft);color:var(--ink)}
+.chip b{font-weight:600}
+.runner{margin:16px 0 0;font-size:15px}
+.runner b{font-weight:600}
+
+/* Priorities tally */
+.tally{display:grid;gap:10px;margin-top:22px}
+.tally-row{display:grid;grid-template-columns:minmax(120px,200px) 1fr auto;gap:12px;align-items:center;font-size:14px}
+.track{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.track i{display:block;height:100%;background:var(--bar);border-radius:99px}
+.tally-row.lead .track i{background:var(--accent)}
+.num{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+section{padding-top:36px}
+.head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+
+/* Product cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;
+  display:flex;flex-direction:column;gap:6px;position:relative}
+.card.is-pick{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.card .badge{position:absolute;top:-10px;left:14px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;
+  text-transform:uppercase;background:var(--accent);color:var(--bg);border-radius:99px;padding:2px 9px}
+.card h3{margin:4px 0 0;font:600 17px/1.3 var(--body)}
+.card .tag{margin:0;color:var(--muted);font-size:14px}
+.price{font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:-.02em;margin-top:6px;line-height:1.1}
+.price small{font-family:var(--body);font-weight:400;font-size:13px;color:var(--muted);letter-spacing:0}
+.where{font-size:12.5px;color:var(--muted)}
+.card .actions{margin-top:auto;padding-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:transparent;border-radius:999px;padding:6px 13px;font-size:13.5px;
+  cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--bg);font-weight:600}
+
+/* Toggle */
+.switch{display:inline-flex;align-items:center;gap:10px;font-size:14px;cursor:pointer;user-select:none}
+.switch input{appearance:none;-webkit-appearance:none;width:36px;height:20px;border-radius:99px;background:var(--line);
+  position:relative;margin:0;cursor:pointer;transition:background .15s}
+.switch input::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;
+  background:var(--surface);transition:transform .15s}
+.switch input:checked{background:var(--accent)}
+.switch input:checked::after{transform:translateX(16px)}
+
+/* Table */
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface);
+  -webkit-overflow-scrolling:touch}
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:14.5px}
+th,td{padding:11px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+thead th{font:600 14px var(--body);position:sticky;top:0;background:var(--surface);z-index:1;white-space:nowrap}
+thead th.is-pick{color:var(--accent)}
+tbody th{font-weight:400;color:var(--muted);position:sticky;left:0;background:var(--surface);min-width:150px;max-width:220px;z-index:1}
+thead th:first-child{left:0;z-index:2}
+td{min-width:132px}
+tr.group th{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink);
+  background:var(--bg);padding-block:7px}
+tr.group td{background:var(--bg);padding-block:7px}
+tr.decides th{color:var(--ink);box-shadow:inset 3px 0 0 var(--accent)}
+.mark{font-family:var(--mono);font-size:10px;color:var(--accent);margin-left:6px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.unit{font-size:12px;color:var(--muted)}
+.val{display:flex;align-items:baseline;gap:6px;font-variant-numeric:tabular-nums}
+td.win .val{color:var(--accent);font-weight:600}
+td.win .val::after{content:"\25CF";font-size:8px;transform:translateY(-2px)}
+.bar{height:5px;border-radius:99px;background:var(--line);margin-top:7px;overflow:hidden;max-width:140px}
+.bar i{display:block;height:100%;background:var(--bar)}
+td.win .bar i{background:var(--accent)}
+.yes{color:var(--good)} .no{color:var(--muted)}
+.unknown{color:var(--muted)}
+.note{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+sup a{font-family:var(--mono);font-size:10px;color:var(--muted);text-decoration:none;margin-left:2px}
+sup a:hover{color:var(--accent)}
+tr[hidden]{display:none}
+
+/* Pros & cons */
+.pc{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.pc > div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.pc h3{margin:0 0 8px;font:600 15px var(--body)}
+.pc ul{list-style:none;margin:0;padding:0;display:grid;gap:5px;font-size:14px}
+.pc li{display:grid;grid-template-columns:16px 1fr;gap:6px}
+.pc li::before{font-family:var(--mono);font-weight:500}
+.pc li.pro::before{content:"+";color:var(--good)}
+.pc li.con::before{content:"\2212";color:var(--bad)}
+
+/* Ask */
+.asks{display:flex;flex-wrap:wrap;gap:8px}
+.asks .btn{text-align:left}
+.hint{font-size:13px;color:var(--muted);margin:10px 0 0}
+
+footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);display:grid;gap:10px}
+footer ol{margin:0;padding-left:20px;display:grid;gap:2px}
+footer ul{margin:0;padding-left:18px}
+
+.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,20px);opacity:0;pointer-events:none;
+  background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 16px;font-size:14px;
+  max-width:min(560px,calc(100vw - 32px));transition:opacity .2s,transform .2s;z-index:10}
+.toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast textarea{display:block;width:100%;margin-top:8px;font:13px var(--mono);border-radius:8px;border:0;
+  padding:8px;resize:none;background:var(--bg);color:var(--ink)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+@media (max-width:520px){
+  .tally-row{grid-template-columns:1fr auto}
+  .tally-row .track{grid-column:1 / -1;grid-row:2}
+  tbody th{min-width:118px}
+  td{min-width:112px}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script type="application/json" id="compare-data">
+{"date":"2026-09-30","title":"Example","products":[{"id":"a","name":"Product A","price":{"amount":10,"currency":"USD","where":"Store","as_of":"2026-09-30","source":"s"}},{"id":"b","name":"Product B","price":{"amount":12,"currency":"USD","where":"Store","as_of":"2026-09-30","source":"s"}}],"rows":[{"key":"x","label":"Example","group":"Specs","better":"higher","values":{"a":{"v":1,"source":"s"},"b":{"v":2,"source":"s"}}}],"verdict":{"pick":"b","headline":"Example","why":"Example.","because":["x"]},"sources":[{"id":"s","title":"Example","kind":"maker"}]}
+</script>
+<script>
+(function () {
+  var data = JSON.parse(document.getElementById("compare-data").textContent);
+  var app = document.getElementById("app");
+  var L = Object.assign({
+    pick: "Our pick for you", why: "Why", decided_by: "Decided by", runner_up: "Runner-up",
+    best_for: "Best for", priorities: "What matters to you", assumed: "Assumed",
+    side_by_side: "Side by side", differences_only: "Differences only", price: "Price",
+    pros: "Pros", cons: "Cons", ask: "Ask Claude", ask_about: "Ask about this",
+    copied: "Copied. Paste it in the chat to keep going.",
+    copy_failed: "Couldn't copy here. Select it and paste it in the chat:",
+    sources: "Sources", not_available: "Couldn't read", unknown: "Not found",
+    partly_unverified: "Some values are from Claude\u2019s knowledge, not a page read today. They\u2019re marked unverified.",
+    unverified: "Unverified", wins: "wins", yes: "Yes", no: "No", from: "from", compared: "compared",
+    matters: "matters", page: "Page", ask_hint: "Each button copies a question with this comparison\u2019s context. Paste it in the chat.",
+    offline: "No web access this run: specs and prices are from Claude's knowledge and unverified."
+  }, data.labels || {});
+  document.documentElement.lang = data.lang || "en";
+  document.title = "Which To Buy · " + data.title;
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function add(parent, child) { parent.appendChild(child); return child; }
+  function isNum(v) { return typeof v === "number" && isFinite(v); }
+
+  var products = data.products || [];
+  var byId = Object.create(null);
+  products.forEach(function (p) { byId[p.id] = p; });
+  var sources = data.sources || [];
+  var srcIndex = Object.create(null);
+  sources.forEach(function (s, i) { srcIndex[s.id] = i + 1; });
+  var pick = byId[data.verdict && data.verdict.pick] || products[0];
+  var because = (data.verdict && data.verdict.because) || [];
+
+  function money(p) {
+    var pr = p.price;
+    if (!pr) return null;
+    var s;
+    // Whole amounts drop the decimals; otherwise show at least the currency's own digits
+    // (3 for KWD) and never fewer than the amount has, so two prices can't round together.
+    try {
+      var opts = { style: "currency", currency: pr.currency };
+      var own = new Intl.NumberFormat("en", opts).resolvedOptions().maximumFractionDigits;
+      var has = (String(pr.amount).split(".")[1] || "").length;
+      var digits = has ? Math.min(20, Math.max(own, has)) : 0;
+      opts.minimumFractionDigits = digits;
+      opts.maximumFractionDigits = digits;
+      s = new Intl.NumberFormat(data.lang || undefined, opts).format(pr.amount);
+    } catch (e) { s = pr.amount + " " + pr.currency; }
+    return (pr.from ? L.from + " " : "") + s;
+  }
+
+  // The price row is built from the products, so the table and the cards can't disagree.
+  // It only compares when every price shares a currency.
+  var rows = (data.rows || []).slice();
+  var currencies = Object.create(null);
+  products.forEach(function (p) { if (p.price) currencies[p.price.currency] = 1; });
+  var oneCurrency = Object.keys(currencies).length === 1;
+  var priceRow = { key: "price", label: L.price, group: L.price, better: oneCurrency ? "lower" : null, values: {} };
+  products.forEach(function (p) {
+    priceRow.values[p.id] = p.price
+      ? { v: p.price.amount, source: p.price.source, note: p.price.where + ", " + p.price.as_of + (p.price.note ? " \u00b7 " + p.price.note : ""), display: money(p) }
+      : { v: null, note: p.price_note };
+  });
+  rows.unshift(priceRow);
+  var rowByKey = Object.create(null);
+  rows.forEach(function (r) { rowByKey[r.key] = r; });
+
+  function known(r) {
+    return products.map(function (p) { return r.values[p.id]; })
+      .filter(function (c) { return c && c.v !== null && c.v !== undefined; });
+  }
+  function winners(r) {
+    // A winner has to beat every product. While any value is unknown, nobody wins the row.
+    var cells = known(r);
+    if (cells.length < 2 || cells.length < products.length) return {};
+    var out = {};
+    if (r.better && cells.every(function (c) { return isNum(c.v); })) {
+      var vals = cells.map(function (c) { return c.v; });
+      var best = r.better === "lower" ? Math.min.apply(null, vals) : Math.max.apply(null, vals);
+      if (vals.every(function (v) { return v === best; })) return {};
+      products.forEach(function (p) { var c = r.values[p.id]; if (c && c.v === best) out[p.id] = 1; });
+    } else if (cells.every(function (c) { return typeof c.v === "boolean"; })) {
+      var t = cells.filter(function (c) { return c.v; }).length;
+      if (t === 0 || t === cells.length) return {};
+      products.forEach(function (p) { var c = r.values[p.id]; if (c && c.v === true) out[p.id] = 1; });
+    }
+    return out;
+  }
+  function differs(r) {
+    var cells = products.map(function (p) { var c = r.values[p.id]; return c ? JSON.stringify(c.v) : "null"; });
+    return cells.some(function (c) { return c !== cells[0]; });
+  }
+
+  // Copy a prompt for the chat. The artifact can't send to the conversation, so this is the bridge.
+  var toast = document.getElementById("toast"), toastTimer;
+  function showToast(msg, prompt) {
+    toast.textContent = "";
+    add(toast, el("span", null, msg));
+    if (prompt) {
+      var ta = add(toast, el("textarea"));
+      ta.readOnly = true; ta.rows = 3; ta.value = prompt;
+      setTimeout(function () { try { ta.focus(); ta.select(); } catch (e) {} }, 30);
+    }
+    toast.classList.add("on");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.classList.remove("on"); }, prompt ? 12000 : 2600);
+  }
+  function legacyCopy(text) {
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      var ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      return ok;
+    } catch (e) { return false; }
+  }
+  function copy(prompt) {
+    var done = function () { showToast(L.copied); };
+    var fail = function () { if (legacyCopy(prompt)) done(); else showToast(L.copy_failed, prompt); };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(prompt).then(done, fail);
+        return;
+      }
+    } catch (e) {}
+    fail();
+  }
+  function askButton(text, prompt, primary) {
+    var b = el("button", "btn" + (primary ? " primary" : ""), text);
+    b.type = "button";
+    b.addEventListener("click", function () { copy(prompt); });
+    return b;
+  }
+  var context = " (from my which-to-buy comparison of " + data.title + ": " +
+    products.map(function (p) { return p.name; }).join(", ") + ")";
+
+  // Top
+  var top = add(app, el("div", "top"));
+  var when = new Date(data.date + "T12:00:00");
+  add(top, el("p", "label", (isNaN(when) ? data.date :
+    when.toLocaleDateString(data.lang || undefined, { month: "long", day: "numeric", year: "numeric" })) + " · " + data.title));
+  add(top, el("span", "pill", products.length + " " + L.compared));
+  var fromClaude = Object.create(null);
+  sources.forEach(function (s) { if (s.kind === "claude") fromClaude[s.id] = 1; });
+  if (data.offline) add(app, el("div", "banner", L.offline));
+  else if (Object.keys(fromClaude).length) add(app, el("div", "banner", L.partly_unverified));
+
+  // Verdict
+  var hero = add(app, el("header", "hero"));
+  add(hero, el("p", "label", L.pick));
+  var h1 = add(hero, el("h1", null, pick.name));
+  add(h1, el("span", "dot", "."));
+  add(hero, el("p", "headline", data.verdict.headline));
+  add(hero, el("p", "why", data.verdict.why));
+  if (because.length) {
+    var dc = add(hero, el("div", "chips"));
+    add(dc, el("span", "label", L.decided_by));
+    because.forEach(function (k) { if (rowByKey[k]) add(dc, el("span", "chip", rowByKey[k].label)); });
+  }
+  var ru = data.verdict.runner_up;
+  if (ru && byId[ru.id]) {
+    var rp = add(hero, el("p", "runner"));
+    add(rp, el("span", "label", L.runner_up + "  "));
+    add(rp, el("b", null, byId[ru.id].name));
+    rp.appendChild(document.createTextNode(", " + ru.when));
+  }
+  var bf = (data.verdict.best_for || []).filter(function (b) { return byId[b.id]; });
+  if (bf.length) {
+    var bc = add(hero, el("div", "chips"));
+    add(bc, el("span", "label", L.best_for));
+    bf.forEach(function (b) {
+      var c = add(bc, el("span", "chip"));
+      add(c, el("b", null, b.label));
+      c.appendChild(document.createTextNode(" · " + byId[b.id].name));
+    });
+  }
+
+  // What matters: row wins on the user's own priorities. Counted, never scored.
+  var prios = (data.priorities || []).filter(function (p) { return rowByKey[p.row]; });
+  if (prios.length) {
+    var ps = add(app, el("section"));
+    var ph = add(ps, el("div", "head"));
+    add(ph, el("h2", "label", L.priorities));
+    var pc = add(ps, el("div", "chips"));
+    prios.forEach(function (p) { add(pc, el("span", "chip", p.label)); });
+    var counts = {};
+    products.forEach(function (p) { counts[p.id] = 0; });
+    prios.forEach(function (p) { var w = winners(rowByKey[p.row]); Object.keys(w).forEach(function (id) { counts[id]++; }); });
+    var max = Math.max.apply(null, products.map(function (p) { return counts[p.id]; }));
+    var tally = add(ps, el("div", "tally"));
+    products.slice().sort(function (a, b) { return counts[b.id] - counts[a.id]; }).forEach(function (p) {
+      var r = add(tally, el("div", "tally-row" + (counts[p.id] === max && max > 0 ? " lead" : "")));
+      add(r, el("span", null, p.name));
+      var t = add(r, el("span", "track"));
+      var i = add(t, el("i"));
+      i.style.width = (prios.length ? counts[p.id] / prios.length * 100 : 0) + "%";
+      add(r, el("span", "num", counts[p.id] + " / " + prios.length + " " + L.wins));
+    });
+  }
+  if (data.assumptions && data.assumptions.length) {
+    add(app, el("p", "hint", L.assumed + ": " + data.assumptions.join(" · ")));
+  }
+
+  // Product cards
+  var cs = add(app, el("section"));
+  var cards = add(cs, el("div", "cards"));
+  products.forEach(function (p) {
+    var c = add(cards, el("article", "card" + (p === pick ? " is-pick" : "")));
+    if (p === pick) add(c, el("span", "badge", L.pick));
+    add(c, el("h3", null, p.name));
+    if (p.tagline) add(c, el("p", "tag", p.tagline));
+    var pr = add(c, el("div", "price", money(p) || "—"));
+    if (!p.price && p.price_note) add(pr, el("small", null, " " + p.price_note));
+    if (p.price) add(c, el("span", "where", p.price.where + " · " + p.price.as_of));
+    var a = add(c, el("div", "actions"));
+    add(a, askButton(L.ask, "About the " + p.name + context + ": ", p === pick));
+    if (p.url) {
+      var link = add(a, el("a", "btn", L.page + " ↗"));
+      link.href = p.url; link.target = "_blank"; link.rel = "noopener noreferrer";
+    }
+  });
+
+  // Side by side
+  var ts = add(app, el("section"));
+  var th = add(ts, el("div", "head"));
+  add(th, el("h2", "label", L.side_by_side));
+  var sw = add(th, el("label", "switch"));
+  var cb = add(sw, el("input"));
+  cb.type = "checkbox";
+  sw.appendChild(document.createTextNode(L.differences_only));
+  var scroll = add(ts, el("div", "scroll"));
+  var table = add(scroll, el("table"));
+  var thead = add(table, el("thead"));
+  var hr = add(thead, el("tr"));
+  add(hr, el("th", null, ""));
+  products.forEach(function (p) { add(hr, el("th", p === pick ? "is-pick" : null, p.name)); });
+  var tbody = add(table, el("tbody"));
+  var groups = [], groupRows = Object.create(null);
+  rows.forEach(function (r) {
+    if (!groupRows[r.group]) { groupRows[r.group] = []; groups.push(r.group); }
+    groupRows[r.group].push(r);
+  });
+  var prioKeys = Object.create(null);
+  prios.forEach(function (p) { prioKeys[p.row] = 1; });
+  var toggleable = [];
+
+  function cellContent(td, r, c, max) {
+    if (!c || c.v === null || c.v === undefined) {
+      var u = add(td, el("span", "unknown", "—"));
+      u.title = L.unknown;
+      if (c && c.note) add(td, el("span", "note", c.note));
+      return;
+    }
+    var v = add(td, el("div", "val"));
+    if (typeof c.v === "boolean") add(v, el("span", c.v ? "yes" : "no", c.v ? L.yes : L.no));
+    else if (c.display) add(v, el("span", null, c.display));
+    else {
+      add(v, el("span", null, isNum(c.v) ? c.v.toLocaleString(data.lang || undefined) : c.v));
+      if (r.unit && isNum(c.v)) add(v, el("span", "unit", r.unit));
+    }
+    if (c.source && srcIndex[c.source]) {
+      var sup = add(v, el("sup"));
+      var a = add(sup, el("a", null, String(srcIndex[c.source])));
+      a.href = "#src-" + c.source;
+      a.title = sources[srcIndex[c.source] - 1].title;
+    }
+    if (r.better && isNum(c.v) && max > 0) {
+      var bar = add(td, el("div", "bar"));
+      var i = add(bar, el("i"));
+      i.style.width = Math.max(4, c.v / max * 100) + "%";
+    }
+    if (c.note) add(td, el("span", "note", c.note));
+    if (fromClaude[c.source] && !data.offline) add(td, el("span", "note", L.unverified));
+  }
+
+  groups.forEach(function (g) {
+    var gr = add(tbody, el("tr", "group"));
+    var gth = add(gr, el("th", null, g));
+    gth.scope = "rowgroup";
+    products.forEach(function () { add(gr, el("td")); });
+    var members = [];
+    groupRows[g].forEach(function (r) {
+      var w = winners(r);
+      var nums = known(r).map(function (c) { return c.v; }).filter(isNum);
+      var max = nums.length ? Math.max.apply(null, nums) : 0;
+      var tr = add(tbody, el("tr", because.indexOf(r.key) >= 0 ? "decides" : null));
+      var rh = add(tr, el("th", null, r.label));
+      rh.scope = "row";
+      if (r.unit && !r.better) add(rh, el("span", "unit", " (" + r.unit + ")"));
+      if (prioKeys[r.key]) add(rh, el("span", "mark", L.matters));
+      products.forEach(function (p) { cellContent(add(tr, el("td", w[p.id] ? "win" : null)), r, r.values[p.id], max); });
+      var keep = differs(r) || prioKeys[r.key] || because.indexOf(r.key) >= 0 || r.key === "price";
+      members.push({ tr: tr, keep: keep });
+    });
+    toggleable.push({ header: gr, members: members });
+  });
+
+  var PREF = "which-to-buy:diff-only";
+  function applyDiff(on) {
+    toggleable.forEach(function (g) {
+      var shown = 0;
+      g.members.forEach(function (m) { m.tr.hidden = on && !m.keep; if (!m.tr.hidden) shown++; });
+      g.header.hidden = shown === 0;
+    });
+  }
+  try { cb.checked = localStorage.getItem(PREF) === "1"; } catch (e) {}
+  applyDiff(cb.checked);
+  cb.addEventListener("change", function () {
+    applyDiff(cb.checked);
+    try { localStorage.setItem(PREF, cb.checked ? "1" : "0"); } catch (e) {}
+  });
+
+  // Pros & cons
+  if (products.some(function (p) { return (p.pros && p.pros.length) || (p.cons && p.cons.length); })) {
+    var pcs = add(app, el("section"));
+    add(add(pcs, el("div", "head")), el("h2", "label", L.pros + " & " + L.cons));
+    var grid = add(pcs, el("div", "pc"));
+    products.forEach(function (p) {
+      var d = add(grid, el("div"));
+      add(d, el("h3", null, p.name));
+      var ul = add(d, el("ul"));
+      (p.pros || []).forEach(function (t) { add(ul, el("li", "pro", t)); });
+      (p.cons || []).forEach(function (t) { add(ul, el("li", "con", t)); });
+    });
+  }
+
+  // Ask Claude
+  var as = add(app, el("section"));
+  add(add(as, el("div", "head")), el("h2", "label", L.ask));
+  var asks = add(as, el("div", "asks"));
+  (data.ask || []).forEach(function (q) { add(asks, askButton(q, q + context)); });
+  add(asks, askButton(L.ask_about + "…", "About my which-to-buy comparison" + context + ": "));
+  add(as, el("p", "hint", L.ask_hint));
+
+  // Sources
+  var foot = add(app, el("footer"));
+  add(foot, el("span", "label", L.sources));
+  var ol = add(foot, el("ol"));
+  sources.forEach(function (s) {
+    var li = add(ol, el("li"));
+    li.id = "src-" + s.id;
+    if (s.url) {
+      var a = add(li, el("a", null, s.title));
+      a.href = s.url; a.target = "_blank"; a.rel = "noopener noreferrer";
+    } else li.appendChild(document.createTextNode(s.title));
+    li.appendChild(document.createTextNode(" · " + s.kind));
+  });
+  if (data.sources_missing && data.sources_missing.length) {
+    add(foot, el("span", null, L.not_available + ": " + data.sources_missing.join(" · ")));
+  }
+})();
+</script>
+</body>
+</html>
