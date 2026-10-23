@@ -1,0 +1,82 @@
+[
+  {
+    "name": "goals-and-calendar",
+    "skills": ["learn-today"],
+    "conversation": "(in a Cowork project with a goals note: 'Q4 retention above 110%; get better at B2B sales; stop working after 22:00'. Calendar: Northwind pitch Thursday. Memory: liked a pricing teardown video, skipped two long podcasts. Web search on. Gmail not connected.)",
+    "query": "What should I learn today?",
+    "reference_output": "example-deck.json",
+    "expected_behavior": [
+      "Searches the web and opens every candidate; YouTube links are checked with oEmbed",
+      "Top pick ties to the Thursday pitch and fits the 30-minute budget",
+      "Covers work, business and life across 3-5 cards, with at most one stretch card",
+      "Every because line cites a source in sources_checked (Project files, Google Calendar, Memory), and Gmail is listed as missing",
+      "adjusted names the shorter-picks change and cites Memory",
+      "deck.json passes validate_deck.py; the artifact is the template plus render_page.py --data, written once",
+      "Closes in two lines: sources read, and how to send feedback"
+    ]
+  },
+  {
+    "name": "feedback-pasted",
+    "skills": ["learn-today"],
+    "conversation": "(the next morning, in the same project)",
+    "query": "learn-today feedback 2026-10-23:\n👍 1 Teardown: a B2B pitch that closed in one meeting (work, video)\n👎 3 The two-minute wind-down (life, podcast)\nAlso the podcast was too slow.",
+    "expected_behavior": [
+      "Saves the feedback with the reason ('too slow') before picking",
+      "Today's deck leans toward the liked creator or format and avoids slow podcasts",
+      "adjusted shows that change, citing You or Memory",
+      "Does not repeat any link from yesterday's deck"
+    ]
+  },
+  {
+    "name": "cold-start",
+    "skills": ["learn-today"],
+    "conversation": "(fresh chat, no memory, no connectors, web search on)",
+    "query": "learn today",
+    "expected_behavior": [
+      "Asks one line about goals in work, business and life, and nothing else",
+      "Builds the deck from the answer with because lines citing You",
+      "Says once that with no memory the deck starts fresh"
+    ]
+  },
+  {
+    "name": "no-web-search",
+    "skills": ["learn-today"],
+    "conversation": "(web search and fetch are off)",
+    "query": "What should I watch today to learn?",
+    "expected_behavior": [
+      "Says it needs web search to find and verify links, and stops",
+      "Does not produce any link from memory or a guessed YouTube URL"
+    ]
+  },
+  {
+    "name": "scheduled-run",
+    "skills": ["learn-today"],
+    "conversation": "(a scheduled task in the project: 'Run learn-today for today. Lead with a five-line text list, then the deck.')",
+    "query": "(scheduled)",
+    "expected_behavior": [
+      "Asks no questions",
+      "Leads with a short text list of title, format, minutes and link, then the deck",
+      "Saves the deck line to memory as the no-repeat history"
+    ]
+  },
+  {
+    "name": "dead-link",
+    "skills": ["learn-today"],
+    "conversation": "(a strong candidate video returns 404 from oEmbed)",
+    "query": "what should I learn today",
+    "expected_behavior": [
+      "Drops the video and picks another verified one, without mentioning the dead one as a pick",
+      "If fewer than three verify, gives them as text and says why instead of padding"
+    ]
+  },
+  {
+    "name": "schedule-it",
+    "skills": ["learn-today"],
+    "conversation": "(a deck was just shown inside a project)",
+    "query": "Do this every morning",
+    "expected_behavior": [
+      "Proposes one message: daily 07:00, auto-approve, the instruction, any non-default settings",
+      "Creates it only after a yes, and never claims it is scheduled without seeing it created"
+    ]
+  }
+]

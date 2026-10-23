@@ -75,12 +75,13 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/workday-summary`](code/workday-summary/SKILL.md) | Summarizes work done today into timesheet-ready bullet points. | Yes |
 | [`/workflow-advisor`](code/workflow-advisor/SKILL.md) | Analyzes recent Claude Code conversations and local Claude state (skills, settings, memory files, CLAUDE.md), researches the latest Claude Code features and best practices online, and suggests one workflow improvement at a time with reasoning and a concrete action item. | Yes |
 
-### Claude Desktop (9)
+### Claude Desktop (10)
 
 | Skill | What it does | Side effects |
 |---|---|---|
 | [`/day-timeline`](desktop/day-timeline/SKILL.md) | Builds an evidence-based, reference-linked timeline of a single workday by merging every connected source — calendar, email, Slack and other chat, issue trackers, docs, and Claude Code sessions — into one chronological view, rendered as both Markdown and an elegant minimal HTML page. | Yes |
 | [`/inbox-catchup`](desktop/inbox-catchup/SKILL.md) | Scans all connected communication channels — Gmail, Slack, Calendar, and any available integrations — then produces a prioritized catchup briefing. | Yes |
+| <img src="desktop/learn-today/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/learn-today`](desktop/learn-today/SKILL.md) | Builds a daily deck of 3-5 learning picks (videos, articles, podcasts) for your work, business and life goals, with why and a summary, learning from your feedback. | Yes |
 | <img src="desktop/make-it-itinerary/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/make-it-itinerary`](desktop/make-it-itinerary/SKILL.md) | Turns an existing travel conversation into a day-by-day trip itinerary. | No |
 | <img src="desktop/make-it-runbook/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/make-it-runbook`](desktop/make-it-runbook/SKILL.md) | Turns the current conversation into a trackable, phase-by-phase runbook: a page with a checkbox per step, a progress bar, amber bars for forced waits, notes for warnings, and copyable literal values (commands, DNS records, amounts). | No |
 | <img src="desktop/one-thing-today/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/one-thing-today`](desktop/one-thing-today/SKILL.md) | Picks the ONE thing to focus on today, for work, personal life or any area, from connected apps and memory, with why and a first step. | Yes |

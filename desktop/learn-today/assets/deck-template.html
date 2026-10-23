@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learn Today</title>
+<!--
+  learn-today deck template.
+  Fill it by replacing ONLY the JSON inside <script id="deck-data"> with a validated
+  deck.json (scripts/render_page.py does this). Everything renders from that data with
+  textContent, and links are only set when they are https, so nothing in the data is ever
+  parsed as HTML. Fonts are the only external request, with system fallbacks.
+  Feedback taps save to the artifact's own storage when the surface provides one
+  (feedback_storage: "artifact", the default), and always to localStorage. Every call is
+  guarded, so the deck works the same with no storage at all.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Instrument+Sans:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#f6f4ef; --surface:#ffffff; --ink:#16151a; --muted:#66636d; --line:#e4e0d8;
+  --accent:#1f4fd6; --accent-ink:#ffffff; --soft:#ebeffc;
+  --work:#1f4fd6; --business:#a85a00; --life:#1c7a4d; --other:#6b4fbf;
+  --up:#1c7a4d; --down:#b4232c;
+  --display:"Fraunces",Georgia,"Times New Roman",serif;
+  --body:"Instrument Sans",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f0f12; --surface:#18181d; --ink:#f2f1ee; --muted:#9d9aa5; --line:#2a2a31;
+    --accent:#8fa8ff; --accent-ink:#0f0f12; --soft:#1c2340;
+    --work:#8fa8ff; --business:#f0a95a; --life:#6fd3a0; --other:#b9a4ff;
+    --up:#6fd3a0; --down:#ff8a8f; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f0f12; --surface:#18181d; --ink:#f2f1ee; --muted:#9d9aa5; --line:#2a2a31;
+  --accent:#8fa8ff; --accent-ink:#0f0f12; --soft:#1c2340;
+  --work:#8fa8ff; --business:#f0a95a; --life:#6fd3a0; --other:#b9a4ff;
+  --up:#6fd3a0; --down:#ff8a8f; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--body);
+  -webkit-text-size-adjust:100%;overflow:hidden}
+button,a.btn{font:600 15px var(--body);border-radius:999px;cursor:pointer;text-decoration:none;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;
+  transition:transform .15s,background .15s,border-color .15s}
+button:focus-visible,a.btn:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.label{font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted)}
+.app{height:100%;display:grid;grid-template-rows:auto 1fr auto;grid-template-columns:minmax(0,1fr);max-width:640px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 16px 8px}
+.dots{display:flex;gap:6px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--line);transition:background .2s,width .2s}
+.dots i.on{width:20px;border-radius:4px;background:var(--ink)}
+.viewport{min-width:0;min-height:0;overflow:hidden;position:relative;touch-action:pan-y}
+.track{display:flex;height:100%;transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.slide{flex:0 0 100%;min-width:0;height:100%;overflow-y:auto;padding:12px 16px 28px;-webkit-overflow-scrolling:touch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px 20px 20px;
+  border-top:5px solid var(--tone,var(--accent))}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.chip{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;
+  border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--muted);white-space:nowrap}
+.chip.tone{color:var(--tone);border-color:var(--tone)}
+.chip.top{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+h1,h2{font-family:var(--display);font-weight:800;letter-spacing:-.02em;margin:0;text-wrap:balance}
+h1{font-size:clamp(32px,8vw,48px);line-height:1.05}
+h2{font-size:clamp(24px,6vw,32px);line-height:1.12}
+h1[tabindex="-1"]:focus,h2[tabindex="-1"]:focus{outline:none}
+.creator{margin:8px 0 0;color:var(--muted);font-size:14.5px}
+.block{margin-top:20px}
+.block .label{display:block;margin-bottom:6px}
+.why{margin:0;font-size:17px;line-height:1.5;text-wrap:pretty}
+.because{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+.because li{display:flex;gap:10px;align-items:baseline;font-size:13.5px;color:var(--muted)}
+.src{flex:none;font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--ink);
+  background:var(--soft);border-radius:4px;padding:1px 7px}
+.get{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.get li{position:relative;padding-left:20px;font-size:15.5px}
+.get li::before{content:"";position:absolute;left:2px;top:.62em;width:8px;height:8px;border-radius:2px;
+  background:var(--tone,var(--accent))}
+.basis{margin:8px 0 0;font-size:12.5px;color:var(--muted)}
+.try{margin-top:20px;background:var(--soft);border-radius:14px;padding:14px 16px}
+.try p{margin:4px 0 0;font-size:15.5px}
+.open{margin-top:20px;width:100%;background:var(--accent);color:var(--accent-ink);border:0}
+.open:hover{transform:translateY(-1px)}
+.fb{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
+.fb button{background:transparent;color:var(--ink);border:1px solid var(--line);font-size:13.5px;padding:0 8px}
+.fb button[aria-pressed="true"].up{border-color:var(--up);color:var(--up);background:color-mix(in srgb,var(--up) 12%,transparent)}
+.fb button[aria-pressed="true"].down{border-color:var(--down);color:var(--down);background:color-mix(in srgb,var(--down) 12%,transparent)}
+.fb button[aria-pressed="true"].done{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.cover h1{margin-top:10px}
+.meta{margin:14px 0 0;color:var(--muted);font-size:15px}
+.tuned{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.tuned li{display:flex;gap:10px;align-items:baseline;font-size:14.5px}
+.toc{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.toc button{width:100%;min-width:0;justify-content:space-between;background:var(--surface);color:var(--ink);
+  border:1px solid var(--line);border-left:4px solid var(--tone);border-radius:12px;padding:10px 14px;
+  min-height:52px;text-align:left;font-weight:400}
+.toc .t{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.toc .m{font-family:var(--mono);font-size:11.5px;color:var(--muted);white-space:nowrap}
+.state{font-size:15px;min-width:1.4em;text-align:right}
+.line{margin:0;font-family:var(--mono);font-size:12.5px;line-height:1.5;white-space:pre-wrap;word-break:break-word;
+  background:var(--soft);border-radius:12px;padding:12px 14px}
+.copy{margin-top:10px;width:100%;background:var(--ink);color:var(--bg);border:0}
+.hint{margin:10px 0 0;font-size:13.5px;color:var(--muted)}
+.foot{margin:18px 4px 0;font-size:12px;color:var(--muted);display:grid;gap:3px}
+.nav{display:flex;gap:10px;padding:10px 16px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);
+  background:var(--bg)}
+.nav button{flex:1;background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.nav button.next{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.nav button:disabled{opacity:.35;cursor:default}
+@media (hover:hover){.fb button:hover,.nav button:not(:disabled):hover,.toc button:hover{border-color:var(--ink)}}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="top"><span class="label" id="date"></span><span class="dots" id="dots" aria-hidden="true"></span></div>
+  <div class="viewport" id="viewport"><div class="track" id="track"></div></div>
+  <div class="nav"><button type="button" id="prev"></button><button type="button" class="next" id="next"></button></div>
+</div>
+<script type="application/json" id="deck-data">
+{"date":"2026-10-23","items":[{"title":"Example","creator":"Example","url":"https://example.com/","format":"article","minutes":5,"area":"work","why":"Example.","because":[{"source":"Memory","fact":"Example"}],"summary":["Example","Example"],"try":"Example","verified_by":"opened","summary_from":"page"}],"sources_checked":["Memory"]}
+</script>
+<script>
+(function () {
+  var data = JSON.parse(document.getElementById("deck-data").textContent);
+  var items = data.items || [];
+  var L = Object.assign({
+    today: "Learn today", top_pick: "Top pick", stretch: "Stretch", why: "Why for you",
+    you_get: "What you'll get", try: "Try after", open: "Open", more: "More like this",
+    less: "Not for me", done: "Done", feedback: "Your feedback", copy: "Copy feedback",
+    copied: "Copied. Paste it in the chat", paste_hint: "Paste this in any chat in this project, or just tell Claude. That's how tomorrow gets better.",
+    adjusted: "Tuned for you", read_from: "Read from", not_available: "Not available",
+    min: "min", next: "Next", prev: "Back", start: "Start", no_taps: "No taps yet. That's fine, tell Claude in your own words.",
+    picks: "picks", in_all: "in all", from_transcript: "Summary from the transcript",
+    from_page: "Summary from the page", from_description: "Summary from the description only"
+  }, data.labels || {});
+  document.documentElement.lang = data.lang || "en";
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function add(p, c) { p.appendChild(c); return c; }
+  function hash(s) { var h = 5381; for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; return h.toString(36); }
+  function safeUrl(u) { try { var x = new URL(u); return x.protocol === "https:" ? x.href : null; } catch (e) { return null; } }
+  function tone(area) {
+    var a = String(area || "").toLowerCase();
+    return a === "work" ? "var(--work)" : a === "business" ? "var(--business)" :
+      a === "life" || a === "personal" ? "var(--life)" : "var(--other)";
+  }
+  function short(t, n) { t = String(t || ""); return t.length > n ? t.slice(0, n - 1).trim() + "…" : t; }
+
+  // Feedback state: {r: {index: "up"|"down"}, d: {index: true}, t: timestamp}. Saved to the
+  // browser always and to artifact storage when present; on load the newer copy wins.
+  var KEY = "learn-today:" + data.date + ":" + hash(items.map(function (i) { return i.url; }).join("|"));
+  var state = { r: {}, d: {}, t: 0 }, touched = false;
+  var useArtifact = data.feedback_storage !== "browser" && window.storage &&
+    typeof window.storage.get === "function" && typeof window.storage.set === "function";
+  var writing = Promise.resolve();
+  function parse(v) {
+    try { var o = JSON.parse(v); return o && typeof o === "object" && typeof o.t === "number" ? o : null; }
+    catch (e) { return null; }
+  }
+  function save() {
+    state.t = Math.max(Date.now(), state.t + 1);
+    var v = JSON.stringify(state);
+    try { localStorage.setItem(KEY, v); } catch (e) {}
+    if (useArtifact) writing = writing.then(function () {
+      return Promise.resolve().then(function () { return window.storage.set(KEY, JSON.stringify(state)); }).catch(function () {});
+    });
+  }
+  function load() {
+    var local = null;
+    try { local = parse(localStorage.getItem(KEY)); } catch (e) {}
+    if (!useArtifact) return Promise.resolve(local);
+    var read = Promise.resolve().then(function () { return window.storage.get(KEY); })
+      .then(function (r) { return parse(r && typeof r === "object" ? r.value : r); }, function () { return null; })
+      .then(function (remote) { return !remote ? local : !local ? remote : remote.t >= local.t ? remote : local; });
+    writing = read.then(function () {}, function () {});
+    return read;
+  }
+
+  // Header
+  var when = new Date(data.date + "T12:00:00");
+  document.getElementById("date").textContent = isNaN(when) ? data.date :
+    when.toLocaleDateString(data.lang || undefined, { weekday: "long", month: "long", day: "numeric" });
+
+  var track = document.getElementById("track");
+  var slides = [], fbButtons = [], tocStates = [];
+
+  // Cover
+  var cover = add(track, el("section", "slide"));
+  slides.push(cover);
+  var cc = add(cover, el("div", "card cover"));
+  add(cc, el("span", "label", L.today));
+  var total = items.reduce(function (s, i) { return s + (i.minutes || 0); }, 0);
+  add(cc, el("h1", null, data.intro || (items.length + " " + L.picks)));
+  add(cc, el("p", "meta", items.length + " " + L.picks + " · " + total + " " + L.min + " " + L.in_all));
+  if (data.adjusted && data.adjusted.length) {
+    var tb = add(cc, el("div", "block"));
+    add(tb, el("span", "label", L.adjusted));
+    var tl = add(tb, el("ul", "tuned"));
+    data.adjusted.forEach(function (a) {
+      var li = add(tl, el("li"));
+      add(li, el("span", "src", a.source));
+      add(li, el("span", null, a.change));
+    });
+  }
+  var toc = add(add(cc, el("div", "block")), el("ul", "toc"));
+  items.forEach(function (it, i) {
+    var b = add(add(toc, el("li")), el("button"));
+    b.type = "button";
+    b.style.setProperty("--tone", tone(it.area));
+    add(b, el("span", "t", it.title));
+    add(b, el("span", "m", it.format + " · " + it.minutes + " " + L.min));
+    tocStates.push(add(b, el("span", "state", "")));
+    b.addEventListener("click", function () { go(i + 1); });
+  });
+
+  // Item cards
+  items.forEach(function (it, i) {
+    var s = add(track, el("section", "slide"));
+    slides.push(s);
+    var c = add(s, el("article", "card"));
+    c.style.setProperty("--tone", tone(it.area));
+    var chips = add(c, el("div", "chips"));
+    if (i === 0) add(chips, el("span", "chip top", L.top_pick));
+    add(chips, el("span", "chip tone", it.area));
+    add(chips, el("span", "chip", it.format + " · " + it.minutes + " " + L.min));
+    if (it.stretch) add(chips, el("span", "chip", L.stretch));
+    add(c, el("h2", null, it.title));
+    add(c, el("p", "creator", it.creator));
+
+    var w = add(c, el("div", "block"));
+    add(w, el("span", "label", L.why));
+    add(w, el("p", "why", it.why));
+    var bl = add(w, el("ul", "because"));
+    (it.because || []).forEach(function (e) {
+      var li = add(bl, el("li"));
+      add(li, el("span", "src", e.source));
+      add(li, el("span", null, e.fact));
+    });
+
+    var g = add(c, el("div", "block"));
+    add(g, el("span", "label", L.you_get));
+    var gl = add(g, el("ul", "get"));
+    (it.summary || []).forEach(function (t) { add(gl, el("li", null, t)); });
+    add(g, el("p", "basis", L["from_" + it.summary_from] || ""));
+
+    var t = add(c, el("div", "try"));
+    add(t, el("span", "label", L.try));
+    add(t, el("p", null, it.try));
+
+    var href = safeUrl(it.url);
+    if (href) {
+      var a = add(c, el("a", "btn open", L.open + " ↗"));
+      a.href = href; a.target = "_blank"; a.rel = "noopener noreferrer";
+    }
+    var fb = add(c, el("div", "fb"));
+    fb.setAttribute("role", "group");
+    fb.setAttribute("aria-label", L.feedback);
+    var set = {};
+    [["up", "👍 " + L.more], ["down", "👎 " + L.less], ["done", "✓ " + L.done]].forEach(function (p) {
+      var b = add(fb, el("button", p[0], p[1]));
+      b.type = "button";
+      b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", function () {
+        touched = true;
+        if (p[0] === "done") { if (state.d[i]) delete state.d[i]; else state.d[i] = true; }
+        else if (state.r[i] === p[0]) delete state.r[i];
+        else state.r[i] = p[0];
+        save(); paintFeedback();
+      });
+      set[p[0]] = b;
+    });
+    fbButtons.push(set);
+  });
+
+  // Feedback card
+  var end = add(track, el("section", "slide"));
+  slides.push(end);
+  var ec = add(end, el("div", "card"));
+  add(ec, el("h2", null, L.feedback));
+  var lineBox = add(add(ec, el("div", "block")), el("p", "line"));
+  lineBox.id = "feedback-line";
+  var copy = add(ec, el("button", "copy", L.copy));
+  copy.type = "button";
+  var copyNote = add(ec, el("p", "hint", L.paste_hint));
+  copyNote.setAttribute("aria-live", "polite");
+  copy.addEventListener("click", function () {
+    var txt = lineBox.textContent;
+    function ok() { copy.textContent = L.copied; setTimeout(function () { copy.textContent = L.copy; }, 2400); }
+    function fallback() {
+      var r = document.createRange(); r.selectNodeContents(lineBox);
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      try { if (document.execCommand("copy")) ok(); } catch (e) {}
+    }
+    try { navigator.clipboard.writeText(txt).then(ok, fallback); } catch (e) { fallback(); }
+  });
+  var foot = add(ec, el("div", "foot"));
+  add(foot, el("span", null, L.read_from + ": " + (data.sources_checked || []).join(" · ")));
+  if (data.sources_missing && data.sources_missing.length)
+    add(foot, el("span", null, L.not_available + ": " + data.sources_missing.join(" · ")));
+
+  function feedbackLine() {
+    var parts = [];
+    items.forEach(function (it, i) {
+      var marks = (state.r[i] === "up" ? "👍" : state.r[i] === "down" ? "👎" : "") + (state.d[i] ? "✓" : "");
+      if (marks) parts.push(marks + " " + (i + 1) + " " + short(it.title, 48) + " (" + it.area + ", " + it.format + ")");
+    });
+    return parts.length ? "learn-today feedback " + data.date + ":\n" + parts.join("\n") : L.no_taps;
+  }
+  function paintFeedback() {
+    fbButtons.forEach(function (set, i) {
+      set.up.setAttribute("aria-pressed", String(state.r[i] === "up"));
+      set.down.setAttribute("aria-pressed", String(state.r[i] === "down"));
+      set.done.setAttribute("aria-pressed", String(!!state.d[i]));
+      tocStates[i].textContent = (state.r[i] === "up" ? "👍" : state.r[i] === "down" ? "👎" : "") + (state.d[i] ? "✓" : "");
+    });
+    lineBox.textContent = feedbackLine();
+    copy.hidden = !(Object.keys(state.r).length || Object.keys(state.d).length);
+  }
+
+  // Navigation: buttons, arrow keys, swipe. Off-screen slides are inert so focus and
+  // screen readers stay on the visible card.
+  var dots = document.getElementById("dots");
+  slides.forEach(function () { add(dots, el("i")); });
+  var prev = document.getElementById("prev"), next = document.getElementById("next");
+  var cur = 0;
+  function go(n, focus) {
+    cur = Math.max(0, Math.min(slides.length - 1, n));
+    track.style.transform = "translateX(" + (-100 * cur) + "%)";
+    slides.forEach(function (s, i) {
+      var on = i === cur;
+      if (on) s.removeAttribute("inert"); else s.setAttribute("inert", "");
+      s.setAttribute("aria-hidden", String(!on));
+      dots.children[i].className = on ? "on" : "";
+    });
+    prev.disabled = cur === 0;
+    next.disabled = cur === slides.length - 1;
+    next.textContent = cur === 0 ? L.start + " →" : L.next + " →";
+    if (focus !== false) {
+      var h = slides[cur].querySelector("h1,h2");
+      if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); }
+      slides[cur].scrollTop = 0;
+    }
+  }
+  prev.textContent = "← " + L.prev;
+  prev.addEventListener("click", function () { go(cur - 1); });
+  next.addEventListener("click", function () { go(cur + 1); });
+  document.addEventListener("keydown", function (e) {
+    if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+    if (e.key === "ArrowRight") go(cur + 1);
+    else if (e.key === "ArrowLeft") go(cur - 1);
+  });
+  var vp = document.getElementById("viewport"), sx = null, sy = 0;
+  vp.addEventListener("touchstart", function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  vp.addEventListener("touchend", function (e) {
+    if (sx == null) return;
+    var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+    sx = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(cur + (dx < 0 ? 1 : -1));
+  }, { passive: true });
+
+  paintFeedback();
+  go(0, false);
+  // A read that finishes after the user has tapped must not undo the tap.
+  load().then(function (saved) {
+    if (saved && !touched) { state = { r: saved.r || {}, d: saved.d || {}, t: saved.t }; paintFeedback(); }
+  });
+})();
+</script>
+</body>
+</html>
