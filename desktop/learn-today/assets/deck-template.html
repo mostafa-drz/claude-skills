@@ -137,11 +137,13 @@ h1[tabindex="-1"]:focus,h2[tabindex="-1"]:focus{outline:none}
     less: "Not for me", done: "Done", feedback: "Your feedback", copy: "Copy feedback",
     copied: "Copied. Paste it in the chat", paste_hint: "Paste this in any chat in this project, or just tell Claude. That's how tomorrow gets better.",
     adjusted: "Tuned for you", read_from: "Read from", not_available: "Not available",
-    min: "min", next: "Next", prev: "Back", start: "Start", no_taps: "No taps yet. That's fine, tell Claude in your own words.",
+    min: "min", of: "of", next: "Next", prev: "Back", start: "Start", no_taps: "No taps yet. That's fine, tell Claude in your own words.",
     picks: "picks", in_all: "in all", from_transcript: "Summary from the transcript",
     from_page: "Summary from the page", from_description: "Summary from the description only"
   }, data.labels || {});
-  document.documentElement.lang = data.lang || "en";
+  var lang = typeof data.lang === "string" ? data.lang.trim() : "";
+  try { lang = Intl.getCanonicalLocales(lang || "en")[0]; } catch (e) { lang = "en"; }
+  document.documentElement.lang = lang;
 
   function el(tag, cls, text) {
     var n = document.createElement(tag);
@@ -162,7 +164,9 @@ h1[tabindex="-1"]:focus,h2[tabindex="-1"]:focus{outline:none}
   // Feedback state: {r: {index: "up"|"down"}, d: {index: true}, t: timestamp}. Saved to the
   // browser always and to artifact storage when present; on load the newer copy wins.
   var KEY = "learn-today:" + data.date + ":" + hash(items.map(function (i) { return i.url; }).join("|"));
-  var state = { r: {}, d: {}, t: 0 }, touched = false;
+  // Taps made before saved feedback finishes loading are kept per card and laid over it,
+  // so a quick tap never erases earlier ratings.
+  var state = { r: {}, d: {}, t: 0 }, loaded = false, early = {};
   var useArtifact = data.feedback_storage !== "browser" && window.storage &&
     typeof window.storage.get === "function" && typeof window.storage.set === "function";
   var writing = Promise.resolve();
@@ -191,8 +195,9 @@ h1[tabindex="-1"]:focus,h2[tabindex="-1"]:focus{outline:none}
 
   // Header
   var when = new Date(data.date + "T12:00:00");
-  document.getElementById("date").textContent = isNaN(when) ? data.date :
-    when.toLocaleDateString(data.lang || undefined, { weekday: "long", month: "long", day: "numeric" });
+  var dateText = data.date;
+  try { if (!isNaN(when)) dateText = when.toLocaleDateString(lang, { weekday: "long", month: "long", day: "numeric" }); } catch (e) {}
+  document.getElementById("date").textContent = dateText;
 
   var track = document.getElementById("track");
   var slides = [], fbButtons = [], tocStates = [];
@@ -235,7 +240,8 @@ h1[tabindex="-1"]:focus,h2[tabindex="-1"]:focus{outline:none}
     var chips = add(c, el("div", "chips"));
     if (i === 0) add(chips, el("span", "chip top", L.top_pick));
     add(chips, el("span", "chip tone", it.area));
-    add(chips, el("span", "chip", it.format + " · " + it.minutes + " " + L.min));
+    add(chips, el("span", "chip", it.format + " · " + it.minutes + " " + L.min +
+      (it.full_minutes ? " " + L.of + " " + it.full_minutes : "")));
     if (it.stretch) add(chips, el("span", "chip", L.stretch));
     add(c, el("h2", null, it.title));
     add(c, el("p", "creator", it.creator));
@@ -274,7 +280,7 @@ h1[tabindex="-1"]:focus,h2[tabindex="-1"]:focus{outline:none}
       b.type = "button";
       b.setAttribute("aria-pressed", "false");
       b.addEventListener("click", function () {
-        touched = true;
+        if (!loaded) early[i] = true;
         if (p[0] === "done") { if (state.d[i]) delete state.d[i]; else state.d[i] = true; }
         else if (state.r[i] === p[0]) delete state.r[i];
         else state.r[i] = p[0];
@@ -375,7 +381,16 @@ h1[tabindex="-1"]:focus,h2[tabindex="-1"]:focus{outline:none}
   go(0, false);
   // A read that finishes after the user has tapped must not undo the tap.
   load().then(function (saved) {
-    if (saved && !touched) { state = { r: saved.r || {}, d: saved.d || {}, t: saved.t }; paintFeedback(); }
+    loaded = true;
+    if (!saved) return;
+    var merged = { r: Object.assign({}, saved.r), d: Object.assign({}, saved.d), t: Math.max(saved.t, state.t) };
+    Object.keys(early).forEach(function (i) {
+      if (state.r[i]) merged.r[i] = state.r[i]; else delete merged.r[i];
+      if (state.d[i]) merged.d[i] = true; else delete merged.d[i];
+    });
+    state = merged;
+    if (Object.keys(early).length) save();
+    paintFeedback();
   });
 })();
 </script>

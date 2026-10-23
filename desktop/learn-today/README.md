@@ -103,9 +103,13 @@ learn-today/
 ## Tested locally
 
 - The validator passes the example and rejects: 2 or 6 cards, duplicate links, http
-  links, a missing `verified_by` or `summary_from`, a citation of an unread source (in a
-  card or in `adjusted`), a top pick over budget, one summary line, two stretch cards, a
-  boolean `minutes`, an unknown format or label.
+  links, the same YouTube video under another link form or timestamp, a missing
+  `verified_by` or `summary_from`, a citation of an unread source (in a card or in
+  `adjusted`), a top pick, or top pick plus any card, over budget, one summary line, two
+  stretch cards, a boolean `minutes`, a bad `lang` (`" en "`, `en-12`), an unknown format
+  or label. Malformed values (`format: {}`, `https://[bad`) get field errors, not a crash.
 - The page, screenshotted in light and dark at phone width (cover, card, feedback card). A
-  hostile title (`</script><img onerror=…>`) renders as text, and a `javascript:` link
-  gets no Open button.
+  hostile title (`</script><img onerror=…>`) and a `<!--<script>` summary render as text
+  (every `<` is escaped), and a `javascript:` link gets no Open button.
+- Feedback with a slow artifact storage: a tap made before saved ratings load is merged
+  over them, so earlier 👍/👎 survive in the page, the copied line and storage.

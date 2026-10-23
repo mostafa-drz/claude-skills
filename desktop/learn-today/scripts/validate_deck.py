@@ -15,7 +15,7 @@ import json
 import re
 import sys
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 FORMATS = ("video", "article", "podcast", "course", "paper", "book", "tool")
@@ -25,8 +25,23 @@ STORAGE = ("artifact", "browser")
 LABEL_KEYS = ("today", "top_pick", "stretch", "why", "you_get", "try", "open", "more",
               "less", "done", "feedback", "copy", "copied", "paste_hint", "adjusted",
               "read_from", "not_available", "min", "next", "prev", "start", "no_taps",
-              "picks", "in_all", "from_transcript", "from_page", "from_description")
+              "picks", "in_all", "of", "from_transcript", "from_page", "from_description")
 YOUTUBE_HOSTS = ("youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be")
+# BCP 47, simplified: language, then optional script, region and variants.
+LANG_RE = re.compile(r"^[a-z]{2,3}(-[A-Z][a-z]{3})?(-([A-Z]{2}|\d{3}))?(-([A-Za-z0-9]{5,8}|\d[A-Za-z0-9]{3}))*$")
+# Playback-only query parameters: they change where a link starts, not what it is.
+PLAYBACK = {"t", "start", "si", "feature", "utm_source", "utm_medium", "utm_campaign"}
+
+
+def link_key(parsed):
+    """Identity of a link for duplicate checks: one YouTube video is one pick, whatever the URL form."""
+    host = parsed.hostname or ""
+    if host in YOUTUBE_HOSTS:
+        vid = parsed.path.strip("/") if host == "youtu.be" else (parse_qs(parsed.query).get("v") or [""])[0]
+        if vid:
+            return ("youtube", vid)
+    query = sorted((k, v) for k, vs in parse_qs(parsed.query).items() if k not in PLAYBACK for v in vs)
+    return (host.removeprefix("www."), parsed.path.rstrip("/"), tuple(query))
 
 
 def text(value):
@@ -86,7 +101,7 @@ def main(path):
         errors.append("items: 3-5 cards. Fewer than 3 verified? Give them as text instead of a deck")
         items = items if isinstance(items, list) else []
 
-    seen, formats, areas, stretch = set(), [], set(), 0
+    seen, formats, areas, stretch, spans = set(), [], set(), 0, []
     budget = doc.get("daily_minutes", 30)
     if not whole(budget) or not 5 <= budget <= 240:
         errors.append("daily_minutes: optional whole number, 5-240 (default 30)")
@@ -102,22 +117,28 @@ def main(path):
         cap(errors, f"{w}.why", text(it.get("why")), 240)
         cap(errors, f"{w}.try", text(it.get("try")), 140)
 
-        url = text(it.get("url"))
-        parsed = urlparse(url)
-        if parsed.scheme != "https" or not parsed.netloc:
-            errors.append(f"{w}.url: an https link that you opened this run")
+        raw_url = it.get("url")
+        url = raw_url if isinstance(raw_url, str) else ""
+        try:
+            parsed = urlparse(url)
+            parsed.hostname  # raises on a malformed host such as "https://[bad"
+        except ValueError:
+            parsed = None
+        if url != url.strip() or not parsed or parsed.scheme != "https" or not parsed.hostname:
+            errors.append(f"{w}.url: an https link that you opened this run, with no spaces around it")
         else:
-            key = (parsed.netloc.lower().removeprefix("www."), parsed.path.rstrip("/"), parsed.query)
+            key = link_key(parsed)
             if key in seen:
-                errors.append(f"{w}.url: duplicate of an earlier card")
+                errors.append(f"{w}.url: same piece as an earlier card (another link form or timestamp of it)")
             seen.add(key)
-            if parsed.netloc.lower() in YOUTUBE_HOSTS and it.get("verified_by") != "oembed":
+            if parsed.hostname in YOUTUBE_HOSTS and it.get("verified_by") != "oembed":
                 warnings.append(f"{w}: YouTube link not checked with oEmbed; it may be private or removed")
 
         fmt = it.get("format")
         if fmt not in FORMATS:
             errors.append(f"{w}.format: one of {', '.join(FORMATS)}")
-        formats.append(fmt)
+        else:
+            formats.append(fmt)
         if it.get("verified_by") not in VERIFIED:
             errors.append(f"{w}.verified_by: one of {', '.join(VERIFIED)}. Open the link before it goes in")
         if it.get("summary_from") not in SUMMARY_FROM:
@@ -126,9 +147,12 @@ def main(path):
         minutes = it.get("minutes")
         if not whole(minutes) or not 1 <= minutes <= 240:
             errors.append(f"{w}.minutes: whole minutes, 1-240")
-        elif i == 0 and minutes > budget:
-            errors.append(f"items[0]: the top pick is {minutes} min, over daily_minutes {budget}. "
-                          "Pick a shorter top pick, or point to a part with a timestamp")
+        else:
+            spans.append(minutes)
+        full = it.get("full_minutes")
+        if full is not None and (not whole(full) or not whole(minutes) or full <= minutes or full > 600):
+            errors.append(f"{w}.full_minutes: optional, the whole piece's length when minutes is only the "
+                          "part the card points to (a whole number above minutes, at most 600)")
 
         area = text(it.get("area"))
         if not area or len(area) > 24:
@@ -149,6 +173,17 @@ def main(path):
 
         cites(f"{w}.because", it.get("because"), 1, 3)
 
+    # The promise: the top pick plus any one other card fits the day. A long piece fits by
+    # pointing to its best part (a timestamp), with minutes for that part and full_minutes for the whole.
+    if len(spans) == len(items) and spans:
+        if spans[0] > budget:
+            errors.append(f"items[0]: the top pick is {spans[0]} min, over daily_minutes {budget}. "
+                          "Pick a shorter one, or point to a part with a timestamp and set full_minutes")
+        else:
+            for i, m in enumerate(spans[1:], start=1):
+                if spans[0] + m > budget:
+                    errors.append(f"items[{i}]: top pick ({spans[0]}) + this card ({m}) is over daily_minutes "
+                                  f"{budget}. Point to a part with a timestamp and set full_minutes, or swap it")
     if stretch > 1:
         errors.append("items: at most one stretch card")
     for f in set(formats):
@@ -175,8 +210,9 @@ def main(path):
         errors.append(f"feedback_storage: one of {', '.join(STORAGE)}")
 
     lang = doc.get("lang", "en")
-    if not re.match(r"^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$", text(lang)):
-        errors.append("lang: a language tag such as en, es, fa, pt-BR")
+    if not isinstance(lang, str) or not LANG_RE.match(lang):
+        errors.append("lang: a language tag such as en, es, fa, pt-BR, with no spaces")
+        lang = "en"
     labels = doc.get("labels", {})
     if not isinstance(labels, dict):
         errors.append("labels: optional object of label overrides")

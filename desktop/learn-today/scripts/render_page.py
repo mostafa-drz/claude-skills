@@ -10,7 +10,8 @@ printed data block, so the page is generated once. The full-page mode is for sur
 without artifacts, where the file is shared instead.
 
 Standard library only. Injects the JSON into assets/deck-template.html, the one place the
-data goes, and escapes "</" so no value can close the data block early and inject markup.
+data goes, and escapes every "<" as \u003c, so no value can close the data block early or start
+an HTML comment that would swallow the page script.
 Every value is later rendered with textContent, so this is the only HTML-level concern.
 """
 import json
@@ -24,7 +25,7 @@ BLOCK = re.compile(r'(<script type="application/json" id="deck-data">)(.*?)(</sc
 
 def payload_of(src):
     deck = json.loads(Path(src).read_text(encoding="utf-8"))
-    return json.dumps(deck, ensure_ascii=False, indent=1).replace("</", "<\\/")
+    return json.dumps(deck, ensure_ascii=False, indent=1).replace("<", "\\u003c")
 
 
 def main(src, dst):

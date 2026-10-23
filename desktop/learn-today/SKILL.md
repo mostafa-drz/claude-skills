@@ -132,8 +132,8 @@ library only.
 **Write the page once.** With artifacts available, create the HTML artifact directly:
 [`assets/deck-template.html`](./assets/deck-template.html) copied unchanged, except for
 the JSON inside `<script type="application/json" id="deck-data">`. Get that JSON from
-`python3 scripts/render_page.py deck.json --data`, which prints it with `</` already
-escaped, and paste it as printed. Don't also render a file.
+`python3 scripts/render_page.py deck.json --data`, which prints it with every `<`
+already escaped, and paste it as printed. Don't also render a file.
 
 Without artifacts, run `python3 scripts/render_page.py deck.json deck.html`, share the
 file, and give the cards as text.

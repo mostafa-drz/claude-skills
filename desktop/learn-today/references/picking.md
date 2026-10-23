@@ -51,9 +51,9 @@ From the verified candidates, choose 3-5:
    move away from what got 👎 with the same reason twice.
 5. **One stretch card at most**: a little outside the usual topics, labelled `stretch`, so
    the deck doesn't narrow into a bubble.
-6. **Budget**: the top pick plus any one other card fit the daily minutes. Long things
-   (a 2-hour podcast) are fine as a non-top card when the summary names the best part
-   with a timestamp.
+6. **Budget**: the top pick plus any one other card fit the daily minutes (the validator
+   checks every pair). A long piece (a 2-hour podcast) fits by pointing to its best part
+   with a timestamp: `minutes` is that part, `full_minutes` the whole.
 
 Thin day? Three cards is the floor. If fewer than three verify, give what you have as
 text and say why; don't pad.
@@ -65,7 +65,8 @@ text and say why; don't pad.
 - **url**: the canonical https link that was opened. For YouTube, `youtube.com/watch?v=`
   or `youtu.be/`, with `&t=` for a timestamp when the summary points to a part.
 - **format**: `video`, `article`, `podcast`, `course`, `paper`, `book`, `tool`.
-- **minutes**: whole minutes, 1-240.
+- **minutes**: whole minutes, 1-240: the time the card asks for. When it points to a part
+  (a timestamp), that part's length, with **full_minutes** for the whole piece.
 - **area**: from the mix, ≤24 characters. **stretch**: true for the stretch card.
 - **why**: ≤240 characters. Name the need and why *this* piece answers it. "You pitch to
   Northwind on Thursday; this is a 12-minute teardown of exactly that kind of pitch."
