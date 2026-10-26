@@ -1,0 +1,279 @@
+{
+  "$schema": "https://www.schemastore.org/claude-code-marketplace.json",
+  "name": "mostafa-skills",
+  "description": "Mostafa's Claude skills for developer workflows and everyday life, grouped into installable bundles.",
+  "owner": {
+    "name": "Mostafa Darehzereshki",
+    "url": "https://github.com/mostafa-drz"
+  },
+  "metadata": {
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "git-and-prs",
+      "source": "./",
+      "strict": false,
+      "description": "Pull requests, reviews, CI failures, branches and release notes.",
+      "category": "development",
+      "author": {
+        "name": "Mostafa Darehzereshki",
+        "url": "https://github.com/mostafa-drz"
+      },
+      "homepage": "https://github.com/mostafa-drz/claude-skills",
+      "repository": "https://github.com/mostafa-drz/claude-skills",
+      "license": "MIT",
+      "keywords": [
+        "automation",
+        "browser-automation",
+        "ci/cd",
+        "code review",
+        "communication",
+        "debugging",
+        "documentation",
+        "git",
+        "github",
+        "issue-tracker",
+        "linear",
+        "maintenance"
+      ],
+      "skills": [
+        "./code/address-pr-comments",
+        "./code/address-pr-feedback",
+        "./code/chunk-pr",
+        "./code/create-pr",
+        "./code/git-cleanup",
+        "./code/investigate-ci",
+        "./code/post-pr-for-review",
+        "./code/release-notes",
+        "./code/repo-timeline",
+        "./code/sync-branch"
+      ]
+    },
+    {
+      "name": "dev-workflow",
+      "source": "./",
+      "strict": false,
+      "description": "Plan, build in verified increments, check the work, decide what's next.",
+      "category": "development",
+      "author": {
+        "name": "Mostafa Darehzereshki",
+        "url": "https://github.com/mostafa-drz"
+      },
+      "homepage": "https://github.com/mostafa-drz/claude-skills",
+      "repository": "https://github.com/mostafa-drz/claude-skills",
+      "license": "MIT",
+      "keywords": [
+        "agents",
+        "automation",
+        "claude-code",
+        "coding",
+        "communication",
+        "decisions",
+        "devops",
+        "linear",
+        "meta",
+        "planning",
+        "productivity",
+        "project-management"
+      ],
+      "skills": [
+        "./code/build-incremental",
+        "./code/build-until-agreed",
+        "./code/exploration-to-spec",
+        "./code/get-up-to-speed",
+        "./code/next-steps",
+        "./code/smoke-test",
+        "./code/step-through",
+        "./code/whats-next",
+        "./code/workflow-advisor"
+      ]
+    },
+    {
+      "name": "qa-and-audits",
+      "source": "./",
+      "strict": false,
+      "description": "Browser-driven UI tests and audits, docs, SEO and compliance checks, triage boards.",
+      "category": "quality",
+      "author": {
+        "name": "Mostafa Darehzereshki",
+        "url": "https://github.com/mostafa-drz"
+      },
+      "homepage": "https://github.com/mostafa-drz/claude-skills",
+      "repository": "https://github.com/mostafa-drz/claude-skills",
+      "license": "MIT",
+      "keywords": [
+        "accessibility",
+        "audit",
+        "beginner-mind",
+        "browser-automation",
+        "claude-in-chrome",
+        "developer-experience",
+        "docs",
+        "documentation",
+        "e2e",
+        "findings",
+        "google-search-console",
+        "html-viewer"
+      ],
+      "skills": [
+        "./code/audit-ui-e2e",
+        "./code/capture-screens",
+        "./code/compliance-audit",
+        "./code/docs-doctor",
+        "./code/sitemap-audit",
+        "./code/triage-board",
+        "./code/ui-test",
+        "./code/ux-interview"
+      ]
+    },
+    {
+      "name": "comms-and-tickets",
+      "source": "./",
+      "strict": false,
+      "description": "Briefs, replies, status updates, timesheets, and turning threads into tickets.",
+      "category": "productivity",
+      "author": {
+        "name": "Mostafa Darehzereshki",
+        "url": "https://github.com/mostafa-drz"
+      },
+      "homepage": "https://github.com/mostafa-drz/claude-skills",
+      "repository": "https://github.com/mostafa-drz/claude-skills",
+      "license": "MIT",
+      "keywords": [
+        "automation",
+        "clipboard",
+        "communication",
+        "documentation",
+        "formatting",
+        "git",
+        "linear",
+        "notion",
+        "productivity",
+        "project-management",
+        "slack",
+        "status-updates"
+      ],
+      "skills": [
+        "./code/clean-copy",
+        "./code/daily-brief",
+        "./code/enrich-message",
+        "./code/guide-from-screenshots",
+        "./code/post-ticket-summary",
+        "./code/project-updates",
+        "./code/respond-to-message",
+        "./code/slack-to-ticket",
+        "./code/thread-to-action",
+        "./code/workday-summary"
+      ]
+    },
+    {
+      "name": "personal-and-research",
+      "source": "./",
+      "strict": false,
+      "description": "Shopping research, screenshot and handwritten-note memory, wellbeing recaps, SVG art.",
+      "category": "personal",
+      "author": {
+        "name": "Mostafa Darehzereshki",
+        "url": "https://github.com/mostafa-drz"
+      },
+      "homepage": "https://github.com/mostafa-drz/claude-skills",
+      "repository": "https://github.com/mostafa-drz/claude-skills",
+      "license": "MIT",
+      "keywords": [
+        "browser-automation",
+        "claude-in-chrome",
+        "creative",
+        "decision",
+        "declutter",
+        "design",
+        "files",
+        "generative",
+        "handwriting",
+        "icons",
+        "knowledge-base",
+        "macos"
+      ],
+      "skills": [
+        "./code/emotional-recap",
+        "./code/organize-screenshots",
+        "./code/remarkable-memory",
+        "./code/screenshots-memory",
+        "./code/shop-research",
+        "./code/should-i-buy",
+        "./code/svg-art",
+        "./code/weather"
+      ]
+    },
+    {
+      "name": "skill-authoring",
+      "source": "./",
+      "strict": false,
+      "description": "Create, extract, audit and publish Claude skills.",
+      "category": "meta",
+      "author": {
+        "name": "Mostafa Darehzereshki",
+        "url": "https://github.com/mostafa-drz"
+      },
+      "homepage": "https://github.com/mostafa-drz/claude-skills",
+      "repository": "https://github.com/mostafa-drz/claude-skills",
+      "license": "MIT",
+      "keywords": [
+        "automation",
+        "git",
+        "maintenance",
+        "memory",
+        "meta",
+        "quality",
+        "skills"
+      ],
+      "skills": [
+        "./code/audit-skills",
+        "./code/extract-skill",
+        "./code/publish-skills",
+        "./code/skill-creator"
+      ]
+    },
+    {
+      "name": "everyday-assistant",
+      "source": "./",
+      "strict": false,
+      "description": "Claude Desktop and claude.ai skills: daily focus, learning, inbox, trips, runbooks, buying, charts, plants.",
+      "category": "personal",
+      "author": {
+        "name": "Mostafa Darehzereshki",
+        "url": "https://github.com/mostafa-drz"
+      },
+      "homepage": "https://github.com/mostafa-drz/claude-skills",
+      "repository": "https://github.com/mostafa-drz/claude-skills",
+      "license": "MIT",
+      "keywords": [
+        "accessibility",
+        "analysis",
+        "anti-perfectionism",
+        "articles",
+        "artifact",
+        "calendar",
+        "chart-selection",
+        "charts",
+        "checklist",
+        "communication",
+        "comparison",
+        "daily-routine"
+      ],
+      "skills": [
+        "./desktop/day-timeline",
+        "./desktop/inbox-catchup",
+        "./desktop/learn-today",
+        "./desktop/make-it-itinerary",
+        "./desktop/make-it-runbook",
+        "./desktop/one-thing-today",
+        "./desktop/remarkable-memory",
+        "./desktop/research-assistant",
+        "./desktop/take-care-of-my-plant",
+        "./desktop/which-chart",
+        "./desktop/which-to-buy"
+      ]
+    }
+  ]
+}

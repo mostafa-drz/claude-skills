@@ -5,10 +5,13 @@ description: >-
   available integrations — then produces a prioritized catchup briefing.
   Helps triage messages and draft replies. Use when starting the day, returning
   from a break, or needing to quickly catch up on communications.
+license: MIT
 metadata:
-  side_effects: true
+  side_effects: "true"
   trigger: "Starting the day, returning from a break, or catching up on communications."
   tags: "communication, email, productivity, triage"
+  author: "mostafa-drz"
+  bundle: "everyday-assistant"
 ---
 
 # Inbox Catchup

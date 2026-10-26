@@ -24,3 +24,9 @@ jobs:
       - run: pip install pyyaml
       - name: Catalog is current and frontmatter parses
         run: make check
+      # The same check Claude Code runs when someone adds this marketplace. Pinned to an
+      # exact version so a CLI release can't turn a green commit red after the fact.
+      - name: Plugin marketplace validates
+        run: npx --yes @anthropic-ai/claude-code@2.1.296 plugin validate .
+      - name: Every portable skill packages
+        run: make dist

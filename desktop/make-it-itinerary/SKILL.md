@@ -12,10 +12,13 @@ description: >-
   "/make-it-itinerary", "turn this into a trip plan", "plan our days", "put this in a
   schedule", or wants a trip they have been discussing organised into days, including
   from a cold start with no prior conversation.
+license: MIT
 metadata:
-  side_effects: false
+  side_effects: "false"
   trigger: "Saying 'make it an itinerary' after chatting about a trip, or asking to turn a trip conversation into a day-by-day plan."
   tags: "travel, itinerary, trip-planning, design-thinking, verification, html, pdf, calendar, desktop"
+  author: "mostafa-drz"
+  bundle: "everyday-assistant"
 ---
 
 # Make it an itinerary

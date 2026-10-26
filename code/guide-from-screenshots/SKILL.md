@@ -16,8 +16,11 @@ allowed-tools:
   - Edit
   - Bash
   - AskUserQuestion
+license: MIT
 metadata:
   trigger: "Use when you have screenshots and want to create a product guide, demo walkthrough, or tool guide."
+  author: "mostafa-drz"
+  bundle: "comms-and-tickets"
 ---
 
 # Guide from Screenshots

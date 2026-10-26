@@ -19,8 +19,11 @@ allowed-tools:
   - WebFetch
   - AskUserQuestion
   - Task
+license: MIT
 metadata:
   trigger: "Use when you need to check a directory or monorepo for compliance violations before an audit or review."
+  author: "mostafa-drz"
+  bundle: "qa-and-audits"
 ---
 
 # Compliance Audit

@@ -15,9 +15,12 @@ allowed-tools:
   - Grep
   - WebFetch
   - WebSearch
+license: MIT
 metadata:
   trigger: "Validating deployments, pipelines, features, or migrations."
   tags: "testing, verification, devops"
+  author: "mostafa-drz"
+  bundle: "dev-workflow"
 ---
 
 # Smoke Test

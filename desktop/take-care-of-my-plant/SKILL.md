@@ -12,10 +12,13 @@ description: >-
   toxicity or a diagnosis as certain. Use when the user photographs a plant, asks
   what is wrong with one, wants to log watering or repotting, asks when to water
   next, or wants to see how their plants are doing.
+license: MIT
 metadata:
-  side_effects: true
+  side_effects: "true"
   trigger: "Photographing a plant to identify or onboard it, diagnosing a sick plant, logging care, scheduling watering, or reviewing how every plant is doing."
   tags: "plants, plant-care, home, diagnosis, notion, google-drive, google-calendar, desktop"
+  author: "mostafa-drz"
+  bundle: "everyday-assistant"
 ---
 
 # Take care of my plant

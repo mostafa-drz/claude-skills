@@ -15,8 +15,11 @@ allowed-tools:
   - Read
   - Write
   - Edit
+license: MIT
 metadata:
   trigger: "Use when the user wants a quick weather check or forecast."
+  author: "mostafa-drz"
+  bundle: "personal-and-research"
 ---
 
 # Weather

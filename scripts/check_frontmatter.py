@@ -11,6 +11,12 @@ Rules enforced (sources in SKILLS_GUIDE.md):
     Skills API and claude.ai uploads reject longer, they do not truncate)
   - `name`, when set, must match the directory and the spec's charset
   - a skill that can write must declare `disable-model-invocation: true`
+  - every key is known: desktop/ skills may use only the six portable spec keys
+    (claude.ai uploads and the Skills API reject anything else); code/ skills may
+    also use Claude Code's keys. Claude Code ignores an unknown key without a word,
+    so a typo like `disable-model-invokation` would otherwise ship unnoticed
+  - `metadata` values are strings, as the Agent Skills spec requires
+  - `compatibility`, when set, is <= 500 chars
 """
 import re
 import sys
@@ -29,6 +35,15 @@ ROOT = Path(__file__).resolve().parent.parent
 NAME_RE = re.compile(r"^(?!-)(?!.*--)[a-z0-9-]{1,64}(?<!-)$")
 WRITES = ("Write", "Edit", "NotebookEdit")
 WRITE_BASH = re.compile(r"Bash\((rm|mv|cp|git|mkdir|tee|curl|npm|pip)\b")
+# https://agentskills.io/specification — the only keys that survive packaging.
+PORTABLE = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
+# https://code.claude.com/docs/en/skills — the Claude Code superset.
+CLAUDE_CODE = PORTABLE | {
+    "when_to_use", "argument-hint", "arguments", "disable-model-invocation",
+    "user-invocable", "disallowed-tools", "model", "effort", "context", "agent",
+    "background", "hooks", "paths", "shell",
+}
+ALLOWED = {"code": CLAUDE_CODE, "desktop": PORTABLE}
 
 def main() -> int:
     problems = []
@@ -65,7 +80,24 @@ def main() -> int:
             body_writes = any(t in tools for t in WRITES) or WRITE_BASH.search(tools)
             if body_writes and str(fm.get("disable-model-invocation", "")).lower() not in ("true", "yes", "on", "1"):
                 problems.append(f"{rel}: can write but no disable-model-invocation: true")
+            unknown = sorted(set(fm) - ALLOWED[platform])
+            if unknown:
+                why = ("not portable — claude.ai and the Skills API reject it"
+                       if platform == "desktop" else "not a Claude Code skill field")
+                problems.append(f"{rel}: unknown key(s) {', '.join(unknown)} — {why}")
+            compat = str(fm.get("compatibility", ""))
+            if len(compat) > 500:
+                problems.append(f"{rel}: compatibility {len(compat)} chars, cap is 500")
             meta = fm.get("metadata") or {}
+            if not isinstance(meta, dict):
+                problems.append(f"{rel}: metadata must be a mapping")
+                meta = {}
+            for k, v in meta.items():
+                if not isinstance(v, str):
+                    problems.append(
+                        f"{rel}: metadata.{k} is {type(v).__name__}, the spec requires a "
+                        f'string — quote it, e.g. {k}: "{str(v).lower()}"'
+                    )
             if platform == "desktop" and "side_effects" not in meta:
                 problems.append(
                     f"{rel}: desktop skills must declare metadata.side_effects — "

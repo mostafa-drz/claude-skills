@@ -25,9 +25,12 @@ allowed-tools:
   - mcp__claude_ai_Linear__list_issue_statuses
   - mcp__claude_ai_Linear__create_comment
   - mcp__claude_ai_Linear__list_comments
+license: MIT
 metadata:
   trigger: "Pasting a conversation that implies developer actions."
   tags: "communication, automation, linear"
+  author: "mostafa-drz"
+  bundle: "comms-and-tickets"
 ---
 
 # Thread → Action

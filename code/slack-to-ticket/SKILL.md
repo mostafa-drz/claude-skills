@@ -15,9 +15,12 @@ allowed-tools:
   - mcp__claude_ai_Linear__list_issues
   - mcp__claude_ai_Linear__list_issue_labels
   - mcp__claude_ai_Linear__list_issue_statuses
+license: MIT
 metadata:
   trigger: "Pasting a Slack thread to turn it into a trackable issue."
   tags: "slack, linear, productivity"
+  author: "mostafa-drz"
+  bundle: "comms-and-tickets"
 ---
 
 # Slack Thread → Linear Ticket

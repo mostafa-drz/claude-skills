@@ -12,10 +12,13 @@ description: >-
   low-confidence reads for review and learns your handwriting and shorthand from
   every correction. Use when the user wants to sync, extract, organize, search, or
   reason over their reMarkable notes and build a second brain from handwritten pages.
+license: MIT
 metadata:
-  side_effects: true
+  side_effects: "true"
   trigger: "Syncing, extracting, organizing, searching, or reasoning over reMarkable notes on Claude Desktop; building a second brain from handwritten pages."
   tags: "remarkable, memory, notes, handwriting, knowledge-base, second-brain, desktop"
+  author: "mostafa-drz"
+  bundle: "everyday-assistant"
 ---
 
 # reMarkable Memory (Desktop)

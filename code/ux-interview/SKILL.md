@@ -42,9 +42,12 @@ allowed-tools:
   - mcp__claude-in-chrome__javascript_tool
   - mcp__claude-in-chrome__read_console_messages
   - mcp__claude-in-chrome__gif_creator
+license: MIT
 metadata:
   trigger: "You want a real-user-perspective audit of a web product to catch UX/UI/product issues that automated tests can't catch."
   tags: "ux, usability, browser-automation, research"
+  author: "mostafa-drz"
+  bundle: "qa-and-audits"
 ---
 
 # UX Interview

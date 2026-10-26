@@ -37,9 +37,12 @@ allowed-tools:
   - mcp__claude-in-chrome__find
   - mcp__claude-in-chrome__form_input
   - mcp__claude-in-chrome__resize_window
+license: MIT
 metadata:
   trigger: "Shopping for something, comparing products, finding a gift, or researching purchases before buying."
   tags: "shopping, browser-automation, research, claude-in-chrome"
+  author: "mostafa-drz"
+  bundle: "personal-and-research"
 ---
 
 ## Preferences

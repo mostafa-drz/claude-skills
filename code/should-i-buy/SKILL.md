@@ -37,9 +37,12 @@ allowed-tools:
   - mcp__claude-in-chrome__javascript_tool
   - mcp__claude-in-chrome__find
   - mcp__claude-in-chrome__resize_window
+license: MIT
 metadata:
   trigger: "Pasting one or more product links and asking whether to buy, which one to pick, or whether to wait."
   tags: "shopping, decision, browser-automation, claude-in-chrome"
+  author: "mostafa-drz"
+  bundle: "personal-and-research"
 ---
 
 ## Preferences

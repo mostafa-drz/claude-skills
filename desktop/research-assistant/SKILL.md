@@ -5,10 +5,13 @@ description: >-
   Gathers key facts, perspectives, and sources into a clear summary.
   Use when asked to research something, prepare a briefing, or compile
   background on a topic.
+license: MIT
 metadata:
-  side_effects: false
+  side_effects: "false"
   trigger: "Researching something, preparing a briefing, or compiling background on a topic."
   tags: "research, writing, analysis"
+  author: "mostafa-drz"
+  bundle: "everyday-assistant"
 ---
 
 # Research Assistant
