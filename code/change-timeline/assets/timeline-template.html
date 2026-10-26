@@ -255,7 +255,7 @@ footer p{margin:4px 0}
   var store = { get: function(k){ try { return localStorage.getItem(k); } catch(e) { return null; } },
                 set: function(k, v){ try { localStorage.setItem(k, v); } catch(e) {} } };
   var KEY = "change-timeline:" + (D.repo && D.repo.name || "") + ":" + (D.range && D.range.label || "") + ":";
-  var reviewed = {};   // the source of truth; storage only carries it between visits
+  var reviewed = Object.create(null);   // the source of truth; storage only carries it between visits
   items.forEach(function(it){ if (store.get(KEY + "done:" + it.id) === "1") reviewed[it.id] = true; });
 
   // ---- theme from the approved style ----

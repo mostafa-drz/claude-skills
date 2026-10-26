@@ -125,26 +125,33 @@ def main(argv):
     by_sha = {c["sha"]: c for c in commits}
 
     # PR attribution: squash "(#N)", merge "Merge pull request #N", then merge ancestry.
-    for c in commits:
+    def attribute(c):
         prs = []
         m = PR_SQUASH.search(c["subject"]) or PR_MERGE.match(c["subject"])
         if m:
             prs.append(int(m.group(1)))
         c["prs"] = prs
         c["mentions"] = sorted({int(n) for n in PR_ANY.findall(c["subject"] + " " + c["body"])} - set(prs))
+
+    for c in commits:
+        attribute(c)
+    # An explicit base stays excluded: recovering a merge's commits must not bring back
+    # history reachable from BASE in BASE..HEAD.
+    exclude = [f"^{base}"] if base else []
     pr_merges = []
     for mc in merges:
         m = PR_MERGE.match(mc["subject"])
         if not m or len(mc["parents"]) < 2:
             continue
         n = int(m.group(1))
-        inner = git(repo, "rev-list", f"{mc['parents'][0]}..{mc['parents'][1]}", check=False).split()
+        inner = git(repo, "rev-list", f"{mc['parents'][0]}..{mc['parents'][1]}", *exclude, check=False).split()
         # A PR merged inside the window can carry commits authored before --since; they are
         # part of what landed, so pull them in rather than dropping the PR.
         missing = [s for s in inner if s not in by_sha]
         if missing:
             for c in log(repo, ["--no-walk", *missing], a.path, merges=False):
-                c["prs"], c["mentions"], c["via_merge"] = [], [], True
+                attribute(c)
+                c["via_merge"] = True
                 commits.append(c)
                 by_sha[c["sha"]] = c
         for sha in inner:
