@@ -139,6 +139,14 @@ def main(argv):
             continue
         n = int(m.group(1))
         inner = git(repo, "rev-list", f"{mc['parents'][0]}..{mc['parents'][1]}", check=False).split()
+        # A PR merged inside the window can carry commits authored before --since; they are
+        # part of what landed, so pull them in rather than dropping the PR.
+        missing = [s for s in inner if s not in by_sha]
+        if missing:
+            for c in log(repo, ["--no-walk", *missing], a.path, merges=False):
+                c["prs"], c["mentions"], c["via_merge"] = [], [], True
+                commits.append(c)
+                by_sha[c["sha"]] = c
         for sha in inner:
             if sha in by_sha and n not in by_sha[sha]["prs"]:
                 by_sha[sha]["prs"].append(n)
@@ -147,14 +155,15 @@ def main(argv):
                           "title": mc["body"].splitlines()[0] if mc["body"] else None,
                           "commits": [s for s in inner if s in by_sha]})
 
+    # Only tags that point at a commit inside the range: `tag --contains` would also return
+    # later releases and tags on other branches.
+    in_range = set(by_sha) | {mc["sha"] for mc in merges}
     tags = []
-    if commits:
-        oldest = commits[-1]["sha"]
-        out = git(repo, "tag", "--contains", oldest, "--sort=creatordate",
-                  "--format=%(refname:short)\t%(creatordate:short)\t%(objectname)", check=False)
-        for line in out.splitlines():
-            name, when, obj = (line.split("\t") + ["", "", ""])[:3]
-            sha = git(repo, "rev-list", "-n", "1", name, check=False).strip()
+    out = git(repo, "tag", "--sort=creatordate", "--format=%(refname:short)\t%(creatordate:short)", check=False)
+    for line in out.splitlines():
+        name, when = (line.split("\t") + [""])[:2]
+        sha = git(repo, "rev-list", "-n", "1", name, check=False).strip()
+        if sha in in_range:
             tags.append({"name": name, "date": when, "sha": sha})
 
     areas = Counter()

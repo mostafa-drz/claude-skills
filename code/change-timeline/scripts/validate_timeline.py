@@ -142,6 +142,18 @@ def main(argv):
             if not p.get("url"):
                 W(f"{at}.prs #{p['number']}: no url, so it renders without a link")
 
+        files = it.get("files", [])
+        if not isinstance(files, list):
+            E(f"{at}.files: must be a list of {{path, additions, deletions}}")
+            files = []
+        for f in files:
+            if not isinstance(f, dict) or not s(f.get("path")):
+                E(f"{at}.files: each entry needs a path (got {f!r})")
+            elif any(k in f and not isinstance(f[k], int) for k in ("additions", "deletions")):
+                E(f"{at}.files {f['path']}: additions and deletions must be integers")
+        for k in ("commits", "prs", "evidence"):
+            if k in it and not isinstance(it[k], list):
+                E(f"{at}.{k}: must be a list")
         ev = it.get("evidence") or []
         for e in ev:
             if not isinstance(e, dict) or not s(e.get("text")) or not s(e.get("source")):

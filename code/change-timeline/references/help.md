@@ -79,8 +79,7 @@ Then one question (header `Plan`): "Render this?" with options:
 
 Publish the preview page (3 real items), then one call with up to three questions:
 
-- **Look** (header `Style`): "Does this look right?" with options *Looks right*, *Adjust*,
-  *Different direction*: quiet editorial or Swiss minimal from DESIGN.md §1.
+- **Look** (header `Style`): "Does this look right?" with options *Looks right* or *Adjust*.
 - **Accent** (header `Accent`), when they pick Adjust: the three accents in DESIGN.md §3,
   each named with its hex.
 - **Density** (header `Density`): *Compact* or *Comfortable*. **Mode** (header `Mode`):

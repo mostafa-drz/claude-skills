@@ -83,10 +83,11 @@ main{padding-top:22px}
 .item.sel{border-color:var(--accent)}
 .item.compact{padding:10px var(--pad)}
 .item.compact h3{font-size:14.5px;margin:4px 0 0}
-.item.compact .what,.item.compact .why{display:none}
+.item.compact .what{display:none}
+.item.compact .why{margin-top:4px}
 .item.compact .ev{margin-top:6px}
 .item.compact details{margin-top:6px;padding-top:4px}
-.item.compact .dl .what,.item.compact .dl .why{display:block}
+.item.compact .dl .what{display:block}
 .item.compact .actions{display:none}
 .item.compact details[open]~.actions{display:flex}
 .row1{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;color:var(--muted);font:12px var(--mono)}
@@ -254,6 +255,8 @@ footer p{margin:4px 0}
   var store = { get: function(k){ try { return localStorage.getItem(k); } catch(e) { return null; } },
                 set: function(k, v){ try { localStorage.setItem(k, v); } catch(e) {} } };
   var KEY = "change-timeline:" + (D.repo && D.repo.name || "") + ":" + (D.range && D.range.label || "") + ":";
+  var reviewed = {};   // the source of truth; storage only carries it between visits
+  items.forEach(function(it){ if (store.get(KEY + "done:" + it.id) === "1") reviewed[it.id] = true; });
 
   // ---- theme from the approved style ----
   if (theme.mode === "light" || theme.mode === "dark") root.setAttribute("data-theme", theme.mode);
@@ -388,8 +391,6 @@ footer p{margin:4px 0}
     var body = el("div", "dl");
     if (opts.compact) {
       if (it.what) body.appendChild(el("p", "what", it.what));
-      if (it.why) { var w = el("p", "why"); w.appendChild(el("b", null, "Why")); w.appendChild(document.createTextNode(it.why));
-        if (it.why_inferred) w.appendChild(el("span", "tag", "inferred")); body.appendChild(w); }
     }
     if ((it.evidence || []).length) {
       body.appendChild(el("h4", null, "Sources"));
@@ -452,16 +453,15 @@ footer p{margin:4px 0}
       var lane = el("div", "lane"); lane.appendChild(el("div", "lane-name", k === "other" ? "other" : areaLabel(k)));
       var track = el("div", "lane-track"), rows = [];
       mine.forEach(function(it){
-        var p = pct(day(it.date)), r = 0;
-        while (rows[r] != null && p - rows[r] < 22) r++;      // a mark is ~180px; leave room before reusing a row
-        rows[r] = p;
-        var m = el("button", "mark"); m.type = "button"; m.style.left = p + "%"; m.style.transform = "translateX(-" + Math.round(p) + "%)"; m.style.top = (6 + r * 30) + "px";
+        var p = pct(day(it.date));
+        var m = el("button", "mark"); m.type = "button"; m.style.left = p + "%"; m.style.transform = "translateX(-" + Math.round(p) + "%)"; m.style.top = "6px";
         m.style.setProperty("--c", color(typeOf(it))); m.setAttribute("aria-pressed", String(state.sel === it.id));
         m.title = fmt(it.date, true) + " · " + it.title; m.appendChild(el("span", null, it.title));
         m.addEventListener("click", function(){ state.sel = state.sel === it.id ? null : it.id; render(); });
         track.appendChild(m);
+        rows.push(m);
       });
-      track.style.height = (12 + rows.length * 30) + "px";
+      track.style.height = "42px";
       lane.appendChild(track); box.appendChild(lane);
     });
     var axis = el("div", "axis"); axis.appendChild(el("div")); var ticks = el("div", "ticks");
@@ -510,14 +510,14 @@ footer p{margin:4px 0}
     });
     var prog = el("div", "progress"), label = el("span"), trk = el("div", "track"), fill = el("div", "fill");
     trk.appendChild(fill); prog.appendChild(label); prog.appendChild(trk); frag.appendChild(prog);
-    function update(){ var d = steps.filter(function(it){ return store.get(KEY + "done:" + it.id) === "1"; }).length;
+    function update(){ var d = steps.filter(function(it){ return reviewed[it.id]; }).length;
       label.textContent = d + " / " + steps.length + " reviewed"; fill.style.width = (steps.length ? 100 * d / steps.length : 0) + "%"; }
     var ol = el("ol", "steps");
     steps.forEach(function(it, i){
-      var li = el("li", "step"); var isDone = store.get(KEY + "done:" + it.id) === "1"; if (isDone) li.classList.add("done");
+      var li = el("li", "step"); var isDone = !!reviewed[it.id]; if (isDone) li.classList.add("done");
       li.appendChild(el("span", "num", i + 1));
       var c = card(it, { review: true }), lab = el("label", "done-toggle"), cb = el("input"); cb.type = "checkbox"; cb.checked = isDone;
-      cb.addEventListener("change", function(){ store.set(KEY + "done:" + it.id, cb.checked ? "1" : "0"); li.classList.toggle("done", cb.checked); update(); });
+      cb.addEventListener("change", function(){ reviewed[it.id] = cb.checked; store.set(KEY + "done:" + it.id, cb.checked ? "1" : "0"); li.classList.toggle("done", cb.checked); update(); });
       lab.appendChild(cb); lab.appendChild(document.createTextNode("Reviewed")); c.appendChild(lab);
       li.appendChild(c); ol.appendChild(li);
     });
@@ -525,6 +525,19 @@ footer p{margin:4px 0}
     return frag;
   }
 
+  // Marks are placed by date, then each is put on the first row where it clears the previous
+  // mark's measured right edge (translateX included), so long titles never overlap.
+  function packLanes(){
+    Array.prototype.forEach.call(document.querySelectorAll(".lane-track"), function(track){
+      var ends = [];
+      Array.prototype.forEach.call(track.querySelectorAll(".mark"), function(m){
+        var r = m.getBoundingClientRect(), row = 0;
+        while (ends[row] != null && r.left < ends[row] + 6) row++;
+        ends[row] = r.right; m.style.top = (6 + row * 30) + "px";
+      });
+      track.style.height = (12 + Math.max(1, ends.length) * 30) + "px";
+    });
+  }
   function render(){
     Array.prototype.forEach.call(tabs.children, function(b){ b.setAttribute("aria-selected", String(b.dataset.view === state.view)); });
     orderBtn.textContent = state.view === "walkthrough" ? "Step order" : (state.order === "newest" ? "Newest first" : "Oldest first");
@@ -535,6 +548,7 @@ footer p{margin:4px 0}
     if (!list.length) { main.appendChild(el("p", "empty", items.length ? "No changes match the filters." : "No changes in this range.")); return; }
     var f = { timeline: viewTimeline, lanes: viewLanes, chapters: viewChapters, walkthrough: viewWalkthrough }[state.view];
     main.appendChild(f(list));
+    if (state.view === "lanes") packLanes();
   }
 
   // ---- footer ----

@@ -20,12 +20,10 @@ not a marketing timeline:
 - **Dark first, light equal.** Light mode is a full theme, not an afterthought.
 - **Minimal.** No gradients, no shadows, no icons beyond `↗` on external links, no emoji.
 
-The two other directions stay available from the style preview. If a user picks one, set
-the tokens below to its values and keep every other rule:
-
-- *Swiss minimal*: `--bg #fbfaf8`, hairlines only, accent `#ff5722`, light first.
-- *Quiet editorial*: warm paper `#f5f1ea`, serif titles (`"Iowan Old Style", Charter,
-  Georgia, serif`), comfortable density, light first.
+The style preview tunes this direction (mode, density, accent); it does not switch to
+another one. The other two directions offered when the skill was designed, *Swiss
+minimal* and *quiet editorial*, are not built. Adding one means a `theme.direction` field,
+its token set in the template, and a validator enum, in one change.
 
 ## 2. Type
 
