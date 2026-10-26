@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-23",
+  "updated": "2026-10-26",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -102,6 +102,25 @@
         "browser-automation"
       ],
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/capture-screens/SKILL.md",
+      "sideEffects": true
+    },
+    {
+      "name": "change-timeline",
+      "platform": "code",
+      "description": "Visualizes code changes as an evidence-backed timeline artifact: every item has a title, what changed, why, and the commit SHAs and PRs that prove it. Researches git history, PR bodies, reviews and linked issues first, asks only what it cannot work out, then shows the plan and a style preview for your OK before rendering one of four review templates: vertical timeline, swimlanes by area, release chapters, or a step-by-step review walkthrough, in your saved design style. Use to understand what changed in a branch, PR, release or period, or to review a branch before merge.",
+      "trigger": "Wanting to see or review what changed in a branch, PR, release or time period as a visual timeline where every item links to its commits and PRs.",
+      "tags": [
+        "git",
+        "github",
+        "code review",
+        "timeline",
+        "visualization",
+        "artifacts",
+        "pull-requests",
+        "history"
+      ],
+      "icon": "https://raw.githubusercontent.com/mostafa-drz/claude-skills/main/code/change-timeline/icon.svg",
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/change-timeline/SKILL.md",
       "sideEffects": true
     },
     {
