@@ -225,6 +225,13 @@ def render():
 def main():
     check = "--check" in sys.argv
     rows = list(skills())
+    # Before any write, so a bad bundle can't leave skills.json updated and the rest stale.
+    unbundled = [s["path"] for s in rows if s["bundle"] not in BUNDLES]
+    if unbundled:
+        sys.exit(
+            "metadata.bundle missing or unknown in: " + ", ".join(unbundled)
+            + f"\nKnown bundles: {', '.join(BUNDLES)}"
+        )
 
     mf = ROOT / "skills.json"
     built = manifest(rows)
@@ -244,12 +251,6 @@ def main():
     else:
         mf.write_text(want)
 
-    unbundled = [s["path"] for s in rows if s["bundle"] not in BUNDLES]
-    if unbundled:
-        sys.exit(
-            "metadata.bundle missing or unknown in: " + ", ".join(unbundled)
-            + f"\nKnown bundles: {', '.join(BUNDLES)}"
-        )
     mp = ROOT / ".claude-plugin" / "marketplace.json"
     want_mp = json.dumps(marketplace(rows), indent=2, ensure_ascii=False) + "\n"
     if check:

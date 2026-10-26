@@ -15,7 +15,9 @@ reads the standard.
 /plugin install git-and-prs@mostafa-skills      # or any bundle below
 ```
 
-Plugin skills are namespaced, so `create-pr` runs as `/git-and-prs:create-pr`.
+On Claude Code 2.1.275 or later, `/plugin install git-and-prs --marketplace mostafa-drz/claude-skills`
+does both steps at once, and that's the form the bundles table uses. Plugin skills are
+namespaced, so `create-pr` runs as `/git-and-prs:create-pr`.
 
 **Any agent (Codex, Cursor, Gemini CLI, Copilot, Windsurf, …): pick single skills**
 with the [`skills`](https://skills.sh) CLI:
