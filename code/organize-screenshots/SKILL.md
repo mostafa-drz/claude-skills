@@ -11,9 +11,12 @@ allowed-tools:
   - Bash
   - Read
   - Glob
+license: MIT
 metadata:
   trigger: "Collecting screenshots for PRs, bug reports, docs, or Linear issues."
   tags: "files, organization, productivity"
+  author: "mostafa-drz"
+  bundle: "personal-and-research"
 ---
 
 # Organize Screenshots

@@ -17,8 +17,11 @@ allowed-tools:
   - Glob
   - Grep
   - Agent
+license: MIT
 metadata:
   trigger: "Use when you've finished exploring and want to formalize decisions into a shareable deliverable."
+  author: "mostafa-drz"
+  bundle: "dev-workflow"
 ---
 
 # Exploration to Spec

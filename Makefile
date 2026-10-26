@@ -1,4 +1,4 @@
-.PHONY: catalog check serve deps
+.PHONY: catalog check dist validate serve deps
 
 # Both scripts parse frontmatter with PyYAML. Using the same parser for generation and
 # validation is deliberate: a regex reader can publish a value the validator read
@@ -18,6 +18,16 @@ check:
 	@python3 scripts/build_catalog.py --check
 	@python3 scripts/sync_guide.py --check
 	@python3 scripts/check_frontmatter.py
+
+# One claude.ai-uploadable zip per portable skill, in dist/. The release workflow
+# attaches these to each GitHub Release.
+dist:
+	@python3 scripts/build_dist.py
+
+# What Claude Code itself checks before anyone can install from this marketplace.
+# Needs the claude CLI; CI installs a pinned version.
+validate:
+	@claude plugin validate .
 
 serve:
 	@echo "Serving at http://localhost:8000"

@@ -16,9 +16,12 @@ allowed-tools:
   - mcp__claude_ai_Linear__get_issue
   - mcp__claude_ai_Linear__list_issues
   - mcp__claude_ai_Linear__list_comments
+license: MIT
 metadata:
   trigger: "Posting a PR for team review in Slack."
   tags: "slack, github, communication"
+  author: "mostafa-drz"
+  bundle: "git-and-prs"
 ---
 
 # Post PR for Review

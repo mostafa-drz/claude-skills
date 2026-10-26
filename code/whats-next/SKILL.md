@@ -23,9 +23,12 @@ allowed-tools:
   - mcp__claude_ai_Linear__list_issue_statuses
   - mcp__claude_ai_Linear__create_comment
   - mcp__claude_ai_Linear__list_comments
+license: MIT
 metadata:
   trigger: "Deciding what to work on next or after finishing a task."
   tags: "productivity, linear, planning"
+  author: "mostafa-drz"
+  bundle: "dev-workflow"
 ---
 
 # What's Next

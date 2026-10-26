@@ -12,9 +12,12 @@ allowed-tools:
   - AskUserQuestion
   - Bash
   - Read
+license: MIT
 metadata:
   trigger: "Opening or updating a release PR (typically main \u2192 prod) that bundles multiple squash-merged PRs."
   tags: "release, github, pull-requests, documentation, issue-tracker"
+  author: "mostafa-drz"
+  bundle: "git-and-prs"
 ---
 
 # Release Notes
