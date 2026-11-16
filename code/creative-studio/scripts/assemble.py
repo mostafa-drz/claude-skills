@@ -9,7 +9,7 @@ captions.json: [{"start": 0.0, "end": 1.8, "text": "Can't start the email?"}, ..
 Without --captions, no captions are burned (the skill should always pass them).
 Needs ffmpeg and ffprobe with libass.
 """
-import argparse, json, os, subprocess, sys, tempfile
+import argparse, json, math, os, subprocess, sys, tempfile
 
 
 def duration(path):
@@ -66,6 +66,10 @@ def main():
     if a.durations:
         if len(a.durations) != n:
             sys.exit("--durations needs one value per scene")
+        if any(not math.isfinite(d) or d < 1 / a.fps for d in a.durations):
+            sys.exit(f"--durations must be finite and at least one frame (1/{a.fps} s) each")
+        if n > 1 and any(d <= a.fade for d in a.durations[1:]):
+            sys.exit(f"--durations after the first scene must be longer than --fade ({a.fade} s)")
         shown = list(a.durations)
     else:
         shown = [total / n] * n
