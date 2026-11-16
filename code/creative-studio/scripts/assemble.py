@@ -3,7 +3,7 @@
 
 python3 assemble.py --scenes s1.png s2.png s3.png --voice voice.mp3 \
     --captions captions.json --out reel.mp4 [--fonts-dir DIR --font "Instrument Sans"]
-    [--size 1080x1920] [--fade 0.5]
+    [--size 1080x1920] [--fade 0.5] [--durations 2.8 2.9 5.9 ...]
 
 captions.json: [{"start": 0.0, "end": 1.8, "text": "Can't start the email?"}, ...]
 Without --captions, no captions are burned (the skill should always pass them).
@@ -35,7 +35,7 @@ def write_ass(captions, path, w, h, font):
         "Format: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, BackColour, Bold, "
         "BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV",
         # White text in an opaque-ish dark box (BorderStyle 3), centred in the lower third.
-        f"Style: Cap,{font},{size},&H00FFFFFF,&H9918181D,&H9918181D,1,3,18,0,2,90,90,{margin_v}",
+        f"Style: Cap,{font},{size},&H00FFFFFF,&H201D1818,&H201D1818,1,3,18,0,2,90,90,{margin_v}",
         "", "[Events]", "Format: Layer, Start, End, Style, Text",
     ]
     for c in captions:
@@ -56,21 +56,31 @@ def main():
     p.add_argument("--fps", type=int, default=30)
     p.add_argument("--fonts-dir")
     p.add_argument("--font", default="Instrument Sans")
+    p.add_argument("--durations", nargs="+", type=float,
+                   help="seconds each scene is on screen (one per scene); default: equal split")
     a = p.parse_args()
 
     w, h = (int(x) for x in a.size.split("x"))
     total = duration(a.voice) + 0.6  # small tail after the last word
     n = len(a.scenes)
-    seg = (total + a.fade * (n - 1)) / n  # each scene's length, overlaps included
-    frames = int(seg * a.fps)
+    if a.durations:
+        if len(a.durations) != n:
+            sys.exit("--durations needs one value per scene")
+        shown = list(a.durations)
+    else:
+        shown = [total / n] * n
+    # Each input runs its on-screen time plus the crossfade into the next scene.
+    lengths = [d + (a.fade if i < n - 1 else 0) for i, d in enumerate(shown)]
+    starts = [sum(shown[:i]) for i in range(n)]
 
     cmd = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error"]
-    for s in a.scenes:
-        cmd += ["-loop", "1", "-t", f"{seg:.3f}", "-i", s]
+    for s, ln in zip(a.scenes, lengths):
+        cmd += ["-loop", "1", "-t", f"{ln:.3f}", "-i", s]
     cmd += ["-i", a.voice]
 
     parts = []
     for i in range(n):
+        frames = int(lengths[i] * a.fps)
         # Cover-crop to the frame, then a slow 4% push-in.
         parts.append(
             f"[{i}:v]scale={w}:{h}:force_original_aspect_ratio=increase,crop={w}:{h},"
@@ -80,7 +90,7 @@ def main():
         )
     last = "v0"
     for i in range(1, n):
-        offset = i * (seg - a.fade)
+        offset = starts[i]
         parts.append(f"[{last}][v{i}]xfade=transition=fade:duration={a.fade}:offset={offset:.3f}[x{i}]")
         last = f"x{i}"
 
@@ -101,7 +111,7 @@ def main():
         "-filter_complex", ";".join(parts),
         "-map", f"[{last}]", "-map", f"{n}:a",
         "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p",
-        "-c:a", "aac", "-b:a", "160k", "-t", f"{total:.3f}", "-movflags", "+faststart", a.out,
+        "-c:a", "aac", "-b:a", "160k", "-t", f"{max(total, sum(shown)):.3f}", "-movflags", "+faststart", a.out,
     ]
     try:
         subprocess.run(cmd, check=True)
