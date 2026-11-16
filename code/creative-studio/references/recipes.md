@@ -37,7 +37,7 @@ then Read the image to check it (no invented text or logos).
 
 ```bash
 python3 scripts/assemble.py --scenes s1.png s2.png s3.png --voice voice.mp3 \
-  --captions captions.json --out reel.mp4 [--font /path/InstrumentSans.ttf]
+  --captions captions.json --out reel.mp4 [--fonts-dir /path/to/fonts --font "Instrument Sans"]
 ```
 
 - `captions.json`: `[{"start": 0.0, "end": 1.8, "text": "Can't start the email?"}, ...]`.
@@ -45,6 +45,7 @@ python3 scripts/assemble.py --scenes s1.png s2.png s3.png --voice voice.mp3 \
   timestamps, split the script evenly over the voice duration.
 - Scenes share the voice duration evenly, with 0.5 s crossfades and a slow 4% push-in.
 - Captions are burned in, centred in the lower third, white text on a dark translucent box.
+- `--font` is a font family name; `--fonts-dir` is the folder holding its .ttf/.otf.
 - Check: `ffprobe -v error -show_entries format=duration -of csv=p=0 reel.mp4`.
 
 ## Layouts

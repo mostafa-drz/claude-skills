@@ -40,9 +40,12 @@ One brief in, finished on-brand assets out. The user picks; nothing ships withou
 ## Standing rules (hold for the whole task)
 
 1. **Brand first.** Every asset follows the brand file. If an asset breaks it, fix or redo it.
-2. **Cost gate.** Before any paid call, show the plan with an estimated cost. Batches under
-   $1 the user asked for can run; anything over $1, any AI video, and any retry loop wait
-   for an explicit yes. Report actual spend at the end.
+2. **Cost gate.** Load `spend_cap` from preferences (default $1) before planning. Before any
+   paid call, show the plan with an estimated cost for drafts and finals together. A run the
+   user asked for can go ahead only if its total estimate is at or under the cap; anything
+   over the cap, any AI video, and any retry loop wait for an explicit yes. Track spend as
+   you go, stop and ask before the running total passes the cap, and report actual spend at
+   the end.
 3. **Draft cheap, finish good.** Drafts use the brand's draft voice and 2–3 image options;
    the final uses the default voice and the chosen image.
 4. **Never invent text in images.** Image prompts say "no text, no logos". Look at every
@@ -62,6 +65,13 @@ One brief in, finished on-brand assets out. The user picks; nothing ships withou
 
 Preferences: `~/.claude/skills/creative-studio/preferences.md` (format in SKILLS_GUIDE).
 Write it after the first successful run.
+
+## 0. Check the tools
+
+Before any paid call, check only what the planned assets need, and say what is missing:
+fal connector or `FAL_KEY` (all); `ffmpeg`/`ffprobe` with libass (video); Python
+`playwright` with Chromium (carousels and cards); `python-pptx` (deck fallback); Pillow
+(image checks). Never spend on assets you can't finish.
 
 ## 1. Load the brand
 

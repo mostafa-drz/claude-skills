@@ -17,4 +17,11 @@ video wait for your yes too.
 Subcommands: `help`, `config` (brand path, output folder, spend cap), `reset` (clears
 preferences only; brands and assets are untouched).
 
-Needs: the fal connector (or a `FAL_KEY`), ffmpeg for video, Python 3 with Pillow.
+Needs, by asset:
+- All: the fal connector (or a `FAL_KEY`), Python 3 with Pillow.
+- Video: `ffmpeg` and `ffprobe` with libass.
+- Carousels, social and OG cards: Python `playwright` plus its Chromium browser
+  (`pip install playwright && playwright install chromium`).
+- Decks without a deck tool: `python-pptx`.
+
+The skill checks these before spending anything.
