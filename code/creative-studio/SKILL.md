@@ -87,7 +87,15 @@ save it to the project's `brand/` or the personal brands folder.
 
 Say which brand you loaded in one line.
 
-## 2. Plan from the brief
+## 2. Story first (the owner's yes before any spend)
+
+For any video or multi-slide asset, first send one short message: 2–3 story options in one
+line each with a recommendation, then a beat sheet for the pick (time, on screen, voice
+line). Wait for a yes or edits. Then a rough cut (draft voice, layout-rendered screens or
+cheap images, ~$0.10), then the final after a second yes. Use real product output on screen
+where the brand allows it; layout-rendered screens cost nothing and stay exactly on brand.
+
+## 3. Plan from the brief
 
 Turn the brief into one short table: asset, format and size (from `brand.formats`), models,
 estimated cost. Ask at most one question, and only if the channel is unknown. Example:
@@ -98,7 +106,7 @@ estimated cost. Ask at most one question, and only if the channel is unknown. Ex
 
 Get prices from `estimate_cost` when unsure. Then follow the cost gate.
 
-## 3. Make it
+## 4. Make it
 
 Recipes with exact commands are in `references/recipes.md`. Read the section you need.
 
@@ -108,7 +116,7 @@ Recipes with exact commands are in `references/recipes.md`. Read the section you
   then generate with `brand.voiceover.draft`, and `default` for the final. Ask for word
   timestamps when the endpoint supports them; they drive captions.
 - **Vertical video:** script → voice → 3–6 scenes (images) → `scripts/assemble.py` builds the
-  1080×1920 MP4 with gentle crossfades, slow push-in and burned captions. Hook in the first 2
+  1080×1920 MP4 (pass `--durations` to time each scene to its voice line) with gentle crossfades, slow push-in and burned captions. Hook in the first 2
   seconds. AI video clips (Veo, Kling) only when asked, as short b-roll, after a yes.
 - **Carousel / social card / OG card:** an illustration from fal plus real text laid out in
   HTML with the brand fonts and colors, rendered to PNG at the exact size
@@ -119,13 +127,13 @@ Recipes with exact commands are in `references/recipes.md`. Read the section you
 Save everything to `creative/out/<YYYY-MM-DD>-<slug>/` (or the configured folder), with
 `manifest.json`: brief, brand used, each file, its fal endpoint, inputs, request ID and cost.
 
-## 4. Check before showing
+## 5. Check before showing
 
 Run the checklist in `references/recipes.md#qa`: brand colors and fonts, no invented text
 or logos, captions present and readable, length within the format, claims and copy rules,
 file sizes. Fix failures before showing.
 
-## 5. Show and hand off
+## 6. Show and hand off
 
 Show the assets (fal `show_media` for media, or send the files) with a one-line summary and
 the actual cost. Offer the next step: variations, another channel, or publishing. Publishing
