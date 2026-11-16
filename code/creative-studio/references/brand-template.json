@@ -1,0 +1,34 @@
+{
+  "name": "<Brand name>",
+  "one_line": "<What it is, for whom, in one sentence>",
+  "voice": { "rules": ["Plain words, short sentences"], "banned_words": [] },
+  "colors": {
+    "paper": "#FAF9F6",
+    "ink": "#18181D",
+    "muted": "#56565F",
+    "accent": "#0F5C52",
+    "accent_tint": "#E8F1EE"
+  },
+  "fonts": { "display": "Fraunces", "text": "Instrument Sans" },
+  "image": {
+    "endpoint": "fal-ai/recraft/v3/text-to-image",
+    "style": "digital_illustration",
+    "palette_rgb": [{ "r": 15, "g": 92, "b": 82 }, { "r": 250, "g": 249, "b": 246 }],
+    "prompt_suffix": "Lots of empty space, one accent color. Calm flat illustration. No text, no logos, no people's faces.",
+    "never": ["text or logos in the image"]
+  },
+  "voiceover": {
+    "default": { "endpoint": "fal-ai/elevenlabs/tts/eleven-v3", "voice": "Sarah", "stability": 0.5 },
+    "draft": { "endpoint": "fal-ai/kokoro/american-english", "voice": "af_heart" },
+    "words_per_minute": 140
+  },
+  "motion": { "rules": ["Gentle fades", "Captions always on", "Hook in the first 2 seconds"] },
+  "formats": {
+    "instagram_post": { "w": 1080, "h": 1350, "max_slides": 7 },
+    "vertical_video": { "w": 1080, "h": 1920, "seconds": [15, 45] },
+    "landscape_social": { "w": 1600, "h": 900 },
+    "og_card": { "w": 1200, "h": 630 },
+    "deck": { "aspect": "16:9" }
+  },
+  "approval": "Nothing is published without the owner's explicit yes."
+}
