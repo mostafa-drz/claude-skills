@@ -11,7 +11,8 @@ What it does: loads your brand file (`brand/brand.json`), plans the assets with 
 estimate, drafts cheaply, finishes with your chosen voice and images, checks everything
 against the brand, and saves files plus a recipe to `creative/out/`.
 
-It never posts, publishes or emails anything without your yes. Spends over $1 or any AI
+It never posts, publishes or emails anything without your yes. Spends over your cap
+(default $1) or any AI
 video wait for your yes too.
 
 Subcommands: `help`, `config` (brand path, output folder, spend cap), `reset` (clears
