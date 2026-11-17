@@ -21,8 +21,11 @@ allowed-tools:
   - mcp__claude_ai_Linear__list_comments
   - mcp__claude_ai_Linear__list_teams
   - mcp__claude_ai_Linear__get_user
+license: MIT
 metadata:
   trigger: "Use when you want to understand what changed, when, and why in a codebase."
+  author: "mostafa-drz"
+  bundle: "git-and-prs"
 ---
 
 # Repo Timeline

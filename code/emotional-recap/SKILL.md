@@ -22,9 +22,12 @@ allowed-tools:
   - Glob
   - Grep
   - Bash
+license: MIT
 metadata:
   trigger: "Wanting an emotional/wellbeing recap, mood check, sentiment review, or to understand ups and downs across recent work sessions."
   tags: "wellbeing, sentiment, self-awareness, reflection"
+  author: "mostafa-drz"
+  bundle: "personal-and-research"
 ---
 
 # Emotional Recap
@@ -39,7 +42,7 @@ _On startup, use the `Read` tool to load `~/.claude/skills/emotional-recap/prefe
 
 ## Design contract
 
-_On startup, use the `Read` tool to load `~/.claude/skills/emotional-recap/DESIGN.md`. This file is the **renderer contract**: aesthetic direction, type system, colour tokens, layout, visualisation principles, anti-patterns, renderer guarantees, component patterns. Apply its tokens and rules to every emitted HTML / SVG / Markdown artefact. Renderer guarantees in DESIGN.md §7 are non-negotiable — they fail closed (refuse to write if violated)._
+_On startup, use the `Read` tool to load `${CLAUDE_SKILL_DIR}/DESIGN.md`. This file is the **renderer contract**: aesthetic direction, type system, colour tokens, layout, visualisation principles, anti-patterns, renderer guarantees, component patterns. Apply its tokens and rules to every emitted HTML / SVG / Markdown artefact. Renderer guarantees in DESIGN.md §7 are non-negotiable — they fail closed (refuse to write if violated)._
 
 _When DESIGN.md and `preferences.md` conflict: **DESIGN.md wins for renderer guarantees** (a11y, anti-patterns, token shape); **`preferences.md` wins for user-tunable knobs** (tone, citation depth, framework choice, auto_open, etc.). If `DESIGN.md` is missing, fall back to the inline spec in `reference/report-structure.md` and flag once._
 
@@ -152,7 +155,7 @@ Then proceed.
 ### Step 0 — Load learning context and design contract
 
 1. Read `~/.claude/skills/emotional-recap/preferences.md` → apply Defaults, then Profile overrides, then Learned overrides.
-2. **Read `~/.claude/skills/emotional-recap/DESIGN.md`** — the renderer contract. Hold its tokens, anti-patterns, and renderer guarantees in working memory for Step 5. If missing, fall back to `reference/report-structure.md` and flag once.
+2. **Read `${CLAUDE_SKILL_DIR}/DESIGN.md`** — the renderer contract. Hold its tokens, anti-patterns, and renderer guarantees in working memory for Step 5. If missing, fall back to `reference/report-structure.md` and flag once.
 3. Read `~/.claude/skills/emotional-recap/feedback-journal.md` if present — scan the last ~10 entries for `Signal:` lines and silently apply them as soft biases for this run.
 4. If `resume-state.md` exists and `$ARGUMENTS` is not `resume`, mention once: `A previous run was interrupted — run /emotional-recap resume to continue, or ignore to start fresh.` Continue with the new run regardless.
 
@@ -190,7 +193,7 @@ Aggregate stats: total messages, total tokens (approx word count × 1.3), distin
 
 ### Step 3 — Sentiment, emotion, and tone analysis
 
-Apply the user's chosen framework(s) — see `~/.claude/skills/emotional-recap/reference/frameworks.md` for the full reference. Summary:
+Apply the user's chosen framework(s) — see `${CLAUDE_SKILL_DIR}/reference/frameworks.md` for the full reference. Summary:
 
 - **Plutchik (1980)** — 8 primary emotions: joy, trust, fear, surprise, sadness, disgust, anger, anticipation. Tag each meaningful user message with 0-2 primary emotions.
 - **Ekman (1992)** — 6 basic emotions: happiness, sadness, fear, anger, surprise, disgust. Useful when Plutchik feels too granular.

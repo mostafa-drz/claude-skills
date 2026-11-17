@@ -17,9 +17,12 @@ allowed-tools:
   - Bash
   - WebSearch
   - WebFetch
+license: MIT
 metadata:
   trigger: "Keeping skills healthy, consistent, and up-to-date with the latest standards."
   tags: "meta, quality, maintenance"
+  author: "mostafa-drz"
+  bundle: "skill-authoring"
 ---
 
 # Audit Skills
@@ -78,7 +81,7 @@ Example output:
 
 ### Local manifest
 
-Read `~/.claude/skills/SKILLS_GUIDE.md` — this is the source of truth for local conventions.
+Read `${CLAUDE_SKILL_DIR}/../SKILLS_GUIDE.md` — this is the source of truth for local conventions.
 
 ### Latest upstream docs
 

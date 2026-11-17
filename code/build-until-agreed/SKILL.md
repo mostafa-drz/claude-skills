@@ -26,9 +26,12 @@ allowed-tools:
   - Bash(git *)
   - Bash(gh *)
   - Bash(rm ~/.claude/skills/build-until-agreed/preferences.md)
+license: MIT
 metadata:
   trigger: "Building toward a goal where done should be judged by independent auditors, not the builder — long-running or exploratory builds, boilerplates, POCs heading to a PR."
   tags: "coding, agents, review, quality, testing, automation"
+  author: "mostafa-drz"
+  bundle: "dev-workflow"
 ---
 
 # Build Until Agreed

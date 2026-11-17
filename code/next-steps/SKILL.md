@@ -12,9 +12,12 @@ allowed-tools:
   - Glob
   - WebFetch
   - AskUserQuestion
+license: MIT
 metadata:
   trigger: "After a working session, when you need to align teammates (PM, design, engineering, leadership) on what happens next, who owns it, and what's blocked."
   tags: "project-management, linear, communication, planning"
+  author: "mostafa-drz"
+  bundle: "dev-workflow"
 ---
 
 # Next Steps — Stakeholder Alignment Checklist

@@ -83,7 +83,21 @@ claude.ai, the Skills API, or Cowork/cloud sessions: `name`, `description`, `lic
 fails the upload outright. This catches an unobvious path: enabling a personal skill for
 cloud sessions uploads it to claude.ai, so the same six-field rule applies there.
 
+**Bundled files resolve from `${CLAUDE_SKILL_DIR}`, never `~/.claude/skills/<skill>/`.**
+A plugin install lives in the plugin cache, not in `~/.claude/skills/`, so a hardcoded home
+path finds the skill's own templates only after a manual copy. Use
+`${CLAUDE_SKILL_DIR}/templates/x.html`, or `${CLAUDE_SKILL_DIR}/../SKILLS_GUIDE.md` for the
+shared guide. Keep `~/.claude/skills/<skill>/` for files the skill writes for the user
+(preferences, learnings, sessions), which a plugin update must not overwrite. `make check`
+enforces this. The substitution applies to `SKILL.md` only, so reference files name
+siblings by relative path.
+
 **`version` is not a frontmatter field** in either authority. It belongs under `metadata`.
+
+**`metadata` values are strings.** The spec defines it as a string-to-string map, so write
+`side_effects: "true"`, not `side_effects: true`. Every skill also carries `license: MIT`
+and `metadata.author`. `make check` enforces string values on every skill, and the six-key
+rule on `desktop/` skills, which are the ones packaged for claude.ai.
 
 ---
 
@@ -204,9 +218,13 @@ effects — which the site consuming it was faithfully displaying.
 `skills.json` is a **published API** — mostafa.xyz renders from it — so its field shape is
 a contract. Don't change the keys without checking the consumer.
 
-The two things a manifest needs that nothing else knows, `trigger` and `tags`, live in each
-skill's own frontmatter `metadata:` map. Add them there when you add a skill; everything
-else is derived.
+The three things a manifest needs that nothing else knows, `trigger`, `tags` and `bundle`,
+live in each skill's own frontmatter `metadata:` map. Add them there when you add a skill;
+everything else is derived. `bundle` names the plugin the skill ships in; the generated
+`.claude-plugin/marketplace.json` groups skills by it, and `make check` fails on a missing or
+unknown bundle. The bundle list lives in `BUNDLES` in `scripts/build_catalog.py`. Add new
+bundles there, but never rename one: a plugin's name is its install id, so a rename breaks
+every existing install.
 
 Locally, `claude plugin validate ~/.claude/skills` reports skills whose frontmatter fails
 to parse, and `/skill-doctor` shows per-skill context cost and flags skills never invoked.

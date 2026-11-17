@@ -16,9 +16,12 @@ allowed-tools:
   - mcp__claude_ai_Linear__list_comments
   - mcp__claude_ai_Linear__create_comment
   - mcp__claude_ai_Linear__get_project
+license: MIT
 metadata:
   trigger: "After completing work on a ticket to document the implementation for the team."
   tags: "linear, documentation, communication"
+  author: "mostafa-drz"
+  bundle: "comms-and-tickets"
 ---
 
 # Post Ticket Summary

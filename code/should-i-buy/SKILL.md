@@ -37,9 +37,12 @@ allowed-tools:
   - mcp__claude-in-chrome__javascript_tool
   - mcp__claude-in-chrome__find
   - mcp__claude-in-chrome__resize_window
+license: MIT
 metadata:
   trigger: "Pasting one or more product links and asking whether to buy, which one to pick, or whether to wait."
   tags: "shopping, decision, browser-automation, claude-in-chrome"
+  author: "mostafa-drz"
+  bundle: "personal-and-research"
 ---
 
 ## Preferences
@@ -388,7 +391,7 @@ Generate a single self-contained `report.html` (no external JS dependencies — 
 
 Structure:
 
-1. **Header** — inline the SVG from `~/.claude/skills/should-i-buy/icon.svg` at ~32px next to the H1 with `color: var(--accent)` so it themes with light/dark mode. Title reflects the decision (e.g., "Standing desk under $500 — REI vs. Amazon"). Date + a muted timestamp.
+1. **Header** — inline the SVG from `${CLAUDE_SKILL_DIR}/icon.svg` at ~32px next to the H1 with `color: var(--accent)` so it themes with light/dark mode. Title reflects the decision (e.g., "Standing desk under $500 — REI vs. Amazon"). Date + a muted timestamp.
 
 2. **Interactive context chips** (below the title) — every input that shaped the verdict is a live chip, not a label:
    - `Priority: {value}` — clickable, cycles through the Q1 options (or opens a small inline dropdown)
@@ -434,7 +437,7 @@ Inline JS responsibilities (keep it ~150 lines max, vanilla, no framework):
 - On any chip change: compute `isStale = current !== original`, toggle the `.stale` class and banner visibility
 - On any chip change: recompute scores client-side using the same weighting logic used server-side (ship a small `scoreOption(option, weights, dealbreakers)` function in the JSON payload's `_recompute` hint, or inline it), re-sort the comparison table, re-dim filtered rows
 
-Reference `~/.claude/skills/should-i-buy/reference/report-template.html` if it exists (load on demand; otherwise generate from scratch following the aesthetic above).
+Reference `${CLAUDE_SKILL_DIR}/reference/report-template.html` if it exists (load on demand; otherwise generate from scratch following the aesthetic above).
 
 ### Step 8 — Finalize and open
 

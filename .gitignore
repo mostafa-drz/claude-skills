@@ -17,3 +17,6 @@ anonymise.deny
 reports/
 sessions/
 resume-state.md
+
+# `make dist` output — release assets, rebuilt from source on every tag.
+dist/

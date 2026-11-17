@@ -22,8 +22,11 @@ allowed-tools:
   - mcp__claude_ai_Linear__list_projects
   - mcp__claude_ai_Notion__notion-search
   - mcp__claude_ai_Notion__notion-fetch
+license: MIT
 metadata:
   trigger: "Use when starting work, catching up after being away, or prepping for standup."
+  author: "mostafa-drz"
+  bundle: "comms-and-tickets"
 ---
 
 # Daily Brief

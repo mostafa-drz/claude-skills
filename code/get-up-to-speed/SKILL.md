@@ -15,8 +15,11 @@ allowed-tools:
   - mcp__claude_ai_Linear__get_issue
   - mcp__claude_ai_Linear__list_comments
   - mcp__claude_ai_Linear__get_project
+license: MIT
 metadata:
   trigger: "Use when picking up work after another agent, resuming a session, or onboarding to a branch mid-flight."
+  author: "mostafa-drz"
+  bundle: "dev-workflow"
 ---
 
 # Get Up to Speed

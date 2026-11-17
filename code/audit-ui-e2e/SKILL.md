@@ -22,9 +22,12 @@ allowed-tools:
   - Glob
   - Grep
   - ToolSearch
+license: MIT
 metadata:
   trigger: "Before shipping a feature, before review, before a demo, or any time the UI deserves a careful poke with fresh eyes. Works on localhost, staging, prod, PR previews \u2014 anywhere a browser reaches."
   tags: "audit, qa, ui, e2e, browser-automation, review, beginner-mind"
+  author: "mostafa-drz"
+  bundle: "qa-and-audits"
 ---
 
 # Audit UI End-to-End
@@ -252,7 +255,7 @@ Topic slug for the folder, in priority order:
 3. Hostname + path slug (e.g. `app-example-com-dashboard`)
 4. `ui-audit` as final fallback
 
-Invoke `/triage-board --findings <path-to-report.json> --topic <slug>` (or write the folder directly using triage-board's template at `~/.claude/skills/triage-board/templates/`).
+Invoke `/triage-board --findings <path-to-report.json> --topic <slug>` (or write the folder directly using triage-board's template at `${CLAUDE_SKILL_DIR}/../triage-board/templates/`).
 
 ### Step 7 — Open + report
 

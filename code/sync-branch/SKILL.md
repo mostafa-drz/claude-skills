@@ -11,9 +11,12 @@ allowed-tools:
   - AskUserQuestion
   - Bash
   - Read
+license: MIT
 metadata:
   trigger: "Keeping a long-lived branch in sync with its upstream."
   tags: "git, automation"
+  author: "mostafa-drz"
+  bundle: "git-and-prs"
 ---
 
 # Sync Branch

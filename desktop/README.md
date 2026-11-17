@@ -12,27 +12,20 @@ For example, if you have the `research-assistant` skill installed and ask _"Rese
 
 ## Install a Skill
 
-### Step 1: Get the skill files
+### Step 1: Download the ZIP
+
+Every [release](https://github.com/mostafa-drz/claude-skills/releases/latest) attaches a
+ready-to-upload `<skill>.zip` for each skill here, e.g. `inbox-catchup.zip`. Skip to Step 3.
+
+### Step 2 (optional): Build the ZIP yourself
 
 ```bash
-# Clone the repo
 git clone https://github.com/mostafa-drz/claude-skills.git
-
-# Or download just the skill folder you want from GitHub
+cd claude-skills && make dist      # writes dist/<skill>.zip for every skill here
 ```
 
-### Step 2: Create a ZIP
+Each ZIP holds the skill folder with `SKILL.md` inside, which is the layout the upload expects:
 
-The ZIP must contain the skill folder (with `SKILL.md` inside). The folder name should match the skill name.
-
-```bash
-cd claude-skills/desktop
-
-# ZIP a single skill
-zip -r inbox-catchup.zip inbox-catchup/
-```
-
-**ZIP structure should look like:**
 ```
 inbox-catchup.zip
 └── inbox-catchup/
