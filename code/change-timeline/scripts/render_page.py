@@ -21,7 +21,7 @@ BLOCK = re.compile(r'(<script type="application/json" id="tl-data">)(.*?)(</scri
 
 def payload(src):
     data = json.loads(Path(src).read_text(encoding="utf-8"))
-    return data, json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    return data, json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
 
 
 def main(argv):

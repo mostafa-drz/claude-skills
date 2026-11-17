@@ -73,6 +73,10 @@ def log(repo, rev_args, paths, merges):
     fmt = RS + US.join(["%H", "%P", "%aI", "%an", "%s", "%b"]) + US
     args = ["log", f"--format={fmt}", "--numstat", "--no-renames"]
     args += ["--merges"] if merges else ["--no-merges"]
+    if merges and paths:
+        # Path filtering prunes a PR merge that is TREESAME to one parent for that path,
+        # yet keeps its branch commits, which would then lose their PR number.
+        args.append("--full-history")
     out = git(repo, *args, *rev_args, "--", *paths)
     commits = []
     for chunk in out.split(RS)[1:]:
