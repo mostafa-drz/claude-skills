@@ -1,10 +1,18 @@
 name: release
 
-# Push a tag like v1.2.0 and every portable skill is attached to the GitHub Release as
-# <name>.zip — the file claude.ai and Claude Desktop take in Settings > Capabilities.
+# Every portable skill is attached to the GitHub Release as <name>.zip — the file
+# claude.ai and Claude Desktop take in Settings > Capabilities. Two ways in:
+#   - push a tag like v1.2.0
+#   - run this workflow from main with a version (Actions > release > Run workflow,
+#     or the API), which creates the tag on main's head for you
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Version to release, e.g. v1.2.0"
+        required: true
 
 permissions:
   contents: write
@@ -13,16 +21,48 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+      # Untrusted input stays in env, never inlined into a script. A manual release is
+      # only cut from main, and only with a plain semver tag.
+      - name: Resolve the tag
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            [ "$GITHUB_REF" = "refs/heads/main" ] || { echo "::error::Run this from main."; exit 1; }
+            TAG="$INPUT_TAG"
+          else
+            TAG="$GITHUB_REF_NAME"
+          fi
+          # Whole-value match: grep would pass a multi-line value that injects more env vars.
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::Not a vX.Y.Z version."; exit 1; }
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
       # Pinned to immutable SHAs, as in check.yml: this job holds a write token.
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
         with:
           python-version: "3.12"
       - run: pip install pyyaml
+      # A version's zips must come from its own commit: refuse when the tag already
+      # exists somewhere other than the commit being built.
+      - name: Tag and build commit agree
+        run: |
+          TAGGED=$(git ls-remote --tags origin "refs/tags/$TAG^{}" "refs/tags/$TAG" | sort -k2 | tail -1 | cut -f1)
+          if [ -n "$TAGGED" ] && [ "$TAGGED" != "$GITHUB_SHA" ]; then
+            echo "::error::$TAG already points at $TAGGED, not $GITHUB_SHA. Use a new version."
+            exit 1
+          fi
       - name: Never release a tree that fails the checks
         run: make check
       - run: make dist
+      # Re-running for a version that already has a release refreshes its zips instead
+      # of failing, so a release drafted on github.com doesn't strand the workflow.
       - name: Publish the release with one zip per skill
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/*.zip --generate-notes --verify-tag
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/*.zip --clobber
+            gh release edit "$TAG" --draft=false
+          else
+            gh release create "$TAG" dist/*.zip --generate-notes --target "$GITHUB_SHA"
+          fi
