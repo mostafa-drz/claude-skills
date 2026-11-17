@@ -4,10 +4,13 @@ description: >-
   Builds a daily deck of 3-5 learning picks (videos, articles, podcasts) for your work,
   business and life goals, with why and summary, learning from your feedback. Use for
   "what should I learn today".
+license: MIT
 metadata:
-  side_effects: true
+  side_effects: "true"
   trigger: "Asking what to learn, watch, read or listen to today; wanting learning picks matched to their goals; setting up a daily learning routine in a project."
   tags: "learning, growth, recommendations, youtube, podcasts, articles, life-areas, daily-routine, memory, feedback, scheduled-task, project, desktop"
+  author: "mostafa-drz"
+  bundle: "everyday-assistant"
 ---
 
 # Learn today

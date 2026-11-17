@@ -14,9 +14,12 @@ allowed-tools:
   - Grep
   - mcp__claude_ai_Linear__get_issue
   - mcp__claude_ai_Linear__update_issue
+license: MIT
 metadata:
   trigger: "Ready to open a PR or when asking to create a pull request."
   tags: "git, github, linear"
+  author: "mostafa-drz"
+  bundle: "git-and-prs"
 ---
 
 # Create PR

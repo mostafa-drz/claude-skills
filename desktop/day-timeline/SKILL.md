@@ -9,10 +9,12 @@ description: >-
   PAST days it produces the timeline only. Use when asked what they did today
   or on a given date, for a daily recap, standup prep, or a
   what-happened-in-my-day view.
-argument-hint: '[today | yesterday | YYYY-MM-DD]'
+license: MIT
 metadata:
-  side_effects: true
+  side_effects: "true"
   trigger: "Use when asked what they did today or on a given date, for a daily recap, standup prep, or a what-happened-in-my-day view."
+  author: "mostafa-drz"
+  bundle: "everyday-assistant"
 ---
 
 # Day Timeline

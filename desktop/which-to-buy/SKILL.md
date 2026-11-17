@@ -3,10 +3,13 @@ name: which-to-buy
 description: >-
   Compares 2-5 products side by side on one page: specs, prices, visual differences, and a
   pick for what matters to you. Use for "which should I buy", "X vs Y" or "compare these".
+license: MIT
 metadata:
-  side_effects: true
+  side_effects: "true"
   trigger: "Choosing between products to buy, asking 'X vs Y', 'which should I get', or pasting product links to compare."
   tags: "shopping, comparison, decision, specs, visualization, recommendation, artifact, desktop"
+  author: "mostafa-drz"
+  bundle: "everyday-assistant"
 ---
 
 # Which to buy

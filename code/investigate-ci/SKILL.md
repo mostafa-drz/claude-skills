@@ -13,9 +13,12 @@ allowed-tools:
   - Glob
   - Grep
   - WebFetch
+license: MIT
 metadata:
   trigger: "A deploy or CI workflow fails and you need to understand why."
   tags: "ci/cd, github, debugging"
+  author: "mostafa-drz"
+  bundle: "git-and-prs"
 ---
 
 # Investigate CI

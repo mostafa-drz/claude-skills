@@ -2,10 +2,13 @@
 name: which-chart
 description: >-
   Recommends the right chart for your data and use case: reads data or screenshots, asks up to 3 questions, then gives one pick and alternatives drawn from your rows. For "which chart should I use?"
+license: MIT
 metadata:
-  side_effects: false
+  side_effects: "false"
   trigger: "Sharing data, screenshots or a use case and asking which chart or visualization fits, e.g. 'how should I show sentiment over time on my dashboard?'"
   tags: "data-visualization, charts, dashboard, chart-selection, vega-lite, sentiment, design, accessibility, desktop"
+  author: "mostafa-drz"
+  bundle: "everyday-assistant"
 ---
 
 # Which chart

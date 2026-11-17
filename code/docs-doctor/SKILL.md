@@ -21,9 +21,12 @@ allowed-tools:
   - Grep
   - Bash
   - WebFetch
+license: MIT
 metadata:
   trigger: "Want a 'docs doctor' pass on a repo before a release, after a refactor, or as a recurring DX health check."
   tags: "docs, audit, developer-experience, quality"
+  author: "mostafa-drz"
+  bundle: "qa-and-audits"
 ---
 
 # Docs Doctor

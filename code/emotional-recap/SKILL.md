@@ -22,9 +22,12 @@ allowed-tools:
   - Glob
   - Grep
   - Bash
+license: MIT
 metadata:
   trigger: "Wanting an emotional/wellbeing recap, mood check, sentiment review, or to understand ups and downs across recent work sessions."
   tags: "wellbeing, sentiment, self-awareness, reflection"
+  author: "mostafa-drz"
+  bundle: "personal-and-research"
 ---
 
 # Emotional Recap

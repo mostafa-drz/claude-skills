@@ -17,9 +17,12 @@ allowed-tools:
   - Bash
   - WebSearch
   - WebFetch
+license: MIT
 metadata:
   trigger: "Keeping skills healthy, consistent, and up-to-date with the latest standards."
   tags: "meta, quality, maintenance"
+  author: "mostafa-drz"
+  bundle: "skill-authoring"
 ---
 
 # Audit Skills

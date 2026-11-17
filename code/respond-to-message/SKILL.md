@@ -15,8 +15,11 @@ allowed-tools:
   - Read
   - Write
   - Glob
+license: MIT
 metadata:
   trigger: "Use when you receive a message and need to reply quickly in your own voice."
+  author: "mostafa-drz"
+  bundle: "comms-and-tickets"
 ---
 
 # Respond to Message

@@ -19,9 +19,12 @@ allowed-tools:
   - Write
   - Edit
   - Bash
+license: MIT
 metadata:
   trigger: "After a beginner-mind audit, QA exploration, code review, or any session where you accumulated discrete findings worth handing off to a ticket system."
   tags: "triage, qa, audit, review, report, findings, html-viewer"
+  author: "mostafa-drz"
+  bundle: "qa-and-audits"
 ---
 
 # Triage Board

@@ -20,9 +20,12 @@ allowed-tools:
   - Grep
   - WebSearch
   - WebFetch
+license: MIT
 metadata:
   trigger: "Creating a new skill or scaffolding a skill from scratch."
   tags: "meta, automation"
+  author: "mostafa-drz"
+  bundle: "skill-authoring"
 ---
 
 # Skill Creator
@@ -366,6 +369,7 @@ Assemble. Use the structure checklist below. Walk through it top to bottom — e
 - [ ] `disable-model-invocation: true` — set if side effects confirmed in Step 2
 - [ ] `context: fork` — set if confirmed self-contained in Step 2
 - [ ] `allowed-tools` — minimal list from Step 3, includes `AskUserQuestion`
+- [ ] `license: MIT`, and `metadata` with string values only: `trigger`, `tags`, `author`, and `bundle` (one of the `BUNDLES` in `scripts/build_catalog.py`, which decides the plugin the skill installs with)
 
 **Top-level sections**
 - [ ] `## Preferences` — runtime Read instruction for `preferences.md` + Defaults list

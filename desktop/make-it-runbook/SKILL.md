@@ -11,10 +11,13 @@ description: >-
   track", "give me a step-by-step I can follow", "make this trackable", or wants setup
   steps, a migration or any multi-step plan discussed in the chat as something to work
   through. Not for a plain answer, a to-do app, or a project or team task tracker.
+license: MIT
 metadata:
-  side_effects: false
+  side_effects: "false"
   trigger: "Saying 'make it a runbook' after working out a setup or plan in the chat, or asking for a checklist to track the steps discussed."
   tags: "runbook, checklist, setup, instructions, distillation, progress-tracking, html, pdf, desktop"
+  author: "mostafa-drz"
+  bundle: "everyday-assistant"
 ---
 
 # Make it a runbook

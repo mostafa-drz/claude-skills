@@ -24,8 +24,11 @@ allowed-tools:
   - mcp__claude_ai_Linear__get_issue
   - mcp__claude_ai_Linear__list_teams
   - mcp__claude_ai_Linear__get_user
+license: MIT
 metadata:
   trigger: "Use when ending a session, filling a timesheet, preparing for standup, writing a daily log, wrapping up for the day, or when asked what was worked on."
+  author: "mostafa-drz"
+  bundle: "comms-and-tickets"
 ---
 
 # Workday Summary

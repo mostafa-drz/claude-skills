@@ -14,9 +14,12 @@ allowed-tools:
   - Edit
   - Glob
   - Grep
+license: MIT
 metadata:
   trigger: "Ready to share skill updates or after creating/updating skills."
   tags: "meta, git, automation"
+  author: "mostafa-drz"
+  bundle: "skill-authoring"
 ---
 
 # Publish Skills

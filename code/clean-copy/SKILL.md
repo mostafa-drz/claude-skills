@@ -16,9 +16,12 @@ allowed-tools:
   - Bash
   - Read
   - Write
+license: MIT
 metadata:
   trigger: "You want to paste a draft from the chat into Gmail, Slack, LinkedIn, or another tool without nightmare terminal formatting (extra whitespace, hard wraps, indented blocks) coming along."
   tags: "clipboard, formatting, communication, productivity"
+  author: "mostafa-drz"
+  bundle: "comms-and-tickets"
 ---
 
 # Clean Copy

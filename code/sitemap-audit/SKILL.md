@@ -16,9 +16,12 @@ allowed-tools:
   - Glob
   - Grep
   - WebFetch
+license: MIT
 metadata:
   trigger: "Search Console shows 'Couldn't fetch', pages aren't indexed, or you want an SEO health check before a launch or after a routing refactor."
   tags: "seo, sitemap, google-search-console, audit, nextjs"
+  author: "mostafa-drz"
+  bundle: "qa-and-audits"
 ---
 
 # sitemap-audit

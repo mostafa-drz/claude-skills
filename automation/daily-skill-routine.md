@@ -112,8 +112,19 @@ description: >-                  # THIRD PERSON, pushy, trigger-keyword-rich, �
   Does X when the user asks for Y. <One concrete capability sentence.>
   <One "what it's for" sentence with trigger keywords.>
   Use when <trigger scenario 1>, <trigger 2>, or <trigger 3>.
+license: MIT
+metadata:                        # string values only: the spec is string → string
+  side_effects: "false"          # "true" if it writes files, sends, or posts anything
+  trigger: "<when the user reaches for it>"
+  tags: "<comma, separated, tags, desktop>"
+  author: "mostafa-drz"
+  bundle: "everyday-assistant"   # the plugin it installs with; see BUNDLES in scripts/build_catalog.py
 ---
 ```
+
+Only these six top-level keys are allowed in a Desktop skill: `name`, `description`,
+`license`, `compatibility`, `metadata`, `allowed-tools`. claude.ai rejects any other key on
+upload, and `make check` fails on one.
 
 Rules:
 - **Third person.** "Researches…" not "I research…". The description is metadata, not narrative.

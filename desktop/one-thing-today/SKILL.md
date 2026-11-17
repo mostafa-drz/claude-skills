@@ -4,10 +4,13 @@ description: >-
   Picks the ONE thing to focus on today, for work, personal life or any area, from connected
   apps and memory, with why and a first step. Use for "what's my one thing today" or "I'm
   overwhelmed".
+license: MIT
 metadata:
-  side_effects: true
+  side_effects: "true"
   trigger: "Asking what to focus on today (for work, personal life or any area), feeling overwhelmed, or setting up a daily focus routine."
   tags: "focus, productivity, prioritization, anti-perfectionism, life-areas, daily-routine, memory, scheduled-task, desktop"
+  author: "mostafa-drz"
+  bundle: "everyday-assistant"
 ---
 
 # One thing today

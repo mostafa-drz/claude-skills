@@ -14,9 +14,12 @@ allowed-tools:
   - Edit
   - Glob
   - Grep
+license: MIT
 metadata:
   trigger: "Building features, implementing milestones, or making multi-step changes."
   tags: "coding, automation, testing"
+  author: "mostafa-drz"
+  bundle: "dev-workflow"
 ---
 
 # Build

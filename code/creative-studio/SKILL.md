@@ -28,9 +28,12 @@ allowed-tools:
   - mcp__Fal_AI__wait_for_jobs
   - mcp__Fal_AI__show_media
   - AskUserQuestion
+license: MIT
 metadata:
   trigger: "Making images, voiceovers, short videos, carousels, social cards or decks for a brand."
   version: "0.1.0"
+  author: "mostafa-drz"
+  bundle: "creative"
 ---
 
 # Creative Studio
