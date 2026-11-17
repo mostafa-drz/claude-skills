@@ -33,7 +33,8 @@ jobs:
           else
             TAG="$GITHUB_REF_NAME"
           fi
-          echo "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$' || { echo "::error::'$TAG' is not vX.Y.Z"; exit 1; }
+          # Whole-value match: grep would pass a multi-line value that injects more env vars.
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::Not a vX.Y.Z version."; exit 1; }
           echo "TAG=$TAG" >> "$GITHUB_ENV"
       # Pinned to immutable SHAs, as in check.yml: this job holds a write token.
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -41,6 +42,15 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install pyyaml
+      # A version's zips must come from its own commit: refuse when the tag already
+      # exists somewhere other than the commit being built.
+      - name: Tag and build commit agree
+        run: |
+          TAGGED=$(git ls-remote --tags origin "refs/tags/$TAG^{}" "refs/tags/$TAG" | sort -k2 | tail -1 | cut -f1)
+          if [ -n "$TAGGED" ] && [ "$TAGGED" != "$GITHUB_SHA" ]; then
+            echo "::error::$TAG already points at $TAGGED, not $GITHUB_SHA. Use a new version."
+            exit 1
+          fi
       - name: Never release a tree that fails the checks
         run: make check
       - run: make dist
@@ -52,6 +62,7 @@ jobs:
         run: |
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" dist/*.zip --clobber
+            gh release edit "$TAG" --draft=false
           else
             gh release create "$TAG" dist/*.zip --generate-notes --target "$GITHUB_SHA"
           fi
