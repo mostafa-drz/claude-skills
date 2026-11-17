@@ -10,7 +10,8 @@ printed data block, so the page is generated once. The full-page mode is for sur
 without artifacts, where the file is shared instead.
 
 Standard library only. Injects the JSON into assets/focus-template.html, the one place the
-data goes, and escapes "</" so no value can close the data block early and inject markup.
+data goes, and escapes every "<" as <, so no value can close the data block early
+("</script>") or switch the parser's script state ("<!--<script>") and inject markup.
 Every value is later rendered with textContent, so this is the only HTML-level concern.
 """
 import json
@@ -24,7 +25,7 @@ BLOCK = re.compile(r'(<script type="application/json" id="focus-data">)(.*?)(</s
 
 def payload_of(src):
     focus = json.loads(Path(src).read_text(encoding="utf-8"))
-    return json.dumps(focus, ensure_ascii=False, indent=1).replace("</", "<\\/")
+    return json.dumps(focus, ensure_ascii=False, indent=1).replace("<", "\\u003c")
 
 
 def main(src, dst):

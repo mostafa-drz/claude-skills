@@ -177,7 +177,8 @@ Checked locally:
 
   It warns on a focus that joins two things, and on non-English pages with no labels.
 - **Page.** Screenshotted in dark mode (work) and light mode (personal). A hostile focus
-  (`</script><img onerror=…>`) is escaped by the renderer (`--data` and full-file modes) and set with `textContent`.
+  (`</script><img onerror=…>`) and a `<!--<script>` value are escaped by the renderer
+  (every `<`, in `--data` and full-file modes) and set with `textContent`.
 - **Done state.** It survives a reload with browser storage. Each save is timestamped (never
   earlier than any copy already seen), writes run in order, and the newest copy wins, tested with a stand-in `window.storage`:
   - a click during a slow storage read stays done;
