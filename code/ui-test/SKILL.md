@@ -202,7 +202,7 @@ Then proceed to Step 1 (preflight). After the first successful run, inline-promp
 
 ## Setup — Chrome extension onboarding
 
-When invoked as `/ui-test setup` (or when Step 1 preflight fails and the user asks for help), load `~/.claude/skills/ui-test/reference/setup.md` via Read and walk through it: prerequisites checklist (browser / plan / Claude Code version / extension version), enable steps (`/chrome`, `/mcp`), and a troubleshooting table. Reference: `https://code.claude.com/docs/en/chrome` — fetch via WebFetch if a detail in the local guide looks stale.
+When invoked as `/ui-test setup` (or when Step 1 preflight fails and the user asks for help), load `${CLAUDE_SKILL_DIR}/reference/setup.md` via Read and walk through it: prerequisites checklist (browser / plan / Claude Code version / extension version), enable steps (`/chrome`, `/mcp`), and a troubleshooting table. Reference: `https://code.claude.com/docs/en/chrome` — fetch via WebFetch if a detail in the local guide looks stale.
 
 After the user says they're set up, run preflight (Step 1). On pass: "Connection good. Paste a test description: `/ui-test \"<description>\"`."
 
@@ -362,7 +362,7 @@ Compose verdict per run:
 
 Generate `report.html` (skip if `--no-html-report`). Single self-contained file: inline JS ≤200 lines, no external scripts, CSS variables only, dark + light via `prefers-color-scheme`, mobile-responsive, **bento-grid layout** (12-col grid with mixed-size cards) reflecting current 2026 dashboard trends. Verdict-forward: hero card with verdict pill + screenshot, perf bento row (4 metric cards with conic-gradient rings + sparklines), step timeline with filter chips, a11y panel with severity badges, visual diff strip, coverage panel, footer.
 
-**Skeleton source** — copy the structure and styles from `~/.claude/skills/ui-test/examples/sample-report.html` (a fully-rendered reference with mock data). Replace its hardcoded data with the run's actual values. Load `~/.claude/skills/ui-test/reference/report.md` for the full layout spec and inline-JS responsibilities if more detail is needed.
+**Skeleton source** — copy the structure and styles from `${CLAUDE_SKILL_DIR}/examples/sample-report.html` (a fully-rendered reference with mock data). Replace its hardcoded data with the run's actual values. Load `${CLAUDE_SKILL_DIR}/reference/report.md` for the full layout spec and inline-JS responsibilities if more detail is needed.
 
 ### Step 9 — CLI summary
 

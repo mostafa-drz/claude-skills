@@ -42,7 +42,7 @@ _On startup, use Read to load `~/.claude/skills/extract-skill/preferences.md`. I
 
 _On startup, use Bash to:_
 1. _List existing skills: `ls ~/.claude/skills/`_
-2. _Read `~/.claude/skills/SKILLS_GUIDE.md` (inventory + conventions)_
+2. _Read `${CLAUDE_SKILL_DIR}/../SKILLS_GUIDE.md` (inventory + conventions)_
 3. _Read `~/.claude/projects/<project-slug>/memory/MEMORY.md` if accessible (the user's auto-memory index)_
 
 _Skip any that fail. The point is to know what already exists so we don't propose duplicates._
@@ -153,7 +153,7 @@ If the user passed `--memory-only` or `--skill-only`, filter the output accordin
 
 Before surfacing any candidate:
 
-1. **Check existing skills inventory** — search `~/.claude/skills/SKILLS_GUIDE.md` and the directory listing. If a skill already covers this workflow, mention it instead of proposing a duplicate.
+1. **Check existing skills inventory** — search `${CLAUDE_SKILL_DIR}/../SKILLS_GUIDE.md` and the directory listing. If a skill already covers this workflow, mention it instead of proposing a duplicate.
 2. **Check MEMORY.md** — search the user's auto-memory index for matching rules. If the rule already exists, propose an **update** (e.g., add a **Why:** line, sharpen wording) rather than a new entry.
 3. **Check Claude Code built-ins** — don't propose a skill for things like `/init`, `/review`, `/loop` that already ship with Claude Code.
 

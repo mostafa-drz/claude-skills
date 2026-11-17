@@ -422,7 +422,7 @@ Generate a **single self-contained** `index.html` per cluster and a top-level
 - **Light + dark** via `prefers-color-scheme`, CSS variables only. Explicit
   background on `body`.
 - **Mobile-responsive**, single column on small screens.
-- **Inline the icon** from `~/.claude/skills/remarkable-memory/icon.svg` at ~32px
+- **Inline the icon** from `${CLAUDE_SKILL_DIR}/icon.svg` at ~32px
   next to the H1, colored with the accent so it themes.
 - **No external scripts/fonts** — one file, opens anywhere.
 

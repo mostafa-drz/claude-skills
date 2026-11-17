@@ -36,7 +36,7 @@ Use the `Read` tool to read `~/.claude/skills/respond-to-message/reference/tone-
 
 ## Platform Context
 
-Use `Glob` to check which platform files exist at `~/.claude/skills/respond-to-message/reference/platforms/*.md`. For the active platform, read its context file. If no file exists for the requested platform, use sensible defaults for that platform's conventions.
+Use `Glob` to check which platform files exist at `${CLAUDE_SKILL_DIR}/reference/platforms/*.md`. For the active platform, read its context file. If no file exists for the requested platform, use sensible defaults for that platform's conventions.
 
 ## Command routing
 

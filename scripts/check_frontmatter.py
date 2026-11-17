@@ -17,6 +17,9 @@ Rules enforced (sources in SKILLS_GUIDE.md):
     so a typo like `disable-model-invokation` would otherwise ship unnoticed
   - `metadata` values are strings, as the Agent Skills spec requires
   - `compatibility`, when set, is <= 500 chars
+  - no skill reaches a file it ships through `~/.claude/skills/<skill>/…`: a plugin
+    install lives elsewhere, so that path only works for a manual copy. Bundled files
+    resolve from `${CLAUDE_SKILL_DIR}`; `~/.claude/skills/` is for user data only
 """
 import re
 import sys
@@ -44,6 +47,20 @@ CLAUDE_CODE = PORTABLE | {
     "background", "hooks", "paths", "shell",
 }
 ALLOWED = {"code": CLAUDE_CODE, "desktop": PORTABLE}
+# Files a skill writes for the user. These belong under ~/.claude/skills/, where a
+# plugin update can't overwrite them, even when the repo ships an empty starter copy.
+USER_DATA = {"preferences.md", "learnings.md", "feedback-journal.md", "tone-profile.md"}
+HOME_SKILL_PATH = re.compile(r"~/\.claude/skills/([a-z0-9-]+)/([A-Za-z0-9_./-]+)")
+
+
+def shipped_via_home(platform: str, text: str) -> list:
+    """Paths written as ~/.claude/skills/<skill>/<file> where that file ships in the repo."""
+    hits = []
+    for skill, rest in HOME_SKILL_PATH.findall(text):
+        rest = rest.rstrip(".")
+        if rest and Path(rest).name not in USER_DATA and (ROOT / platform / skill / rest).exists():
+            hits.append(f"~/.claude/skills/{skill}/{rest}")
+    return hits
 
 def main() -> int:
     problems = []
@@ -98,6 +115,11 @@ def main() -> int:
                         f"{rel}: metadata.{k} is {type(v).__name__}, the spec requires a "
                         f'string — quote it, e.g. {k}: "{str(v).lower()}"'
                     )
+            for hit in shipped_via_home(platform, raw):
+                problems.append(
+                    f"{rel}: {hit} is a bundled file — use ${{CLAUDE_SKILL_DIR}}/… "
+                    "(plugin installs don't live in ~/.claude/skills)"
+                )
             if platform == "desktop" and "side_effects" not in meta:
                 problems.append(
                     f"{rel}: desktop skills must declare metadata.side_effects — "
