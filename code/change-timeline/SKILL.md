@@ -31,9 +31,12 @@ allowed-tools:
   - mcp__github__pull_request_read
   - mcp__github__list_pull_requests
   - mcp__github__issue_read
+license: MIT
 metadata:
   trigger: "Wanting to see or review what changed in a branch, PR, release or time period as a visual timeline where every item links to its commits and PRs."
   tags: "git, github, code review, timeline, visualization, artifacts, pull-requests, history"
+  author: "mostafa-drz"
+  bundle: "git-and-prs"
 ---
 
 # Change timeline

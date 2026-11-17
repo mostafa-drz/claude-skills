@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-26",
+  "updated": "2026-11-17",
   "repo": "https://github.com/mostafa-drz/claude-skills",
   "skills": [
     {
@@ -175,6 +175,15 @@
         "linear"
       ],
       "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/create-pr/SKILL.md",
+      "sideEffects": true
+    },
+    {
+      "name": "creative-studio",
+      "platform": "code",
+      "description": "Makes brand-consistent creative assets end to end from a one-line brief: images, voiceovers, short vertical videos with burned-in captions (Reels, TikTok, Shorts), Instagram carousels, social cards, blog heroes and slide decks. Reads the project's brand file, generates with fal.ai models (images, voice, optional AI video), assembles video with ffmpeg, checks every asset against the brand, shows a cost estimate before spending and saves everything with its recipe. Never posts or publishes without an explicit yes. Use for \"make a reel\", \"Instagram post\", \"TikTok\", \"carousel\", \"voiceover\", \"explainer video\", \"blog image\", \"social card\", \"ad creative\", \"deck\" or \"creative assets\".",
+      "trigger": "Making images, voiceovers, short videos, carousels, social cards or decks for a brand.",
+      "tags": [],
+      "url": "https://github.com/mostafa-drz/claude-skills/blob/main/code/creative-studio/SKILL.md",
       "sideEffects": true
     },
     {
