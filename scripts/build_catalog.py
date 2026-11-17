@@ -107,7 +107,8 @@ BUNDLES = {
     "dev-workflow": ("Development", "Plan, build in verified increments, check the work, decide what's next."),
     "qa-and-audits": ("Quality", "Browser-driven UI tests and audits, docs, SEO and compliance checks, triage boards."),
     "comms-and-tickets": ("Productivity", "Briefs, replies, status updates, timesheets, and turning threads into tickets."),
-    "personal-and-research": ("Personal", "Shopping research, screenshot and handwritten-note memory, wellbeing recaps, SVG art."),
+    "personal-and-research": ("Personal", "Shopping research, screenshot and handwritten-note memory, wellbeing recaps."),
+    "creative": ("Creative", "Brand-consistent images, voiceovers, short videos, carousels and SVG art."),
     "skill-authoring": ("Meta", "Create, extract, audit and publish Claude skills."),
     "everyday-assistant": ("Personal", "Claude Desktop and claude.ai skills: daily focus, learning, inbox, trips, runbooks, buying, charts, plants."),
 }

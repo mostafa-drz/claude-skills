@@ -29,7 +29,7 @@ metadata:
   trigger: "Needing icons for a product, a brand mark, a generative poster, or a set of decorative SVGs for a page, blog, or app."
   tags: "design, svg, icons, creative, visual, generative"
   author: "mostafa-drz"
-  bundle: "personal-and-research"
+  bundle: "creative"
 ---
 
 ## Preferences

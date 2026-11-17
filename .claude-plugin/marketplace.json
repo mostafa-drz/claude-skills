@@ -171,7 +171,7 @@
       "name": "personal-and-research",
       "source": "./",
       "strict": false,
-      "description": "Shopping research, screenshot and handwritten-note memory, wellbeing recaps, SVG art.",
+      "description": "Shopping research, screenshot and handwritten-note memory, wellbeing recaps.",
       "category": "personal",
       "author": {
         "name": "Mostafa Darehzereshki",
@@ -183,16 +183,16 @@
       "keywords": [
         "browser-automation",
         "claude-in-chrome",
-        "creative",
         "decision",
         "declutter",
-        "design",
         "files",
-        "generative",
         "handwriting",
-        "icons",
         "knowledge-base",
-        "macos"
+        "macos",
+        "mcp",
+        "memory",
+        "notes",
+        "organization"
       ],
       "skills": [
         "./code/emotional-recap",
@@ -201,8 +201,33 @@
         "./code/screenshots-memory",
         "./code/shop-research",
         "./code/should-i-buy",
-        "./code/svg-art",
         "./code/weather"
+      ]
+    },
+    {
+      "name": "creative",
+      "source": "./",
+      "strict": false,
+      "description": "Brand-consistent images, voiceovers, short videos, carousels and SVG art.",
+      "category": "creative",
+      "author": {
+        "name": "Mostafa Darehzereshki",
+        "url": "https://github.com/mostafa-drz"
+      },
+      "homepage": "https://github.com/mostafa-drz/claude-skills",
+      "repository": "https://github.com/mostafa-drz/claude-skills",
+      "license": "MIT",
+      "keywords": [
+        "creative",
+        "design",
+        "generative",
+        "icons",
+        "svg",
+        "visual"
+      ],
+      "skills": [
+        "./code/creative-studio",
+        "./code/svg-art"
       ]
     },
     {
