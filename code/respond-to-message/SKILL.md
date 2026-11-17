@@ -36,7 +36,7 @@ Use the `Read` tool to read `~/.claude/skills/respond-to-message/reference/tone-
 
 ## Platform Context
 
-Use `Glob` to check which platform files exist at `${CLAUDE_SKILL_DIR}/reference/platforms/*.md`. For the active platform, read its context file. If no file exists for the requested platform, use sensible defaults for that platform's conventions.
+For the active platform, read the user's saved context at `~/.claude/skills/respond-to-message/reference/platforms/{platform}.md`. If it doesn't exist, fall back to the bundled starter at `${CLAUDE_SKILL_DIR}/reference/platforms/{platform}.md`. If no file exists for the requested platform, use sensible defaults for that platform's conventions.
 
 ## Command routing
 
@@ -94,11 +94,11 @@ If Q4 is Yes, use `AskUserQuestion` to collect sample messages, then analyze the
 - Use of humor, emojis, or directness
 - Vocabulary tendencies
 
-Save tone analysis + samples to `reference/tone-profile.md`.
+Save tone analysis + samples to `~/.claude/skills/respond-to-message/reference/tone-profile.md`.
 
 For each platform selected in Q3, ask:
 
-**Platform-specific Q** — "Any specific context for {platform}? (e.g., your LinkedIn headline, Slack workspace role, email signature)" — save to `reference/platforms/{platform}.md`.
+**Platform-specific Q** — "Any specific context for {platform}? (e.g., your LinkedIn headline, Slack workspace role, email signature)" — save to `~/.claude/skills/respond-to-message/reference/platforms/{platform}.md` (create the folder if needed; never write into the skill's own folder).
 
 Save overall preferences to `~/.claude/skills/respond-to-message/preferences.md`.
 
@@ -106,9 +106,9 @@ Save overall preferences to `~/.claude/skills/respond-to-message/preferences.md`
 
 Interactive flow to update the tone profile:
 
-1. Read current `reference/tone-profile.md` (if exists, show summary)
+1. Read current `~/.claude/skills/respond-to-message/reference/tone-profile.md` (if exists, show summary)
 2. Ask: "Paste 2-3 messages you've recently sent that represent your voice."
-3. Analyze patterns and update `reference/tone-profile.md`
+3. Analyze patterns and update `~/.claude/skills/respond-to-message/reference/tone-profile.md`
 4. Confirm: "Tone profile updated. Key traits: {traits}."
 
 ### Reset
@@ -156,8 +156,8 @@ If the incoming message isn't clear, ask:
 
 ### Step 3: Load tone and context
 
-1. **Tone profile** — read from `reference/tone-profile.md`
-2. **Platform context** — read from `reference/platforms/{platform}.md`
+1. **Tone profile** — read from `~/.claude/skills/respond-to-message/reference/tone-profile.md`
+2. **Platform context** — read from `~/.claude/skills/respond-to-message/reference/platforms/{platform}.md`, else the bundled starter in `${CLAUDE_SKILL_DIR}/reference/platforms/`
 3. **Preferences** — read from `preferences.md`
 
 Merge into a response framework:

@@ -123,7 +123,7 @@ Show a compact table (severity + id + title only) and let the user accept / drop
 ```bash
 if [ ! -f ~/Desktop/triage-boards/schema/triage-board.schema.json ]; then
   mkdir -p ~/Desktop/triage-boards/schema
-  cp ${CLAUDE_SKILL_DIR}/templates/schema.json \
+  cp "${CLAUDE_SKILL_DIR}/templates/schema.json" \
      ~/Desktop/triage-boards/schema/triage-board.schema.json
 fi
 ```
