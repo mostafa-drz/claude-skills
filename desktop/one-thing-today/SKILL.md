@@ -125,7 +125,7 @@ standard library only.
 **Write the page once.** With artifacts available, create the HTML artifact directly:
 [`assets/focus-template.html`](./assets/focus-template.html) copied unchanged, except for
 the JSON inside `<script type="application/json" id="focus-data">`. Get that JSON from
-`python3 scripts/render_page.py focus.json --data`, which prints it with `</` already
+`python3 scripts/render_page.py focus.json --data`, which prints it with every `<` already
 escaped, and paste it as printed. Don't also render a file.
 
 Without artifacts, run `python3 scripts/render_page.py focus.json focus.html`, share the
