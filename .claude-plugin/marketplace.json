@@ -24,6 +24,7 @@
       "repository": "https://github.com/mostafa-drz/claude-skills",
       "license": "MIT",
       "keywords": [
+        "artifacts",
         "automation",
         "browser-automation",
         "ci/cd",
@@ -33,13 +34,13 @@
         "documentation",
         "git",
         "github",
-        "issue-tracker",
-        "linear",
-        "maintenance"
+        "history",
+        "issue-tracker"
       ],
       "skills": [
         "./code/address-pr-comments",
         "./code/address-pr-feedback",
+        "./code/change-timeline",
         "./code/chunk-pr",
         "./code/create-pr",
         "./code/git-cleanup",

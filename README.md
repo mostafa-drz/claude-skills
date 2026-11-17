@@ -48,7 +48,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 
 | Bundle | Skills | Install in Claude Code |
 |---|---|---|
-| **git-and-prs** — Pull requests, reviews, CI failures, branches and release notes. | `address-pr-comments`, `address-pr-feedback`, `chunk-pr`, `create-pr`, `git-cleanup`, `investigate-ci`, `post-pr-for-review`, `release-notes`, `repo-timeline`, `sync-branch` | `/plugin install git-and-prs --marketplace mostafa-drz/claude-skills` |
+| **git-and-prs** — Pull requests, reviews, CI failures, branches and release notes. | `address-pr-comments`, `address-pr-feedback`, `change-timeline`, `chunk-pr`, `create-pr`, `git-cleanup`, `investigate-ci`, `post-pr-for-review`, `release-notes`, `repo-timeline`, `sync-branch` | `/plugin install git-and-prs --marketplace mostafa-drz/claude-skills` |
 | **dev-workflow** — Plan, build in verified increments, check the work, decide what's next. | `build-incremental`, `build-until-agreed`, `exploration-to-spec`, `get-up-to-speed`, `next-steps`, `smoke-test`, `step-through`, `whats-next`, `workflow-advisor` | `/plugin install dev-workflow --marketplace mostafa-drz/claude-skills` |
 | **qa-and-audits** — Browser-driven UI tests and audits, docs, SEO and compliance checks, triage boards. | `audit-ui-e2e`, `capture-screens`, `compliance-audit`, `docs-doctor`, `sitemap-audit`, `triage-board`, `ui-test`, `ux-interview` | `/plugin install qa-and-audits --marketplace mostafa-drz/claude-skills` |
 | **comms-and-tickets** — Briefs, replies, status updates, timesheets, and turning threads into tickets. | `clean-copy`, `daily-brief`, `enrich-message`, `guide-from-screenshots`, `post-ticket-summary`, `project-updates`, `respond-to-message`, `slack-to-ticket`, `thread-to-action`, `workday-summary` | `/plugin install comms-and-tickets --marketplace mostafa-drz/claude-skills` |
@@ -57,7 +57,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | **skill-authoring** — Create, extract, audit and publish Claude skills. | `audit-skills`, `extract-skill`, `publish-skills`, `skill-creator` | `/plugin install skill-authoring --marketplace mostafa-drz/claude-skills` |
 | **everyday-assistant** — Claude Desktop and claude.ai skills: daily focus, learning, inbox, trips, runbooks, buying, charts, plants. | `day-timeline`, `inbox-catchup`, `learn-today`, `make-it-itinerary`, `make-it-runbook`, `one-thing-today`, `remarkable-memory`, `research-assistant`, `take-care-of-my-plant`, `which-chart`, `which-to-buy` | `/plugin install everyday-assistant --marketplace mostafa-drz/claude-skills` |
 
-### Claude Code (50)
+### Claude Code (51)
 
 | Skill | What it does | Side effects |
 |---|---|---|
@@ -68,6 +68,7 @@ cp -r claude-skills/code/whats-next ~/.claude/skills/
 | [`/build-incremental`](code/build-incremental/SKILL.md) | Implements code in progressive, verified increments — auto-detects the project's toolchain, builds each unit, runs checks (typecheck, lint, test), fixes errors, and commits with semantic messages. | Yes |
 | <img src="code/build-until-agreed/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/build-until-agreed`](code/build-until-agreed/SKILL.md) | Builds toward a goal agreed up front, then has independent read-only auditors judge whether it is actually met — looping build → blind audit → verify → fix until the harness passes, no verified blocking finding remains, and more than half of the auditors agree the goal is met. | Yes |
 | [`/capture-screens`](code/capture-screens/SKILL.md) | Automatically navigates a web app using Playwright MCP and captures context-aware named screenshots at each product feature state. | Yes |
+| <img src="code/change-timeline/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/change-timeline`](code/change-timeline/SKILL.md) | Visualizes code changes as an evidence-backed timeline artifact: every item has a title, what changed, why, and the commit SHAs and PRs that prove it. | Yes |
 | <img src="code/chunk-pr/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/chunk-pr`](code/chunk-pr/SKILL.md) | Analyzes a large pull request (or branch, or commit range) and proposes a sequence of smaller, logically-grouped, merge-safe PRs following review best practices — dependency first, one concern per PR, mergeable in order. | Yes |
 | <img src="code/clean-copy/icon.svg" width="20" height="20" alt="" valign="middle"> &nbsp; [`/clean-copy`](code/clean-copy/SKILL.md) | Cleans terminal-formatted text and copies it to the macOS clipboard via pbcopy, formatted for the target platform (Gmail, Slack, LinkedIn, plain, markdown). | Yes |
 | [`/compliance-audit`](code/compliance-audit/SKILL.md) | Audits codebases against compliance frameworks (SOC2, HIPAA, PCI-DSS, GDPR, ISO27001, etc.) using parallel agents per subdirectory/sub-repo. | Yes |

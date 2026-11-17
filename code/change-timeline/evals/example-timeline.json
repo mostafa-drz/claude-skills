@@ -1,0 +1,883 @@
+{
+ "version": 1,
+ "title": "Memory skills, one catalog, then a wave of Desktop skills",
+ "subtitle": "Two memory skills landed in August and September. The catalog was then consolidated and a confidentiality slip fixed, and seven Desktop and Code skills followed by late October.",
+ "repo": {
+  "name": "mostafa-drz/claude-skills",
+  "url": "https://github.com/mostafa-drz/claude-skills",
+  "commit_url": "https://github.com/mostafa-drz/claude-skills/commit/{sha}"
+ },
+ "range": {
+  "label": "main · Aug 13 – Oct 23, 2026",
+  "base": "d794ea5",
+  "head": "e289ced",
+  "from": "2026-08-13",
+  "to": "2026-10-23"
+ },
+ "view": "timeline",
+ "order": "newest",
+ "generated": "2026-10-26",
+ "theme": {
+  "mode": "dark",
+  "density": "compact",
+  "accent": "#ff6b3d"
+ },
+ "sources": [
+  "git",
+  "GitHub PRs #43–#56",
+  "PR bodies for #47, #48, #50, #55"
+ ],
+ "stats": {
+  "commits": 14,
+  "prs": 14,
+  "authors": 1,
+  "additions": 20672,
+  "deletions": 1727
+ },
+ "areas": [
+  {
+   "key": "code",
+   "label": "Code skills"
+  },
+  {
+   "key": "desktop",
+   "label": "Desktop skills"
+  },
+  {
+   "key": "tooling",
+   "label": "Repo tooling"
+  }
+ ],
+ "chapters": [
+  {
+   "key": "memory",
+   "title": "Memory",
+   "date": "2026-09-11",
+   "summary": "Two skills that turn personal material, handwritten notes and screenshots, into a local memory Claude can query."
+  },
+  {
+   "key": "consolidation",
+   "title": "Consolidation",
+   "date": "2026-09-11",
+   "summary": "A same-day cleanup: the catalog gets one source of truth, and real names leave the example data."
+  },
+  {
+   "key": "desktop",
+   "title": "Desktop wave",
+   "date": "2026-10-23",
+   "summary": "Seven skills in six weeks, most of them for Claude Desktop, on one shared shape: a JSON schema, a validator and a page template."
+  }
+ ],
+ "items": [
+  {
+   "id": "remarkable-memory",
+   "date": "2026-09-11",
+   "commits": [
+    {
+     "sha": "9b8bf7568b314d02c939a60cd309dd0e2b6b2354",
+     "subject": "Add /remarkable-memory skill (code + desktop) (#43)",
+     "author": "Mostafa Darehzereshki",
+     "date": "2026-08-13",
+     "additions": 1965,
+     "deletions": 1
+    },
+    {
+     "sha": "cc3f3c37860a82419a7ca2f3e9755d6ed3a23123",
+     "subject": "feat(remarkable-memory): clickable facet chips + review popovers (#44)",
+     "author": "Mostafa Darehzereshki",
+     "date": "2026-09-10",
+     "additions": 1468,
+     "deletions": 113
+    },
+    {
+     "sha": "73fdf26f317e8078052c4f4fe4b6234f732d6aaf",
+     "subject": "docs(remarkable-memory): list review --apply in argument-hint (#45)",
+     "author": "Mostafa Darehzereshki",
+     "date": "2026-09-11",
+     "additions": 1,
+     "deletions": 1
+    }
+   ],
+   "prs": [
+    {
+     "number": 43,
+     "title": "Add /remarkable-memory skill (code + desktop)",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/43",
+     "state": "merged"
+    },
+    {
+     "number": 44,
+     "title": "feat(remarkable-memory): clickable facet chips + review popovers",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/44",
+     "state": "merged"
+    },
+    {
+     "number": 45,
+     "title": "docs(remarkable-memory): list review --apply in argument-hint",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/45",
+     "state": "merged"
+    }
+   ],
+   "files": [
+    {
+     "path": "code/remarkable-memory/examples/human-memory-posts.html",
+     "additions": 876,
+     "deletions": 53
+    },
+    {
+     "path": "code/remarkable-memory/reference/report-template.html",
+     "additions": 835,
+     "deletions": 43
+    },
+    {
+     "path": "code/remarkable-memory/SKILL.md",
+     "additions": 679,
+     "deletions": 11
+    },
+    {
+     "path": "code/remarkable-memory/examples/quickstart.html",
+     "additions": 390,
+     "deletions": 3
+    },
+    {
+     "path": "code/remarkable-memory/reference/memory-schema.md",
+     "additions": 166,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/remarkable-memory/SKILL.md",
+     "additions": 164,
+     "deletions": 0
+    }
+   ],
+   "title": "/remarkable-memory ships for Code and Desktop",
+   "type": "feat",
+   "area": "code",
+   "chapter": "memory",
+   "step": 1,
+   "what": "A new skill that keeps handwritten reMarkable notes as a local memory, then gets clickable facet chips and review popovers a month later, plus a doc fix for review --apply.",
+   "why": null
+  },
+  {
+   "id": "screenshots-memory",
+   "date": "2026-09-11",
+   "commits": [
+    {
+     "sha": "8aa7ae6e9bdf355a6df0146546ba8d9b3d0ff834",
+     "subject": "Add /screenshots-memory — screenshots as a queryable, local memory (#46)",
+     "author": "Mostafa Darehzereshki",
+     "date": "2026-09-11",
+     "additions": 3613,
+     "deletions": 1
+    }
+   ],
+   "prs": [
+    {
+     "number": 46,
+     "title": "Add /screenshots-memory — screenshots as a queryable, local memory",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/46",
+     "state": "merged"
+    }
+   ],
+   "files": [
+    {
+     "path": "code/screenshots-memory/examples/sample-cluster.html",
+     "additions": 949,
+     "deletions": 0
+    },
+    {
+     "path": "code/screenshots-memory/reference/report-template.html",
+     "additions": 839,
+     "deletions": 0
+    },
+    {
+     "path": "code/screenshots-memory/SKILL.md",
+     "additions": 499,
+     "deletions": 0
+    },
+    {
+     "path": "code/screenshots-memory/examples/quickstart.html",
+     "additions": 374,
+     "deletions": 0
+    },
+    {
+     "path": "code/screenshots-memory/reference/memory-schema.md",
+     "additions": 193,
+     "deletions": 0
+    },
+    {
+     "path": "code/screenshots-memory/reference/learning-loop.md",
+     "additions": 170,
+     "deletions": 0
+    }
+   ],
+   "title": "/screenshots-memory: screenshots as a queryable local memory",
+   "type": "feat",
+   "area": "code",
+   "chapter": "memory",
+   "step": 2,
+   "what": "The same memory idea applied to screenshots, the largest single change in the range by lines added.",
+   "why": "Extends the memory pattern from #43 to a second source; inferred from the subject and timing.",
+   "why_inferred": true
+  },
+  {
+   "id": "single-source-catalog",
+   "date": "2026-09-11",
+   "commits": [
+    {
+     "sha": "22df896675b7897b6958a34c62cbab38e65fb6d8",
+     "subject": "Refactor: one source of truth for the catalog, and a guide that can't rot (#47)",
+     "author": "Mostafa Darehzereshki",
+     "date": "2026-09-11",
+     "additions": 1612,
+     "deletions": 1555
+    }
+   ],
+   "prs": [
+    {
+     "number": 47,
+     "title": "Refactor: one source of truth for the catalog, and a guide that can't rot",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/47",
+     "state": "merged"
+    }
+   ],
+   "files": [
+    {
+     "path": "index.html",
+     "additions": 268,
+     "deletions": 599
+    },
+    {
+     "path": "README.md",
+     "additions": 92,
+     "deletions": 455
+    },
+    {
+     "path": "skills.json",
+     "additions": 227,
+     "deletions": 123
+    },
+    {
+     "path": "SKILLS_GUIDE.md",
+     "additions": 151,
+     "deletions": 178
+    },
+    {
+     "path": "code/SKILLS_GUIDE.md",
+     "additions": 152,
+     "deletions": 176
+    },
+    {
+     "path": "scripts/build_catalog.py",
+     "additions": 195,
+     "deletions": 0
+    }
+   ],
+   "title": "Frontmatter becomes the only source of truth for the catalog",
+   "type": "refactor",
+   "area": "tooling",
+   "chapter": "consolidation",
+   "impact": "notable",
+   "step": 3,
+   "what": "Hand-maintained copies of the skill list were removed. make catalog generates the README table from frontmatter and make check fails CI when it is stale.",
+   "why": "Four hand-maintained copies disagreed on which skills exist, and one advertised a write-capable skill as side-effect free.",
+   "evidence": [
+    {
+     "kind": "pr-body",
+     "source": "PR #47",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/47",
+     "text": "68% of skills.json descriptions had drifted from their frontmatter — zero exact matches."
+    },
+    {
+     "kind": "pr-body",
+     "source": "PR #47",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/47",
+     "text": "whats-next was advertised as having no side effects while holding unrestricted Bash and Linear create/update/comment tools."
+    },
+    {
+     "kind": "pr-body",
+     "source": "PR #47",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/47",
+     "text": "That check found a real defect on its first run: next-steps declared Write and unrestricted Bash without disable-model-invocation: true."
+    }
+   ],
+   "review": {
+    "risk": "65 files touched; the generated README and skills.json are now outputs, so a hand edit there is overwritten.",
+    "check": [
+     "make check passes on a clean tree",
+     "make catalog is a no-op after checkout",
+     "Every README link resolves"
+    ]
+   }
+  },
+  {
+   "id": "scrub-example-names",
+   "date": "2026-09-11",
+   "commits": [
+    {
+     "sha": "af072416a0cc9be93b12dde5c569df459d042861",
+     "subject": "Fix: replace real colleague and client names used as example data (#48)",
+     "author": "Mostafa Darehzereshki",
+     "date": "2026-09-11",
+     "additions": 45,
+     "deletions": 41
+    }
+   ],
+   "prs": [
+    {
+     "number": 48,
+     "title": "Fix: replace real colleague and client names used as example data",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/48",
+     "state": "merged"
+    }
+   ],
+   "files": [
+    {
+     "path": "code/screenshots-memory/reference/memory-schema.md",
+     "additions": 21,
+     "deletions": 21
+    },
+    {
+     "path": "code/screenshots-memory/reference/report-template.html",
+     "additions": 12,
+     "deletions": 12
+    },
+    {
+     "path": "automation/README.md",
+     "additions": 8,
+     "deletions": 2
+    },
+    {
+     "path": "code/screenshots-memory/reference/learning-loop.md",
+     "additions": 4,
+     "deletions": 4
+    },
+    {
+     "path": "README.md",
+     "additions": 0,
+     "deletions": 2
+    }
+   ],
+   "title": "Real names in example data replaced with placeholders",
+   "type": "security",
+   "area": "code",
+   "chapter": "consolidation",
+   "impact": "notable",
+   "step": 4,
+   "what": "Example data in /screenshots-memory used real colleague and client names; they were replaced with obvious placeholders across three reference files.",
+   "why": "The names were live on a public repo, in a context implying a workplace deadline.",
+   "evidence": [
+    {
+     "kind": "pr-body",
+     "source": "PR #48",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/48",
+     "text": "This is a confidentiality failure, not a style issue. Example data must be invented."
+    },
+    {
+     "kind": "pr-body",
+     "source": "PR #48",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/48",
+     "text": "This removes the names from HEAD, not from git history — they remain in the #46 commits."
+    },
+    {
+     "kind": "review",
+     "source": "Greptile on PR #48",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/48",
+     "text": "The previous confidentiality finding remains outstanding because the identified ABI examples outside these reference files were not changed."
+    }
+   ],
+   "review": {
+    "risk": "History still holds the names; a review bot found more occurrences outside the changed files.",
+    "check": [
+     "grep the whole tree for the replaced names, not only the edited files",
+     "Decide whether history needs rewriting"
+    ]
+   }
+  },
+  {
+   "id": "plant-companion",
+   "date": "2026-09-14",
+   "commits": [
+    {
+     "sha": "5026c52606b8a4476a87bc2c4ad63ea56f8c465a",
+     "subject": " feat(take-care-of-my-plant) — a Claude Desktop plant companion (#49)",
+     "author": "Mostafa Darehzereshki",
+     "date": "2026-09-14",
+     "additions": 906,
+     "deletions": 2
+    }
+   ],
+   "prs": [
+    {
+     "number": 49,
+     "title": "feat(take-care-of-my-plant) — a Claude Desktop plant companion",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/49",
+     "state": "merged"
+    }
+   ],
+   "files": [
+    {
+     "path": "desktop/take-care-of-my-plant/SKILL.md",
+     "additions": 327,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/take-care-of-my-plant/references/plant-schema.md",
+     "additions": 284,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/take-care-of-my-plant/references/care-and-diagnosis.md",
+     "additions": 177,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/take-care-of-my-plant/references/dashboard.md",
+     "additions": 85,
+     "deletions": 0
+    },
+    {
+     "path": "skills.json",
+     "additions": 20,
+     "deletions": 1
+    },
+    {
+     "path": "desktop/take-care-of-my-plant/icon.svg",
+     "additions": 11,
+     "deletions": 0
+    }
+   ],
+   "title": "/take-care-of-my-plant: a Desktop plant companion",
+   "type": "feat",
+   "area": "desktop",
+   "chapter": "desktop",
+   "step": 5,
+   "what": "The first Desktop skill in this range.",
+   "why": null
+  },
+  {
+   "id": "build-until-agreed",
+   "date": "2026-09-15",
+   "commits": [
+    {
+     "sha": "01439e8a255831cc1b6b256f44d1028dd8c41080",
+     "subject": "Add /build-until-agreed — independent auditors decide when a build is done (#50)",
+     "author": "Mostafa Darehzereshki",
+     "date": "2026-09-15",
+     "additions": 622,
+     "deletions": 2
+    }
+   ],
+   "prs": [
+    {
+     "number": 50,
+     "title": "Add /build-until-agreed — independent auditors decide when a build is done",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/50",
+     "state": "merged"
+    }
+   ],
+   "files": [
+    {
+     "path": "code/build-until-agreed/SKILL.md",
+     "additions": 201,
+     "deletions": 0
+    },
+    {
+     "path": "code/build-until-agreed/reference/contract-and-ledger.md",
+     "additions": 147,
+     "deletions": 0
+    },
+    {
+     "path": "code/build-until-agreed/README.md",
+     "additions": 131,
+     "deletions": 0
+    },
+    {
+     "path": "code/build-until-agreed/reference/auditors.md",
+     "additions": 85,
+     "deletions": 0
+    },
+    {
+     "path": "code/build-until-agreed/reference/review-bot.md",
+     "additions": 23,
+     "deletions": 0
+    },
+    {
+     "path": "skills.json",
+     "additions": 18,
+     "deletions": 1
+    }
+   ],
+   "title": "/build-until-agreed: blind auditors decide when a build is done",
+   "type": "feat",
+   "area": "code",
+   "chapter": "desktop",
+   "step": 6,
+   "what": "A build loop where read-only auditors vote blind against a written contract, each blocking finding is verified before it is fixed, and the loop stops at agreement.",
+   "why": "The agent that does the work is also the one judging it, and agents rate their own output generously.",
+   "evidence": [
+    {
+     "kind": "pr-body",
+     "source": "PR #50",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/50",
+     "text": "When an agent works for hours, the agent that did the work is also the one judging it, and agents rate their own output generously."
+    },
+    {
+     "kind": "pr-body",
+     "source": "PR #50",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/50",
+     "text": "So auditors vote blind, and the only step between them is a per-finding verifier."
+    }
+   ],
+   "review": {
+    "risk": "Marked v0: not yet run end to end.",
+    "check": [
+     "The ledger stays untracked during a run",
+     "Editing a tracked file while auditors run voids the round"
+    ]
+   }
+  },
+  {
+   "id": "conversation-to-artifact",
+   "date": "2026-09-22",
+   "commits": [
+    {
+     "sha": "92e63932ae6e0f2c1fe7dacba928d6d590606589",
+     "subject": "Add make-it-itinerary — turn a trip conversation into a verified day-by-day plan (Desktop) (#51)",
+     "author": "Mostafa Darehzereshki",
+     "date": "2026-09-21",
+     "additions": 1983,
+     "deletions": 2
+    },
+    {
+     "sha": "9ce28fa388ee028fc0b754c7f8d47f68dc07dd0c",
+     "subject": "Add make-it-runbook — turn a setup conversation into a trackable runbook (Desktop) (#52)",
+     "author": "Mostafa Darehzereshki",
+     "date": "2026-09-22",
+     "additions": 1549,
+     "deletions": 2
+    }
+   ],
+   "prs": [
+    {
+     "number": 51,
+     "title": "Add make-it-itinerary — turn a trip conversation into a verified day-by-day plan (Desktop)",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/51",
+     "state": "merged"
+    },
+    {
+     "number": 52,
+     "title": "Add make-it-runbook — turn a setup conversation into a trackable runbook (Desktop)",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/52",
+     "state": "merged"
+    }
+   ],
+   "files": [
+    {
+     "path": "desktop/make-it-itinerary/assets/itinerary-template.html",
+     "additions": 409,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/make-it-itinerary/scripts/validate_itinerary.py",
+     "additions": 348,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/make-it-runbook/assets/runbook-template.html",
+     "additions": 328,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/make-it-runbook/scripts/validate_runbook.py",
+     "additions": 296,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/make-it-itinerary/SKILL.md",
+     "additions": 227,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/make-it-runbook/SKILL.md",
+     "additions": 186,
+     "deletions": 0
+    }
+   ],
+   "title": "Conversations become artifacts: itinerary and runbook",
+   "type": "feat",
+   "area": "desktop",
+   "chapter": "desktop",
+   "step": 7,
+   "what": "Two Desktop skills on the same pattern: take a long conversation and turn it into a structured, checkable page, a day-by-day trip plan and a trackable setup runbook.",
+   "why": "Grouped because both PRs share the shape schema → validator → page template; inferred from their file lists.",
+   "why_inferred": true
+  },
+  {
+   "id": "one-thing-today",
+   "date": "2026-09-24",
+   "commits": [
+    {
+     "sha": "636b315d64f4dd8ecb4bcdaece0fb2e39709387a",
+     "subject": "Add one-thing-today — one focus for today, any area of life (Desktop) (#53)",
+     "author": "Mostafa Darehzereshki",
+     "date": "2026-09-24",
+     "additions": 1299,
+     "deletions": 2
+    }
+   ],
+   "prs": [
+    {
+     "number": 53,
+     "title": "Add one-thing-today — one focus for today, any area of life (Desktop)",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/53",
+     "state": "merged"
+    }
+   ],
+   "files": [
+    {
+     "path": "desktop/one-thing-today/assets/focus-template.html",
+     "additions": 253,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/one-thing-today/SKILL.md",
+     "additions": 248,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/one-thing-today/README.md",
+     "additions": 194,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/one-thing-today/scripts/validate_focus.py",
+     "additions": 152,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/one-thing-today/evals/evals.json",
+     "additions": 143,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/one-thing-today/references/choosing.md",
+     "additions": 118,
+     "deletions": 0
+    }
+   ],
+   "title": "/one-thing-today: one focus for today",
+   "type": "feat",
+   "area": "desktop",
+   "chapter": "desktop",
+   "step": 8,
+   "what": "Picks a single focus for the day across any area of life.",
+   "why": null
+  },
+  {
+   "id": "which-chart",
+   "date": "2026-09-30",
+   "commits": [
+    {
+     "sha": "b344b31f07bf6de821b61a177b2fa4937693d806",
+     "subject": "Add which-chart — data visualization recommendations from your data and use case (Desktop) (#55)",
+     "author": "Mostafa Darehzereshki",
+     "date": "2026-09-30",
+     "additions": 2612,
+     "deletions": 2
+    }
+   ],
+   "prs": [
+    {
+     "number": 55,
+     "title": "Add which-chart — data visualization recommendations from your data and use case (Desktop)",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/55",
+     "state": "merged"
+    }
+   ],
+   "files": [
+    {
+     "path": "desktop/which-chart/evals/example-reco.json",
+     "additions": 778,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/which-chart/evals/example-reco-ranking.json",
+     "additions": 424,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/which-chart/assets/page-template.html",
+     "additions": 365,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/which-chart/scripts/validate_reco.py",
+     "additions": 358,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/which-chart/references/choosing.md",
+     "additions": 189,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/which-chart/SKILL.md",
+     "additions": 187,
+     "deletions": 0
+    }
+   ],
+   "title": "/which-chart: one chart pick, drawn from your own rows",
+   "type": "feat",
+   "area": "desktop",
+   "chapter": "desktop",
+   "step": 9,
+   "what": "Reads data, screenshots or a use case, asks at most three questions, and answers with one pick plus alternatives, each rendered live with Vega-Lite.",
+   "why": "Picking a chart from a gallery of thumbnails that aren't your data, or from whatever the library lists first.",
+   "evidence": [
+    {
+     "kind": "pr-body",
+     "source": "PR #55",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/55",
+     "text": "It asks at most three questions, then gives one pick, 1–3 alternatives and what to avoid. Every option is drawn live from your own rows."
+    },
+    {
+     "kind": "review",
+     "source": "Greptile on PR #55",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/55",
+     "text": "The CDN scripts had no integrity check. They're now pinned with SRI."
+    }
+   ],
+   "review": {
+    "risk": "Charts load from a CDN inside the artifact; the first Desktop run must confirm they draw.",
+    "check": [
+     "Page renders with the CDN blocked",
+     "Dates are UTC west of Greenwich"
+    ]
+   }
+  },
+  {
+   "id": "which-to-buy",
+   "date": "2026-09-30",
+   "commits": [
+    {
+     "sha": "1b45796120b6de4b2dce6f68b02c4052eb40875a",
+     "subject": "Add which-to-buy — compare 2-5 products side by side with a pick (Desktop) (#54)",
+     "author": "Mostafa Darehzereshki",
+     "date": "2026-09-30",
+     "additions": 1625,
+     "deletions": 1
+    }
+   ],
+   "prs": [
+    {
+     "number": 54,
+     "title": "Add which-to-buy — compare 2-5 products side by side with a pick (Desktop)",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/54",
+     "state": "merged"
+    }
+   ],
+   "files": [
+    {
+     "path": "desktop/which-to-buy/assets/compare-template.html",
+     "additions": 535,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/which-to-buy/scripts/validate_compare.py",
+     "additions": 345,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/which-to-buy/SKILL.md",
+     "additions": 198,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/which-to-buy/README.md",
+     "additions": 160,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/which-to-buy/evals/example-compare.json",
+     "additions": 122,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/which-to-buy/evals/evals.json",
+     "additions": 93,
+     "deletions": 0
+    }
+   ],
+   "title": "/which-to-buy: compare 2–5 products with a pick",
+   "type": "feat",
+   "area": "desktop",
+   "chapter": "desktop",
+   "step": 10,
+   "what": "Side-by-side comparison of a few products ending in a single recommendation.",
+   "why": "Same one-pick principle as /which-chart, merged the same day; inferred.",
+   "why_inferred": true
+  },
+  {
+   "id": "learn-today",
+   "date": "2026-10-23",
+   "commits": [
+    {
+     "sha": "e289cedeca6f9d9d2fdd26ab43abc7ab3141c2cb",
+     "subject": "Add learn-today — a daily learning deck matched to your goals, learning from feedback (Desktop) (#56)",
+     "author": "Mostafa Darehzereshki",
+     "date": "2026-10-23",
+     "additions": 1372,
+     "deletions": 2
+    }
+   ],
+   "prs": [
+    {
+     "number": 56,
+     "title": "Add learn-today — a daily learning deck matched to your goals, learning from feedback (Desktop)",
+     "url": "https://github.com/mostafa-drz/claude-skills/pull/56",
+     "state": "merged"
+    }
+   ],
+   "files": [
+    {
+     "path": "desktop/learn-today/assets/deck-template.html",
+     "additions": 399,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/learn-today/scripts/validate_deck.py",
+     "additions": 245,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/learn-today/SKILL.md",
+     "additions": 244,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/learn-today/README.md",
+     "additions": 115,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/learn-today/references/picking.md",
+     "additions": 102,
+     "deletions": 0
+    },
+    {
+     "path": "desktop/learn-today/evals/example-deck.json",
+     "additions": 101,
+     "deletions": 0
+    }
+   ],
+   "title": "/learn-today: a daily learning deck that learns from feedback",
+   "type": "feat",
+   "area": "desktop",
+   "chapter": "desktop",
+   "step": 11,
+   "what": "A daily deck matched to the user's goals, adjusting from their feedback.",
+   "why": null
+  }
+ ]
+}
