@@ -371,7 +371,7 @@ Generate a single self-contained `report.html` (no external JS dependencies — 
 - **No emoji soup** — use color + typography to signal meaning, not emoji
 
 Structure:
-1. **Header** — brand mark + research title, date, budget, criteria summary (as pill chips). Inline the SVG from `~/.claude/skills/shop-research/icon.svg` at ~32px next to the H1 with `color: var(--accent)` so it themes with light/dark mode. The icon is the grid-pick mark — a 3×3 dot grid with one cell haloed, signaling "N candidates → one pick" which matches this skill's behavior.
+1. **Header** — brand mark + research title, date, budget, criteria summary (as pill chips). Inline the SVG from `${CLAUDE_SKILL_DIR}/icon.svg` at ~32px next to the H1 with `color: var(--accent)` so it themes with light/dark mode. The icon is the grid-pick mark — a 3×3 dot grid with one cell haloed, signaling "N candidates → one pick" which matches this skill's behavior.
 2. **TL;DR** — one-paragraph verdict + the top pick card with hero image, price, score ring, "why this won" (3 bullets)
 3. **Quick comparison table** — all candidates, sortable by score/price/rating (client-side JS inline)
 4. **Candidate deep-dives** — one section per candidate with:
@@ -384,7 +384,7 @@ Structure:
    - Link to the product page
 5. **Footer** — sources, criteria recap, "rate this research" link to `/shop-research feedback`
 
-Reference `~/.claude/skills/shop-research/reference/report-template.html` if it exists (load on demand; otherwise generate from scratch following the aesthetic above).
+Reference `${CLAUDE_SKILL_DIR}/reference/report-template.html` if it exists (load on demand; otherwise generate from scratch following the aesthetic above).
 
 ### Step 8 — Finalize and open
 

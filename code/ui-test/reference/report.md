@@ -42,4 +42,4 @@ If the run was triggered without confirmation, render the parsed inputs as chips
 
 ## Template file (optional)
 
-If `~/.claude/skills/ui-test/reference/report-template.html` exists, load it as the skeleton and fill placeholders. Otherwise generate from scratch following this guide.
+If `report-template.html` exists next to this file (in the skill's `reference/` folder), load it as the skeleton and fill placeholders. Otherwise generate from scratch following this guide.

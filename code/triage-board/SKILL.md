@@ -37,7 +37,7 @@ _On startup, use the `Read` tool to load `~/.claude/skills/triage-board/preferen
 
 ## Context
 
-_On startup, use Bash to verify_ `~/Desktop/triage-boards/schema/triage-board.schema.json` _exists. If missing, copy from_ `~/.claude/skills/triage-board/templates/schema.json` _on first run._
+_On startup, use Bash to verify_ `~/Desktop/triage-boards/schema/triage-board.schema.json` _exists. If missing, copy from_ `${CLAUDE_SKILL_DIR}/templates/schema.json` _on first run._
 
 ## Command routing
 
@@ -123,7 +123,7 @@ Show a compact table (severity + id + title only) and let the user accept / drop
 ```bash
 if [ ! -f ~/Desktop/triage-boards/schema/triage-board.schema.json ]; then
   mkdir -p ~/Desktop/triage-boards/schema
-  cp ~/.claude/skills/triage-board/templates/schema.json \
+  cp ${CLAUDE_SKILL_DIR}/templates/schema.json \
      ~/Desktop/triage-boards/schema/triage-board.schema.json
 fi
 ```
@@ -145,14 +145,14 @@ End with **Things that worked well**, **Notes / side effects**, and a **Severity
 
 ### Step 7 — Write `viewer.html`
 
-Copy `~/.claude/skills/triage-board/templates/viewer.template.html` and inline the JSON at the marker `/*REPORT_JSON_START*/…/*REPORT_JSON_END*/`. Use Python or sed for the substitution (Python preferred — handles edge cases):
+Copy `${CLAUDE_SKILL_DIR}/templates/viewer.template.html` and inline the JSON at the marker `/*REPORT_JSON_START*/…/*REPORT_JSON_END*/`. Use Python or sed for the substitution (Python preferred — handles edge cases):
 
 ```bash
 python3 <<'PYEOF'
 import re, json, pathlib
 report = pathlib.Path('<dest>/report.json').read_text()
 json.loads(report)  # validate
-template = pathlib.Path('~/.claude/skills/triage-board/templates/viewer.template.html').expanduser().read_text()
+template = pathlib.Path('${CLAUDE_SKILL_DIR}/templates/viewer.template.html').expanduser().read_text()
 out = re.sub(r'/\*REPORT_JSON_START\*/.*?/\*REPORT_JSON_END\*/',
              '/*REPORT_JSON_START*/' + report.strip() + '/*REPORT_JSON_END*/',
              template, flags=re.DOTALL)

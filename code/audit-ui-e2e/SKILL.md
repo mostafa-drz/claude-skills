@@ -255,7 +255,7 @@ Topic slug for the folder, in priority order:
 3. Hostname + path slug (e.g. `app-example-com-dashboard`)
 4. `ui-audit` as final fallback
 
-Invoke `/triage-board --findings <path-to-report.json> --topic <slug>` (or write the folder directly using triage-board's template at `~/.claude/skills/triage-board/templates/`).
+Invoke `/triage-board --findings <path-to-report.json> --topic <slug>` (or write the folder directly using triage-board's template at `${CLAUDE_SKILL_DIR}/../triage-board/templates/`).
 
 ### Step 7 — Open + report
 

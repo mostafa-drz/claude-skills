@@ -40,7 +40,7 @@ _On startup, use the `Read` tool to load `~/.claude/skills/skill-creator/prefere
 
 Before starting:
 - Use the `Glob` tool to discover existing skills at `~/.claude/skills/*/SKILL.md` (so you don't reinvent or collide with a name).
-- Read `~/.claude/skills/SKILLS_GUIDE.md` once at Step 3 — it's the canonical manifest.
+- Read `${CLAUDE_SKILL_DIR}/../SKILLS_GUIDE.md` once at Step 3 — it's the canonical manifest.
 - Treat `svg-art`, `should-i-buy`, and `step-through` as the gold-standard reference for learning + feedback patterns.
 
 ## Command routing
@@ -242,7 +242,7 @@ Use **AskUserQuestion** with **3 questions in one batch**:
 
 ## Step 3 — Identify tools needed
 
-Read `~/.claude/skills/SKILLS_GUIDE.md` to confirm conventions.
+Read `${CLAUDE_SKILL_DIR}/../SKILLS_GUIDE.md` to confirm conventions.
 
 Use **AskUserQuestion** (multiSelect):
 
@@ -300,7 +300,7 @@ If Step 2 / 3 / 4 surfaced that the skill emits user-facing UI (HTML files, Reac
 > - **No** — skip. (Acceptable only if the skill emits raw text / data, no styling decisions.)
 
 If Yes:
-1. Create `~/.claude/skills/<skill-name>/DESIGN.md` with the canonical structure (see manifest item 28 and the example at `~/.claude/skills/emotional-recap/DESIGN.md`).
+1. Create `~/.claude/skills/<skill-name>/DESIGN.md` with the canonical structure (see manifest item 28 and the emotional-recap skill's `DESIGN.md` as the example).
 2. Add to the skill's `## Context` section: _On startup, use the `Read` tool to load `DESIGN.md`. Apply its tokens, type system, anti-patterns, and renderer contract to every emitted artefact. If missing, fall back to built-in defaults but flag once._
 3. Add a workflow step before the render step: `### Step N — Load DESIGN.md`.
 4. In the structure checklist (Step 6), tick the "DESIGN.md loaded before any render" box.

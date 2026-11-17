@@ -81,6 +81,15 @@ claude.ai, the Skills API, or Cowork/cloud sessions: `name`, `description`, `lic
 fails the upload outright. This catches an unobvious path: enabling a personal skill for
 cloud sessions uploads it to claude.ai, so the same six-field rule applies there.
 
+**Bundled files resolve from `${CLAUDE_SKILL_DIR}`, never `~/.claude/skills/<skill>/`.**
+A plugin install lives in the plugin cache, not in `~/.claude/skills/`, so a hardcoded home
+path finds the skill's own templates only after a manual copy. Use
+`${CLAUDE_SKILL_DIR}/templates/x.html`, or `${CLAUDE_SKILL_DIR}/../SKILLS_GUIDE.md` for the
+shared guide. Keep `~/.claude/skills/<skill>/` for files the skill writes for the user
+(preferences, learnings, sessions), which a plugin update must not overwrite. `make check`
+enforces this. The substitution applies to `SKILL.md` only, so reference files name
+siblings by relative path.
+
 **`version` is not a frontmatter field** in either authority. It belongs under `metadata`.
 
 **`metadata` values are strings.** The spec defines it as a string-to-string map, so write

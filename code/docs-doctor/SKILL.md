@@ -49,7 +49,7 @@ Check `$ARGUMENTS`:
 - **`config`** → interactive setup, then stop
 - **`reset`** → delete `~/.claude/skills/docs-doctor/preferences.md`, `feedback-journal.md`, `sessions/`, `resume-state.md`, confirm, stop
 - **`feedback`** → run the feedback flow (see § Feedback & learning), then stop
-- **`templates`** → list available templates from `~/.claude/skills/docs-doctor/templates/`, then stop
+- **`templates`** → list available templates from `${CLAUDE_SKILL_DIR}/templates/`, then stop
 - **`resume`** → if `resume-state.md` exists, continue the last interrupted run; else say `No session to resume.`
 - **`--from-template=<name>`** → load template, merge with flags, run
 - **anything else** (including empty) → run the audit
@@ -138,7 +138,7 @@ Then proceed.
 ### Step 1 — Resolve run config
 
 1. Parse flags from `$ARGUMENTS`.
-2. If `--from-template=<name>`: `Read` `~/.claude/skills/docs-doctor/templates/<name>.md`, merge template values under flags (flags override template).
+2. If `--from-template=<name>`: `Read` `${CLAUDE_SKILL_DIR}/templates/<name>.md`, merge template values under flags (flags override template).
 3. If `--mode` is unset and not in preferences: use `AskUserQuestion` to pick mode. Pre-select the `Learned` mode if one exists, else `main`.
 4. If `--category` is set but `--mode` is not `focused`, set `--mode=focused`.
 5. Compute final config object: `{ mode, scope, output, severity_threshold, fix_policy, ignored_paths, categories, target_files }`.
@@ -227,7 +227,7 @@ End with one line:
 
 ## Templates
 
-Templates live in `~/.claude/skills/docs-doctor/templates/<name>.md`. Each template declares default flags as YAML frontmatter:
+Templates live in `${CLAUDE_SKILL_DIR}/templates/<name>.md`. Each template declares default flags as YAML frontmatter:
 
 ```yaml
 ---
