@@ -27,7 +27,7 @@ allowed-tools:
   - Bash(git branch *)
   - Bash(gh pr view *)
   - Bash(gh pr list *)
-  - Bash(python3 ~/.claude/skills/change-timeline/scripts/*)
+  - Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/*)
   - mcp__github__pull_request_read
   - mcp__github__list_pull_requests
   - mcp__github__issue_read
@@ -123,7 +123,7 @@ Over 300 commits, propose a narrower range before collecting.
 Follow [`references/research.md`](./references/research.md). In short:
 
 ```bash
-python3 ~/.claude/skills/change-timeline/scripts/collect.py --range BASE..HEAD > raw.json
+python3 ${CLAUDE_SKILL_DIR}/scripts/collect.py --range BASE..HEAD > raw.json
 ```
 
 (or `--since`/`--until`, `--path`). It returns full SHAs, dates, subjects, bodies, per-file
@@ -172,7 +172,7 @@ Write `timeline.json` to the schema in [`references/schema.md`](./references/sch
 with `theme` from the approved style and `view` from step 4.
 
 ```bash
-python3 ~/.claude/skills/change-timeline/scripts/validate_timeline.py timeline.json --repo "$(git rev-parse --show-toplevel)"
+python3 ${CLAUDE_SKILL_DIR}/scripts/validate_timeline.py timeline.json --repo "$(git rev-parse --show-toplevel)"
 ```
 
 It names each error and its fix: missing SHAs, SHAs that don't exist, an unbacked why,
@@ -182,7 +182,7 @@ warnings as review notes; fix the ones about abbreviated SHAs and missing reason
 ### 6. Render
 
 ```bash
-python3 ~/.claude/skills/change-timeline/scripts/render_page.py timeline.json timeline.html
+python3 ${CLAUDE_SKILL_DIR}/scripts/render_page.py timeline.json timeline.html
 ```
 
 With the Artifact tool available, publish `timeline.html` as an artifact (icon: `timeline`)

@@ -25,11 +25,13 @@ close.
 
 ## Commands
 
+`${CLAUDE_SKILL_DIR}` below is this skill's folder: the same resolved path SKILL.md's commands use.
+
 ```bash
 # skeleton
-python3 ~/.claude/skills/change-timeline/scripts/collect.py --range main..HEAD > raw.json
-python3 ~/.claude/skills/change-timeline/scripts/collect.py --since "2026-09-01" --until "2026-10-01" > raw.json
-python3 ~/.claude/skills/change-timeline/scripts/collect.py --range v2.3.0..v2.4.0 --path services/api > raw.json
+python3 ${CLAUDE_SKILL_DIR}/scripts/collect.py --range main..HEAD > raw.json
+python3 ${CLAUDE_SKILL_DIR}/scripts/collect.py --since "2026-09-01" --until "2026-10-01" > raw.json
+python3 ${CLAUDE_SKILL_DIR}/scripts/collect.py --range v2.3.0..v2.4.0 --path services/api > raw.json
 
 # a PR, with gh
 gh pr view 142 --json number,title,body,url,author,labels,mergedAt,reviews,comments,closingIssuesReferences,files
